@@ -1,0 +1,33 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A0F5CC7E-155F-4726-8DEB-E966950B3FE9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EBB55F65-7D07-4281-8D5E-7B0CA88E1AD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Core", "src\EasyCaching.Core\EasyCaching.Core.csproj", "{CE61FAA2-0233-451C-991D-4222ED61C84B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Memory", "src\EasyCaching.Memory\EasyCaching.Memory.csproj", "{B9490432-737B-4518-B851-9D40FD29B392}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CE61FAA2-0233-451C-991D-4222ED61C84B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE61FAA2-0233-451C-991D-4222ED61C84B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE61FAA2-0233-451C-991D-4222ED61C84B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE61FAA2-0233-451C-991D-4222ED61C84B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9490432-737B-4518-B851-9D40FD29B392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9490432-737B-4518-B851-9D40FD29B392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9490432-737B-4518-B851-9D40FD29B392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9490432-737B-4518-B851-9D40FD29B392}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{B9490432-737B-4518-B851-9D40FD29B392} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+	EndGlobalSection
+EndGlobal
