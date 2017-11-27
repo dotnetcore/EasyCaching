@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspectCore.Core" Version="0.2.4" />
+    <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="0.2.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
+  </ItemGroup>
+</Project>
