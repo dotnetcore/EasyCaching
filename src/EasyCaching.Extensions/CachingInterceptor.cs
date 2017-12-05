@@ -93,9 +93,8 @@
             await next(context);
 
             if (!string.IsNullOrWhiteSpace(cacheKey))
-            {
-                CacheEntry entry = new CacheEntry(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
-                CacheProvider.Set(entry);
+            {                
+                CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
             }
         }
 

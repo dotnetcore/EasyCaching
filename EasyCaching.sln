@@ -15,12 +15,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Extensions", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.Interceptor", "sample\EasyCaching.Demo.Interceptor\EasyCaching.Demo.Interceptor.csproj", "{C94E91EB-1F55-40E7-9A69-BBFEF740839C}"
 EndProject
-<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.SQLite", "src\EasyCaching.SQLite\EasyCaching.SQLite.csproj", "{09FCF125-522E-4C0F-9CF0-0377A3F2A1A0}"
 EndProject
-=======
 
->>>>>>> 7d9771c9f7bf870febe0877563b40284c9e53dde
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
