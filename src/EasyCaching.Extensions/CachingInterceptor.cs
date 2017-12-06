@@ -83,7 +83,7 @@
         {
             var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
 
-            var cacheValue = CacheProvider.Get(cacheKey);
+            var cacheValue = CacheProvider.Get(cacheKey, () => new object(), TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
             if (cacheValue != null)
             {
                 context.ReturnValue = cacheValue;

@@ -13,18 +13,19 @@
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
-        /// <param name="absoluteExpirationRelativeToNow">Absolute expiration relative to now.</param>
+        /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void Set<T>(string cacheKey, T cacheValue, TimeSpan absoluteExpirationRelativeToNow) where T : class;
+        void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
 
         /// <summary>
-        /// Get the specified cacheKey and dataRetriever.
+        /// Get the specified cacheKey, dataRetriever and expiration.
         /// </summary>
         /// <returns>The get.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="dataRetriever">Data retriever.</param>
+        /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        T Get<T>(string cacheKey, Func<T> dataRetriever = null) where T : class;
+        T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class;
 
         /// <summary>
         /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
@@ -32,16 +33,17 @@
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
-        /// <param name="absoluteExpirationRelativeToNow">Absolute expiration relative to now.</param>
-        void Set(string cacheKey,object cacheValue, TimeSpan absoluteExpirationRelativeToNow);
+        /// <param name="expiration">Expiration.</param>
+        void Set(string cacheKey,object cacheValue, TimeSpan expiration);
 
         /// <summary>
-        /// Get the specified cacheKey and dataRetriever.
+        /// Get the specified cacheKey, dataRetriever and expiration.
         /// </summary>
         /// <returns>The get.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="dataRetriever">Data retriever.</param>
-        object Get(string cacheKey, Func<object> dataRetriever = null);
+        /// <param name="expiration">Expiration.</param>
+        object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration);
 
     }
 }

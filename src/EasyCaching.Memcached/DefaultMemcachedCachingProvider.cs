@@ -1,26 +1,26 @@
-﻿namespace EasyCaching.Memory
+﻿namespace EasyCaching.Memcached
 {
     using System;
     using EasyCaching.Core;
-    using Microsoft.Extensions.Caching.Memory;
+    using Enyim.Caching;
 
     /// <summary>
-    /// MemoryCaching provider.
+    /// Default memcached caching provider.
     /// </summary>
-    public class MemoryCachingProvider : IEasyCachingProvider
+    public class DefaultMemcachedCachingProvider : IEasyCachingProvider
     {
         /// <summary>
-        /// The MemoryCache.
+        /// The memcached client.
         /// </summary>
-        private readonly IMemoryCache _cache;
+        private readonly IMemcachedClient _memcachedClient;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
-        /// <param name="cache">Microsoft MemoryCache.</param>
-        public MemoryCachingProvider(IMemoryCache cache)
+        /// <param name="memcachedClient">Memcached client.</param>
+        public DefaultMemcachedCachingProvider(IMemcachedClient memcachedClient)
         {
-            this._cache = cache;
+            this._memcachedClient = memcachedClient;
         }
 
         /// <summary>
@@ -33,10 +33,7 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                throw new ArgumentNullException(nameof(cacheKey));
-
-            var result = _cache.Get(cacheKey) as T;
+            var result = _memcachedClient.Get<T>(cacheKey);
 
             if (result != null)
                 return result;
@@ -56,10 +53,7 @@
         /// <param name="expiration">Expiration.</param>
         public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                throw new ArgumentNullException(nameof(cacheKey));
-
-            var result = _cache.Get(cacheKey);
+            var result = _memcachedClient.Get(cacheKey);
 
             if (result != null)
                 return result;
@@ -71,7 +65,7 @@
         }
 
         /// <summary>
-        /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
+        /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
@@ -80,19 +74,19 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
-            _cache.Set(cacheKey, cacheValue, expiration);
+            _memcachedClient.Add(cacheKey, cacheValue, expiration.Seconds);
         }
 
         /// <summary>
-        /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
+        /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
-        /// <param name="absoluteExpirationRelativeToNow">Absolute expiration relative to now.</param>
-        public void Set(string cacheKey, object cacheValue, TimeSpan absoluteExpirationRelativeToNow)
+        /// <param name="expiration">Expiration.</param>
+        public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
-            _cache.Set(cacheKey, cacheValue, absoluteExpirationRelativeToNow);
+            _memcachedClient.Add(cacheKey, cacheValue, expiration.Seconds);
         }
     }
 }
