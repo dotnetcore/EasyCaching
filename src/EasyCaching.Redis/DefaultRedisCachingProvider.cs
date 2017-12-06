@@ -1,26 +1,26 @@
-﻿namespace EasyCaching.Memory
+﻿namespace EasyCaching.Redis
 {
     using System;
     using EasyCaching.Core;
-    using Microsoft.Extensions.Caching.Memory;
+    using StackExchange.Redis;
 
     /// <summary>
-    /// MemoryCaching provider.
+    /// Default redis caching provider.
     /// </summary>
-    public class MemoryCachingProvider : IEasyCachingProvider
+    public class DefaultRedisCachingProvider : IEasyCachingProvider
     {
         /// <summary>
-        /// The MemoryCache.
+        /// The database.
         /// </summary>
-        private readonly IMemoryCache _cache;
+        private readonly IDatabase _database;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
-        /// <param name="cache">Microsoft MemoryCache.</param>
-        public MemoryCachingProvider(IMemoryCache cache)
+        /// <param name="database">Database.</param>
+        public DefaultRedisCachingProvider(IDatabase database)
         {
-            this._cache = cache;
+            this._database = database;
         }
 
         /// <summary>
@@ -33,18 +33,14 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                throw new ArgumentNullException(nameof(cacheKey));
+            var result = _database.StringGet(cacheKey);
+            if (!result.IsNull)
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(result);
 
-            var result = _cache.Get(cacheKey) as T;
+            var item = dataRetriever.Invoke();
+            Set(cacheKey, item, expiration);
 
-            if (result != null)
-                return result;
-
-            result = dataRetriever.Invoke();
-            Set(cacheKey, result, expiration);
-
-            return result;
+            return item;
         }
 
         /// <summary>
@@ -56,22 +52,18 @@
         /// <param name="expiration">Expiration.</param>
         public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-                throw new ArgumentNullException(nameof(cacheKey));
+            var result = _database.StringGet(cacheKey);
+            if (!result.IsNull)
+                return Newtonsoft.Json.JsonConvert.DeserializeObject(result);
 
-            var result = _cache.Get(cacheKey);
+            var item = dataRetriever.Invoke();
+            Set(cacheKey, item, expiration);
 
-            if (result != null)
-                return result;
-
-            result = dataRetriever.Invoke();
-            Set(cacheKey, result, expiration);
-
-            return result;
+            return item;
         }
 
         /// <summary>
-        /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
+        /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
@@ -80,19 +72,19 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
-            _cache.Set(cacheKey, cacheValue, expiration);
+            _database.StringSet(cacheKey, Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue), expiration);
         }
 
         /// <summary>
-        /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
+        /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
-        /// <param name="absoluteExpirationRelativeToNow">Absolute expiration relative to now.</param>
-        public void Set(string cacheKey, object cacheValue, TimeSpan absoluteExpirationRelativeToNow)
+        /// <param name="expiration">Expiration.</param>
+        public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
-            _cache.Set(cacheKey, cacheValue, absoluteExpirationRelativeToNow);
+            _database.StringSet(cacheKey,Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),expiration);
         }
     }
 }

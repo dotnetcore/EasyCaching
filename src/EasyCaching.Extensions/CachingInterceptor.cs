@@ -83,7 +83,7 @@
         {
             var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
 
-            var cacheValue = CacheProvider.Get(cacheKey);
+            var cacheValue = CacheProvider.Get(cacheKey, () => new object(), TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
             if (cacheValue != null)
             {
                 context.ReturnValue = cacheValue;
@@ -93,9 +93,8 @@
             await next(context);
 
             if (!string.IsNullOrWhiteSpace(cacheKey))
-            {
-                CacheEntry entry = new CacheEntry(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
-                CacheProvider.Set(entry);
+            {                
+                CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
             }
         }
 

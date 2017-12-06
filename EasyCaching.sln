@@ -15,12 +15,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Extensions", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.Interceptor", "sample\EasyCaching.Demo.Interceptor\EasyCaching.Demo.Interceptor.csproj", "{C94E91EB-1F55-40E7-9A69-BBFEF740839C}"
 EndProject
-<<<<<<< HEAD
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.SQLite", "src\EasyCaching.SQLite\EasyCaching.SQLite.csproj", "{09FCF125-522E-4C0F-9CF0-0377A3F2A1A0}"
 EndProject
-=======
-
->>>>>>> 7d9771c9f7bf870febe0877563b40284c9e53dde
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Redis", "src\EasyCaching.Redis\EasyCaching.Redis.csproj", "{7F72FA56-C4E8-4EF5-963D-FC4174453574}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Memcached", "src\EasyCaching.Memcached\EasyCaching.Memcached.csproj", "{D5626647-1E42-4584-BC42-354D8BD94FE7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +47,14 @@ Global
 		{09FCF125-522E-4C0F-9CF0-0377A3F2A1A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09FCF125-522E-4C0F-9CF0-0377A3F2A1A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09FCF125-522E-4C0F-9CF0-0377A3F2A1A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F72FA56-C4E8-4EF5-963D-FC4174453574}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F72FA56-C4E8-4EF5-963D-FC4174453574}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F72FA56-C4E8-4EF5-963D-FC4174453574}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F72FA56-C4E8-4EF5-963D-FC4174453574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5626647-1E42-4584-BC42-354D8BD94FE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5626647-1E42-4584-BC42-354D8BD94FE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5626647-1E42-4584-BC42-354D8BD94FE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5626647-1E42-4584-BC42-354D8BD94FE7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
@@ -54,5 +62,7 @@ Global
 		{679ABDB5-7218-4B4E-A632-10612750CD74} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{C94E91EB-1F55-40E7-9A69-BBFEF740839C} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 		{09FCF125-522E-4C0F-9CF0-0377A3F2A1A0} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{7F72FA56-C4E8-4EF5-963D-FC4174453574} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{D5626647-1E42-4584-BC42-354D8BD94FE7} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 	EndGlobalSection
 EndGlobal
