@@ -1,9 +1,11 @@
-﻿namespace EasyCaching.Core.Serialization
-{
+﻿namespace EasyCaching.Serialization.Json
+{    
+    using EasyCaching.Core;
+    
     /// <summary>
     /// Default json serializer.
     /// </summary>
-    public class DefaultJsonSerializer : ISerializer
+    public class DefaultEasyCachingJsonSerializer : IEasyCachingSerializer
     {
         /// <summary>
         /// Deserialize the specified string.

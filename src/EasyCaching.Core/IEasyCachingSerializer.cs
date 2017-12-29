@@ -3,7 +3,7 @@
     /// <summary>
     /// Serializer.
     /// </summary>
-    public interface ISerializer
+    public interface IEasyCachingSerializer
     {
         /// <summary>
         /// Serialize the specified item.

@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Memcached", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.PubSub.Redis", "src\EasyCaching.PubSub.Redis\EasyCaching.PubSub.Redis.csproj", "{87C958D7-6C6C-4DD2-8F2A-30C86C3AC0E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.Json", "src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj", "{B9C904D1-1A43-4540-A49A-07C516F1EC64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{87C958D7-6C6C-4DD2-8F2A-30C86C3AC0E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87C958D7-6C6C-4DD2-8F2A-30C86C3AC0E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87C958D7-6C6C-4DD2-8F2A-30C86C3AC0E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9C904D1-1A43-4540-A49A-07C516F1EC64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9C904D1-1A43-4540-A49A-07C516F1EC64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9C904D1-1A43-4540-A49A-07C516F1EC64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9C904D1-1A43-4540-A49A-07C516F1EC64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
@@ -71,5 +77,6 @@ Global
 		{7F72FA56-C4E8-4EF5-963D-FC4174453574} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{D5626647-1E42-4584-BC42-354D8BD94FE7} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{87C958D7-6C6C-4DD2-8F2A-30C86C3AC0E4} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{B9C904D1-1A43-4540-A49A-07C516F1EC64} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 	EndGlobalSection
 EndGlobal
