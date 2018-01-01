@@ -41,7 +41,7 @@
             if (result != null)
                 return result;
 
-            result = dataRetriever.Invoke();
+            result = dataRetriever?.Invoke();
             Set(cacheKey, result, expiration);
 
             return result;
@@ -64,7 +64,7 @@
             if (result != null)
                 return result;
 
-            result = dataRetriever.Invoke();
+            result = dataRetriever?.Invoke();
             Set(cacheKey, result, expiration);
 
             return result;
