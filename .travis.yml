@@ -1,26 +1,30 @@
 language: csharp
 
+solution: EasyCaching.sln
+
+sudo: required
+
 env:
   global:
+    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    - DOTNET_CLI_TELEMETRY_OPTOUT: 1
     - CONFIGURATION=Release
+    
+dotnet: 2.0.0
 
-matrix:
-  include:
-  - os: linux
-    dist: trusty # Ubuntu 14.04
-    dotnet: 2.0.0
-    mono: none
-    env: DOTNETCORE=2
-    sudo: required
-  - os: osx
-    osx_image: xcode9.1 # macOS 10.11
-    dotnet: 2.0.0
-    mono: none
-    env: DOTNETCORE=2
+mono: none
 
-before_install:
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then ulimit -n 1024 ; fi
+os:
+  - linux
+  - osx
+  
+osx_image: xcode9.1
 
-install:
-   - dotnet restore
-
+branches:
+  only:
+    - master
+ 
+script:
+  - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
+  - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
+  - dotnet build -c Release
