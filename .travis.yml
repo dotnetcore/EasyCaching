@@ -1,0 +1,29 @@
+language: csharp
+
+env:
+  global:
+    - CONFIGURATION=Release
+
+matrix:
+  include:
+  - os: linux
+    dist: trusty # Ubuntu 14.04
+    dotnet: 2.0.0
+    mono: none
+    env: DOTNETCORE=2
+    sudo: required
+  - os: osx
+    osx_image: xcode9.1 # macOS 10.11
+    dotnet: 2.0.0
+    mono: none
+    env: DOTNETCORE=2
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then ulimit -n 1024 ; fi
+
+install:
+   - dotnet restore
+
+script:
+   - make build
+   - make test
