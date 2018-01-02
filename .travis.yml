@@ -24,6 +24,3 @@ before_install:
 install:
    - dotnet restore
 
-script:
-   - make build
-   - make test
