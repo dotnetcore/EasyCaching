@@ -72,5 +72,21 @@ namespace EasyCaching.Memory.Test
 
             Assert.Equal("123", res.ToString());
         }
+
+        [Fact]
+        public void Remove_Cached_Value_Should_Succeed()
+        {
+            _provider.Set(_key,"Remove",_defaultTs);
+
+            var first = _provider.Get(_key, null, _defaultTs);
+
+            Assert.NotNull(first);
+
+            _provider.Remove(_key);
+
+            var second = _provider.Get(_key,null,_defaultTs);
+
+            Assert.Null(second);
+        }
     }
 }

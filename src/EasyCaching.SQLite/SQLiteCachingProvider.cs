@@ -56,6 +56,16 @@
         }
 
         /// <summary>
+        /// Remove the specified cacheKey.
+        /// </summary>
+        /// <returns>The remove.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        public void Remove(string cacheKey)
+        {
+            SQLHelper.Instance.Delete(cacheKey);
+        }
+
+        /// <summary>
         /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
         /// </summary>
         /// <returns>The set.</returns>

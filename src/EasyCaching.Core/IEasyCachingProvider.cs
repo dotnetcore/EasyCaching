@@ -45,5 +45,11 @@
         /// <param name="expiration">Expiration.</param>
         object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration);
 
+        /// <summary>
+        /// Remove the specified cacheKey.
+        /// </summary>
+        /// <returns>The remove.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        void Remove(string cacheKey);
     }
 }

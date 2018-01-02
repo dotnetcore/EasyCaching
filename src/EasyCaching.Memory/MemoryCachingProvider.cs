@@ -71,6 +71,16 @@
         }
 
         /// <summary>
+        /// Remove the specified cacheKey.
+        /// </summary>
+        /// <returns>The remove.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        public void Remove(string cacheKey)
+        {
+            _cache.Remove(cacheKey);
+        }
+
+        /// <summary>
         /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
         /// </summary>
         /// <returns>The set.</returns>

@@ -101,5 +101,17 @@
 
             return res == null ? null : Newtonsoft.Json.JsonConvert.DeserializeObject(res);
         }
+
+        public void Delete(string cacheKey)
+        {
+            if (!IsOpened) this.Open();
+
+            var sql = @"DELETE FROM [easycaching] WHERE [cachekey] = @cachekey ";
+
+            Conn.Execute(sql,new 
+            {
+                cachekey = cacheKey
+            });
+        }
     }
 }

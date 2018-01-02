@@ -65,6 +65,16 @@
         }
 
         /// <summary>
+        /// Remove the specified cacheKey.
+        /// </summary>
+        /// <returns>The remove.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        public void Remove(string cacheKey)
+        {
+            _memcachedClient.Remove(cacheKey);
+        }
+
+        /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
         /// <returns>The set.</returns>
