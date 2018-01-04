@@ -17,7 +17,7 @@ namespace EasyCaching.Memory.Test
 
             _provider = new MemoryCachingProvider(cache);
             _key = Guid.NewGuid().ToString();
-            _defaultTs = TimeSpan.FromSeconds(30);
+            _defaultTs = TimeSpan.FromSeconds(5);
         }
 
         [Fact]
