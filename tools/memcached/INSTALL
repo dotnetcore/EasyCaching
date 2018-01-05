@@ -1,0 +1,12 @@
+Installation instructions for Win32 memcached
+
+1. In a command shell, create a directory of your choice name and location
+2. Unzip the archive memcached-win32-1.4.4-14.zip in this location
+3. Run on the command line: memcached.exe -d install
+4. Run, from the Start button "Administrative Tools -> "Services"
+5. Double-click on the listing for "memcached"
+6. In the panel, you will see:
+  * "Startup type:" - this should be "automatic"
+  * "Service status:". Click the start button to start memcached (As shown in the image below)Windows_service
+
+7. Enjoy using memcached!

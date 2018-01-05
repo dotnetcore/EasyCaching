@@ -1,9 +1,10 @@
-namespace EasyCaching.Memory.Test
+namespace EasyCaching.UnitTests
 {
-    using System;
-    using Xunit;
+    using EasyCaching.Memory;
     using FakeItEasy;
     using Microsoft.Extensions.Caching.Memory;
+    using System;
+    using Xunit;
 
     public class MemoryCachingProviderTest
     {

@@ -10,9 +10,14 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="FakeItEasy" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Memcached\EasyCaching.Memcached.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Memory\EasyCaching.Memory.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
   </ItemGroup>
 </Project>

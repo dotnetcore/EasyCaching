@@ -1,5 +1,6 @@
-namespace EasyCaching.Serialization.Json.Test
-{    
+namespace EasyCaching.UnitTests
+{
+    using EasyCaching.Serialization.Json;
     using Xunit; 
 
     public class JsonSerializerTest

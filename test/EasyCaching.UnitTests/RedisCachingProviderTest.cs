@@ -1,10 +1,11 @@
-namespace EasyCaching.Redis.Test
+namespace EasyCaching.UnitTests
 {
-    using System;
-    using Xunit;
+    using EasyCaching.Redis;
     using FakeItEasy;
     using Microsoft.Extensions.Options;
     using StackExchange.Redis;
+    using System;
+    using Xunit;
 
     public class RedisCachingProviderTest
     {
