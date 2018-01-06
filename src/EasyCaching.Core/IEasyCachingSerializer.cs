@@ -1,30 +1,34 @@
 ﻿namespace EasyCaching.Core
 {
+    using System;
+
     /// <summary>
-    /// Serializer.
+    /// Easy caching serializer.
     /// </summary>
     public interface IEasyCachingSerializer
     {
         /// <summary>
-        /// Serialize the specified item.
+        /// Serialize the specified value.
         /// </summary>
         /// <returns>The serialize.</returns>
-        /// <param name="obj">Object.</param>
-        string Serialize(object obj);
-
-        /// <summary>
-        /// Deserialize the specified str.
-        /// </summary>
-        /// <returns>The deserialize.</returns>
-        /// <param name="str">String.</param>
-        object Deserialize(string str);
-
-        /// <summary>
-        /// Deserialize the specified str.
-        /// </summary>
-        /// <returns>The deserialize.</returns>
-        /// <param name="str">String.</param>
+        /// <param name="value">Value.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        T Deserialize<T>(string str);
+        byte[] Serialize<T>(T value);
+
+        ///// <summary>
+        ///// Deserialize the specified bytes and target.
+        ///// </summary>
+        ///// <returns>The deserialize.</returns>
+        ///// <param name="bytes">Bytes.</param>
+        ///// <param name="target">Target.</param>
+        //object Deserialize(byte[] bytes, Type target);
+
+        /// <summary>
+        /// Deserialize the specified bytes.
+        /// </summary>
+        /// <returns>The deserialize.</returns>
+        /// <param name="bytes">Bytes.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        T Deserialize<T>(byte[] bytes);
     }
 }

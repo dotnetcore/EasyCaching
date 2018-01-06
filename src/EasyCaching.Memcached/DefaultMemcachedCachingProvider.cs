@@ -1,8 +1,8 @@
 ﻿namespace EasyCaching.Memcached
 {
-    using System;
     using EasyCaching.Core;
-    using Enyim.Caching;
+    using Enyim.Caching;   
+    using System;
 
     /// <summary>
     /// Default memcached caching provider.
@@ -38,7 +38,7 @@
             if (result != null)
                 return result;
 
-            result = dataRetriever.Invoke();
+            result = dataRetriever?.Invoke();
             Set(cacheKey, result, expiration);
 
             return result;
@@ -58,7 +58,7 @@
             if (result != null)
                 return result;
 
-            result = dataRetriever.Invoke();
+            result = dataRetriever?.Invoke();
             Set(cacheKey, result, expiration);
 
             return result;
@@ -97,6 +97,6 @@
         public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
             _memcachedClient.Add(cacheKey, cacheValue, expiration.Seconds);
-        }
+        }             
     }
 }

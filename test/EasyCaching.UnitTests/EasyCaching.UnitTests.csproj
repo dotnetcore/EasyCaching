@@ -11,6 +11,8 @@
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
     <PackageReference Include="FakeItEasy" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +20,6 @@
     <ProjectReference Include="..\..\src\EasyCaching.Memcached\EasyCaching.Memcached.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Memory\EasyCaching.Memory.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj" />
   </ItemGroup>
 </Project>

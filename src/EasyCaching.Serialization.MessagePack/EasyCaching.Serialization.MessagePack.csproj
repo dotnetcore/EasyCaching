@@ -2,17 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>Catcher Wong</Owners>
+     <Owners>Catcher Wong</Owners>
     <Summary>An Easy Caching provider.</Summary>
     <PackageTags>Caching</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/catcherwong/Nancy.Authentication.JwtBearer</RepositoryUrl>
+    <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="MessagePack" Version="1.7.3.2" />
   </ItemGroup>
 </Project>

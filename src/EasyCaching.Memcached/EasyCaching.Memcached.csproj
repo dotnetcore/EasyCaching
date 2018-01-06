@@ -6,7 +6,7 @@
     <Summary>An Easy Caching provider.</Summary>
     <PackageTags>Caching</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/catcherwong/Nancy.Authentication.JwtBearer</RepositoryUrl>
+    <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
