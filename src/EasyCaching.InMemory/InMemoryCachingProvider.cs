@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Memory
+﻿namespace EasyCaching.InMemory
 {
     using System;
     using EasyCaching.Core;
@@ -7,7 +7,7 @@
     /// <summary>
     /// MemoryCaching provider.
     /// </summary>
-    public class MemoryCachingProvider : IEasyCachingProvider
+    public class InMemoryCachingProvider : IEasyCachingProvider
     {
         /// <summary>
         /// The MemoryCache.
@@ -18,7 +18,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
         /// </summary>
         /// <param name="cache">Microsoft MemoryCache.</param>
-        public MemoryCachingProvider(IMemoryCache cache)
+        public InMemoryCachingProvider(IMemoryCache cache)
         {
             this._cache = cache;
         }

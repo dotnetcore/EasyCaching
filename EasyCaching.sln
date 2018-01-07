@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EBB55F65-7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Core", "src\EasyCaching.Core\EasyCaching.Core.csproj", "{CE61FAA2-0233-451C-991D-4222ED61C84B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Memory", "src\EasyCaching.Memory\EasyCaching.Memory.csproj", "{B9490432-737B-4518-B851-9D40FD29B392}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.InMemory", "src\EasyCaching.InMemory\EasyCaching.InMemory.csproj", "{B9490432-737B-4518-B851-9D40FD29B392}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Extensions", "src\EasyCaching.Extensions\EasyCaching.Extensions.csproj", "{679ABDB5-7218-4B4E-A632-10612750CD74}"
 EndProject
@@ -30,6 +30,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.Memcached", "sample\EasyCaching.Demo.Memcached\EasyCaching.Demo.Memcached.csproj", "{7F30B7AF-6149-4464-B682-1857270E64DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.MessagePack", "src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj", "{50D8C42C-1BC0-4133-8B70-63A6649DBD74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.InMemory", "sample\EasyCaching.Demo.InMemory\EasyCaching.Demo.InMemory.csproj", "{CF1734C0-BDD3-4E71-957A-5FEA6008DE16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -85,6 +87,10 @@ Global
 		{50D8C42C-1BC0-4133-8B70-63A6649DBD74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50D8C42C-1BC0-4133-8B70-63A6649DBD74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50D8C42C-1BC0-4133-8B70-63A6649DBD74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF1734C0-BDD3-4E71-957A-5FEA6008DE16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF1734C0-BDD3-4E71-957A-5FEA6008DE16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF1734C0-BDD3-4E71-957A-5FEA6008DE16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF1734C0-BDD3-4E71-957A-5FEA6008DE16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
@@ -99,5 +105,6 @@ Global
 		{93E7EF96-D44A-4400-BA75-169C0F3FDAC5} = {EBB55F65-7D07-4281-8D5E-7B0CA88E1AD0}
 		{7F30B7AF-6149-4464-B682-1857270E64DD} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 		{50D8C42C-1BC0-4133-8B70-63A6649DBD74} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{CF1734C0-BDD3-4E71-957A-5FEA6008DE16} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 	EndGlobalSection
 EndGlobal

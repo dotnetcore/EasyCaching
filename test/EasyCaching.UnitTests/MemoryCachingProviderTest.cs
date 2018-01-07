@@ -1,6 +1,6 @@
 namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Memory;
+    using EasyCaching.InMemory;
     using FakeItEasy;
     using Microsoft.Extensions.Caching.Memory;
     using System;
@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests
 
     public class MemoryCachingProviderTest
     {
-        private readonly MemoryCachingProvider _provider;
+        private readonly InMemoryCachingProvider _provider;
         private readonly string _key;
         private readonly TimeSpan _defaultTs;
 
@@ -16,7 +16,7 @@ namespace EasyCaching.UnitTests
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
 
-            _provider = new MemoryCachingProvider(cache);
+            _provider = new InMemoryCachingProvider(cache);
             _key = Guid.NewGuid().ToString();
             _defaultTs = TimeSpan.FromSeconds(5);
         }

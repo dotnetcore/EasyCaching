@@ -1,9 +1,5 @@
-﻿namespace EasyCaching.Demo.Interceptor
+﻿namespace EasyCaching.Demo.InMemory
 {
-    using System;
-    using EasyCaching.Core;
-    using EasyCaching.Demo.Interceptor.Services;
-    using EasyCaching.Extensions;
     using EasyCaching.InMemory;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -19,14 +15,12 @@
 
         public IConfiguration Configuration { get; }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
 
-            services.AddScoped<IEasyCachingProvider,InMemoryCachingProvider>();
-            services.AddScoped<IDateTimeService,DateTimeService>();
-
-            return services.ConfigureEasyCaching();
+            //Important step for using InMemory Cache
+            services.AddDefaultInMemoryCache();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
