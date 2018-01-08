@@ -1,4 +1,4 @@
-# EasyCaching
+![](https://github.com/catcherwong/EasyCaching/blob/master/media/easycaching-icon.png)
 
 EasyCaching is a caching provider that help us to handle caching easily.
 
