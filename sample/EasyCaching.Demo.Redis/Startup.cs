@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Demo.Redis
 {
     using EasyCaching.Redis;
+    using EasyCaching.Serialization.MessagePack;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -19,6 +20,7 @@
         {
             services.AddMvc();
 
+            services.AddDefaultMessagePackSerializer();
             services.AddDefaultRedisCache(option=>
             {                
                 option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));

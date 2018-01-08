@@ -32,17 +32,31 @@
         private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
 
         /// <summary>
+        /// The serializer.
+        /// </summary>
+        private readonly IEasyCachingSerializer _serializer;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
         /// <param name="options">Options.</param>
-        public DefaultRedisCachingProvider(IOptions<RedisCacheOptions> options)
+        /// <param name="serializer">Serializer.</param>
+        public DefaultRedisCachingProvider(
+            IOptions<RedisCacheOptions> options,
+            IEasyCachingSerializer serializer)
         {
             if (options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
 
+            if (serializer == null)
+            {
+                throw new ArgumentNullException(nameof(serializer));
+            }
+
             _options = options.Value;
+            _serializer = serializer;
         }
 
         /// <summary>
@@ -64,7 +78,7 @@
 
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
-                return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(result);
+                return _serializer.Deserialize<T>(result);
 
             var item = dataRetriever?.Invoke();
             Set(cacheKey, item, expiration);
@@ -90,7 +104,7 @@
 
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
-                return Newtonsoft.Json.JsonConvert.DeserializeObject(result);
+                return _serializer.Deserialize<object>(result);
 
             var item = dataRetriever?.Invoke();
             Set(cacheKey, item, expiration);
@@ -137,7 +151,7 @@
 
             Connect();
 
-            _cache.StringSet(cacheKey, Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue), expiration);
+            _cache.StringSet(cacheKey, _serializer.Serialize<T>(cacheValue), expiration);
         }
 
         /// <summary>
@@ -162,7 +176,7 @@
 
             Connect();
 
-            _cache.StringSet(cacheKey, Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue), expiration);
+            _cache.StringSet(cacheKey, _serializer.Serialize(cacheValue), expiration);
         }
 
         /// <summary>

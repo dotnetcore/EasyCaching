@@ -11,7 +11,6 @@
 
   <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1-beta1" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.0" />
   </ItemGroup>
   <ItemGroup>
