@@ -69,7 +69,7 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
-            if (cacheKey == null)
+            if (string.IsNullOrWhiteSpace(cacheKey))
             {
                 throw new ArgumentNullException(nameof(cacheKey));
             }
@@ -95,7 +95,7 @@
         /// <param name="expiration">Expiration.</param>
         public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
         {
-            if (cacheKey == null)
+            if (string.IsNullOrWhiteSpace(cacheKey))
             {
                 throw new ArgumentNullException(nameof(cacheKey));
             }
@@ -119,7 +119,7 @@
         /// <param name="cacheKey">Cache key.</param>
         public void Remove(string cacheKey)
         {
-            if (cacheKey == null)
+            if (string.IsNullOrWhiteSpace(cacheKey))
             {
                 throw new ArgumentNullException(nameof(cacheKey));
             }
@@ -139,7 +139,7 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
-            if (cacheKey == null)
+            if (string.IsNullOrWhiteSpace(cacheKey))
             {
                 throw new ArgumentNullException(nameof(cacheKey));
             }
@@ -163,8 +163,7 @@
         /// <param name="expiration">Expiration.</param>
         public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
-
-            if (cacheKey == null)
+            if (string.IsNullOrWhiteSpace(cacheKey))
             {
                 throw new ArgumentNullException(nameof(cacheKey));
             }
