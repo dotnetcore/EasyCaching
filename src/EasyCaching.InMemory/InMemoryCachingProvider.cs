@@ -42,7 +42,9 @@
                 return result;
 
             result = dataRetriever?.Invoke();
-            Set(cacheKey, result, expiration);
+
+            if (result != null)
+                Set(cacheKey, result, expiration);
 
             return result;
         }
@@ -65,7 +67,9 @@
                 return result;
 
             result = dataRetriever?.Invoke();
-            Set(cacheKey, result, expiration);
+
+            if (result != null)
+                Set(cacheKey, result, expiration);
 
             return result;
         }
@@ -77,6 +81,9 @@
         /// <param name="cacheKey">Cache key.</param>
         public void Remove(string cacheKey)
         {
+            if (string.IsNullOrWhiteSpace(cacheKey))
+                throw new ArgumentNullException(nameof(cacheKey));
+
             _cache.Remove(cacheKey);
         }
 
@@ -86,10 +93,16 @@
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
+        /// <param name="expiration">expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
+            if (string.IsNullOrWhiteSpace(cacheKey))
+                throw new ArgumentNullException(nameof(cacheKey));
+
+            if (cacheValue == null)
+                throw new ArgumentNullException(nameof(cacheValue));
+
             _cache.Set(cacheKey, cacheValue, expiration);
         }
 
@@ -99,10 +112,16 @@
         /// <returns>The set.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
-        /// <param name="absoluteExpirationRelativeToNow">Absolute expiration relative to now.</param>
-        public void Set(string cacheKey, object cacheValue, TimeSpan absoluteExpirationRelativeToNow)
+        /// <param name="expiration">expiration.</param>
+        public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
-            _cache.Set(cacheKey, cacheValue, absoluteExpirationRelativeToNow);
+            if (string.IsNullOrWhiteSpace(cacheKey))
+                throw new ArgumentNullException(nameof(cacheKey));
+
+            if (cacheValue == null)
+                throw new ArgumentNullException(nameof(cacheValue));
+
+            _cache.Set(cacheKey, cacheValue, expiration);
         }
     }
 }

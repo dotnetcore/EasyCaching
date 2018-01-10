@@ -33,6 +33,11 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
+            if(string.IsNullOrWhiteSpace(cacheKey))
+            {
+                throw new ArgumentNullException(nameof(cacheKey));
+            }
+
             var result = _memcachedClient.Get<T>(cacheKey);
 
             if (result != null)
@@ -53,6 +58,11 @@
         /// <param name="expiration">Expiration.</param>
         public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
         {
+            if (string.IsNullOrWhiteSpace(cacheKey))
+            {
+                throw new ArgumentNullException(nameof(cacheKey));
+            }
+            
             var result = _memcachedClient.Get(cacheKey);
 
             if (result != null)
@@ -71,6 +81,11 @@
         /// <param name="cacheKey">Cache key.</param>
         public void Remove(string cacheKey)
         {
+            if (string.IsNullOrWhiteSpace(cacheKey))
+            {
+                throw new ArgumentNullException(nameof(cacheKey));
+            }
+
             _memcachedClient.Remove(cacheKey);
         }
 
@@ -84,6 +99,16 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
+            if (string.IsNullOrWhiteSpace(cacheKey))
+            {
+                throw new ArgumentNullException(nameof(cacheKey));
+            }
+
+            if (cacheValue == null)
+            {
+                throw new ArgumentNullException(nameof(cacheValue));
+            }
+
             _memcachedClient.Add(cacheKey, cacheValue, expiration.Seconds);
         }
 
@@ -96,6 +121,16 @@
         /// <param name="expiration">Expiration.</param>
         public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
+            if (string.IsNullOrWhiteSpace(cacheKey))
+            {
+                throw new ArgumentNullException(nameof(cacheKey));
+            }
+
+            if (cacheValue == null)
+            {
+                throw new ArgumentNullException(nameof(cacheValue));
+            }
+
             _memcachedClient.Add(cacheKey, cacheValue, expiration.Seconds);
         }             
     }

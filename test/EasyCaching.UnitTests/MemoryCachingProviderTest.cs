@@ -9,85 +9,105 @@ namespace EasyCaching.UnitTests
     public class MemoryCachingProviderTest
     {
         private readonly InMemoryCachingProvider _provider;
-        private readonly string _key;
         private readonly TimeSpan _defaultTs;
 
         public MemoryCachingProviderTest()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
-
             _provider = new InMemoryCachingProvider(cache);
-            _key = Guid.NewGuid().ToString();
-            _defaultTs = TimeSpan.FromSeconds(5);
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public void Set_Value_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string cacheKey)
+        {
+            var cacheVlaue = "value";
+            Assert.Throws<ArgumentNullException>(()=>_provider.Set(cacheKey,cacheVlaue,_defaultTs));
         }
 
         [Fact]
-        public void Get_Cached_Value_Should_Succeed()
+        public void Set_Value_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
         {
-            _provider.Set(_key, "value", _defaultTs);
-
-            var res = _provider.Get(_key, null, _defaultTs);
-
-            Assert.Equal("value", res.ToString());
+            var cacheKey = Guid.NewGuid().ToString();
+            object cacheVlaue = null;
+            Assert.Throws<ArgumentNullException>(() => _provider.Set(cacheKey, cacheVlaue, _defaultTs));
         }
 
         [Fact]
-        public void Get_Not_Cached_Value_Should_Return_Null()
+        public void Set_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var res = _provider.Get(_key, null, _defaultTs);
+            var cacheKey = Guid.NewGuid().ToString();
+            object cacheVlaue = "value";
 
-            Assert.Null(res);
-        }
+            _provider.Set(cacheKey, cacheVlaue, _defaultTs);
+            var res = _provider.Get(cacheKey, null, _defaultTs);
 
-        [Fact]
-        public void Get_Cached_Value_Should_Not_Call_Retriever()
-        {
-            _provider.Set(_key, "Memory", _defaultTs);
-
-            var func = A.Fake<Func<string>>();
-
-            var res = _provider.Get(_key, func, _defaultTs);
-
-            A.CallTo(() => func.Invoke()).MustNotHaveHappened();
+            Assert.Equal(cacheVlaue, res);
         }
 
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever()
         {
-            var func = A.Fake<Func<string>>();
+            var cacheKey = Guid.NewGuid().ToString();
+            
+            var func = Create_Fake_Retriever_Return_String();
 
-            var res = _provider.Get(_key, func, _defaultTs);
+            var res = _provider.Get(cacheKey, func, _defaultTs);
 
-            A.CallTo(() => func.Invoke()).MustHaveHappened(Repeated.Exactly.Once);
-        }
+            A.CallTo(() => func.Invoke()).MustHaveHappened();
+        }              
 
+        [Fact]
+        public void Get_Cached_Value_Should_Not_Call_Retriever()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var func = Create_Fake_Retriever_Return_String();
+            var cacheVlaue = "Memory";
+
+            _provider.Set(cacheKey, cacheVlaue, _defaultTs);
+            var res = _provider.Get(cacheKey, func, _defaultTs);
+
+            A.CallTo(() => func.Invoke()).MustNotHaveHappened();
+        }           
 
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Value()
         {
-            var func = A.Fake<Func<string>>();
+            var cacheKey = Guid.NewGuid().ToString();
+            var func = Create_Fake_Retriever_Return_String();
 
-            A.CallTo(() => func.Invoke()).Returns("123");
+            var res = _provider.Get(cacheKey, func, _defaultTs);
 
-            var res = _provider.Get(_key, func, _defaultTs);
-
-            Assert.Equal("123", res.ToString());
+            Assert.Equal("123", res);
         }
 
         [Fact]
         public void Remove_Cached_Value_Should_Succeed()
         {
-            _provider.Set(_key,"Remove",_defaultTs);
+            var cacheKey = Guid.NewGuid().ToString();
+            _provider.Set(cacheKey,"Remove",_defaultTs);
 
-            var first = _provider.Get(_key, null, _defaultTs);
+            var first = _provider.Get(cacheKey, null, _defaultTs);
 
             Assert.NotNull(first);
 
-            _provider.Remove(_key);
+            _provider.Remove(cacheKey);
 
-            var second = _provider.Get(_key,null,_defaultTs);
+            var second = _provider.Get(cacheKey,null,_defaultTs);
 
             Assert.Null(second);
+        }
+
+        private Func<string> Create_Fake_Retriever_Return_String()
+        {
+            var func = A.Fake<Func<string>>();
+
+            A.CallTo(() => func.Invoke()).Returns("123");
+
+            return func;
         }
     }
 }
