@@ -3,16 +3,14 @@ language: csharp
 solution: EasyCaching.sln
 
 sudo: required
-
-env:
-  global:
-    - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    - DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    - CONFIGURATION=Release
     
 dotnet: 2.0.0
 
 mono: none
+
+services:
+  - memcached
+  - redis-server
 
 os:
   - linux
@@ -28,3 +26,4 @@ script:
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
+  - dotnet test -c Release ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
