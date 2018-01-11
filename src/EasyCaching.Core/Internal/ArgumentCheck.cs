@@ -31,7 +31,7 @@
         {            
             if (string.IsNullOrWhiteSpace(argument))
             {
-                throw new ArgumentException(argumentName);
+                throw new ArgumentNullException(argumentName);
             }
         }
     }
