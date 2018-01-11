@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Memcached
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Enyim.Caching;
     using Enyim.Caching.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -19,22 +20,15 @@
         /// <param name="options">Options.</param>
         public static IServiceCollection AddDefaultMemcached(this IServiceCollection services, Action<MemcachedClientOptions> options)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentCheck.NotNull(services, nameof(services));
 
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentCheck.NotNull(options, nameof(options));
 
             services.AddOptions();
             services.Configure(options);
             services.AddTransient<IMemcachedClientConfiguration, MemcachedClientConfiguration>();
             services.AddSingleton<MemcachedClient, MemcachedClient>();
             services.AddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
-            //services.AddSingleton<IDistributedCache>(factory => factory.GetService<MemcachedClient>());
 
             services.Add(ServiceDescriptor.Singleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>());
 

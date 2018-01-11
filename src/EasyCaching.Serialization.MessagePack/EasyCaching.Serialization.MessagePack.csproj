@@ -2,11 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-     <Owners>Catcher Wong</Owners>
-    <Summary>An Easy Caching provider.</Summary>
-    <PackageTags>Caching</PackageTags>
+    <Owners>Catcher Wong</Owners>
+    <Authors>Catcher Wong</Authors>    
+    <Version>0.1.0</Version>
+    <Description>
+      EasyCaching is a open source caching library that contains basic opreations of caching.
+    </Description>
+    <PackageTags>Caching,Cache,Distributed Cache,Memory Cache,Interceptor,Synchronization</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

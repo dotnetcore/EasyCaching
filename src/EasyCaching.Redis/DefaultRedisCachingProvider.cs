@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Redis
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
@@ -69,10 +70,7 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-            {
-                throw new ArgumentNullException(nameof(cacheKey));
-            }
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             Connect();
 
@@ -95,10 +93,7 @@
         /// <param name="expiration">Expiration.</param>
         public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-            {
-                throw new ArgumentNullException(nameof(cacheKey));
-            }
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             Connect();
 
@@ -119,10 +114,7 @@
         /// <param name="cacheKey">Cache key.</param>
         public void Remove(string cacheKey)
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-            {
-                throw new ArgumentNullException(nameof(cacheKey));
-            }
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             Connect();
 
@@ -139,15 +131,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-            {
-                throw new ArgumentNullException(nameof(cacheKey));
-            }
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            if (cacheValue == null)
-            {
-                throw new ArgumentNullException(nameof(cacheValue));
-            }
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
 
             Connect();
 
@@ -163,15 +149,9 @@
         /// <param name="expiration">Expiration.</param>
         public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
-            if (string.IsNullOrWhiteSpace(cacheKey))
-            {
-                throw new ArgumentNullException(nameof(cacheKey));
-            }
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            if (cacheValue == null)
-            {
-                throw new ArgumentNullException(nameof(cacheValue));
-            }
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
 
             Connect();
 

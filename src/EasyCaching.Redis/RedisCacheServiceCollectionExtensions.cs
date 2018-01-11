@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Redis
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using System;
 
@@ -16,16 +17,10 @@
         /// <param name="services">Services.</param>
         /// <param name="options">Options.</param>
         public static IServiceCollection AddDefaultRedisCache(this IServiceCollection services, Action<RedisCacheOptions> options)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+        {            
+            ArgumentCheck.NotNull(services, nameof(services));
 
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentCheck.NotNull(options, nameof(options));
 
             services.AddOptions();
             services.Configure(options);

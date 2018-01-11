@@ -1,20 +1,20 @@
-﻿namespace EasyCaching.Extensions
+﻿namespace EasyCaching.Interceptor.AspectCore
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
     using System.Text;
-    using System.Threading.Tasks;
-    using AspectCore.DynamicProxy;
-    using AspectCore.Injector;
+    using System.Threading.Tasks;   
     using EasyCaching.Core.Internal;
     using EasyCaching.Core;
+    using global::AspectCore.DynamicProxy;
+    using global::AspectCore.Injector;
 
     /// <summary>
-    /// Caching interceptor.
+    /// Default easy caching interceptor.
     /// </summary>
-    public class CachingInterceptor : AbstractInterceptorAttribute
+    public class DefaultEasyCachingInterceptor: AbstractInterceptorAttribute
     {
 
         /// <summary>
@@ -67,9 +67,9 @@
         /// </summary>
         /// <returns>The QC aching attribute info.</returns>
         /// <param name="method">Method.</param>
-        private CachingInterceptor GetInterceptorAttributeInfo(MethodInfo method)
+        private DefaultEasyCachingInterceptor GetInterceptorAttributeInfo(MethodInfo method)
         {
-            return method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(CachingInterceptor)) as CachingInterceptor;
+            return method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(DefaultEasyCachingInterceptor)) as DefaultEasyCachingInterceptor;
         }
 
         /// <summary>
@@ -79,7 +79,7 @@
         /// <param name="context">Context.</param>
         /// <param name="next">Next.</param>
         /// <param name="attribute">Attribute.</param>
-        private async Task ProceedCaching(AspectContext context, AspectDelegate next, CachingInterceptor attribute)
+        private async Task ProceedCaching(AspectContext context, AspectDelegate next, DefaultEasyCachingInterceptor attribute)
         {
             var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
 
@@ -93,7 +93,7 @@
             await next(context);
 
             if (!string.IsNullOrWhiteSpace(cacheKey))
-            {                
+            {
                 CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
             }
         }

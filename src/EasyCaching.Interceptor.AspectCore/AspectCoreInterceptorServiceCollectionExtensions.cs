@@ -1,30 +1,29 @@
-﻿namespace EasyCaching.Extensions
+﻿namespace EasyCaching.Interceptor.AspectCore
 {
-    using AspectCore.Configuration;
-    using AspectCore.Extensions.DependencyInjection;
-    using AspectCore.Injector;
+    using global::AspectCore.Configuration;
+    using global::AspectCore.Extensions.DependencyInjection;
+    using global::AspectCore.Injector;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using System;
 
     /// <summary>
-    /// Service extension.
+    /// Aspectcore interceptor service collection extensions.
     /// </summary>
-    public static class ServiceExtension
+    public static class AspectCoreInterceptorServiceCollectionExtensions
     {
-
         /// <summary>
         /// Configures the easy caching.
         /// </summary>
         /// <returns>The easy caching.</returns>
         /// <param name="services">Services.</param>
-        public static IServiceProvider ConfigureEasyCaching(this IServiceCollection services)
+        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services)
         {
             var container = services.ToServiceContainer();
 
-            container.Configure(config => 
+            container.Configure(config =>
             {
-                config.Interceptors.AddTyped<CachingInterceptor>(method=>typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
+                config.Interceptors.AddTyped<DefaultEasyCachingInterceptor>(method => typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
             });
 
             return container.Build();
@@ -36,13 +35,13 @@
         /// <returns>The easy caching.</returns>
         /// <param name="services">Services.</param>
         /// <param name="action">Action.</param>
-        public static IServiceProvider ConfigureEasyCaching(this IServiceCollection services , Action<IAspectConfiguration> action)
+        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services, Action<IAspectConfiguration> action)
         {
             var container = services.ToServiceContainer();
 
             container.Configure(config =>
             {
-                config.Interceptors.AddTyped<CachingInterceptor>(method => typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
+                config.Interceptors.AddTyped<DefaultEasyCachingInterceptor>(method => typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
                 action(config);
             });
 

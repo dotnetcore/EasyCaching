@@ -1,8 +1,8 @@
 ﻿namespace EasyCaching.InMemory
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
 
     public static class InMemoryCacheServiceCollectionExtensions
     {
@@ -13,10 +13,7 @@
         /// <param name="services">Services.</param>
         public static IServiceCollection AddDefaultInMemoryCache(this IServiceCollection services)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentCheck.NotNull(services, nameof(services));
 
             services.Add(ServiceDescriptor.Singleton<IEasyCachingProvider, InMemoryCachingProvider>());
 

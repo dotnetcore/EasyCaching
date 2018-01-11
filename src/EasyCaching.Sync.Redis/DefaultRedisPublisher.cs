@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.PubSub.Redis
+﻿namespace EasyCaching.Sync.Redis
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;

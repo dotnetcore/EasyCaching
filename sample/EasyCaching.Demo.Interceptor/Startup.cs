@@ -1,10 +1,9 @@
 ﻿namespace EasyCaching.Demo.Interceptor
 {
     using System;
-    using EasyCaching.Core;
     using EasyCaching.Demo.Interceptor.Services;
-    using EasyCaching.Extensions;
     using EasyCaching.InMemory;
+    using EasyCaching.Interceptor.AspectCore;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -23,10 +22,11 @@
         {
             services.AddMvc();
 
-            services.AddScoped<IEasyCachingProvider,InMemoryCachingProvider>();
             services.AddScoped<IDateTimeService,DateTimeService>();
 
-            return services.ConfigureEasyCaching();
+            services.AddDefaultInMemoryCache();
+
+            return services.ConfigureAspectCoreInterceptor();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
