@@ -2,25 +2,34 @@ version: 1.0.{build}
 image: Visual Studio 2017
 configuration: Release
 clone_folder: C:\projects\easycaching\
+
 install:
 - cmd: >-
     cd C:\projects\easycaching\tools\RedisConfigs\3.0.503
-
     redis-server.exe --service-install --service-name "redis-6379" "..\Basic\master-6379.conf"
-
     net start redis-6379
-
     c:\projects\easycaching\tools\memcached\memcached.exe -d install
-
     net start memcached
-
     cd C:\projects\easycaching
+    
 before_build:
 - cmd: dotnet restore
+
 build:
   project: EasyCaching.sln
   parallel: true
   verbosity: minimal
+  
 test_script:
 - cmd: >-
     dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
+    
+after_test:
+- cmd: >-
+    nuget install coveralls.net -Version 0.7.0 -OutputDirectory tools
+
+    nuget install OpenCover -Version 4.6.519 -OutputDirectory tools
+
+    tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]*" -oldstyle -returntargetcode -output:coverage.xml
+
+    tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths   

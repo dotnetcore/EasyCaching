@@ -1,6 +1,8 @@
-![](https://github.com/catcherwong/EasyCaching/blob/master/media/easycaching-icon.png)
+![](https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png)
 
 EasyCaching is a caching provider that help us to handle caching easily.
+
+[![Coverage Status](https://coveralls.io/repos/github/catcherwong/EasyCaching/badge.svg?branch=master)](https://coveralls.io/github/catcherwong/EasyCaching?branch=master)[![GitHub license](https://img.shields.io/github/license/catcherwong/EasyCaching.svg)](https://github.com/catcherwong/EasyCaching/blob/master/LICENSE)
 
 ## CI Build Status
 
