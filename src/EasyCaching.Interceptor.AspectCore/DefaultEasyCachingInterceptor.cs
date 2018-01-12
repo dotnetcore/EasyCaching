@@ -81,21 +81,21 @@
         /// <param name="attribute">Attribute.</param>
         private async Task ProceedCaching(AspectContext context, AspectDelegate next, DefaultEasyCachingInterceptor attribute)
         {
-            var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
+            //var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
 
-            var cacheValue = CacheProvider.Get(cacheKey, () => new object(), TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
-            if (cacheValue != null)
-            {
-                context.ReturnValue = cacheValue;
-                return;
-            }
+            //var cacheValue = CacheProvider.Get(cacheKey, () => new object(), TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
+            //if (cacheValue != null)
+            //{
+            //    context.ReturnValue = cacheValue;
+            //    return;
+            //}
 
             await next(context);
 
-            if (!string.IsNullOrWhiteSpace(cacheKey))
-            {
-                CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
-            }
+            //if (!string.IsNullOrWhiteSpace(cacheKey))
+            //{
+            //    CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
+            //}
         }
 
         /// <summary>

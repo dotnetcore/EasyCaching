@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.Redis
 {
-    using System;
+    using EasyCaching.Core.Internal;
 
     /// <summary>
     /// Defines an endpoint.
@@ -21,10 +21,7 @@
         /// <param name="port">Port.</param>
         public ServerEndPoint(string host, int port)
         {
-            if(string.IsNullOrWhiteSpace(host))
-            {
-                throw new ArgumentNullException(nameof(host));
-            }
+            ArgumentCheck.NotNullOrWhiteSpace(host, nameof(host));
 
             Host = host;
             Port = port;

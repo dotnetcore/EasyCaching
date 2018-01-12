@@ -1,14 +1,11 @@
 ﻿namespace EasyCaching.Redis
-{
-    using Microsoft.Extensions.Options;
-    using StackExchange.Redis;
-    using System;
+{    
     using System.Collections.Generic;
 
     /// <summary>
     /// Redis cache options.
     /// </summary>
-    public class RedisCacheOptions :  IOptions<RedisCacheOptions>
+    public class RedisCacheOptions
     {
         /// <summary>
         /// Gets or sets the password to be used to connect to the Redis server.
@@ -57,11 +54,6 @@
         /// <value>
         /// The database.
         /// </value>
-        public int Database { get; set; } = 0;    
-
-        RedisCacheOptions IOptions<RedisCacheOptions>.Value
-        {
-            get { return this; }
-        }
+       public int Database { get; set; } = 0;    
     }
 }

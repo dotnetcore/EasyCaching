@@ -2,10 +2,8 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
-    using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
-    using System.Threading;
 
     /// <summary>
     /// Default redis caching provider.
@@ -13,24 +11,14 @@
     public class DefaultRedisCachingProvider : IEasyCachingProvider
     {
         /// <summary>
-        /// The connection.
-        /// </summary>
-        private volatile ConnectionMultiplexer _connection;
-
-        /// <summary>
         /// The cache.
         /// </summary>
-        private IDatabase _cache;
+        private readonly IDatabase _cache;
 
         /// <summary>
-        /// The options.
+        /// The db provider.
         /// </summary>
-        private readonly RedisCacheOptions _options;
-
-        /// <summary>
-        /// The connection lock.
-        /// </summary>
-        private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(initialCount: 1, maxCount: 1);
+        private readonly IRedisDatabaseProvider _dbProvider;
 
         /// <summary>
         /// The serializer.
@@ -40,24 +28,18 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
-        /// <param name="options">Options.</param>
+        /// <param name="dbProvider">DB Provider.</param>
         /// <param name="serializer">Serializer.</param>
         public DefaultRedisCachingProvider(
-            IOptions<RedisCacheOptions> options,
+            IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentCheck.NotNull(dbProvider, nameof(dbProvider));
+            ArgumentCheck.NotNull(serializer, nameof(serializer));
 
-            if (serializer == null)
-            {
-                throw new ArgumentNullException(nameof(serializer));
-            }
-
-            _options = options.Value;
+            _dbProvider = dbProvider;
             _serializer = serializer;
+            _cache = _dbProvider.GetDatabase();
         }
 
         /// <summary>
@@ -68,45 +50,30 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
-            Connect();
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
-                return _serializer.Deserialize<T>(result);
+            {
+                var value = _serializer.Deserialize<T>(result);
+                return new CacheValue<T>(value, true);
+            }
 
             var item = dataRetriever?.Invoke();
-            Set(cacheKey, item, expiration);
-
-            return item;
+            if (item != null)
+            {
+                Set(cacheKey, item, expiration);
+                return new CacheValue<T>(item, true);
+            }
+            else
+            {
+                return CacheValue<T>.NoValue;
+            }
         }
-
-        /// <summary>
-        /// Get the specified cacheKey, dataRetriever and expiration.
-        /// </summary>
-        /// <returns>The get.</returns>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="dataRetriever">Data retriever.</param>
-        /// <param name="expiration">Expiration.</param>
-        public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
-            Connect();
-
-            var result = _cache.StringGet(cacheKey);
-            if (!result.IsNull)
-                return _serializer.Deserialize<object>(result);
-
-            var item = dataRetriever?.Invoke();
-            Set(cacheKey, item, expiration);
-
-            return item;
-        }
-
+           
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
@@ -115,8 +82,6 @@
         public void Remove(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
-            Connect();
 
             _cache.KeyDelete(cacheKey);
         }
@@ -132,69 +97,25 @@
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            Connect();
-
-            _cache.StringSet(cacheKey, _serializer.Serialize<T>(cacheValue), expiration);
+            _cache.StringSet(
+                cacheKey,
+                _serializer.Serialize(cacheValue),
+                expiration);
         }
 
         /// <summary>
-        /// Set the specified cacheKey, cacheValue and expiration.
+        /// Exists the specified cacheKey.
         /// </summary>
-        /// <returns>The set.</returns>
+        /// <returns>The exists.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
+        public bool Exists(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
-
-            Connect();
-
-            _cache.StringSet(cacheKey, _serializer.Serialize(cacheValue), expiration);
-        }
-
-        /// <summary>
-        /// Connect this instance.
-        /// </summary>
-        private void Connect()
-        {
-            if (_connection != null)
-            {
-                return;
-            }
-
-            _connectionLock.Wait();
-            try
-            {
-                if (_connection == null)
-                {
-                    var configurationOptions = new ConfigurationOptions
-                    {
-                        ConnectTimeout = _options.ConnectionTimeout,
-                        Password = _options.Password,
-                        Ssl = _options.IsSsl,
-                        SslHost = _options.SslHost,
-                    };
-
-                    foreach (var endpoint in _options.Endpoints)
-                    {
-                        configurationOptions.EndPoints.Add(endpoint.Host, endpoint.Port);
-                    }
-
-                    _connection = ConnectionMultiplexer.Connect(configurationOptions.ToString());
-
-                    _cache = _connection.GetDatabase(_options.Database);
-                }
-            }
-            finally
-            {
-                _connectionLock.Release();
-            }
+            return _cache.KeyExists(cacheKey);
         }
     }
 }

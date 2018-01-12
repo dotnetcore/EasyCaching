@@ -1,9 +1,9 @@
 ﻿namespace EasyCaching.InMemory
 {
-    using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Caching.Memory;
+    using System;
 
     /// <summary>
     /// MemoryCaching provider.
@@ -32,47 +32,29 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var result = _cache.Get(cacheKey) as T;
 
             if (result != null)
-                return result;
+                return new CacheValue<T>(result, true);
 
             result = dataRetriever?.Invoke();
 
             if (result != null)
+            {
                 Set(cacheKey, result, expiration);
-
-            return result;
+                return new CacheValue<T>(result, true);
+            }
+            else
+            {
+                return CacheValue<T>.NoValue;
+            }
         }
-
-        /// <summary>
-        /// Get the specified cacheKey, dataRetriever and expiration.
-        /// </summary>
-        /// <returns>The get.</returns>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="dataRetriever">Data retriever.</param>
-        /// <param name="expiration">Expiration.</param>
-        public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
-            var result = _cache.Get(cacheKey);
-
-            if (result != null)
-                return result;
-
-            result = dataRetriever?.Invoke();
-
-            if (result != null)
-                Set(cacheKey, result, expiration);
-
-            return result;
-        }
-
+            
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
@@ -96,26 +78,22 @@
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             _cache.Set(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
-        /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
+        /// Exists the specified cacheKey.
         /// </summary>
-        /// <returns>The set.</returns>
+        /// <returns>The exists.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">expiration.</param>
-        public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
+        public bool Exists(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
-
-            _cache.Set(cacheKey, cacheValue, expiration);
+            return _cache.TryGetValue(cacheKey, out object value);
         }
     }
 }

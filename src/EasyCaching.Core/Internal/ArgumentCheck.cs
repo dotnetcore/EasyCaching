@@ -8,7 +8,7 @@
     public static class ArgumentCheck
     {
         /// <summary>
-        /// Validates that <paramref name="argument"/> is not <c>null</c> , otherwise throws an exception.
+        /// Validates that <paramref name="argument"/> is not null , otherwise throws an exception.
         /// </summary>
         /// <param name="argument">Argument.</param>
         /// <param name="argumentName">Argument name.</param>
@@ -22,7 +22,7 @@
         }
 
         /// <summary>
-        /// Validates that <paramref name="argument"/> is not <c>null</c> , otherwise throws an exception.
+        /// Validates that <paramref name="argument"/> is not null or white space , otherwise throws an exception.
         /// </summary>
         /// <param name="argument">Argument.</param>
         /// <param name="argumentName">Argument name.</param>
@@ -32,6 +32,19 @@
             if (string.IsNullOrWhiteSpace(argument))
             {
                 throw new ArgumentNullException(argumentName);
+            }
+        }
+
+        /// <summary>
+        /// Validates that <paramref name="argument"/> is not negative or zero , otherwise throws an exception.
+        /// </summary>
+        /// <param name="argument">Argument.</param>
+        /// <param name="argumentName">Argument name.</param>
+        public static void NotNegativeOrZero(TimeSpan argument, string argumentName)
+        {
+            if (argument <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(argumentName);
             }
         }
     }

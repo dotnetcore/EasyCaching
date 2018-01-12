@@ -8,6 +8,11 @@
     /// </summary>
     public class SQLiteCachingProvider : IEasyCachingProvider
     {
+        public bool Exists(string cacheKey)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Get the specified cacheKey, dataRetriever and expiration.
         /// </summary>
@@ -16,45 +21,25 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public T Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) where T : class
         {
             var result = SQLHelper.Instance.Get(cacheKey) as T;
 
             if (result != null)
-                return result;
+                return new CacheValue<T>(result, true);
 
             if (dataRetriever != null)
             {
                 result = dataRetriever.Invoke();
                 Set(cacheKey, result, expiration);
+                return new CacheValue<T>(result, true);
             }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Get the specified cacheKey, dataRetriever and expiration.
-        /// </summary>
-        /// <returns>The get.</returns>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="dataRetriever">Data retriever.</param>
-        /// <param name="expiration">Expiration.</param>
-        public object Get(string cacheKey, Func<object> dataRetriever, TimeSpan expiration)
-        {
-            var result = SQLHelper.Instance.Get(cacheKey);
-
-            if (result != null)
-                return result;
-
-            if (dataRetriever != null)
+            else
             {
-                result = dataRetriever.Invoke();
-                Set(cacheKey, result, expiration);
+                return CacheValue<T>.NoValue;
             }
-
-            return result;
         }
-
+            
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
@@ -74,18 +59,6 @@
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
-        {
-            SQLHelper.Instance.Set(cacheKey, Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue), expiration.Ticks / 10000000);
-        }
-
-        /// <summary>
-        /// Set the specified cacheKey, cacheValue and absoluteExpirationRelativeToNow.
-        /// </summary>
-        /// <returns>The set.</returns>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        public void Set(string cacheKey, object cacheValue, TimeSpan expiration)
         {
             SQLHelper.Instance.Set(cacheKey, Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue), expiration.Ticks / 10000000);
         }
