@@ -1,9 +1,10 @@
 ﻿namespace EasyCaching.Demo.Redis.Controllers
 {
-    using System;
-    using Microsoft.AspNetCore.Mvc;
     using EasyCaching.Core;
-    
+    using Microsoft.AspNetCore.Mvc;
+    using System;
+    using System.Threading.Tasks;
+
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
@@ -14,8 +15,9 @@
             this._provider = provider;
         }
 
-        // GET api/values?type=1
+        // GET api/values/get?type=1
         [HttpGet]
+        [Route("get")]
         public string Get(int type = 1)
         {
             if (type == 1)
@@ -31,6 +33,33 @@
             else if (type == 3)
             {
                 var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
+                return $"cached value : {res}";
+            }
+            else
+            {
+                return "error";
+            }
+        }
+
+
+        // GET api/values/getasync?type=1
+        [HttpGet]
+        [Route("getasync")]
+        public async Task<string> GetAsync(int type = 1)
+        {
+            if (type == 1)
+            {
+                await _provider.RemoveAsync("demo");
+                return "removed";
+            }
+            else if (type == 2)
+            {
+                await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));
+                return "seted";
+            }
+            else if (type == 3)
+            {
+                var res = await _provider.GetAsync("demo", async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));
                 return $"cached value : {res}";
             }
             else

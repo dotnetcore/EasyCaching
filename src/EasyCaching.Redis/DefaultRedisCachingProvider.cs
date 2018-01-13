@@ -4,6 +4,7 @@
     using EasyCaching.Core.Internal;
     using StackExchange.Redis;
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Default redis caching provider.
@@ -24,6 +25,12 @@
         /// The serializer.
         /// </summary>
         private readonly IEasyCachingSerializer _serializer;
+
+        /// <summary>
+        /// <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> 
+        /// is not distributed cache.
+        /// </summary>
+        public bool IsDistributedCache => false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
@@ -73,7 +80,39 @@
                 return CacheValue<T>.NoValue;
             }
         }
-           
+
+        /// <summary>
+        /// Gets the specified cacheKey, dataRetriever and expiration async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="dataRetriever">Data retriever.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            var result = await _cache.StringGetAsync(cacheKey);
+            if (!result.IsNull)
+            {
+                var value = _serializer.Deserialize<T>(result);
+                return new CacheValue<T>(value, true);
+            }
+
+            var item = await dataRetriever?.Invoke();
+            if (item != null)
+            {
+                await SetAsync(cacheKey, item, expiration);
+                return new CacheValue<T>(item, true);
+            }
+            else
+            {
+                return CacheValue<T>.NoValue;
+            }
+        }
+
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
@@ -84,6 +123,18 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             _cache.KeyDelete(cacheKey);
+        }
+
+        /// <summary>
+        /// Removes the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        public async Task RemoveAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            await _cache.KeyDeleteAsync(cacheKey);
         }
 
         /// <summary>
@@ -107,6 +158,26 @@
         }
 
         /// <summary>
+        /// Sets the specified cacheKey, cacheValue and expiration async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            await _cache.StringSetAsync(
+                    cacheKey,
+                    _serializer.Serialize(cacheValue),
+                    expiration);
+        }
+
+        /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>
         /// <returns>The exists.</returns>
@@ -116,6 +187,18 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             return _cache.KeyExists(cacheKey);
+        }
+
+        /// <summary>
+        /// Existses the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        public async Task<bool> ExistsAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return await _cache.KeyExistsAsync(cacheKey);
         }
     }
 }

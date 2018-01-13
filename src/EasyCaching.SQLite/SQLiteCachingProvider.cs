@@ -2,13 +2,25 @@
 {
     using EasyCaching.Core;
     using System;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// SQLiteCaching provider.
     /// </summary>
     public class SQLiteCachingProvider : IEasyCachingProvider
     {
+        /// <summary>
+        /// <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> is not distributed cache.
+        /// </summary>
+        /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
+        public bool IsDistributedCache => false;
+
         public bool Exists(string cacheKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> ExistsAsync(string cacheKey)
         {
             throw new NotImplementedException();
         }
@@ -39,7 +51,12 @@
                 return CacheValue<T>.NoValue;
             }
         }
-            
+
+        public Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
@@ -48,6 +65,11 @@
         public void Remove(string cacheKey)
         {
             SQLHelper.Instance.Delete(cacheKey);
+        }
+
+        public Task RemoveAsync(string cacheKey)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -61,6 +83,11 @@
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
         {
             SQLHelper.Instance.Set(cacheKey, Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue), expiration.Ticks / 10000000);
+        }
+
+        public Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        {
+            throw new NotImplementedException();
         }
     }
 }

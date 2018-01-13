@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     public static class InMemoryCacheServiceCollectionExtensions
     {
@@ -15,7 +16,7 @@
         {
             ArgumentCheck.NotNull(services, nameof(services));
 
-            services.Add(ServiceDescriptor.Singleton<IEasyCachingProvider, InMemoryCachingProvider>());
+            services.TryAddSingleton<IEasyCachingProvider, InMemoryCachingProvider>();
 
             return services;
         }
