@@ -287,6 +287,11 @@ __pycache__/
 *.odx.cs
 *.xsd.cs
 
-#MACOS
+# MACOS
 
 .DS_Store
+
+# SQLite database file
+
+*.db
+*.sqlite3
