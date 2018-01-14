@@ -1,8 +1,11 @@
-﻿namespace EasyCaching.Demo.Interceptor.Controllers
-{
-    using EasyCaching.Demo.Interceptor.Services;
-    using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
+namespace EasyCaching.Demo.Interceptor.Castle.Controllers
+{
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {

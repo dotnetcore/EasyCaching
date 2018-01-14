@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Demo.Interceptor
+﻿namespace EasyCaching.Demo.Interceptor.Castle
 {
     using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;

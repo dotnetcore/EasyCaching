@@ -47,17 +47,5 @@
             }
             return _conn;
         }
-
-        public string GetPath()
-        {
-            if(_options.DataSource.Equals(":memory:"))
-            {
-                return string.Empty;
-            }
-            else
-            {
-                return $"{_options.FilePath}_{_options.FileName}";
-            }
-        }
     }
 }

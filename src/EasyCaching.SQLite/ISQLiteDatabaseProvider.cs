@@ -12,7 +12,5 @@
         /// </summary>
         /// <returns>The connection.</returns>
         SqliteConnection GetConnection();
-
-        string GetPath();
     }
 }

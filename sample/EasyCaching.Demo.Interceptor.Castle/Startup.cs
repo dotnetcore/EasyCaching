@@ -1,13 +1,12 @@
-﻿namespace EasyCaching.Demo.Interceptor
+﻿namespace EasyCaching.Demo.Interceptor.Castle
 {
-    using System;
-    using EasyCaching.Demo.Interceptor.Services;
     using EasyCaching.InMemory;
-    using EasyCaching.Interceptor.AspectCore;
+    using EasyCaching.Interceptor.Castle;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using System;
     
     public class Startup
     {
@@ -22,11 +21,11 @@
         {
             services.AddMvc();
 
-            services.AddScoped<IDateTimeService,DateTimeService>();
+            services.AddTransient<IDateTimeService,DateTimeService>();
 
             services.AddDefaultInMemoryCache();
 
-            return services.ConfigureAspectCoreInterceptor();
+            return services.ConfigureCastleInterceptor();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

@@ -12,25 +12,10 @@
     using global::AspectCore.Injector;
 
     /// <summary>
-    /// Default easy caching interceptor.
+    /// Easy caching interceptor.
     /// </summary>
-    public class DefaultEasyCachingInterceptor: AbstractInterceptorAttribute
-    {
-
-        /// <summary>
-        /// Gets or sets the absolute expiration.
-        /// </summary>
-        /// <value>The absolute expiration.</value>
-        public int AbsoluteExpiration { get; set; } = 30;
-
-
-        /// <summary>
-        /// Gets or sets the parameter count to generate cache key.
-        /// </summary>
-        /// <value>The parameter count.</value>
-        public int ParamCount { get; set; } = 5;
-
-
+    public class EasyCachingInterceptor : AbstractInterceptor
+    {           
         /// <summary>
         /// Gets or sets the cache provider.
         /// </summary>
@@ -67,9 +52,9 @@
         /// </summary>
         /// <returns>The QC aching attribute info.</returns>
         /// <param name="method">Method.</param>
-        private DefaultEasyCachingInterceptor GetInterceptorAttributeInfo(MethodInfo method)
+        private EasyCachingInterceptorAttribute GetInterceptorAttributeInfo(MethodInfo method)
         {
-            return method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(DefaultEasyCachingInterceptor)) as DefaultEasyCachingInterceptor;
+            return method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingInterceptorAttribute)) as EasyCachingInterceptorAttribute;
         }
 
         /// <summary>
@@ -79,23 +64,24 @@
         /// <param name="context">Context.</param>
         /// <param name="next">Next.</param>
         /// <param name="attribute">Attribute.</param>
-        private async Task ProceedCaching(AspectContext context, AspectDelegate next, DefaultEasyCachingInterceptor attribute)
+        private async Task ProceedCaching(AspectContext context, AspectDelegate next, EasyCachingInterceptorAttribute attribute)
         {
-            //var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
+            var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
 
-            //var cacheValue = CacheProvider.Get(cacheKey, () => new object(), TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
-            //if (cacheValue != null)
-            //{
-            //    context.ReturnValue = cacheValue;
-            //    return;
-            //}
+            var cacheValue = CacheProvider.Get<object>(cacheKey, null, TimeSpan.FromSeconds(attribute.Expiration));
+
+            if (cacheValue.HasValue)
+            {
+                context.ReturnValue = cacheValue.Value;
+                return;
+            }
 
             await next(context);
 
-            //if (!string.IsNullOrWhiteSpace(cacheKey))
-            //{
-            //    CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.AbsoluteExpiration));
-            //}
+            if (!string.IsNullOrWhiteSpace(cacheKey))
+            {
+                CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+            }
         }
 
         /// <summary>

@@ -23,7 +23,7 @@
 
             container.Configure(config =>
             {
-                config.Interceptors.AddTyped<DefaultEasyCachingInterceptor>(method => typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
+                config.Interceptors.AddTyped<EasyCachingInterceptor>(method => typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
             });
 
             return container.Build();
@@ -41,7 +41,7 @@
 
             container.Configure(config =>
             {
-                config.Interceptors.AddTyped<DefaultEasyCachingInterceptor>(method => typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
+                config.Interceptors.AddTyped<EasyCachingInterceptor>(method => typeof(IEasyCaching).IsAssignableFrom(method.DeclaringType));
                 action(config);
             });
 
