@@ -1,44 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-
-namespace EasyCaching.Demo.SQLite.Controllers
+﻿namespace EasyCaching.Demo.SQLite.Controllers
 {
+    using EasyCaching.Core;
+    using Microsoft.AspNetCore.Mvc;
+    using System;
+    using System.Threading.Tasks;
+
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        // GET api/values
+        private readonly IEasyCachingProvider _provider;
+
+        public ValuesController(IEasyCachingProvider provider)
+        {
+            this._provider = provider;
+        }
+
+        // GET api/values/get?type=1
         [HttpGet]
-        public IEnumerable<string> Get()
+        [Route("get")]
+        public string Get(int type = 1)
         {
-            return new string[] { "value1", "value2" };
+            if (type == 1)
+            {
+                _provider.Remove("demo");
+                return "removed";
+            }
+            else if (type == 2)
+            {
+                _provider.Set("demo", "123", TimeSpan.FromMinutes(1));
+                return "seted";
+            }
+            else if (type == 3)
+            {
+                var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
+                return $"cached value : {res}";
+            }
+            else
+            {
+                return "error";
+            }
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
-        // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
+        // GET api/values/getasync?type=1
+        [HttpGet]
+        [Route("getasync")]
+        public async Task<string> GetAsync(int type = 1)
         {
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if (type == 1)
+            {
+                await _provider.RemoveAsync("demo");
+                return "removed";
+            }
+            else if (type == 2)
+            {
+                await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));
+                return "seted";
+            }
+            else if (type == 3)
+            {
+                var res = await _provider.GetAsync("demo", async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));
+                return $"cached value : {res}";
+            }
+            else
+            {
+                return "error";
+            }
         }
     }
 }
