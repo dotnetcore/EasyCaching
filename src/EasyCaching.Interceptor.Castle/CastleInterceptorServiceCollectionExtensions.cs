@@ -23,7 +23,7 @@
             var builder = new ContainerBuilder();
             builder.Populate(services);
 
-            var assembly = Assembly.GetEntryAssembly();
+            var assembly = Assembly.GetCallingAssembly();
             builder.RegisterType<EasyCachingInterceptor>();
 
             builder.RegisterAssemblyTypes(assembly)
