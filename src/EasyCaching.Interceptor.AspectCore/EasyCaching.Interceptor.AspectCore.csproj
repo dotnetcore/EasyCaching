@@ -13,7 +13,7 @@
     <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 

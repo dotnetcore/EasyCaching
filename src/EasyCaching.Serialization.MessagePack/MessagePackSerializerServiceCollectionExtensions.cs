@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
     public static class MessagePackSerializerServiceCollectionExtensions
@@ -18,7 +19,7 @@
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.Add(ServiceDescriptor.Singleton<IEasyCachingSerializer, DefaultMessagePackSerializer>());
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultMessagePackSerializer>();
 
             return services;
         }

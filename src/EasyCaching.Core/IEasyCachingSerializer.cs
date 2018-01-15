@@ -30,5 +30,9 @@
         /// <param name="bytes">Bytes.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         T Deserialize<T>(byte[] bytes);
+
+        ArraySegment<byte> SerializeObject(object obj);
+
+        object DeserializeObject(ArraySegment<byte> value);
     }
 }

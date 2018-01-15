@@ -4,17 +4,23 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Description>
-      EasyCaching is a open source caching library that contains basic opreations of caching.
+      EasyCaching.SQLite based on EasyCaching.Core and Microsoft.Data.SQLite
     </Description>
-    <PackageTags>Caching,Cache,Distributed Cache,Memory Cache,Interceptor,Synchronization</PackageTags>
+    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
+    <PackageReleaseNotes>
+      v0.1.1 
+      1. Change Nuget logo.      
+
+      v0.1.0 
+      1. Init.
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,8 +1,10 @@
 namespace EasyCaching.UnitTests
 {
+    using EasyCaching.Core;
     using EasyCaching.InMemory;
     using FakeItEasy;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;
     using Xunit;
@@ -114,6 +116,19 @@ namespace EasyCaching.UnitTests
             await _provider.RemoveAsync(cacheKey);
             var valAfterRemove = await _provider.GetAsync<string>(cacheKey, async () => await Task.FromResult("123"), _defaultTs);
             Assert.Equal("123", valAfterRemove.Value);
+        }
+
+        [Fact]
+        public void AddDefaultInMemoryCache_Should_Get_InMemoryCachingProvider()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddDefaultInMemoryCache();
+            services.AddMemoryCache();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            
+            var cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
+
+            Assert.IsType<InMemoryCachingProvider>(cachingProvider);
         }
     }
 }

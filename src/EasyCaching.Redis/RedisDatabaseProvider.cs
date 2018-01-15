@@ -4,11 +4,25 @@
     using StackExchange.Redis;
     using System;
 
+    /// <summary>
+    /// Redis database provider.
+    /// </summary>
     public class RedisDatabaseProvider : IRedisDatabaseProvider
     {
+        /// <summary>
+        /// The options.
+        /// </summary>
         private readonly RedisCacheOptions _options;
+
+        /// <summary>
+        /// The connection multiplexer.
+        /// </summary>
         private readonly Lazy<ConnectionMultiplexer> _connectionMultiplexer;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisDatabaseProvider"/> class.
+        /// </summary>
+        /// <param name="options">Options.</param>
         public RedisDatabaseProvider(IOptions<RedisCacheOptions> options)
         {
             _options = options.Value;
@@ -23,6 +37,10 @@
             return _connectionMultiplexer.Value.GetDatabase(_options.Database);
         }
 
+        /// <summary>
+        /// Creates the connection multiplexer.
+        /// </summary>
+        /// <returns>The connection multiplexer.</returns>
         private ConnectionMultiplexer CreateConnectionMultiplexer()
         {
             var configurationOptions = new ConfigurationOptions

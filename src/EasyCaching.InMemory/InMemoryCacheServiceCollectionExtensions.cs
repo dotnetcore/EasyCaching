@@ -5,6 +5,9 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
+    /// <summary>
+    /// In memory cache service collection extensions.
+    /// </summary>
     public static class InMemoryCacheServiceCollectionExtensions
     {
         /// <summary>

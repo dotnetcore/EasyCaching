@@ -1,7 +1,6 @@
 ﻿namespace EasyCaching.Serialization.MessagePack
 {
     using EasyCaching.Core;
-    //using MessagePack;
     using System;
     using global::MessagePack;
     using global::MessagePack.Resolvers;
@@ -19,17 +18,6 @@
         {
             MessagePackSerializer.SetDefaultResolver(ContractlessStandardResolver.Instance);
         }
-
-        ///// <summary>
-        ///// Deserialize the specified bytes and target.
-        ///// </summary>
-        ///// <returns>The deserialize.</returns>
-        ///// <param name="bytes">Bytes.</param>
-        ///// <param name="target">Target.</param>
-        //public object Deserialize(byte[] bytes, Type target)
-        //{            
-        //    return MessagePackSerializer.Deserialize<object>(bytes);
-        //}
 
         /// <summary>
         /// Deserialize the specified bytes.
@@ -51,6 +39,26 @@
         public byte[] Serialize<T>(T value)
         {
             return MessagePackSerializer.Serialize(value);
+        }
+
+        /// <summary>
+        /// Serializes the object.
+        /// </summary>
+        /// <returns>The object.</returns>
+        /// <param name="value">Value.</param>
+        public ArraySegment<byte> SerializeObject(object value)
+        {
+            return MessagePackSerializer.SerializeUnsafe<object>(value , TypelessContractlessStandardResolver.Instance);
+        }
+
+        /// <summary>
+        /// Deserializes the object.
+        /// </summary>
+        /// <returns>The object.</returns>
+        /// <param name="value">Value.</param>
+        public object DeserializeObject(ArraySegment<byte> value)
+        {
+            return MessagePackSerializer.Deserialize<object>(value, TypelessContractlessStandardResolver.Instance);
         }
     }
 }

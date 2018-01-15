@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Demo.Memcached
 {
     using EasyCaching.Memcached;
+    using EasyCaching.Serialization.MessagePack;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -18,10 +19,12 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
+            services.AddDefaultMessagePackSerializer();
             services.AddDefaultMemcached(op=>
             {                
                 op.AddServer("127.0.0.1",11211);
+                //specify the Transcoder use messagepack .
+                op.Transcoder = new MessagePackFormatterTranscoder(new DefaultMessagePackSerializer()) ;
             });
         }
 

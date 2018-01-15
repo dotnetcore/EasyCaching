@@ -6,8 +6,16 @@
     using Microsoft.Extensions.Logging;
     using System;
 
+    /// <summary>
+    /// Memcached application builder extensions.
+    /// </summary>
     public static class MemcachedApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Uses the default memcached.
+        /// </summary>
+        /// <returns>The default memcached.</returns>
+        /// <param name="app">App.</param>
         public static IApplicationBuilder UseDefaultMemcached(this IApplicationBuilder app)
         {
             try

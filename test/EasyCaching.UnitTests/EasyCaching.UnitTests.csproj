@@ -13,6 +13,8 @@
     <PackageReference Include="FakeItEasy" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
+    <PackageReference Include="AspectCore.Core" Version="0.2.4" />
+    <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="0.2.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,5 +24,7 @@
     <ProjectReference Include="..\..\src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.SQLite\EasyCaching.SQLite.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />
   </ItemGroup>
 </Project>

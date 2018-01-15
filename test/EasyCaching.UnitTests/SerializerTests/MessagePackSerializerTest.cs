@@ -5,13 +5,11 @@ namespace EasyCaching.UnitTests
 
     public class MessagePackSerializerTest
     {
-        private readonly DefaultMessagePackSerializer _serializer;
-        //private readonly string jsonStr;
+        private readonly DefaultMessagePackSerializer _serializer;        
 
         public MessagePackSerializerTest()
         {
-            _serializer = new DefaultMessagePackSerializer();
-            //jsonStr = "{\"Prop\":\"abc\"}";
+            _serializer = new DefaultMessagePackSerializer();            
         }
 
         [Fact]
@@ -30,6 +28,28 @@ namespace EasyCaching.UnitTests
             var res = _serializer.Deserialize<Model>(bytes);
 
             Assert.Equal("abc", res.Prop);
+        }
+
+        [Fact]
+        public void SerializeObject_should_Succeed()
+        {
+            object obj = new Model { Prop = "abc" };
+
+            var bytes = _serializer.SerializeObject(obj);
+
+            Assert.NotEmpty(bytes);            
+        }
+        
+        [Fact]
+        public void DeserializeObject_should_Succeed()
+        {
+            object obj = new Model { Prop = "abc" };
+
+            var bytes = _serializer.SerializeObject(obj);
+
+            var desObj = _serializer.DeserializeObject(bytes) as Model;
+
+            Assert.Equal("abc",desObj.Prop);   
         }
     }
 

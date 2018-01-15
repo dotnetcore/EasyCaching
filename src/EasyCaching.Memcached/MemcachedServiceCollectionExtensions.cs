@@ -5,6 +5,7 @@
     using Enyim.Caching;
     using Enyim.Caching.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
     /// <summary>
@@ -26,9 +27,9 @@
 
             services.AddOptions();
             services.Configure(options);
-            services.AddTransient<IMemcachedClientConfiguration, MemcachedClientConfiguration>();
-            services.AddSingleton<MemcachedClient, MemcachedClient>();
-            services.AddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
+            services.TryAddTransient<IMemcachedClientConfiguration, MemcachedClientConfiguration>();
+            services.TryAddSingleton<MemcachedClient, MemcachedClient>();
+            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
 
             services.Add(ServiceDescriptor.Singleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>());
 
