@@ -4,7 +4,7 @@
     using System;
     using Xunit;
 
-    public class BaseSerializerTestTest
+    public abstract class BaseSerializerTest
     {
         protected IEasyCachingSerializer _serializer;
 

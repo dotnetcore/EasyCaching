@@ -3,7 +3,7 @@
     using EasyCaching.Redis;
     using Xunit; 
 
-    public class BinaryFormatterSerializerTest : BaseSerializerTestTest
+    public class BinaryFormatterSerializerTest : BaseSerializerTest
     {      
         public BinaryFormatterSerializerTest()
         {
