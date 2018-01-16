@@ -23,10 +23,14 @@ EasyCaching is a open source caching library that contains basic usages and some
 | EasyCaching.Memcached | ![](https://img.shields.io/nuget/v/EasyCaching.Memcached.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Memcached.svg)
 | EasyCaching.SQLite | ![](https://img.shields.io/nuget/v/EasyCaching.SQLite.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.SQLite.svg)
 | EasyCaching.Serialization.MessagePack | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.MessagePack.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.MessagePack.svg)
+| EasyCaching.Interceptor.Castle | ![](https://img.shields.io/nuget/v/EasyCaching.Interceptor.Castle.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Interceptor.Castle.svg)
+| EasyCaching.Interceptor.AspectCore | ![](https://img.shields.io/nuget/v/EasyCaching.Interceptor.AspectCore.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Interceptor.AspectCore.svg)
 
 ## Basci Usages 
 
-### Step 1. Install the package
+### #1 Caching APIs usage
+
+#### Step 1 : Install the package
 
 Choose one kinds of caching type that you needs and install it via Nuget.
 
@@ -37,7 +41,7 @@ Install-Package EasyCaching.SQLite
 Install-Package EasyCaching.Memcached
 ```
 
-### Step 2. Config in your Startup class
+#### Step 2 : Config in your Startup class
 
 Different types of caching hvae their own way to config.
 
@@ -56,7 +60,6 @@ public class Startup
         services.AddDefaultInMemoryCache();
         
         //2. Redis Cache
-        //services.AddDefaultMessagePackSerializer();
         //services.AddDefaultRedisCache(option=>
         //{                
         //    option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
@@ -86,7 +89,7 @@ public class Startup
 }
 ```
 
-### Step 3. Write code in you controller 
+####  Step 3 : Write code in you controller 
 
 ```csharp
 [Route("api/[controller]")]
@@ -111,6 +114,9 @@ public class ValuesController : Controller
         //Get
         var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
         
+        //Get without data retriever
+        var res = _provider.Get<string>("demo");
+        
         //Remove Async
         await _provider.RemoveAsync("demo");
            
@@ -119,18 +125,139 @@ public class ValuesController : Controller
             
         //Get Async    
         var res = await _provider.GetAsync("demo",async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));   
+        
+        //Get without data retriever Async
+        var res = await _provider.GetAsync<string>("demo");
     }
 }
 ```
 
+### #2 Caching Serializer
+
+Serializer is mainly building for distributed caching . 
+
+Redis Caching has implemented a default serializer that uses **System.Runtime.Serialization.Formatters.Binary** to handle serialization and deserialization .
+
+Memcahced Caching is based on [EnyimMemcachedCore](https://github.com/cnblogs/EnyimMemcachedCore) , it also has a default serializer named **BinaryFormatterTranscoder** .
+
+[EasyCaching.Serialization.MessagePack]() is an extension package providing MessagePack serialization for distributed caches
+
+How to use ?
+
+#### Step 1 : Install packages via Nuget
+
+```
+Install-Package EasyCaching.Serialization.MessagePack
+```
+
+
+#### Step 2 : Config in Startup class 
+
+```csharp
+
+public class Startup
+{
+    //...
+    
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc();
+        //1. For Redis
+        services.AddDefaultRedisCache(option=>
+        {                
+            option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            option.Password = "";       
+        });
+        services.AddDefaultMessagePackSerializer();
+        //2. For Memcached
+        //services.AddDefaultMemcached(op=>
+        //{                
+        //    op.AddServer("127.0.0.1",11211);
+        //
+        //    op.Transcoder = new MessagePackFormatterTranscoder(new DefaultMessagePackSerializer()) ;
+        //});
+        //services.AddDefaultMessagePackSerializer();
+    }
+}
+```
+
+### #3 Others
+
+coming soon !
+
 ## Advanced Usages
 
-coming soon!
+### #1 Caching Interceptor
+
+#### Step 1 : Define you service class
+
+```csharp
+public interface IDateTimeService 
+{        
+    string GetCurrentUtcTime();
+}
+
+public class DateTimeService : IDateTimeService ,  IEasyCaching
+{        
+    [EasyCachingInterceptor(Expiration = 10)]
+    public string GetCurrentUtcTime()
+    {
+        return System.DateTime.UtcNow.ToString();
+    }
+}
+```
+
+#### Step 2 : Config in Startup class 
+
+```csharp
+public class Startup
+{
+    //...
+
+    public IServiceProvider ConfigureServices(IServiceCollection services)
+    {
+        //..
+
+        //service 
+        services.AddTransient<IDateTimeService,DateTimeService>();
+
+        //caching
+        services.AddDefaultInMemoryCache();
+
+        //CastleInterceptor
+        return services.ConfigureCastleInterceptor();
+    }
+}
+```
+
+#### Step 3 : Write code in you controller 
+
+```csharp
+[Route("api/[controller]")]
+public class ValuesController : Controller
+{
+    private readonly IDateTimeService _service;
+
+    public ValuesController(IDateTimeService service)
+    {
+        this._service = service;
+    }
+
+    [HttpGet]
+    public string Get()
+    {
+        return _service.GetCurrentUtcTime();
+    }
+}
+```
+
+### #3 Others
+
+coming soon !
 
 ## Examples
 
 See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
-
 
 ## Todo List
 
