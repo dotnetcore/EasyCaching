@@ -35,6 +35,6 @@ after_test:
 
     nuget install OpenCover -Version 4.6.519 -OutputDirectory tools
 
-    tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]* -[EasyCaching.Sync*]* -[EasyCaching.Interceptor]*" -oldstyle -returntargetcode -output:coverage.xml
+    tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]* -[EasyCaching.Sync*]*" -oldstyle -returntargetcode -output:coverage.xml
 
     tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths   
