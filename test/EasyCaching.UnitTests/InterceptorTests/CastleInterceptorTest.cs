@@ -1,13 +1,16 @@
 namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Core;
-    using EasyCaching.InMemory;
-    using EasyCaching.Interceptor.Castle;
+    using EasyCaching.Core.Internal;
     using EasyCaching.UnitTests.Infrastructure;
-    using Microsoft.Extensions.DependencyInjection;
+    using EasyCaching.Interceptor.Castle;
+    using EasyCaching.InMemory;
     using System;
     using System.Threading;
     using Xunit;
+    using Autofac;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Caching.Memory;
+    using EasyCaching.Core;
 
     public class CastleInterceptorTest
     {
@@ -17,22 +20,22 @@ namespace EasyCaching.UnitTests
 
         public CastleInterceptorTest()
         {
-            IServiceCollection services = new  ServiceCollection();
-            services.AddTransient<ICastleExampleService,CastleExampleService>();            
+            IServiceCollection services = new ServiceCollection();
+            services.AddTransient<ICastleExampleService, CastleExampleService>();
             services.AddMemoryCache();
             services.AddDefaultInMemoryCache();
             IServiceProvider serviceProvider = services.ConfigureCastleInterceptor();
-            
+
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
-            _service = serviceProvider.GetService<ICastleExampleService>();            
+            _service = serviceProvider.GetService<ICastleExampleService>();
         }
 
         [Fact]
-        public void Interceptor_Cached_Value_Should_Equal()
-        {                     
-            var tick1 = _service.GetCurrentUTC();            
+        public void Interceptor_Attribute_Method_Should_Handle_Caching()
+        {
+            var tick1 = _service.GetCurrentUTC();
 
-            Thread.Sleep(500);
+            Thread.Sleep(1);
 
             var tick2 = _service.GetCurrentUTC();
 
@@ -40,13 +43,26 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
-        public void Interceptor_Cached_Value_Should_Not_Equal()
-        {                     
-            var tick1 = _service.GetCurrentUTC();            
+        public void Interceptor_Attribute_Method_Should_Handle_Caching_Twice()
+        {
+            var tick1 = _service.GetCurrentUTC();
 
             Thread.Sleep(1100);
 
             var tick2 = _service.GetCurrentUTC();
+
+            Assert.NotEqual(tick1, tick2);
+        }
+
+
+        [Fact]
+        public void Not_Interceptor_Attribute_Method_Should_Not_Handle_Caching()
+        {
+            var tick1 = _service.GetCurrentUTCTick();
+
+            Thread.Sleep(1);
+
+            var tick2 = _service.GetCurrentUTCTick();
 
             Assert.NotEqual(tick1, tick2);
         }

@@ -20,7 +20,7 @@
         {
             services.AddMvc();
 
-            services.AddDefaultMessagePackSerializer();
+            //services.AddDefaultMessagePackSerializer();
             services.AddDefaultRedisCache(option=>
             {                
                 option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));

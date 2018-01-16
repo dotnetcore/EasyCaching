@@ -148,6 +148,58 @@
         }
 
         /// <summary>
+        /// Get the specified cacheKey.
+        /// </summary>
+        /// <returns>The get.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public CacheValue<T> Get<T>(string cacheKey) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var dbResult = _cache.Query<string>(ConstSQL.GETSQL, new
+            {
+                cachekey = cacheKey
+            }).FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(dbResult))
+            {
+                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
+            }
+            else
+            {
+                return CacheValue<T>.NoValue;
+            }
+        }
+
+        /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+           
+            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            {
+                cachekey = cacheKey
+            });
+
+            var dbResult = list.FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(dbResult))
+            {
+                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
+            }
+            else
+            {
+                return CacheValue<T>.NoValue;
+            }
+        }
+
+        /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
         /// <returns>The remove.</returns>

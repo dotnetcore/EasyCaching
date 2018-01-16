@@ -61,6 +61,50 @@
         }
 
         [Fact]
+        public void Get_Cached_Value_Without_Retriever_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+            var val = _provider.Get<string>(cacheKey);
+
+            Assert.Equal(cacheValue, val.Value);
+        }
+
+        [Fact]
+        public async Task Get_Cached_Value_Without_Retriever_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+            var val = await _provider.GetAsync<string>(cacheKey);
+
+            Assert.Equal(cacheValue, val.Value);
+        }
+
+        [Fact]
+        public void Get_Not_Cached_Value_Without_Retriever_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var val = _provider.Get<string>(cacheKey);
+
+            Assert.Equal(default(string), val.Value);
+        }
+
+        [Fact]
+        public async Task Get_Not_Cached_Value_Without_Retriever_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var val = await _provider.GetAsync<string>(cacheKey);
+
+            Assert.Equal(default(string), val.Value);
+        }
+
+        [Fact]
         public void Remove_Cached_Value_Should_Succeed()
         {
             var cacheKey = Guid.NewGuid().ToString();

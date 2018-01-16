@@ -47,7 +47,23 @@
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration) where T : class;
-          
+
+        /// <summary>
+        /// Get the specified cacheKey.
+        /// </summary>
+        /// <returns>The get.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        CacheValue<T> Get<T>(string cacheKey) where T : class;
+
+        /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class;
+
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>

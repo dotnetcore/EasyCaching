@@ -164,6 +164,50 @@ namespace EasyCaching.UnitTests
         }        
 
         [Fact]
+        public void Get_Cached_Value_Without_Retriever_Should_Call_Deserialize()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+            _provider.Get<string>(cacheKey);
+
+            A.CallTo(() => _serializer.Deserialize<string>(A<byte[]>.Ignored)).MustHaveHappened();
+        }
+
+        [Fact]
+        public async Task Get_Cached_Value_Without_Retriever_Async_Should_Call_Deserialize()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+            await _provider.GetAsync<string>(cacheKey);
+
+            A.CallTo(() => _serializer.Deserialize<string>(A<byte[]>.Ignored)).MustHaveHappened();
+        }
+             
+        [Fact]
+        public void Get_Not_Cached_Value_Without_Retriever_Should_Not_Call_Deserialize()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var res = _provider.Get<string>(cacheKey);
+
+            A.CallTo(() => _serializer.Deserialize<string>(A<byte[]>.Ignored)).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public async Task Get_Not_Cached_Value_Without_Retriever_Async_Should_Not_Call_Deserialize()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var res = await _provider.GetAsync<string>(cacheKey);
+
+            A.CallTo(() => _serializer.Deserialize<string>(A<byte[]>.Ignored)).MustNotHaveHappened();
+        }             
+
+        [Fact]
         public void Remove_Cached_Value_Should_Succeed()
         {
             var cacheKey = Guid.NewGuid().ToString();

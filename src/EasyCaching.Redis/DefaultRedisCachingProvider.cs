@@ -114,6 +114,50 @@
         }
 
         /// <summary>
+        /// Get the specified cacheKey.
+        /// </summary>
+        /// <returns>The get.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public CacheValue<T> Get<T>(string cacheKey) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var result = _cache.StringGet(cacheKey);
+            if (!result.IsNull)
+            {
+                var value = _serializer.Deserialize<T>(result);
+                return new CacheValue<T>(value, true);
+            }
+            else
+            {
+                return CacheValue<T>.NoValue;
+            }           
+        }
+
+        /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var result = await _cache.StringGetAsync(cacheKey);
+            if (!result.IsNull)
+            {
+                var value = _serializer.Deserialize<T>(result);
+                return new CacheValue<T>(value, true);
+            }
+            else
+            {
+                return CacheValue<T>.NoValue;
+            }                 
+        }
+
+        /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
         /// <returns>The remove.</returns>
@@ -199,6 +243,6 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             return await _cache.KeyExistsAsync(cacheKey);
-        }
+        }             
     }
 }

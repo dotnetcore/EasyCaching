@@ -24,6 +24,7 @@
 
             services.AddOptions();
             services.Configure(optionsAction);
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
             services.TryAddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
 

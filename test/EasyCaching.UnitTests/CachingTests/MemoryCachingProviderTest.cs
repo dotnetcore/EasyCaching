@@ -91,6 +91,50 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
+        public void Get_Not_Cached_Value_Without_Retriever_Should_Return_Default_Value()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var res = _provider.Get<string>(cacheKey);
+
+            Assert.Equal(default(string), res.Value);
+        }
+
+        [Fact]
+        public async Task Get_Not_Cached_Value_Without_Retriever_Async_Should_Return_Default_Value()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var res = await _provider.GetAsync<string>(cacheKey);
+
+            Assert.Equal(default(string), res.Value);
+        }
+
+        [Fact]
+        public void Get_Cached_Value_Without_Retriever_Should_Return_Default_Value()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            _provider.Set(cacheKey, "123", _defaultTs);
+
+            var res = _provider.Get<string>(cacheKey);
+
+            Assert.Equal("123", res.Value);
+        }
+
+        [Fact]
+        public async Task Get_Cached_Value_Without_Retriever_Async_Should_Return_Default_Value()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            await _provider.SetAsync(cacheKey, "123", _defaultTs);
+
+            var res = await _provider.GetAsync<string>(cacheKey);
+
+            Assert.Equal("123", res.Value);
+        }
+
+        [Fact]
         public void Remove_Cached_Value_Should_Succeed()
         {
             var cacheKey = Guid.NewGuid().ToString();

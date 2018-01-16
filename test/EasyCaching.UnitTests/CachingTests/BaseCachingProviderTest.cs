@@ -151,6 +151,24 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
+        public void Get_Cached_Value_Without_Retriever_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string cachekey)
+        {
+            Assert.Throws<ArgumentNullException>(() => _provider.Get<string>(cachekey));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public async Task Get_Cached_Value_Without_Retriever_Async_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string cachekey)
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.GetAsync<string>(cachekey));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
         public void Remove_Cached_Value_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string cacheKey)
         {
             Assert.Throws<ArgumentNullException>(() => _provider.Remove(cacheKey));

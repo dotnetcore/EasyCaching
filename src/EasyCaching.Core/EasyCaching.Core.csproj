@@ -15,9 +15,9 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-logo.png</PackageIconUrl>
     <PackageReleaseNotes>
-      v0.1.1 
-      1.Change Nuget logo.
-      2.IEasyCachingSerializer Add new APIs in order to support Memcached Transcoder.
+      v0.1.1       
+      1. IEasyCachingSerializer add new APIs in order to support Memcached Transcoder.
+      2. IEasyCachingProvider add new APIs without data retriever.
 
       v0.1.0 
       1. Init.

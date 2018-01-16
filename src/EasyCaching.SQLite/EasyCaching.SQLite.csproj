@@ -16,7 +16,7 @@
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
       v0.1.1 
-      1. Change Nuget logo.      
+      1. SQLiteCachingProvider add new APIs without data retriever.       
 
       v0.1.0 
       1. Init.

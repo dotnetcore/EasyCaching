@@ -16,7 +16,8 @@
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
       v0.1.1 
-      1.Change Nuget logo.     
+      1. DefaultRedisCachingProvider add new APIs without data retriever.  
+      2. Add default binary formatter Serializer.      
 
       v0.1.0 
       1. Init.

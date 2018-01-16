@@ -15,9 +15,8 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      v0.1.1 
-      1. Change Nuget logo.      
-      2. Add SerializeObject and DeserializeObject methods.
+      v0.1.1       
+      1. Add SerializeObject and DeserializeObject methods.
 
       v0.1.0 
       1. Init.
