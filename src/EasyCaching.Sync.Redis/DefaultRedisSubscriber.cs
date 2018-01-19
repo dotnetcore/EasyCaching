@@ -35,7 +35,7 @@
         /// <summary>
         /// The local cache.
         /// </summary>
-        private readonly ILocalCachingProvider _localCache;
+        private readonly IEasyCachingProvider _localCache;
 
         /// <summary>
         /// The serialize.
@@ -50,7 +50,7 @@
         /// <param name="serialize">Serialize.</param>
         public DefaultRedisSubscriber(
             IOptions<RedisCacheOptions> options,
-            ILocalCachingProvider localCache, 
+            IEasyCachingProvider localCache, 
             IEasyCachingSerializer serialize)
         {
             this._options = options.Value;
