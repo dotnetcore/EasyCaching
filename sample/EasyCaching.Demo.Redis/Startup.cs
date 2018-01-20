@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.Demo.Redis
 {
+    using EasyCaching.Core.Internal;
     using EasyCaching.Redis;
     using EasyCaching.Serialization.MessagePack;
     using Microsoft.AspNetCore.Builder;

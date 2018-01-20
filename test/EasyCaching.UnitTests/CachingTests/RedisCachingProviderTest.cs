@@ -1,6 +1,7 @@
 namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using EasyCaching.Redis;
     using EasyCaching.Serialization.MessagePack;
     using FakeItEasy;

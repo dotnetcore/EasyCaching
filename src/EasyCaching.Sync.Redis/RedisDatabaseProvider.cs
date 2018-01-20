@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Redis
+﻿namespace EasyCaching.Sync.Redis
 {
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Options;
@@ -8,7 +8,7 @@
     /// <summary>
     /// Redis database provider.
     /// </summary>
-    public class RedisDatabaseProvider : IRedisDatabaseProvider
+    public class RedisDatabaseProvider : IRedisSubscriberProvider
     {
         /// <summary>
         /// The options.
@@ -33,9 +33,9 @@
         /// <summary>
         /// Gets the database connection.
         /// </summary>
-        public IDatabase GetDatabase()
+        public ISubscriber GetSubscriber()
         {
-            return _connectionMultiplexer.Value.GetDatabase(_options.Database);
+           return _connectionMultiplexer.Value.GetSubscriber();
         }
 
         /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Redis
+﻿namespace EasyCaching.Core.Internal
 {    
     using System.Collections.Generic;
 
