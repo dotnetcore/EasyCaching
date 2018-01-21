@@ -17,7 +17,7 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
-        void Publish(string channel, string cacheKey, object cacheValue, TimeSpan expiration);
+        void Publish<T>(string channel, string cacheKey, T cacheValue, TimeSpan expiration);
 
         /// <summary>
         /// Publishs the async.
@@ -27,6 +27,6 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
-        Task PublishAsync(string channel, string cacheKey, object cacheValue, TimeSpan expiration);
+        Task PublishAsync<T>(string channel, string cacheKey, T cacheValue, TimeSpan expiration);
     }
 }

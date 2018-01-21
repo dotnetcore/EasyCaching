@@ -1,11 +1,11 @@
 ﻿namespace EasyCaching.Core.Internal
-{    
+{
     using System.Collections.Generic;
 
     /// <summary>
-    /// Redis cache options.
+    /// Base redis options.
     /// </summary>
-    public class RedisCacheOptions
+    public class BaseRedisOptions
     {
         /// <summary>
         /// Gets or sets the password to be used to connect to the Redis server.
@@ -47,13 +47,5 @@
         /// The endpoints.
         /// </value>
         public IList<ServerEndPoint> Endpoints { get; } = new List<ServerEndPoint>();
-
-        /// <summary>
-        /// Gets or sets the Redis database index the cache will use.
-        /// </summary>
-        /// <value>
-        /// The database.
-        /// </value>
-       public int Database { get; set; } = 0;    
     }
 }

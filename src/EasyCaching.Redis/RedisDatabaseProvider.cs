@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.Redis
-{
-    using EasyCaching.Core.Internal;
+{    
     using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
