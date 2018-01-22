@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.HybridCache
-{
-    using Autofac;
+{ 
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;    
     using System;
@@ -27,13 +26,20 @@
         private IEasyCachingProvider _distributedCachingProvider;
 
         /// <summary>
+        /// The service accessor.
+        /// </summary>
+        private readonly Func<string, IEasyCachingProvider> _serviceAccessor;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
         /// </summary>
-        /// <param name="context">Context.</param>
-        public HybridCachingProvider(IComponentContext context)
+        /// <param name="serviceAccessor">Service accessor.</param>
+        public HybridCachingProvider(Func<string, IEasyCachingProvider> serviceAccessor)
         {
-            this._localCachingProvider = context.ResolveKeyed<IEasyCachingProvider>("Local");
-            this._distributedCachingProvider = context.ResolveKeyed<IEasyCachingProvider>("Distributed");
+            _serviceAccessor = serviceAccessor;
+
+            this._localCachingProvider = _serviceAccessor(HybridCachingKeyType.LocalKey);
+            this._distributedCachingProvider = _serviceAccessor(HybridCachingKeyType.DistributedKey);
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>   
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <Description>          
       EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
     </Description>
@@ -15,6 +15,9 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
+        v0.1.2
+      1. Support HybridCaching Probider.  
+
       v0.1.1       
       1. IEasyCachingSerializer add new APIs in order to support Memcached Transcoder.
       2. IEasyCachingProvider add new APIs without data retriever.

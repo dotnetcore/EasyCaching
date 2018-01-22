@@ -1,5 +1,7 @@
 ﻿namespace EasyCaching.InMemory
 {
+    using System;
+    using System.Collections.Generic;
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +22,36 @@
             ArgumentCheck.NotNull(services, nameof(services));
 
             services.TryAddSingleton<IEasyCachingProvider, InMemoryCachingProvider>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the default in memory cache for hybrid.
+        /// </summary>
+        /// <returns>The default in memory cache for hybrid.</returns>
+        /// <param name="services">Services.</param>
+        public static IServiceCollection AddDefaultInMemoryCacheForHybrid(this IServiceCollection services)
+        {
+            ArgumentCheck.NotNull(services, nameof(services));
+
+            services.TryAddSingleton<InMemoryCachingProvider>();
+
+            //services.AddSingleton(factory =>
+            //{
+            //    Func<string, IEasyCachingProvider> accesor = key =>
+            //    {
+            //        if(key.Equals(HybridCachingKeyType.LocalKey))
+            //        {
+            //            return factory.GetService<InMemoryCachingProvider>();
+            //        }     
+            //        else
+            //        {
+            //            throw new KeyNotFoundException();
+            //        }
+            //    };
+            //    return accesor;
+            //});
 
             return services;
         }
