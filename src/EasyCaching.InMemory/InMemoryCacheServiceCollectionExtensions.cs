@@ -1,7 +1,5 @@
 ﻿namespace EasyCaching.InMemory
-{
-    using System;
-    using System.Collections.Generic;
+{    
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +19,7 @@
         {
             ArgumentCheck.NotNull(services, nameof(services));
 
+            services.AddMemoryCache();
             services.TryAddSingleton<IEasyCachingProvider, InMemoryCachingProvider>();
 
             return services;
@@ -35,6 +34,7 @@
         {
             ArgumentCheck.NotNull(services, nameof(services));
 
+            services.AddMemoryCache();
             services.TryAddSingleton<InMemoryCachingProvider>();
 
             //services.AddSingleton(factory =>

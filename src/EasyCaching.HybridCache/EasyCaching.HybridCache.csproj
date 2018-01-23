@@ -8,7 +8,7 @@
     <Description>    
       EasyCaching.HybridCache contains local caching and distributed caching.           
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization</PackageTags>
+    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization,Hybrid</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
