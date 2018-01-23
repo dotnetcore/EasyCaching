@@ -251,7 +251,71 @@ public class ValuesController : Controller
 }
 ```
 
-### #3 Others
+### #3 Hybrid Caching
+
+Hybrid Caching is mainly building for combine local caching and distributed caching. It is called 2-tiers caching.
+
+#### Step 1 : Config
+
+```csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    //...
+    //1. Add local caching
+    services.AddDefaultInMemoryCacheForHybrid();
+    //2. Add distributed caching
+    services.AddDefaultRedisCacheForHybrid(option =>
+    {
+        option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+        option.Password = "";
+    });
+    //3. Add hybrid caching
+    services.AddDefaultHybridCache();
+    //4. Important step for different impls of only one interface .
+    services.AddSingleton(factory =>
+    {
+        Func<string, IEasyCachingProvider> accesor = key =>
+        {
+            if(key.Equals(HybridCachingKeyType.LocalKey))
+            {
+                return factory.GetService<InMemoryCachingProvider>();
+            }
+            else if(key.Equals(HybridCachingKeyType.DistributedKey))
+            {
+                return factory.GetService<DefaultRedisCachingProvider>();
+            }
+            else
+            {
+                throw new KeyNotFoundException();
+            }
+        };
+        return accesor;
+    });
+}
+```
+
+#### Step 2: Use
+
+```csharp
+[Route("api/[controller]")]
+public class ValuesController : Controller
+{
+    private readonly IHybridCachingProvider _provider;
+
+    public ValuesController(IHybridCachingProvider provider)
+    {
+        this._provider = provider;
+    }
+    
+    [HttpGet]    
+    public string Get()
+    {
+        _provider.xxx();
+    }
+}
+```
+
+### #4 Others
 
 coming soon !
 
@@ -261,9 +325,38 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 
 ## Todo List
 
-- [ ] More convenient caching APIs in IEasyCachingProvider 
-- [ ] Implement a simple configuration system in order to replace **Microsoft.Extensions.Options**
-- [ ] AOP Caching
-- [ ] Synchronization betweent Multi-Level(Local and Distributed) 
-- [ ] Others
+### Caching Providers
+
+- [x] Memory
+- [x] Redis
+- [x] SQLite
+- [x] Memcached
+- [x] Hybrid(Combine local caching and distributed caching)
+
+### Basic Caching API
+
+- [x] Get/GetAsync(with data retriever)
+- [x] Get/GetAsync(without data retriever)
+- [x] Set/SetAsync
+- [x] Remove/RemoveAsync
+- [ ] Refresh/RefreshAsync
+
+### Serializer Extensions 
+
+- [x] BinaryFormatter
+- [x] MessagePack
+
+### Caching Interceptor
+
+- [x] AspectCore
+- [x] Castle
+
+
+### Others
+
+- [ ] Configuration
+- [ ] Bus
+- [ ] Caching Region
+- [ ] ...
+
 
