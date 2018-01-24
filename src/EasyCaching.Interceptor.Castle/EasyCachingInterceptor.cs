@@ -70,7 +70,7 @@
         {
             var cacheKey = GenerateCacheKey(invocation);
 
-            var cacheValue = _cacheProvider.Get<object>(cacheKey, null , TimeSpan.FromSeconds(attribute.Expiration));
+            var cacheValue = _cacheProvider.Get<object>(cacheKey);
 
             if(cacheValue.HasValue)
             {

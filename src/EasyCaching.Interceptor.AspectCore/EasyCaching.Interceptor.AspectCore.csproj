@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.0</Version>
+    <Version>0.1.1</Version>
     <Description>      
       Caching Interceptor based on EasyCaching.Core and AspectCore
     </Description>
@@ -15,7 +15,10 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      v 0.1.0 
+        v0.1.1
+      Get caching with data retriever => without data retriever .
+
+      v0.1.0 
       Init.
     </PackageReleaseNotes>
   </PropertyGroup>
