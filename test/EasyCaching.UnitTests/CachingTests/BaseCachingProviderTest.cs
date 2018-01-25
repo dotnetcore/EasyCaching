@@ -245,6 +245,113 @@
             Assert.False(flag);
         }
 
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public void Refresh_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string cacheKey)
+        {
+            var cacheVlaue = "value";
+            Assert.Throws<ArgumentNullException>(() => _provider.Set(cacheKey, cacheVlaue, _defaultTs));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public async Task Refresh_Async_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string cacheKey)
+        {
+            var cacheVlaue = "value";
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, _defaultTs));
+        }
+
+        [Fact]
+        public void Refresh_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            string cacheVlaue = null;
+            Assert.Throws<ArgumentNullException>(() => _provider.Set(cacheKey, cacheVlaue, _defaultTs));
+        }
+
+        [Fact]
+        public async Task Refresh_Async_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            string cacheVlaue = null;
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, _defaultTs));
+        }
+
+        [Fact]
+        public void Refresh_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            string cacheVlaue = "123";
+            var expiration = TimeSpan.Zero;
+            Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
+        }
+
+        [Fact]
+        public async Task Refresh_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            string cacheVlaue = "123";
+            var expiration = TimeSpan.Zero;
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
+        }
+
+        [Fact]
+        public void Refresh_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            string cacheVlaue = "123";
+            var expiration = new TimeSpan(0, 0, -1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
+        }
+
+        [Fact]
+        public async Task Refresh_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            string cacheVlaue = "123";
+            var expiration = new TimeSpan(0, 0, -1);
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
+        }
+
+        [Fact]
+        public void Refresh_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = _provider.Get<string>(cacheKey);
+            Assert.Equal("value", tmp.Value);
+
+            _provider.Refresh(cacheKey, "NewValue", _defaultTs);
+
+            var act = _provider.Get<string>(cacheKey);
+
+            Assert.Equal("NewValue", act.Value);
+        }
+
+        [Fact]
+        public async Task Refresh_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = await _provider.GetAsync<string>(cacheKey);
+            Assert.Equal("value", tmp.Value);
+
+            await _provider.RefreshAsync(cacheKey, "NewValue", _defaultTs);
+
+            var act = await _provider.GetAsync<string>(cacheKey);
+
+            Assert.Equal("NewValue", act.Value);
+        }
+
         protected Func<string> Create_Fake_Retriever_Return_String()
         {
             var func = A.Fake<Func<string>>();

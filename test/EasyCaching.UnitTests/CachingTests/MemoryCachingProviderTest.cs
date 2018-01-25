@@ -161,18 +161,5 @@ namespace EasyCaching.UnitTests
             var valAfterRemove = await _provider.GetAsync<string>(cacheKey, async () => await Task.FromResult("123"), _defaultTs);
             Assert.Equal("123", valAfterRemove.Value);
         }
-
-        [Fact]
-        public void AddDefaultInMemoryCache_Should_Get_InMemoryCachingProvider()
-        {
-            IServiceCollection services = new ServiceCollection();
-            services.AddDefaultInMemoryCache();
-            services.AddMemoryCache();
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            
-            var cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
-
-            Assert.IsType<InMemoryCachingProvider>(cachingProvider);
-        }
     }
 }

@@ -212,5 +212,40 @@
 
             return await Task.Run(() => { return _cache.TryGetValue(cacheKey, out object value); });
         }
+
+        /// <summary>
+        /// Refresh the specified cacheKey, cacheValue and expiration.
+        /// </summary>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            this.Remove(cacheKey);
+            this.Set(cacheKey, cacheValue, expiration);
+        }
+
+        /// <summary>
+        /// Refreshs the specified cacheKey, cacheValue and expiration.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            await this.RemoveAsync(cacheKey);
+            await this.SetAsync(cacheKey, cacheValue, expiration);
+        }
     }
 }

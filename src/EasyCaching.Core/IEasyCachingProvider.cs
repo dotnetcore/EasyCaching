@@ -79,16 +79,15 @@
         Task RemoveAsync(string cacheKey);
 
         /// <summary>
-        /// Exists the specified cacheKey.
+        /// Whether the cached value contains the specified cacheKey.
         /// </summary>
         /// <returns>The exists.</returns>
         /// <param name="cacheKey">Cache key.</param>
         bool Exists(string cacheKey);
 
         /// <summary>
-        /// Existses the specified cacheKey async.
+        /// Whether the cached value contains the specified cacheKey async.
         /// </summary>
-        /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         Task<bool> ExistsAsync(string cacheKey);
 
@@ -97,5 +96,23 @@
         /// </summary>
         /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
         bool IsDistributedCache { get; }
+
+        /// <summary>
+        /// Refresh the cached value by specified cacheKey, cacheValue and expiration.
+        /// </summary>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+
+        /// <summary>
+        /// Refresh the cached value by specified cacheKey, cacheValue and expiration async.
+        /// </summary>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
     }
 }

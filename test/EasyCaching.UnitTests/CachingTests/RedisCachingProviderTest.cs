@@ -245,26 +245,6 @@ namespace EasyCaching.UnitTests
             var valAfterRemove = await _provider.GetAsync(cacheKey,async () => await Task.FromResult("123"), _defaultTs);
             Assert.Equal("123", valAfterRemove.Value);
         }
-
-        [Fact]
-        public void AddDefaultRedisCache_Should_Get_RedisDatabaseProvider()
-        {
-            IServiceCollection services = new ServiceCollection();
-            services.AddDefaultMessagePackSerializer();
-            services.AddDefaultRedisCache(option=>
-            {                
-                option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-                option.Password = "";                                                  
-            });            
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            
-            var serializer = serviceProvider.GetService<IEasyCachingSerializer>();
-            var dbProvider = serviceProvider.GetService<IRedisDatabaseProvider>();
-            var cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
-
-            Assert.IsType<DefaultMessagePackSerializer>(serializer);
-            Assert.IsType<RedisDatabaseProvider>(dbProvider);
-            Assert.IsType<DefaultRedisCachingProvider>(cachingProvider);
-        }
+             
     }
 }
