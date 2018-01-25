@@ -25,10 +25,12 @@ build:
   parallel: true
   verbosity: minimal
   
+#test_script:
+#- cmd: >-
+#    dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
 test_script:
-- cmd: >-
-    dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
-    
+  - echo This is my custom test script
+      
 after_test:
 - cmd: >-
     nuget install coveralls.net -Version 0.7.0 -OutputDirectory tools
