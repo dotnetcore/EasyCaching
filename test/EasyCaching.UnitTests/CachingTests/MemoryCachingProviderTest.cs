@@ -161,5 +161,39 @@ namespace EasyCaching.UnitTests
             var valAfterRemove = await _provider.GetAsync<string>(cacheKey, async () => await Task.FromResult("123"), _defaultTs);
             Assert.Equal("123", valAfterRemove.Value);
         }
+
+        [Fact]
+        public void Refresh_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = _provider.Get<string>(cacheKey);
+            Assert.Equal("value", tmp.Value);
+
+            _provider.Refresh(cacheKey, "NewValue", _defaultTs);
+
+            var act = _provider.Get<string>(cacheKey);
+
+            Assert.Equal("NewValue", act.Value);
+        }
+
+        [Fact]
+        public async Task Refresh_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = await _provider.GetAsync<string>(cacheKey);
+            Assert.Equal("value", tmp.Value);
+
+            await _provider.RefreshAsync(cacheKey, "NewValue", _defaultTs);
+
+            var act = await _provider.GetAsync<string>(cacheKey);
+
+            Assert.Equal("NewValue", act.Value);
+        }
     }
 }
