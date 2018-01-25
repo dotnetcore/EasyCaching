@@ -251,12 +251,22 @@ namespace EasyCaching.UnitTests
         {
             var cacheKey = Guid.NewGuid().ToString();
             var cacheValue = "value";
+            var cacheBytes = new byte[] { 0x01 };
+
+            A.CallTo(() => _serializer.Serialize(cacheValue)).Returns(cacheBytes);
+            A.CallTo(() => _serializer.Deserialize<string>(A<byte[]>.Ignored)).Returns(cacheValue);
+
             _provider.Set(cacheKey, cacheValue, _defaultTs);
 
             var tmp = _provider.Get<string>(cacheKey);
             Assert.Equal("value", tmp.Value);
 
-            _provider.Refresh(cacheKey, "NewValue", _defaultTs);
+            var newValue = "NewValue";
+
+            A.CallTo(() => _serializer.Serialize(cacheValue)).Returns(cacheBytes);
+            A.CallTo(() => _serializer.Deserialize<string>(A<byte[]>.Ignored)).Returns(newValue);
+
+            _provider.Refresh(cacheKey, newValue, _defaultTs);
 
             var act = _provider.Get<string>(cacheKey);
 
