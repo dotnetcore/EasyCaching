@@ -4,14 +4,7 @@
     /// Defines an endpoint.
     /// </summary>
     public class ServerEndPoint
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.ServerEndPoint"/> class.
-        /// </summary>
-        public ServerEndPoint()
-        {
-        }
-
+    {     
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.ServerEndPoint"/> class.
         /// </summary>

@@ -1,21 +1,18 @@
 ﻿namespace EasyCaching.Interceptor.AspectCore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Text;
-    using System.Threading.Tasks;   
-    using EasyCaching.Core.Internal;
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using global::AspectCore.DynamicProxy;
     using global::AspectCore.Injector;
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Easy caching interceptor.
     /// </summary>
     public class EasyCachingInterceptor : AbstractInterceptor
-    {           
+    {
         /// <summary>
         /// Gets or sets the cache provider.
         /// </summary>
@@ -24,9 +21,11 @@
         public IEasyCachingProvider CacheProvider { get; set; }
 
         /// <summary>
-        /// The link char of cache key.
+        /// Gets or sets the key generator.
         /// </summary>
-        private char _linkChar = ':';
+        /// <value>The key generator.</value>
+        [FromContainer]
+        public IEasyCachingKeyGenerator KeyGenerator { get; set; }
 
         /// <summary>
         /// Invoke the specified context and next.
@@ -36,123 +35,87 @@
         /// <param name="next">Next.</param>
         public async override Task Invoke(AspectContext context, AspectDelegate next)
         {
-            var interceptorAttribute = GetInterceptorAttributeInfo(context.ServiceMethod);
-            if (interceptorAttribute != null)
+            //Process any early evictions 
+            await ProcessEvictAsync(context, true);
+
+            //Process any cache interceptor 
+            await ProceedAbleAsync(context, next);
+
+            // Process any put requests
+            await ProcessPutAsync(context);
+
+            // Process any late evictions
+            await ProcessEvictAsync(context, false);
+        }
+
+        /// <summary>
+        /// Proceeds the able async.
+        /// </summary>
+        /// <returns>The able async.</returns>
+        /// <param name="context">Context.</param>
+        /// <param name="next">Next.</param>
+        private async Task ProceedAbleAsync(AspectContext context, AspectDelegate next)
+        {
+            var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) as EasyCachingAbleAttribute;
+
+            if (attribute != null)
             {
-                await ProceedCaching(context, next, interceptorAttribute);
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, attribute.CacheKeyPrefix);
+                var cacheValue = await CacheProvider.GetAsync<object>(cacheKey);
+
+                if (cacheValue.HasValue)
+                {
+                    context.ReturnValue = cacheValue.Value;
+                }
+                else
+                {
+                    // Invoke the method if we don't have a cache hit
+                    await next(context);
+
+                    if (!string.IsNullOrWhiteSpace(cacheKey))
+                        await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                }
             }
             else
             {
+                // Invoke the method if we don't have EasyCachingAbleAttribute
                 await next(context);
             }
         }
 
         /// <summary>
-        /// Gets the QC aching attribute info.
+        /// Processes the put async.
         /// </summary>
-        /// <returns>The QC aching attribute info.</returns>
-        /// <param name="method">Method.</param>
-        private EasyCachingInterceptorAttribute GetInterceptorAttributeInfo(MethodInfo method)
-        {
-            return method.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingInterceptorAttribute)) as EasyCachingInterceptorAttribute;
-        }
-
-        /// <summary>
-        /// Proceeds the caching.
-        /// </summary>
-        /// <returns>The caching.</returns>
+        /// <returns>The put async.</returns>
         /// <param name="context">Context.</param>
-        /// <param name="next">Next.</param>
-        /// <param name="attribute">Attribute.</param>
-        private async Task ProceedCaching(AspectContext context, AspectDelegate next, EasyCachingInterceptorAttribute attribute)
+        private async Task ProcessPutAsync(AspectContext context)
         {
-            var cacheKey = GenerateCacheKey(context, attribute.ParamCount);
+            var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) as EasyCachingPutAttribute;
 
-            var cacheValue = CacheProvider.Get<object>(cacheKey);
-
-            if (cacheValue.HasValue)
+            if (attribute != null)
             {
-                context.ReturnValue = cacheValue.Value;
-                return;
-            }
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, attribute.CacheKeyPrefix);
 
-            await next(context);
-
-            if (!string.IsNullOrWhiteSpace(cacheKey))
-            {
-                CacheProvider.Set(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
             }
         }
 
         /// <summary>
-        /// Generates the cache key.
+        /// Processes the evict async.
         /// </summary>
-        /// <returns>The cache key.</returns>
+        /// <returns>The evict async.</returns>
         /// <param name="context">Context.</param>
-        /// <param name="paramCount">Parameter count.</param>
-        private string GenerateCacheKey(AspectContext context, int paramCount)
+        /// <param name="isBefore">If set to <c>true</c> is before.</param>
+        private async Task ProcessEvictAsync(AspectContext context, bool isBefore)
         {
-            var typeName = context.ServiceMethod.DeclaringType.Name;
-            var methodName = context.ServiceMethod.Name;
-            var methodArguments = this.FormatArgumentsToPartOfCacheKey(context.ServiceMethod.GetParameters(), paramCount);
+            var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) as EasyCachingEvictAttribute;
 
-            return this.GenerateCacheKey(typeName, methodName, methodArguments);
-        }
-
-        /// <summary>
-        /// Generates the cache key.
-        /// </summary>
-        /// <returns>The cache key.</returns>
-        /// <param name="typeName">Type name.</param>
-        /// <param name="methodName">Method name.</param>
-        /// <param name="parameters">Parameters.</param>
-        private string GenerateCacheKey(string typeName, string methodName, IList<string> parameters)
-        {
-            var builder = new StringBuilder();
-
-            builder.Append(typeName);
-            builder.Append(_linkChar);
-
-            builder.Append(methodName);
-            builder.Append(_linkChar);
-
-            foreach (var param in parameters)
+            if (attribute != null && attribute.IsBefore == isBefore)
             {
-                builder.Append(param);
-                builder.Append(_linkChar);
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, attribute.CacheKeyPrefix);
+
+                await CacheProvider.RemoveAsync(cacheKey);
             }
-
-            return builder.ToString().TrimEnd(_linkChar);
-        }
-
-        /// <summary>
-        /// Formats the arguments to part of cache key.
-        /// </summary>
-        /// <returns>The arguments to part of cache key.</returns>
-        /// <param name="methodArguments">Method arguments.</param>
-        /// <param name="paramCount">Max parameter count.</param>
-        private IList<string> FormatArgumentsToPartOfCacheKey(IList<ParameterInfo> methodArguments, int paramCount = 5)
-        {
-            return methodArguments.Select(this.GetArgumentValue).Take(paramCount).ToList();
-        }
-
-        /// <summary>
-        /// Gets the argument value.
-        /// </summary>
-        /// <returns>The argument value.</returns>
-        /// <param name="arg">Argument.</param>
-        private string GetArgumentValue(object arg)
-        {
-            if (arg is int || arg is long || arg is string)
-                return arg.ToString();
-
-            if (arg is DateTime)
-                return ((DateTime)arg).ToString("yyyyMMddHHmmss");
-
-            if (arg is ICachable)
-                return ((ICachable)arg).CacheKey;
-
-            return null;
         }
     }
 }

@@ -8,11 +8,21 @@ namespace EasyCaching.UnitTests.Infrastructure
         string GetCurrentUTC();
 
         long GetCurrentUTCTick();
+
+        string PutTest(int num);
+
+        string EvictTest();
     }
 
     public class CastleExampleService : ICastleExampleService, IEasyCaching
     {
-        [EasyCachingInterceptor(Expiration = 1)]
+        [EasyCachingEvict(CacheKeyPrefix = "CastleExample")]
+        public string EvictTest()
+        {
+            return "EvictTest";
+        }
+
+        [EasyCachingAble(Expiration = 1)]
         public string GetCurrentUTC()
         {
             return DateTime.UtcNow.ToString();
@@ -21,19 +31,36 @@ namespace EasyCaching.UnitTests.Infrastructure
         public long GetCurrentUTCTick()
         {
             return DateTime.UtcNow.Ticks;
+        }
+
+        [EasyCachingPut(CacheKeyPrefix = "CastleExample")]
+        public string PutTest(int num)
+        {
+            return $"PutTest-{num}";
         }
     }
 
     public interface IAspectCoreExampleService : IEasyCaching
     {
-        [EasyCachingInterceptor(Expiration = 1)]
+        [EasyCachingAble(Expiration = 1)]
         string GetCurrentUTC();
 
         long GetCurrentUTCTick();
+
+        [EasyCachingEvict(CacheKeyPrefix = "AspectCoreExample")]
+        string EvictTest();
+
+        [EasyCachingPut(CacheKeyPrefix = "AspectCoreExample")]
+        string PutTest(int num);
     }
 
     public class AspectCoreExampleService : IAspectCoreExampleService
     {
+        public string EvictTest()
+        {
+            return "EvictTest";
+        }
+
         public string GetCurrentUTC()
         {
             return DateTime.UtcNow.ToString();
@@ -42,6 +69,11 @@ namespace EasyCaching.UnitTests.Infrastructure
         public long GetCurrentUTCTick()
         {
             return DateTime.UtcNow.Ticks;
+        }
+
+        public string PutTest(int num)
+        {
+            return $"PutTest-{num}";
         }
     }
 }

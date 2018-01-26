@@ -3,6 +3,7 @@
     using global::AspectCore.Configuration;
     using global::AspectCore.Extensions.DependencyInjection;
     using global::AspectCore.Injector;
+    using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using System;
@@ -19,6 +20,8 @@
         /// <param name="services">Services.</param>
         public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services)
         {
+
+            services.AddSingleton<IEasyCachingKeyGenerator,DefaultEasyCachingKeyGenerator>();
             var container = services.ToServiceContainer();
 
             container.Configure(config =>

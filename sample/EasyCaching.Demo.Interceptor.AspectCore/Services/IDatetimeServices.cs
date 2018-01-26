@@ -4,7 +4,7 @@
     
     public interface IDateTimeService : EasyCaching.Core.Internal.IEasyCaching
     {
-        [EasyCachingInterceptor(Expiration = 10)]
+        [EasyCachingAble(Expiration = 10)]
         string GetCurrentUtcTime();
     }
 

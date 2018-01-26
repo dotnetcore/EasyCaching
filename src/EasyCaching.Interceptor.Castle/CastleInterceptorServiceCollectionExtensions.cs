@@ -3,6 +3,7 @@
     using Autofac;
     using Autofac.Extensions.DependencyInjection;
     using Autofac.Extras.DynamicProxy;
+    using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using System;
@@ -20,6 +21,8 @@
         /// <param name="services">Services.</param>
         public static IServiceProvider ConfigureCastleInterceptor(this IServiceCollection services)
         {
+            services.AddSingleton<IEasyCachingKeyGenerator, DefaultEasyCachingKeyGenerator>();
+
             var builder = new ContainerBuilder();
             builder.Populate(services);
 

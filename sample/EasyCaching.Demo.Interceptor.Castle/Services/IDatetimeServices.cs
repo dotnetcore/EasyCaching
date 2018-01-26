@@ -9,7 +9,7 @@
 
     public class DateTimeService : IDateTimeService ,  IEasyCaching
     {        
-        [EasyCachingInterceptor(Expiration = 10)]
+        [EasyCachingAble(Expiration = 10)]
         public string GetCurrentUtcTime()
         {
             return System.DateTime.UtcNow.ToString();

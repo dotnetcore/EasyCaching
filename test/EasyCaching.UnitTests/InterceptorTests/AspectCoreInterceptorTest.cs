@@ -1,5 +1,5 @@
 namespace EasyCaching.UnitTests
-{    
+{
     using EasyCaching.Core;
     using EasyCaching.InMemory;
     using EasyCaching.Interceptor.AspectCore;
@@ -15,16 +15,18 @@ namespace EasyCaching.UnitTests
 
         private readonly IAspectCoreExampleService _service;
 
+        private readonly IEasyCachingKeyGenerator _keyGenerator;
+
         public AspectCoreInterceptorTest()
         {
-            IServiceCollection services = new  ServiceCollection();
-            services.AddTransient<IAspectCoreExampleService,AspectCoreExampleService>();            
-            services.AddMemoryCache();
+            IServiceCollection services = new ServiceCollection();
+            services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
             services.AddDefaultInMemoryCache();
             IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor();
-            
+
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
-            _service = serviceProvider.GetService<IAspectCoreExampleService>();            
+            _service = serviceProvider.GetService<IAspectCoreExampleService>();
+            _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
         }
 
         [Fact]
@@ -63,5 +65,42 @@ namespace EasyCaching.UnitTests
 
             Assert.NotEqual(tick1, tick2);
         }
+
+        [Fact]
+        public void Put_Should_Succeed()
+        {
+            var str = _service.PutTest(1);
+
+            System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("PutTest");
+
+            var key = _keyGenerator.GetCacheKey(method, "AspectCoreExample");
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.True(value.HasValue);
+            Assert.Equal("PutTest-1", value.Value);
+        }
+
+        [Fact]
+        public void Evict_Should_Succeed()
+        {
+            System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("EvictTest");
+
+            var key = _keyGenerator.GetCacheKey(method, "AspectCoreExample");
+
+            _cachingProvider.Set(key, "AAA", TimeSpan.FromSeconds(30));
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.Equal("AAA", value.Value);
+
+
+            _service.EvictTest();
+
+            var after = _cachingProvider.Get<string>(key);
+
+            Assert.False(after.HasValue);
+        }
+
     }
 }

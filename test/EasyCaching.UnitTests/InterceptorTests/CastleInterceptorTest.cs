@@ -7,9 +7,7 @@ namespace EasyCaching.UnitTests
     using System;
     using System.Threading;
     using Xunit;
-    using Autofac;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Caching.Memory;
     using EasyCaching.Core;
 
     public class CastleInterceptorTest
@@ -18,16 +16,18 @@ namespace EasyCaching.UnitTests
 
         private readonly ICastleExampleService _service;
 
+        private readonly IEasyCachingKeyGenerator _keyGenerator;
+
         public CastleInterceptorTest()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<ICastleExampleService, CastleExampleService>();
-            services.AddMemoryCache();
             services.AddDefaultInMemoryCache();
             IServiceProvider serviceProvider = services.ConfigureCastleInterceptor();
 
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
             _service = serviceProvider.GetService<ICastleExampleService>();
+            _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
         }
 
         [Fact]
@@ -65,6 +65,43 @@ namespace EasyCaching.UnitTests
             var tick2 = _service.GetCurrentUTCTick();
 
             Assert.NotEqual(tick1, tick2);
+        }
+
+
+        [Fact]
+        public void Put_Should_Succeed()
+        {
+            var str = _service.PutTest(1);
+
+            System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("PutTest");
+
+            var key = _keyGenerator.GetCacheKey(method, "CastleExample");
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.True(value.HasValue);
+            Assert.Equal("PutTest-1", value.Value);
+        }
+
+        [Fact]
+        public void Evict_Should_Succeed()
+        {
+            System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("EvictTest");
+
+            var key = _keyGenerator.GetCacheKey(method, "CastleExample");
+
+            _cachingProvider.Set(key, "AAA", TimeSpan.FromSeconds(30));
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.Equal("AAA", value.Value);
+
+
+            _service.EvictTest();
+
+            var after = _cachingProvider.Get<string>(key);
+
+            Assert.False(after.HasValue);
         }
     }
 }
