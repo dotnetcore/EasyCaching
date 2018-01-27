@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-
-namespace EasyCaching.Demo.Interceptor.Castle.Controllers
+﻿namespace EasyCaching.Demo.Interceptor.Castle.Controllers
 {
+    using Microsoft.AspNetCore.Mvc;
+
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
@@ -17,9 +13,25 @@ namespace EasyCaching.Demo.Interceptor.Castle.Controllers
         }
 
         [HttpGet]
-        public string Get()
+        public string Get(int type = 1)
         {
-            return _service.GetCurrentUtcTime();
+            if (type == 1)
+            {
+                return _service.GetCurrentUtcTime();
+            }
+            else if (type == 2)
+            {
+                _service.DeleteSomething(1);
+                return "ok";
+            }
+            else if (type == 3)
+            {
+                return _service.PutSomething("123");
+            }
+            else
+            {
+                return "wait";
+            }
         }
     }
 }

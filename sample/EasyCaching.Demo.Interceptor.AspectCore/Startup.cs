@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.Demo.Interceptor.AspectCore
 {
-    using System;
     using EasyCaching.Demo.Interceptor.AspectCore.Services;
     using EasyCaching.InMemory;
     using EasyCaching.Interceptor.AspectCore;
@@ -8,6 +7,7 @@
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using System;
 
     public class Startup
     {
