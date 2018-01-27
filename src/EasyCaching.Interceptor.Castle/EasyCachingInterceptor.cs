@@ -64,7 +64,7 @@
 
             if (attribute != null)
             {
-                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, attribute.CacheKeyPrefix);
+                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
                 var cacheValue = _cacheProvider.Get<object>(cacheKey);
 
@@ -100,7 +100,7 @@
 
             if (attribute != null)
             {
-                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, attribute.CacheKeyPrefix);
+                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
                 _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
             }
@@ -119,7 +119,7 @@
 
             if (attribute != null && attribute.IsBefore == isBefore)
             {
-                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, attribute.CacheKeyPrefix);
+                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
                 _cacheProvider.Remove(cacheKey);
             }

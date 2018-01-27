@@ -9,7 +9,7 @@ namespace EasyCaching.UnitTests.Infrastructure
 
         long GetCurrentUTCTick();
 
-        string PutTest(int num);
+        string PutTest(int num,string str = "123");
 
         string EvictTest();
     }
@@ -34,7 +34,7 @@ namespace EasyCaching.UnitTests.Infrastructure
         }
 
         [EasyCachingPut(CacheKeyPrefix = "CastleExample")]
-        public string PutTest(int num)
+        public string PutTest(int num, string str)
         {
             return $"PutTest-{num}";
         }
@@ -51,7 +51,7 @@ namespace EasyCaching.UnitTests.Infrastructure
         string EvictTest();
 
         [EasyCachingPut(CacheKeyPrefix = "AspectCoreExample")]
-        string PutTest(int num);
+        string PutTest(int num , string str="123");
     }
 
     public class AspectCoreExampleService : IAspectCoreExampleService
@@ -71,7 +71,7 @@ namespace EasyCaching.UnitTests.Infrastructure
             return DateTime.UtcNow.Ticks;
         }
 
-        public string PutTest(int num)
+        public string PutTest(int num , string str)
         {
             return $"PutTest-{num}";
         }

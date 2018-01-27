@@ -73,7 +73,7 @@ namespace EasyCaching.UnitTests
 
             System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("PutTest");
 
-            var key = _keyGenerator.GetCacheKey(method, "AspectCoreExample");
+            var key = _keyGenerator.GetCacheKey(method, new object[] { 1, "123" }, "AspectCoreExample");
 
             var value = _cachingProvider.Get<string>(key);
 
@@ -86,7 +86,7 @@ namespace EasyCaching.UnitTests
         {
             System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("EvictTest");
 
-            var key = _keyGenerator.GetCacheKey(method, "AspectCoreExample");
+            var key = _keyGenerator.GetCacheKey(method, null, "AspectCoreExample");
 
             _cachingProvider.Set(key, "AAA", TimeSpan.FromSeconds(30));
 

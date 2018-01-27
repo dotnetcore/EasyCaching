@@ -75,7 +75,7 @@ namespace EasyCaching.UnitTests
 
             System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("PutTest");
 
-            var key = _keyGenerator.GetCacheKey(method, "CastleExample");
+            var key = _keyGenerator.GetCacheKey(method, new object[]{1,"123" } ,"CastleExample");
 
             var value = _cachingProvider.Get<string>(key);
 
@@ -88,7 +88,7 @@ namespace EasyCaching.UnitTests
         {
             System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("EvictTest");
 
-            var key = _keyGenerator.GetCacheKey(method, "CastleExample");
+            var key = _keyGenerator.GetCacheKey(method, null, "CastleExample");
 
             _cachingProvider.Set(key, "AAA", TimeSpan.FromSeconds(30));
 

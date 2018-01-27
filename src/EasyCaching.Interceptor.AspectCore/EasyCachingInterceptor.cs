@@ -60,7 +60,7 @@
 
             if (attribute != null)
             {
-                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, attribute.CacheKeyPrefix);
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
                 var cacheValue = await CacheProvider.GetAsync<object>(cacheKey);
 
                 if (cacheValue.HasValue)
@@ -94,7 +94,7 @@
 
             if (attribute != null)
             {
-                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, attribute.CacheKeyPrefix);
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters,attribute.CacheKeyPrefix);
 
                 await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
             }
@@ -112,7 +112,7 @@
 
             if (attribute != null && attribute.IsBefore == isBefore)
             {
-                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, attribute.CacheKeyPrefix);
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
                 await CacheProvider.RemoveAsync(cacheKey);
             }

@@ -13,7 +13,8 @@
         /// </summary>
         /// <returns>The cache key.</returns>
         /// <param name="methodInfo">Method info.</param>
+        /// <param name="args">Arguments.</param>
         /// <param name="prefix">Prefix.</param>
-        string GetCacheKey(MethodInfo methodInfo, string prefix);
+        string GetCacheKey(MethodInfo methodInfo, object[] args, string prefix);
     }
 }

@@ -23,21 +23,22 @@
         /// </summary>
         /// <returns>The cache key.</returns>
         /// <param name="methodInfo">Method info.</param>
+        /// <param name="args">Arguments.</param>
         /// <param name="prefix">Prefix.</param>
-        public string GetCacheKey(MethodInfo methodInfo, string prefix)
+        public string GetCacheKey(MethodInfo methodInfo, object[] args, string prefix)
         {
             if(string.IsNullOrWhiteSpace(prefix))
             {
                 var typeName = methodInfo.DeclaringType.Name;
                 var methodName = methodInfo.Name;
 
-                var methodArguments = this.FormatArgumentsToPartOfCacheKey(methodInfo.GetParameters());
+                var methodArguments = this.FormatArgumentsToPartOfCacheKey(args);
 
                 return this.GenerateCacheKey(typeName, methodName, methodArguments);
             }
             else
-            {
-                var methodArguments = this.FormatArgumentsToPartOfCacheKey(methodInfo.GetParameters());
+            {                
+                var methodArguments = this.FormatArgumentsToPartOfCacheKey(args);
 
                 return this.GenerateCacheKey(string.Empty, prefix, methodArguments);
             }
@@ -48,9 +49,16 @@
         /// </summary>
         /// <returns>The arguments to part of cache key.</returns>
         /// <param name="methodArguments">Method arguments.</param>
-        private IList<string> FormatArgumentsToPartOfCacheKey(IList<ParameterInfo> methodArguments)
+        private IList<string> FormatArgumentsToPartOfCacheKey(object[] methodArguments)
         {
-            return methodArguments.Select(this.GetArgumentValue).ToList();
+            if(methodArguments!=null && methodArguments.Length > 0)
+            {
+                return methodArguments.Select(this.GetArgumentValue).ToList();    
+            }
+            else
+            {
+                return new List<string> { "0" };
+            }
         }
 
         /// <summary>
@@ -76,7 +84,7 @@
                 builder.Append(_linkChar);
             }
 
-            var str = builder.ToString().TrimEnd(_linkChar);
+            var str = builder.ToString().TrimStart(_linkChar).TrimEnd(_linkChar);
 
             using (SHA1 sha1 = SHA1.Create())
             {
