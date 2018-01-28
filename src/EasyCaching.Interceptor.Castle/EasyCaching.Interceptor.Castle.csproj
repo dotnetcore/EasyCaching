@@ -16,7 +16,8 @@
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
        v0.1.1
-      Get caching with data retriever => without data retriever .
+      1. Get caching with data retriever => without data retriever .
+      2. Introduct Able , Put And Evict.
 
       v 0.1.0 
       Init.

@@ -6,7 +6,7 @@
     <Authors>Catcher Wong</Authors>    
     <Version>0.1.0</Version>
     <Description>    
-      EasyCaching.HybridCache contains local caching and distributed caching.           
+      EasyCaching.HybridCache combines local caching and distributed caching.           
     </Description>
     <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization,Hybrid</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>

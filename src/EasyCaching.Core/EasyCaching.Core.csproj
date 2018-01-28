@@ -8,7 +8,7 @@
     <Description>          
       EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization</PackageTags>
+    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization,Hybrid</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
@@ -16,7 +16,9 @@
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
         v0.1.2
-      1. Support HybridCaching Probider.  
+      1. Support HybridCaching Probider. 
+      2. Add KeyGenerator. 
+      3. Introduct Able , Put And Evict Attribute.
 
       v0.1.1       
       1. IEasyCachingSerializer add new APIs in order to support Memcached Transcoder.

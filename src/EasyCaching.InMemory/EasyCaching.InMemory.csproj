@@ -17,6 +17,7 @@
     <PackageReleaseNotes>
         v0.1.2
       1. Support HybridCaching Probider.
+      2. Introduce Refresh(Async) method to handle cached value.
 
       v0.1.1 
       1. InMemoryCachingProvider add new APIs without data retriever.      
