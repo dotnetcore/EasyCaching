@@ -1,8 +1,11 @@
 ﻿namespace EasyCaching.Redis
-{    
+{
     using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
 
     /// <summary>
     /// Redis database provider.
@@ -38,6 +41,20 @@
         }
 
         /// <summary>
+        /// Gets the server list.
+        /// </summary>
+        /// <returns>The server list.</returns>
+        public IEnumerable<IServer> GetServerList()
+        {
+            var endpoints = GetMastersServersEndpoints();
+
+            foreach (var endpoint in endpoints)
+            {
+                yield return _connectionMultiplexer.Value.GetServer(endpoint);
+            }
+        }
+
+        /// <summary>
         /// Creates the connection multiplexer.
         /// </summary>
         /// <returns>The connection multiplexer.</returns>
@@ -57,6 +74,34 @@
             }
 
             return ConnectionMultiplexer.Connect(configurationOptions.ToString());
+        }
+
+        /// <summary>
+        /// Gets the masters servers endpoints.
+        /// </summary>
+        private List<EndPoint> GetMastersServersEndpoints()
+        {
+            var masters = new List<EndPoint>();
+            foreach (var ep in _connectionMultiplexer.Value.GetEndPoints())
+            {
+                var server = _connectionMultiplexer.Value.GetServer(ep);
+                if (server.IsConnected)
+                {
+                    //Cluster
+                    if (server.ServerType == ServerType.Cluster)
+                    {
+                        masters.AddRange(server.ClusterConfiguration.Nodes.Where(n => !n.IsSlave).Select(n => n.EndPoint));
+                        break;
+                    }
+                    // Single , Master-Slave
+                    if (server.ServerType == ServerType.Standalone && !server.IsSlave)
+                    {
+                        masters.Add(ep);
+                        break;
+                    }
+                }
+            }
+            return masters;
         }
     }
 }
