@@ -1,0 +1,18 @@
+site_name: EasyCaching
+theme: readthedocs
+repo_url: https://github.com/catcherwong/EasyCaching
+
+pages:
+- Introduction: index.md
+- Features : Features.md
+- Caching Provider:
+    - In-Memory : In-Memory.md
+    - Redis : Redis.md
+    - Memcached : Memcached.md
+    - SQLite : SQLite.md
+    - Hybird : Hybrid.md
+- Caching Interceptor:
+    - AspectCore : AspectCore.md
+    - Castle : Castle.md
+- Caching Serializer:
+    - MessagePack : MessagePack.md
