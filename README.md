@@ -25,6 +25,7 @@ EasyCaching is a open source caching library that contains basic usages and some
 | EasyCaching.Serialization.MessagePack | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.MessagePack.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.MessagePack.svg)
 | EasyCaching.Interceptor.Castle | ![](https://img.shields.io/nuget/v/EasyCaching.Interceptor.Castle.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Interceptor.Castle.svg)
 | EasyCaching.Interceptor.AspectCore | ![](https://img.shields.io/nuget/v/EasyCaching.Interceptor.AspectCore.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Interceptor.AspectCore.svg)
+| EasyCaching.HybridCache  | ![](https://img.shields.io/nuget/v/EasyCaching.HybridCache.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.HybridCache.svg)
 
 ## Basci Usages 
 
@@ -255,7 +256,13 @@ public class ValuesController : Controller
 
 Hybrid Caching is mainly building for combine local caching and distributed caching. It is called 2-tiers caching.
 
-#### Step 1 : Config
+#### Step 1 : Install the package
+
+```
+Install-Package EasyCaching.HybridCache
+```
+
+#### Step 2 : Config in startup class
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
@@ -294,7 +301,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-#### Step 2: Use
+#### Step 2: Calling the HybridCachingProvider
 
 ```csharp
 [Route("api/[controller]")]
@@ -332,6 +339,7 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 - [x] SQLite
 - [x] Memcached
 - [x] Hybrid(Combine local caching and distributed caching)
+- [ ] Others...
 
 ### Basic Caching API
 
@@ -339,24 +347,43 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 - [x] Get/GetAsync(without data retriever)
 - [x] Set/SetAsync
 - [x] Remove/RemoveAsync
-- [ ] Refresh/RefreshAsync
+- [x] Refresh/RefreshAsync
+- [ ] Remove by pattern(**Developing...**)
+- [ ] Flush/FlushAsync(whether is in need ? )
+- [ ] Others...
 
 ### Serializer Extensions 
 
 - [x] BinaryFormatter
 - [x] MessagePack
+- [ ] Json
+- [ ] Others...
 
 ### Caching Interceptor
 
-- [x] AspectCore
-- [x] Castle
+Not support Hybird yet .
 
+- AspectCore
+    1. [x] EasyCachingAble
+    2. [x] EasyCachingPut
+    3. [ ] EasyCachingEvict(only single item)
+- Castle
+    1. [x] EasyCachingAble
+    2. [x] EasyCachingPut
+    3. [ ] EasyCachingEvict(only single item)
+- Others ..
+    
 
 ### Others
 
+- [ ] Documents(Writing..)
 - [ ] Configuration
 - [ ] Bus
 - [ ] Caching Region
+- [ ] Caching Statistics
+- [ ] UI Manager
+- [ ] Logger
+- [ ] Caching Warm Up 
 - [ ] ...
 
 
