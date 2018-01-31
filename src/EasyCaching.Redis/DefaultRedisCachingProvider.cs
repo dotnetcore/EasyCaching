@@ -4,6 +4,8 @@
     using EasyCaching.Core.Internal;
     using StackExchange.Redis;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -17,6 +19,11 @@
         private readonly IDatabase _cache;
 
         /// <summary>
+        /// The servers.
+        /// </summary>
+        private readonly IEnumerable<IServer> _servers;
+
+        /// <summary>
         /// The db provider.
         /// </summary>
         private readonly IRedisDatabaseProvider _dbProvider;
@@ -28,7 +35,7 @@
 
         /// <summary>
         /// <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> 
-        /// is not distributed cache.
+        /// is distributed cache.
         /// </summary>
         public bool IsDistributedCache => false;
 
@@ -47,6 +54,7 @@
             _dbProvider = dbProvider;
             _serializer = serializer;
             _cache = _dbProvider.GetDatabase();
+            _servers = _dbProvider.GetServerList();
         }
 
         /// <summary>
@@ -278,6 +286,110 @@
 
             await this.RemoveAsync(cacheKey);
             await this.SetAsync(cacheKey, cacheValue, expiration);
+        }
+
+        /// <summary>
+        /// Removes cached item by cachekey's prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        public void RemoveByPrefix(string prefix)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            this.HandlePrefix(prefix);
+
+            foreach (var server in _servers)
+            {
+                this.HandleKeyDelWithTran(server, prefix);
+            }
+        }
+
+        /// <summary>
+        /// Removes cached item by cachekey's prefix async.
+        /// </summary>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        public async Task RemoveByPrefixAsync(string prefix)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            this.HandlePrefix(prefix);
+
+            foreach (var server in _servers)
+            {
+                await this.HandleKeyDelWithTranAsync(server, prefix);
+            }
+        }
+
+        /// <summary>
+        /// Delete keys of Redis using transaction.
+        /// </summary>
+        /// <param name="server">Server.</param>
+        /// <param name="prefix">Prefix.</param>
+        private void HandleKeyDelWithTran(IServer server, string prefix)
+        {
+            int count = 1;
+            do
+            {
+                var keys = server.Keys(pattern: prefix, pageSize: 100);
+                count = keys.Count();
+                if (count > 0)
+                {
+                    var tran = _cache.CreateTransaction();
+
+                    tran.KeyDeleteAsync(keys.ToArray());
+
+                    tran.Execute(CommandFlags.FireAndForget);
+                }
+            }
+            while (count <= 0);
+        }
+
+        /// <summary>
+        /// Delete keys of Redis using transaction async.
+        /// </summary>
+        /// <returns>The key del with tran async.</returns>
+        /// <param name="server">Server.</param>
+        /// <param name="prefix">Prefix.</param>
+        private async Task HandleKeyDelWithTranAsync(IServer server, string prefix)
+        {
+            int count = 1;
+            do
+            {
+                var keys = server.Keys(pattern: prefix, pageSize: 100);
+                count = keys.Count();
+                if (count > 0)
+                {
+                    var tran = _cache.CreateTransaction();
+
+                    await tran.KeyDeleteAsync(keys.ToArray());
+
+                    await tran.ExecuteAsync(CommandFlags.FireAndForget);
+                }
+            }
+            while (count <= 0);
+        }
+           
+        /// <summary>
+        /// Handles the prefix of CacheKey.
+        /// </summary>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        /// <exception cref="ArgumentException">
+        private void HandlePrefix(string prefix)
+        {
+            // Forbid
+            if (prefix.Equals("*"))
+            {                
+                throw new ArgumentException("the prefix should not to *");
+            }
+
+            // Don't start with *
+            prefix = new System.Text.RegularExpressions.Regex("^\\*+").Replace(prefix, "");
+
+            // End with *
+            if (!prefix.EndsWith("*", StringComparison.OrdinalIgnoreCase))
+            {
+                prefix = string.Concat(prefix, "*");
+            }
         }
     }
 }

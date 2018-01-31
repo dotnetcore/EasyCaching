@@ -8,11 +8,6 @@
     /// <summary>
     /// Hybrid caching provider.
     /// </summary>
-    public interface IHybridCachingProvider : IEasyCachingProvider{}
-
-    /// <summary>
-    /// Hybrid caching provider.
-    /// </summary>
     public class HybridCachingProvider : IHybridCachingProvider
     {
         /// <summary>
@@ -330,6 +325,16 @@
 
             await this.RemoveAsync(cacheKey);
             await this.SetAsync(cacheKey, cacheValue, expiration);
+        }
+
+        public void RemoveByPrefix(string prefix)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveByPrefixAsync(string prefix)
+        {
+            throw new NotImplementedException();
         }
     }
 }

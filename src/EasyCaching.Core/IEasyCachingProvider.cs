@@ -114,5 +114,17 @@
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+
+        /// <summary>
+        /// Removes cached item by cachekey's prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        void RemoveByPrefix(string prefix);
+
+        /// <summary>
+        /// Removes cached item by cachekey's prefix async.
+        /// </summary>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        Task RemoveByPrefixAsync(string prefix);
     }
 }

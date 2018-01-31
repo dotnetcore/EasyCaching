@@ -32,6 +32,11 @@
         public const string REMOVESQL = @"DELETE FROM [easycaching] WHERE [cachekey] = @cachekey ";
 
         /// <summary>
+        /// The removebyprefixsql.
+        /// </summary>
+        public const string REMOVEBYPREFIXSQL = @"DELETE FROM [easycaching] WHERE [cachekey] like @cachekey ";
+
+        /// <summary>
         /// The existssql.
         /// </summary>
         public const string EXISTSSQL = @"SELECT COUNT(1)

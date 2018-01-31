@@ -251,5 +251,15 @@
             await this.RemoveAsync(cacheKey);
             await this.SetAsync(cacheKey, cacheValue, expiration);
         }
+
+        public void RemoveByPrefix(string prefix)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveByPrefixAsync(string prefix)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

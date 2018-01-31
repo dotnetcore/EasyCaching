@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.HybridCache
 {
+    using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

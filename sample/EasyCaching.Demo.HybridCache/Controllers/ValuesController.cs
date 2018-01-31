@@ -1,10 +1,10 @@
 ﻿namespace EasyCaching.Demo.HybridCache.Controllers
-{
-    using EasyCaching.HybridCache;
+{    
+    using EasyCaching.Core;
     using Microsoft.AspNetCore.Mvc;
     using System;
     using System.Threading.Tasks;
-    
+
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
