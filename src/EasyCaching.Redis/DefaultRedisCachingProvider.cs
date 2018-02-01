@@ -140,7 +140,7 @@
             else
             {
                 return CacheValue<T>.NoValue;
-            }           
+            }
         }
 
         /// <summary>
@@ -162,7 +162,7 @@
             else
             {
                 return CacheValue<T>.NoValue;
-            }                 
+            }
         }
 
         /// <summary>
@@ -251,7 +251,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             return await _cache.KeyExistsAsync(cacheKey);
-        }             
+        }
 
         /// <summary>
         /// Refresh the specified cacheKey, cacheValue and expiration.
@@ -312,7 +312,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            this.HandlePrefix(prefix);
+            prefix = this.HandlePrefix(prefix);
 
             foreach (var server in _servers)
             {
@@ -368,28 +368,26 @@
             }
             while (count <= 0);
         }
-           
+
         /// <summary>
         /// Handles the prefix of CacheKey.
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>
         /// <exception cref="ArgumentException">
-        private void HandlePrefix(string prefix)
+        private string HandlePrefix(string prefix)
         {
             // Forbid
             if (prefix.Equals("*"))
-            {                
                 throw new ArgumentException("the prefix should not to *");
-            }
 
             // Don't start with *
             prefix = new System.Text.RegularExpressions.Regex("^\\*+").Replace(prefix, "");
 
             // End with *
             if (!prefix.EndsWith("*", StringComparison.OrdinalIgnoreCase))
-            {
                 prefix = string.Concat(prefix, "*");
-            }
+
+            return prefix;
         }
     }
 }
