@@ -299,6 +299,61 @@ namespace EasyCaching.UnitTests
 
             Assert.Equal("NewValue", act.Value);
         }
-             
+           
+
+        [Fact]
+        public void RemoveByPrefix_Should_Succeed()
+        {
+            SetCacheItem("demo:1", "1");
+            SetCacheItem("demo:2", "2");
+            SetCacheItem("demo:3", "3");
+            SetCacheItem("demo:4", "4");
+
+            _provider.RemoveByPrefix("demo");
+
+            var demo1 = _provider.Get<string>("demo:1");
+            var demo2 = _provider.Get<string>("demo:2");
+            var demo3 = _provider.Get<string>("demo:3");
+            var demo4 = _provider.Get<string>("demo:4");
+
+            Assert.False(demo1.HasValue);
+            Assert.False(demo2.HasValue);
+            Assert.False(demo3.HasValue);
+            Assert.False(demo4.HasValue);
+        }
+
+        [Fact]
+        public async Task RemoveByPrefixAsync_Should_Succeed()
+        {
+            SetCacheItem("demo:1", "1");
+            SetCacheItem("demo:2", "2");
+            SetCacheItem("demo:3", "3");
+            SetCacheItem("demo:4", "4");
+
+            await _provider.RemoveByPrefixAsync("demo");
+
+            var demo1 = _provider.Get<string>("demo:1");
+            var demo2 = _provider.Get<string>("demo:2");
+            var demo3 = _provider.Get<string>("demo:3");
+            var demo4 = _provider.Get<string>("demo:4");
+
+            Assert.False(demo1.HasValue);
+            Assert.False(demo2.HasValue);
+            Assert.False(demo3.HasValue);
+            Assert.False(demo4.HasValue);
+        }
+
+        private void SetCacheItem(string cacheKey, string cacheValue)
+        {            
+            var cacheBytes = new byte[] { 0x01 };
+
+            A.CallTo(() => _serializer.Serialize(cacheValue)).Returns(cacheBytes);
+            A.CallTo(() => _serializer.Deserialize<string>(A<byte[]>.Ignored)).Returns(cacheValue);
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _provider.Get<string>(cacheKey);
+            Assert.Equal(cacheValue, val.Value);
+        }
     }
 }
