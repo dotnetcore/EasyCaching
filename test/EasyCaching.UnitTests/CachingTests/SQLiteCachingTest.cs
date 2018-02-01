@@ -166,5 +166,59 @@
 
             Assert.Equal("NewValue", act.Value);
         }
+
+        [Fact]
+        public void RemoveByPrefix_Should_Succeed()
+        {
+            var cacheKey1 = "PREFIX:1";
+            var cacheValue1 = "value1";
+            _provider.Set(cacheKey1, cacheValue1, _defaultTs);
+
+            var cacheKey2 = "PREFIX:2";
+            var cacheValue2 = "value2";
+            _provider.Set(cacheKey2, cacheValue2, _defaultTs);
+
+
+            var tmpRes1 = _provider.Get<string>(cacheKey1);
+            var tmpRes2 = _provider.Get<string>(cacheKey2);
+
+            Assert.Equal(cacheValue1, tmpRes1.Value);
+            Assert.Equal(cacheValue2, tmpRes2.Value);
+
+            _provider.RemoveByPrefix("PREFIX");
+
+            var res1 = _provider.Get<string>(cacheKey1);
+            var res2 = _provider.Get<string>(cacheKey2);
+
+            Assert.False(res1.HasValue);
+            Assert.False(res2.HasValue);
+        }
+
+        [Fact]
+        public async Task RemoveByPrefixAsync_Should_Succeed()
+        {
+            var cacheKey1 = "PREFIX:1";
+            var cacheValue1 = "value1";
+            await _provider.SetAsync(cacheKey1, cacheValue1, _defaultTs);
+
+            var cacheKey2 = "PREFIX:2";
+            var cacheValue2 = "value2";
+            await _provider.SetAsync(cacheKey2, cacheValue2, _defaultTs);
+
+
+            var tmpRes1 = await _provider.GetAsync<string>(cacheKey1);
+            var tmpRes2 = await _provider.GetAsync<string>(cacheKey2);
+
+            Assert.Equal(cacheValue1, tmpRes1.Value);
+            Assert.Equal(cacheValue2, tmpRes2.Value);
+
+            await _provider.RemoveByPrefixAsync("PREFIX");
+
+            var res1 = await _provider.GetAsync<string>(cacheKey1);
+            var res2 = await _provider.GetAsync<string>(cacheKey2);
+
+            Assert.False(res1.HasValue);
+            Assert.False(res2.HasValue);
+        }
     }
 }
