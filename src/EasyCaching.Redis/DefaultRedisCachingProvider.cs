@@ -296,7 +296,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            this.HandlePrefix(prefix);
+            prefix = this.HandlePrefix(prefix);
 
             foreach (var server in _servers)
             {
@@ -361,9 +361,15 @@
                 {
                     var tran = _cache.CreateTransaction();
 
-                    await tran.KeyDeleteAsync(keys.ToArray());
+                    Task delTask = tran.KeyDeleteAsync(keys.ToArray());
 
-                    await tran.ExecuteAsync(CommandFlags.FireAndForget);
+                    Task execTask = tran.ExecuteAsync(CommandFlags.FireAndForget);
+
+                    await Task.WhenAll(delTask, execTask);
+
+                    //await tran.KeyDeleteAsync(keys.ToArray());
+
+                    //await tran.ExecuteAsync(CommandFlags.FireAndForget);
                 }
             }
             while (count <= 0);
