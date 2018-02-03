@@ -174,5 +174,77 @@
 
             Assert.Equal("NewValue", act.Value);
         }
+
+        [Fact]
+        public void RemoveByPrefix_Should_Succeed()
+        {
+            string prefixKey = "demo";
+            string prefixValue = "abc";
+
+            _provider.Set(prefixKey, prefixValue, TimeSpan.FromSeconds(120));
+
+
+            SetCacheItem("1", "1", prefixKey);
+            SetCacheItem("2", "2", prefixKey);
+            SetCacheItem("3", "3", prefixKey);
+            SetCacheItem("4", "4", prefixKey);
+
+            _provider.RemoveByPrefix(prefixKey);
+
+            GetCacheItem("1", prefixKey);
+            GetCacheItem("2", prefixKey);
+            GetCacheItem("3", prefixKey);
+            GetCacheItem("4", prefixKey);
+
+            var afterPrefixValue = _provider.Get<string>(prefixKey);
+            Assert.NotEqual(prefixValue, afterPrefixValue.Value);
+        }
+
+        [Fact]
+        public async Task RemoveByPrefix_Async_Should_Succeed()
+        {
+            string prefixKey = "demo";
+            string prefixValue = "abc";
+
+            _provider.Set("demo", prefixValue, TimeSpan.FromSeconds(120));
+
+            SetCacheItem("1", "1", prefixKey);
+            SetCacheItem("2", "2", prefixKey);
+            SetCacheItem("3", "3", prefixKey);
+            SetCacheItem("4", "4", prefixKey);
+
+            await _provider.RemoveByPrefixAsync(prefixKey);
+
+            GetCacheItem("1", prefixKey);
+            GetCacheItem("2", prefixKey);
+            GetCacheItem("3", prefixKey);
+            GetCacheItem("4", prefixKey);
+
+            var afterPrefixValue = _provider.Get<string>(prefixKey);
+            Assert.NotEqual(prefixValue, afterPrefixValue.Value);
+        }
+
+        private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
+        {
+            var pre = _provider.Get<string>(prefix);
+
+            cacheKey = string.Concat(pre, cacheKey);
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _provider.Get<string>(cacheKey);
+            Assert.Equal(cacheValue, val.Value);
+        }
+
+
+        private void GetCacheItem(string cacheKey, string prefix)
+        {
+            var pre = _provider.Get<string>(prefix);
+
+            cacheKey = string.Concat(pre, cacheKey);
+
+            var val = _provider.Get<string>(cacheKey);
+            Assert.False(val.HasValue);
+        }
     }
 }
