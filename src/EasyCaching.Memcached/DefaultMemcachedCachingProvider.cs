@@ -4,6 +4,8 @@
     using EasyCaching.Core.Internal;
     using Enyim.Caching;
     using System;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -44,7 +46,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _memcachedClient.Get(cacheKey) as T;
+            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey)) as T;
             if (result != null)
             {
                 return new CacheValue<T>(result, true);
@@ -53,7 +55,7 @@
             var item = dataRetriever?.Invoke();
             if (item != null)
             {
-                Set(cacheKey, item, expiration);
+                this.Set(cacheKey, item, expiration);
                 return new CacheValue<T>(item, true);
             }
             else
@@ -75,7 +77,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _memcachedClient.GetValueAsync<T>(cacheKey);
+            var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
                 return new CacheValue<T>(result, true);
@@ -84,7 +86,7 @@
             var item = await dataRetriever?.Invoke();
             if (item != null)
             {
-                await SetAsync(cacheKey, item, expiration);
+                await this.SetAsync(cacheKey, item, expiration);
                 return new CacheValue<T>(item, true);
             }
             else
@@ -103,7 +105,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _memcachedClient.Get(cacheKey) as T;
+            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey)) as T;
             if (result != null)
             {
                 return new CacheValue<T>(result, true);
@@ -122,9 +124,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class
         {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));           
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await _memcachedClient.GetValueAsync<T>(cacheKey);
+            var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
                 return new CacheValue<T>(result, true);
@@ -144,7 +146,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _memcachedClient.Remove(cacheKey);
+            _memcachedClient.Remove(this.HandleCacheKey(cacheKey));
         }
 
         /// <summary>
@@ -156,7 +158,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _memcachedClient.RemoveAsync(cacheKey);
+            await _memcachedClient.RemoveAsync(this.HandleCacheKey(cacheKey));
         }
 
         /// <summary>
@@ -173,7 +175,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            _memcachedClient.Add(cacheKey, cacheValue, expiration.Seconds);
+            _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }
 
         /// <summary>
@@ -190,7 +192,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            await _memcachedClient.AddAsync(cacheKey, cacheValue, expiration.Seconds);
+            await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }
 
         /// <summary>
@@ -202,7 +204,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return _memcachedClient.TryGet(cacheKey, out object obj);
+            return _memcachedClient.TryGet(this.HandleCacheKey(cacheKey), out object obj);
         }
 
         /// <summary>
@@ -214,7 +216,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return Task.Run(() => { return _memcachedClient.TryGet(cacheKey, out object obj); });
+            return Task.Run(() => { return _memcachedClient.TryGet(this.HandleCacheKey(cacheKey), out object obj); });
         }
 
         /// <summary>
@@ -252,14 +254,70 @@
             await this.SetAsync(cacheKey, cacheValue, expiration);
         }
 
+        /// <summary>
+        /// Removes cached item by cachekey's prefix.
+        /// </summary>
+        /// <remarks>
+        /// Before using the method , you should follow this link 
+        /// https://github.com/memcached/memcached/wiki/ProgrammingTricks#namespacing
+        /// and confirm that you use the namespacing when you set and get the cache.
+        /// </remarks>
+        /// <param name="prefix">Prefix of CacheKey.</param>
         public void RemoveByPrefix(string prefix)
         {
-            throw new NotImplementedException();
+            var oldPrefixKey = _memcachedClient.Get(prefix)?.ToString();
+
+            var newValue = DateTime.UtcNow.Ticks.ToString();
+
+            if (oldPrefixKey.Equals(newValue))
+            {
+                newValue = string.Concat(newValue, new Random().Next(9).ToString());
+            }
+            _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(prefix), newValue, new TimeSpan(0, 0, 0));
         }
 
-        public Task RemoveByPrefixAsync(string prefix)
+        /// <summary>
+        /// Removes cached item by cachekey's prefix async.
+        /// </summary>
+        /// <remarks>
+        /// Before using the method , you should follow this link 
+        /// https://github.com/memcached/memcached/wiki/ProgrammingTricks#namespacing
+        /// and confirm that you use the namespacing when you set and get the cache.
+        /// </remarks>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        /// <returns></returns>
+        public async Task RemoveByPrefixAsync(string prefix)
         {
-            throw new NotImplementedException();
+            var oldPrefixKey = _memcachedClient.Get(prefix)?.ToString();
+
+            var newValue = DateTime.UtcNow.Ticks.ToString();
+
+            if (oldPrefixKey.Equals(newValue))
+            {
+                newValue = string.Concat(newValue, new Random().Next(9).ToString());
+            }
+            await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(prefix), newValue, new TimeSpan(0, 0, 0));
+        }
+
+        /// <summary>
+        /// Handle the cache key of memcached limititaion
+        /// </summary>
+        /// <param name="cacheKey">Cache Key</param>
+        /// <returns></returns>
+        private string HandleCacheKey(string cacheKey)
+        {
+            // Memcached has a 250 character limit
+            // Following memcached.h in https://github.com/memcached/memcached/
+            if (cacheKey.Length >= 250)
+            {
+                using (SHA1 sha1 = SHA1.Create())
+                {
+                    byte[] data = sha1.ComputeHash(Encoding.UTF8.GetBytes(cacheKey));
+                    return Convert.ToBase64String(data, Base64FormattingOptions.None);
+                }
+            }
+
+            return cacheKey;
         }
     }
 }
