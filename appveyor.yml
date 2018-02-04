@@ -45,6 +45,7 @@ build:
 before_test:
 - ps: >-
     nuget install coveralls.net -Version 0.7.0 -OutputDirectory tools
+    
     nuget install OpenCover -Version 4.6.519 -OutputDirectory tools
 
 test_script:
