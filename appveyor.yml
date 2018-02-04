@@ -3,6 +3,20 @@ image: Visual Studio 2017
 configuration: Release
 clone_folder: C:\projects\easycaching\
 
+pull_requests:
+  do_not_increment_build_number: true
+
+#skip_branch_with_pr: true
+skip_commits:
+  files:
+    - docs/*
+    - media/*
+    - LICENSE
+    - mkdocs.yml
+    - README.md
+    - .travis.yml
+    - .gitignore
+
 install:
 - cmd: >-
     cd C:\projects\easycaching\tools\RedisConfigs\3.0.503
@@ -28,15 +42,22 @@ build:
 #test_script:
 #- cmd: >-
 #    dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
-test_script:
-  - echo This is my custom test script
-      
-after_test:
-- cmd: >-
+before_test:
+- ps: >-
     nuget install coveralls.net -Version 0.7.0 -OutputDirectory tools
-
+    
     nuget install OpenCover -Version 4.6.519 -OutputDirectory tools
 
-    tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]* -[EasyCaching.Demo.*]* -[EasyCaching.Sync*]*" -oldstyle -returntargetcode -output:coverage.xml
-
-    tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths   
+test_script:
+- ps: tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]*" -oldstyle -returntargetcode -output:coverage.xml
+    
+after_test:
+- ps: >-
+    if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+    {       
+      tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths
+    }
+    else 
+    {
+      echo "not master branch...."
+    }
