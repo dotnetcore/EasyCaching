@@ -178,20 +178,27 @@
             var cacheValue2 = "value2";
             _provider.Set(cacheKey2, cacheValue2, _defaultTs);
 
+            var cacheKey3 = "xxx:1";
+            var cacheValue3 = "xxx1";
+            _provider.Set(cacheKey3, cacheValue3, _defaultTs);
 
             var tmpRes1 = _provider.Get<string>(cacheKey1);
             var tmpRes2 = _provider.Get<string>(cacheKey2);
+            var tmpRes3 = _provider.Get<string>(cacheKey3);
 
             Assert.Equal(cacheValue1, tmpRes1.Value);
             Assert.Equal(cacheValue2, tmpRes2.Value);
+            Assert.Equal(cacheValue3, tmpRes3.Value);
 
             _provider.RemoveByPrefix("PREFIX");
 
             var res1 = _provider.Get<string>(cacheKey1);
             var res2 = _provider.Get<string>(cacheKey2);
+            var res3 = _provider.Get<string>(cacheKey3);
 
             Assert.False(res1.HasValue);
             Assert.False(res2.HasValue);
+            Assert.True(res3.HasValue);
         }
 
         [Fact]
@@ -205,20 +212,27 @@
             var cacheValue2 = "value2";
             await _provider.SetAsync(cacheKey2, cacheValue2, _defaultTs);
 
+            var cacheKey3 = "xxx:1";
+            var cacheValue3 = "xxx1";
+            await _provider.SetAsync(cacheKey3, cacheValue3, _defaultTs);
 
             var tmpRes1 = await _provider.GetAsync<string>(cacheKey1);
             var tmpRes2 = await _provider.GetAsync<string>(cacheKey2);
+            var tmpRes3 = await _provider.GetAsync<string>(cacheKey3);
 
             Assert.Equal(cacheValue1, tmpRes1.Value);
             Assert.Equal(cacheValue2, tmpRes2.Value);
+            Assert.Equal(cacheValue3, tmpRes3.Value);
 
             await _provider.RemoveByPrefixAsync("PREFIX");
 
             var res1 = await _provider.GetAsync<string>(cacheKey1);
             var res2 = await _provider.GetAsync<string>(cacheKey2);
+            var res3 = await _provider.GetAsync<string>(cacheKey3);
 
             Assert.False(res1.HasValue);
             Assert.False(res2.HasValue);
+            Assert.True(res3.HasValue);
         }
     }
 }

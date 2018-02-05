@@ -327,14 +327,30 @@
             await this.SetAsync(cacheKey, cacheValue, expiration);
         }
 
+        /// <summary>
+        /// Removes cached item by cachekey's prefix.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
         public void RemoveByPrefix(string prefix)
         {
-            throw new NotImplementedException();
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            _localCachingProvider.RemoveByPrefix(prefix);
+            _distributedCachingProvider.RemoveByPrefix(prefix);
         }
 
-        public Task RemoveByPrefixAsync(string prefix)
+        /// <summary>
+        /// Removes cached item by cachekey's prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public async Task RemoveByPrefixAsync(string prefix)
         {
-            throw new NotImplementedException();
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            await _localCachingProvider.RemoveByPrefixAsync(prefix);
+            await _distributedCachingProvider.RemoveByPrefixAsync(prefix);
         }
     }
 }
