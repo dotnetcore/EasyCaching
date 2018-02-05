@@ -245,7 +245,6 @@
             Assert.False(flag);
         }
 
-
         [Theory]
         [InlineData("")]
         [InlineData(" ")]
@@ -316,7 +315,25 @@
             string cacheVlaue = "123";
             var expiration = new TimeSpan(0, 0, -1);
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
-        }              
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
+        {
+            Assert.Throws<ArgumentNullException>(() => _provider.RemoveByPrefix(prefix));
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(" ")]
+        [InlineData(null)]
+        public async Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
+        {
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
+        }
 
         protected Func<string> Create_Fake_Retriever_Return_String()
         {
@@ -337,7 +354,7 @@
         }
 
         protected Func<Task<string>> Create_Fake_Retriever_Return_String_Async()
-        {            
+        {
             var func = A.Fake<Func<Task<string>>>();
 
             A.CallTo(() => func.Invoke()).Returns(Task.FromResult("123"));

@@ -4,6 +4,7 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Caching.Memory;
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -15,6 +16,11 @@
         /// The MemoryCache.
         /// </summary>
         private readonly IMemoryCache _cache;
+
+        /// <summary>
+        /// The cache keys.
+        /// </summary>
+        private readonly ConcurrentCollections.ConcurrentHashSet<string> _cacheKeys;
 
         /// <summary>
         /// <see cref="T:EasyCaching.InMemory.InMemoryCachingProvider"/> 
@@ -30,6 +36,7 @@
         public InMemoryCachingProvider(IMemoryCache cache)
         {
             this._cache = cache;
+            this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
         }
 
         /// <summary>
@@ -140,6 +147,8 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             _cache.Remove(cacheKey);
+
+            _cacheKeys.TryRemove(cacheKey);
         }
 
         /// <summary>
@@ -152,6 +161,8 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             await Task.Run(() => _cache.Remove(cacheKey));
+
+            _cacheKeys.TryRemove(cacheKey);
         }
 
         /// <summary>
@@ -169,6 +180,8 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             _cache.Set(cacheKey, cacheValue, expiration);
+
+            _cacheKeys.Add(cacheKey);
         }
 
 
@@ -187,6 +200,8 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             await Task.Run(() => _cache.Set(cacheKey, cacheValue, expiration));
+
+            _cacheKeys.Add(cacheKey);
         }
 
         /// <summary>
@@ -248,14 +263,41 @@
             await this.SetAsync(cacheKey, cacheValue, expiration);
         }
 
+        /// <summary>
+        /// Removes cached item by cachekey's prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix.</param>
         public void RemoveByPrefix(string prefix)
         {
-            throw new NotImplementedException();
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(),StringComparison.OrdinalIgnoreCase));
+            if(keys.Count()>0)
+            {
+                foreach (var item in keys)
+                {
+                    this.Remove(item);
+                }
+            }
         }
 
-        public Task RemoveByPrefixAsync(string prefix)
+        /// <summary>
+        /// Removes cached item by cachekey's prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public async Task RemoveByPrefixAsync(string prefix)
         {
-            throw new NotImplementedException();
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (keys.Count() > 0)
+            {
+                foreach (var item in keys)
+                {
+                    await this.RemoveAsync(item);
+                }
+            }
         }
     }
 }

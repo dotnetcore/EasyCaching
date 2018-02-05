@@ -183,11 +183,11 @@
 
             _provider.Set(prefixKey, prefixValue, TimeSpan.FromSeconds(120));
 
-
             SetCacheItem("1", "1", prefixKey);
             SetCacheItem("2", "2", prefixKey);
             SetCacheItem("3", "3", prefixKey);
             SetCacheItem("4", "4", prefixKey);
+            SetCacheItem("4", "4", "xxx");
 
             _provider.RemoveByPrefix(prefixKey);
 
@@ -195,6 +195,11 @@
             GetCacheItem("2", prefixKey);
             GetCacheItem("3", prefixKey);
             GetCacheItem("4", prefixKey);
+
+            var pre = _provider.Get<string>("xxx");
+            var cacheKey = string.Concat(pre, "4");
+            var val = _provider.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
 
             var afterPrefixValue = _provider.Get<string>(prefixKey);
             Assert.NotEqual(prefixValue, afterPrefixValue.Value);
@@ -212,6 +217,7 @@
             SetCacheItem("2", "2", prefixKey);
             SetCacheItem("3", "3", prefixKey);
             SetCacheItem("4", "4", prefixKey);
+            SetCacheItem("4", "4", "xxx");
 
             await _provider.RemoveByPrefixAsync(prefixKey);
 
@@ -219,6 +225,12 @@
             GetCacheItem("2", prefixKey);
             GetCacheItem("3", prefixKey);
             GetCacheItem("4", prefixKey);
+
+            var pre = _provider.Get<string>("xxx");
+            var cacheKey = string.Concat(pre, "4");
+            var val = _provider.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
+
 
             var afterPrefixValue = _provider.Get<string>(prefixKey);
             Assert.NotEqual(prefixValue, afterPrefixValue.Value);
