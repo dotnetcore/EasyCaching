@@ -265,6 +265,8 @@
         /// <param name="prefix">Prefix of CacheKey.</param>
         public void RemoveByPrefix(string prefix)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var oldPrefixKey = _memcachedClient.Get(prefix)?.ToString();
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
@@ -288,6 +290,8 @@
         /// <returns></returns>
         public async Task RemoveByPrefixAsync(string prefix)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var oldPrefixKey = _memcachedClient.Get(prefix)?.ToString();
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
