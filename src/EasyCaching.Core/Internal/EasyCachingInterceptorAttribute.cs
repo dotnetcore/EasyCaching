@@ -54,10 +54,13 @@
     public class EasyCachingEvictAttribute : EasyCachingInterceptorAttribute
     {        
         /// <summary>
-        /// Gets or sets a value indicating whether evict all cached values which are 
+        /// Gets or sets a value indicating whether evict all cached values by cachekey prefix
         /// </summary>
-        /// <value><c>true</c> if all; otherwise, <c>false</c>.</value>
-        public bool All { get; set; } = false;
+        /// <remarks>
+        /// This need to use with CacheKeyPrefix.
+        /// </remarks>
+        /// <value><c>true</c> if is all; otherwise, <c>false</c>.</value>
+        public bool IsAll { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether is before.

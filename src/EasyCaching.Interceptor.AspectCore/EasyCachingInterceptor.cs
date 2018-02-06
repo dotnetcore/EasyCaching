@@ -72,7 +72,7 @@
                     // Invoke the method if we don't have a cache hit
                     await next(context);
 
-                    if (!string.IsNullOrWhiteSpace(cacheKey))
+                    if (!string.IsNullOrWhiteSpace(cacheKey) && context.ReturnValue != null)
                         await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
                 }
             }
@@ -92,7 +92,7 @@
         {
             var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) as EasyCachingPutAttribute;
 
-            if (attribute != null)
+            if (attribute != null && context.ReturnValue != null)
             {
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters,attribute.CacheKeyPrefix);
 
@@ -111,10 +111,21 @@
             var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) as EasyCachingEvictAttribute;
 
             if (attribute != null && attribute.IsBefore == isBefore)
-            {
-                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
+            {                
+                if(attribute.IsAll)
+                {
+                    //If is all , clear all cached items which cachekey start with the prefix.
+                    var cachePrefix = KeyGenerator.GetCacheKeyPrefix(context.ServiceMethod, attribute.CacheKeyPrefix);
 
-                await CacheProvider.RemoveAsync(cacheKey);
+                    await CacheProvider.RemoveByPrefixAsync(cachePrefix);
+                }
+                else
+                {
+                    //If not all , just remove the cached item by its cachekey.
+                    var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
+
+                    await CacheProvider.RemoveAsync(cacheKey);    
+                }
             }
         }
     }

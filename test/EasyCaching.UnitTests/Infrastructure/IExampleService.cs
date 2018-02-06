@@ -12,10 +12,18 @@ namespace EasyCaching.UnitTests.Infrastructure
         string PutTest(int num,string str = "123");
 
         string EvictTest();
+
+        string EvictAllTest();
     }
 
     public class CastleExampleService : ICastleExampleService, IEasyCaching
     {
+        [EasyCachingEvict(CacheKeyPrefix = "CastleExample",IsAll = true)]
+        public string EvictAllTest()
+        {
+            return "EvictAllTest";
+        }
+
         [EasyCachingEvict(CacheKeyPrefix = "CastleExample")]
         public string EvictTest()
         {
@@ -50,12 +58,20 @@ namespace EasyCaching.UnitTests.Infrastructure
         [EasyCachingEvict(CacheKeyPrefix = "AspectCoreExample")]
         string EvictTest();
 
+        [EasyCachingEvict(CacheKeyPrefix = "AspectCoreExample",IsAll = true)]
+        string EvictAllTest();
+
         [EasyCachingPut(CacheKeyPrefix = "AspectCoreExample")]
         string PutTest(int num , string str="123");
     }
 
     public class AspectCoreExampleService : IAspectCoreExampleService
     {
+        public string EvictAllTest()
+        {
+            return "EvictAllTest";
+        }
+
         public string EvictTest()
         {
             return "EvictTest";

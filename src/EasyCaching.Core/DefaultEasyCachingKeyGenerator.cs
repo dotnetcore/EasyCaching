@@ -45,6 +45,38 @@
         }
 
         /// <summary>
+        /// Gets the cache key prefix.
+        /// </summary>
+        /// <returns>The cache key prefix.</returns>
+        /// <param name="methodInfo">Method info.</param>
+        /// <param name="prefix">Prefix.</param>
+        public string GetCacheKeyPrefix(MethodInfo methodInfo, string prefix)
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                var typeName = methodInfo.DeclaringType.Name;
+                var methodName = methodInfo.Name;
+
+                return this.GenerateCacheKeyPrefix(typeName, methodName);
+            }
+            else
+            {                
+                return this.GenerateCacheKeyPrefix(string.Empty, prefix);
+            }
+        }
+
+        /// <summary>
+        /// Generates the cache key prefix.
+        /// </summary>
+        /// <returns>The cache key prefix.</returns>
+        /// <param name="first">First.</param>
+        /// <param name="second">Second.</param>
+        private string GenerateCacheKeyPrefix(string first, string second)
+        {            
+            return string.Concat(first,_linkChar,second,_linkChar).TrimStart(_linkChar);                       
+        }
+
+        /// <summary>
         /// Formats the arguments to part of cache key.
         /// </summary>
         /// <returns>The arguments to part of cache key.</returns>
@@ -72,11 +104,7 @@
         {
             var builder = new StringBuilder();
 
-            builder.Append(typeName);
-            builder.Append(_linkChar);
-
-            builder.Append(methodName);
-            builder.Append(_linkChar);
+            builder.Append(this.GenerateCacheKeyPrefix(typeName,methodName));
 
             foreach (var param in parameters)
             {
@@ -84,13 +112,14 @@
                 builder.Append(_linkChar);
             }
 
-            var str = builder.ToString().TrimStart(_linkChar).TrimEnd(_linkChar);
+            var str = builder.ToString().TrimEnd(_linkChar);
 
-            using (SHA1 sha1 = SHA1.Create())
-            {
-                byte[] data = sha1.ComputeHash(Encoding.UTF8.GetBytes(str));
-                return Convert.ToBase64String(data, Base64FormattingOptions.None);
-            }
+            return str;
+            //using (SHA1 sha1 = SHA1.Create())
+            //{
+            //    byte[] data = sha1.ComputeHash(Encoding.UTF8.GetBytes(str));
+            //    return Convert.ToBase64String(data, Base64FormattingOptions.None);
+            //}
         }
 
         /// <summary>
