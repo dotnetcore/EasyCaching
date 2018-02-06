@@ -103,5 +103,30 @@ namespace EasyCaching.UnitTests
 
             Assert.False(after.HasValue);
         }
+
+        [Fact]
+        public void EvictAll_Should_Succeed()
+        {
+            System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("EvictAllTest");
+
+            var prefix = _keyGenerator.GetCacheKeyPrefix(method, "CastleExample");
+
+            _cachingProvider.Set(string.Concat(prefix, "1"), "AAA", TimeSpan.FromSeconds(30));
+            _cachingProvider.Set(string.Concat(prefix, "2"), "AAA", TimeSpan.FromSeconds(30));
+
+            var value1 = _cachingProvider.Get<string>(string.Concat(prefix, "1"));
+            var value2 = _cachingProvider.Get<string>(string.Concat(prefix, "2"));
+
+            Assert.Equal("AAA", value1.Value);
+            Assert.Equal("AAA", value2.Value);
+
+            _service.EvictAllTest();
+
+            var after1 = _cachingProvider.Get<string>(string.Concat(prefix, "1"));
+            var after2 = _cachingProvider.Get<string>(string.Concat(prefix, "2"));
+
+            Assert.False(after1.HasValue);
+            Assert.False(after2.HasValue);
+        }
     }
 }

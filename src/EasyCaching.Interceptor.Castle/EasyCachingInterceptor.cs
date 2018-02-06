@@ -77,7 +77,7 @@
                     // Invoke the method if we don't have a cache hit                    
                     invocation.Proceed();
 
-                    if (!string.IsNullOrWhiteSpace(cacheKey))
+                    if (!string.IsNullOrWhiteSpace(cacheKey) && invocation.ReturnValue != null)
                         _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
                 }
             }
@@ -98,7 +98,7 @@
 
             var attribute = serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) as EasyCachingPutAttribute;
 
-            if (attribute != null)
+            if (attribute != null && invocation.ReturnValue != null)
             {
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
@@ -118,10 +118,21 @@
             var attribute = serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) as EasyCachingEvictAttribute;
 
             if (attribute != null && attribute.IsBefore == isBefore)
-            {
-                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
+            {                
+                if(attribute.IsAll)
+                {
+                    //If is all , clear all cached items which cachekey start with the prefix.
+                    var cacheKeyPrefix = _keyGenerator.GetCacheKeyPrefix(serviceMethod, attribute.CacheKeyPrefix);
 
-                _cacheProvider.Remove(cacheKey);
+                    _cacheProvider.RemoveByPrefix(cacheKeyPrefix);
+                }
+                else
+                {
+                    //If not all , just remove the cached item by its cachekey.
+                    var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
+
+                    _cacheProvider.Remove(cacheKey);    
+                }
             }
         }
     }
