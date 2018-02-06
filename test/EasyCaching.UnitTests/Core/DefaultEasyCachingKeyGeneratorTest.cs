@@ -23,11 +23,9 @@
             var methodName = "Method1";
             MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
 
-            var key = _keyGenerator.GetCacheKey(methodInfo, new object[]{} ,string.Empty);
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { }, string.Empty);
 
-            var keyBeforeHash = $"Demo:Method1:0";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash),key);
+            Assert.Equal($"Demo:Method1:0", key);
         }
 
         [Fact]
@@ -38,9 +36,7 @@
 
             var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { }, "GenKey");
 
-            var keyBeforeHash = $"GenKey:0";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"GenKey:0", key);
         }
 
         [Fact]
@@ -49,11 +45,9 @@
             var methodName = "Method2";
             MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
 
-            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { 10 } ,string.Empty);
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { 10 }, string.Empty);
 
-            var keyBeforeHash = $"Demo:Method2:10";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"Demo:Method2:10", key);
         }
 
         [Fact]
@@ -64,9 +58,7 @@
 
             var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { 10 }, "GenKey");
 
-            var keyBeforeHash = $"GenKey:10";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"GenKey:10", key);
         }
 
         [Fact]
@@ -75,11 +67,9 @@
             var methodName = "Method3";
             MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
 
-            var key = _keyGenerator.GetCacheKey(methodInfo, new object[]{ "str" } ,string.Empty);
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { "str" }, string.Empty);
 
-            var keyBeforeHash = $"Demo:Method3:str";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"Demo:Method3:str", key);
         }
 
         [Fact]
@@ -90,9 +80,7 @@
 
             var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { "str" }, "GenKey");
 
-            var keyBeforeHash = $"GenKey:str";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"GenKey:str", key);
         }
 
         [Fact]
@@ -103,9 +91,7 @@
 
             var key = _keyGenerator.GetCacheKey(methodInfo, null, string.Empty);
 
-            var keyBeforeHash = $"Demo:Method4:0";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"Demo:Method4:0", key);
         }
 
         [Fact]
@@ -116,9 +102,7 @@
 
             var key = _keyGenerator.GetCacheKey(methodInfo, null, "GenKey");
 
-            var keyBeforeHash = $"GenKey:0";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"GenKey:0", key);
         }
 
         [Fact]
@@ -129,9 +113,7 @@
 
             var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { new Product() }, string.Empty);
 
-            var keyBeforeHash = $"Demo:Method5:1000";
-
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+            Assert.Equal($"Demo:Method5:1000", key);
         }
 
         [Fact]
@@ -142,9 +124,29 @@
 
             var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { new Product() }, "GenKey");
 
-            var keyBeforeHash = $"GenKey:1000";
+            Assert.Equal($"GenKey:1000", key);
+        }
 
-            Assert.Equal(SHA1AndBase64(keyBeforeHash), key);
+        [Fact]
+        public void Generate_CacheKeyPrefix_Without_PrefixParam_Should_Succeed()
+        {
+            var methodName = "Method3";
+            MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
+
+            var key = _keyGenerator.GetCacheKeyPrefix(methodInfo, string.Empty);
+
+            Assert.Equal($"Demo:Method3:", key);
+        }
+
+        [Fact]
+        public void Generate_CacheKeyPrefix_With_PrefixParam_Should_Succeed()
+        {
+            var methodName = "Method3";
+            MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
+
+            var key = _keyGenerator.GetCacheKeyPrefix(methodInfo, "prefix");
+
+            Assert.Equal($"prefix:", key);
         }
 
         private string SHA1AndBase64(string str)
