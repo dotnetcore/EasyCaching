@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <Description>      
       Caching Interceptor based on EasyCaching.Core and AspectCore
     </Description>
@@ -15,7 +15,10 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-        v0.1.1
+      v0.1.2
+      1. Enable IsAll when using Evict. 
+
+      v0.1.1
       1. Get caching with data retriever => without data retriever .
       2. Caching Handle with async method.
       3. Introduct Able , Put And Evict.

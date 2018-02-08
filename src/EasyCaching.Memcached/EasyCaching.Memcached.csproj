@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.2</Version>
+    <Version>0.1.3</Version>
     <Description>
       EasyCaching.Memcached based on EasyCaching.Core and EnyimMemcachedCore
     </Description>
@@ -15,7 +15,11 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-        v0.1.2
+      v0.1.3
+      1. RemoveByPrefix(Async). 
+      2. Handle limitation of cachekey.
+
+      v0.1.2
       1. Support HybridCaching Probider.
       2. Introduce Refresh(Async) method to handle cached value.
       
