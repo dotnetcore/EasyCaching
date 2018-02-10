@@ -106,29 +106,35 @@ public class ValuesController : Controller
     [HttpGet]
     public string Get()
     {
-        //Remove
-        _provider.Remove("demo");
-        
         //Set
         _provider.Set("demo", "123", TimeSpan.FromMinutes(1));
             
-        //Get
-        var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
+        //Set Async
+        await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));   
         
         //Get without data retriever
         var res = _provider.Get<string>("demo");
         
+        //Get without data retriever Async
+        var res = await _provider.GetAsync<string>("demo");
+        
+        //Get
+        var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
+        
+        //Get Async    
+        var res = await _provider.GetAsync("demo",async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));   
+                
+        //Remove
+        _provider.Remove("demo");
+
         //Remove Async
         await _provider.RemoveAsync("demo");
            
-        //Set Async
-        await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));   
-            
-        //Get Async    
-        var res = await _provider.GetAsync("demo",async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));   
-        
-        //Get without data retriever Async
-        var res = await _provider.GetAsync<string>("demo");
+        //Refresh
+        _provider.Refresh("demo", "123", TimeSpan.FromMinutes(1));
+
+        //Refresh Async
+        await _provider.RefreshAsync("demo", "123", TimeSpan.FromMinutes(1));               
     }
 }
 ```
@@ -150,7 +156,6 @@ How to use ?
 ```
 Install-Package EasyCaching.Serialization.MessagePack
 ```
-
 
 #### Step 2 : Config in Startup class 
 
@@ -190,6 +195,16 @@ coming soon !
 
 ### #1 Caching Interceptor
 
+EasyCaching contains three attributes(`EasyCachingAble`,`EasyCachingPut`,`EasyCachingEvict`) to handle interceptor. 
+
+- EasyCachingAble : triggers cache population
+- EasyCachingPut : updates the cache without interfering with the method execution
+- EasyCachingEvict : triggers cache eviction
+
+And EasyCaching provide two implementations of caching interceptor, one is based on Castle, the other one is based on AspectCore.
+
+The following example use Castle to show how to config.
+
 #### Step 1 : Define you service class
 
 ```csharp
@@ -198,12 +213,25 @@ public interface IDateTimeService
     string GetCurrentUtcTime();
 }
 
+//IEasyCaching is important for this!!
 public class DateTimeService : IDateTimeService ,  IEasyCaching
 {        
     [EasyCachingInterceptor(Expiration = 10)]
     public string GetCurrentUtcTime()
     {
         return System.DateTime.UtcNow.ToString();
+    }
+
+    [EasyCachingEvict(CacheKeyPrefix = "CastleExample")]
+    public string EvictTest()
+    {
+        return "EvictTest";
+    }
+
+    [EasyCachingPut(CacheKeyPrefix = "CastleExample")]
+    public string PutTest(int num)
+    {
+        return $"PutTest-{num}";
     }
 }
 ```
@@ -222,7 +250,7 @@ public class Startup
         //service 
         services.AddTransient<IDateTimeService,DateTimeService>();
 
-        //caching
+        //Choose one of caching provider that you want to use.
         services.AddDefaultInMemoryCache();
 
         //CastleInterceptor
@@ -247,7 +275,10 @@ public class ValuesController : Controller
     [HttpGet]
     public string Get()
     {
-        return _service.GetCurrentUtcTime();
+        _service.GetCurrentUtcTime();
+        _service.EvictTest();
+        _service.PutTest();
+        return "";
     }
 }
 ```
@@ -348,7 +379,7 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 - [x] Set/SetAsync
 - [x] Remove/RemoveAsync
 - [x] Refresh/RefreshAsync
-- [ ] Remove by pattern(**Developing...**)
+- [x] RemoveByPrefix/RemoveByPrefixAsync
 - [ ] Flush/FlushAsync(whether is in need ? )
 - [ ] Others...
 
@@ -361,16 +392,16 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 
 ### Caching Interceptor
 
-Not support Hybird yet .
+Not support Hybird Caching provider yet .
 
 - AspectCore
     1. [x] EasyCachingAble
     2. [x] EasyCachingPut
-    3. [ ] EasyCachingEvict(only single item)
+    3. [x] EasyCachingEvict
 - Castle
     1. [x] EasyCachingAble
     2. [x] EasyCachingPut
-    3. [ ] EasyCachingEvict(only single item)
+    3. [x] EasyCachingEvict
 - Others ..
     
 
