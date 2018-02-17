@@ -19,7 +19,7 @@
       1. Enable IsAll when using Evict. 
 
       v0.1.1
-      1. Get caching with data retriever => without data retriever .
+      1. Get caching with data retriever =&gt; without data retriever .
       2. Caching Handle with async method.
       3. Introduct Able , Put And Evict.
 

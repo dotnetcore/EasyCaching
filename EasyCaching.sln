@@ -29,9 +29,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.InMemory",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Interceptor.AspectCore", "src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj", "{BED4832E-A790-42A6-978D-E0C1A215E638}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Sync.Redis", "src\EasyCaching.Sync.Redis\EasyCaching.Sync.Redis.csproj", "{07326A03-B144-469F-837B-31DD3E0EB1AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Bus.Redis", "src\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj", "{07326A03-B144-469F-837B-31DD3E0EB1AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Sync.RabbitMQ", "src\EasyCaching.Sync.RabbitMQ\EasyCaching.Sync.RabbitMQ.csproj", "{265FB0C5-2C34-438D-B671-63836954EB5A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Bus.RabbitMQ", "src\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj", "{265FB0C5-2C34-438D-B671-63836954EB5A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.SQLite", "sample\EasyCaching.Demo.SQLite\EasyCaching.Demo.SQLite.csproj", "{9DD08645-38D0-4EB8-8127-347512B1DF4C}"
 EndProject

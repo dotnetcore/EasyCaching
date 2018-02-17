@@ -58,13 +58,13 @@
 
             //TODO : Handle Parameters
             EasyCachingMessage message = new EasyCachingMessage()
-            { 
+            {
                 CacheKey = cacheKey,
                 CacheValue = cacheValue,
                 Expiration = expiration
             };
 
-            _subscriber.Publish(channel, _serializer.Serialize(message));    
+            _subscriber.Publish(channel, _serializer.Serialize(message));
         }
 
         /// <summary>
@@ -157,7 +157,7 @@
             var message = _serializer.Deserialize<EasyCachingMessage>(value);
 
             //TODO : add local cache
-            _localCachingProvider.Set(message.CacheKey,message.CacheValue,message.Expiration);
+            _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
         }
 
         /// <summary>
@@ -172,6 +172,6 @@
             //TODO : update local cache
             _localCachingProvider.Remove(message.CacheKey);
             _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
-        }  
+        }
     }
 }
