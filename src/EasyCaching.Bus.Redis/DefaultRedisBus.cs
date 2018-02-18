@@ -5,6 +5,9 @@
     using StackExchange.Redis;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Default redis bus.
+    /// </summary>
     public class DefaultRedisBus : IEasyCachingBus
     {
         /// <summary>

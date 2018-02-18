@@ -19,7 +19,7 @@
         private readonly IConnectionChannelPool _connectionChannelPool;
 
         /// <summary>
-        /// The rabbit MQB us options.
+        /// The rabbitMQ Bus options.
         /// </summary>
         private readonly RabbitMQBusOptions _rabbitMQBusOptions;
 
