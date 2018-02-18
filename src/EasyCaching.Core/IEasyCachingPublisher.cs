@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.Core
-{
-    using EasyCaching.Core.Internal;
+{    
     using System;
     using System.Threading.Tasks;
 
@@ -10,23 +9,21 @@
     public interface IEasyCachingPublisher
     {
         /// <summary>
-        /// Publish the specified channel, cacheKey, cacheValue and expiration.
+        /// Publish the specified channel and message.
         /// </summary>
         /// <returns>The publish.</returns>
         /// <param name="channel">Channel.</param>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        void Publish<T>(string channel, string cacheKey, T cacheValue, TimeSpan expiration);
+        /// <param name="message">Message.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        void Publish(string channel, EasyCachingMessage message);
 
         /// <summary>
-        /// Publishs the async.
+        /// Publishs the specified channel and message async.
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="channel">Channel.</param>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        Task PublishAsync<T>(string channel, string cacheKey, T cacheValue, TimeSpan expiration);
+        /// <param name="message">Message.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        Task PublishAsync(string channel, EasyCachingMessage message);
     }
 }

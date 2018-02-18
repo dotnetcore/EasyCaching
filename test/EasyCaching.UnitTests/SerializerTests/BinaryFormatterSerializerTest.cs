@@ -1,7 +1,6 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Redis;
-    using Xunit; 
+    using EasyCaching.Core;
 
     public class BinaryFormatterSerializerTest : BaseSerializerTest
     {      
