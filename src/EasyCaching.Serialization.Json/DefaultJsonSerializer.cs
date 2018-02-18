@@ -4,8 +4,8 @@
     using System.Collections.Concurrent;
     using System.IO;
     using System.Text;
-    using System.Text.RegularExpressions;
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -16,7 +16,6 @@
         static readonly ConcurrentDictionary<string, Type> readCache = new ConcurrentDictionary<string, Type>();
         static readonly ConcurrentDictionary<Type, string> writeCache = new ConcurrentDictionary<Type, string>();
         static readonly JsonSerializer jsonSerializer = new JsonSerializer();
-        static readonly Regex SubtractFullNameRegex = new Regex(@", Version=\d+.\d+.\d+.\d+, Culture=\w+, PublicKeyToken=\w+", RegexOptions.Compiled);
 
         /// <summary>
         /// Deserialize the specified bytes.
@@ -37,9 +36,6 @@
         /// <summary>
         /// Deserializes the object.
         /// </summary>
-        /// <remarks>
-        /// This is following https://github.com/neuecc/MemcachedTranscoder.
-        /// </remarks>
         /// <returns>The object.</returns>
         /// <param name="value">Value.</param>
         public object DeserializeObject(ArraySegment<byte> value)
@@ -90,15 +86,12 @@
         /// <summary>
         /// Serializes the object.
         /// </summary>
-        /// <remarks>
-        /// This is following https://github.com/neuecc/MemcachedTranscoder.
-        /// </remarks>
         /// <returns>The object.</returns>
         /// <param name="obj">Object.</param>
         public ArraySegment<byte> SerializeObject(object obj)
         {
             var type = obj.GetType();
-            var typeName = writeCache.GetOrAdd(type, BuildTypeName); // Get type or Register type
+            var typeName = writeCache.GetOrAdd(type, TypeHelper.BuildTypeName); // Get type or Register type
 
             using (var ms = new MemoryStream())
             using (var tw = new StreamWriter(ms))
@@ -114,21 +107,6 @@
 
                 return new ArraySegment<byte>(ms.ToArray(), 0, (int)ms.Length);
             }
-        }
-
-        // see:http://msdn.microsoft.com/en-us/library/w3f99sx1.aspx
-        // subtract Version, Culture and PublicKeyToken from AssemblyQualifiedName 
-        /// <summary>
-        /// Builds the name of the type.
-        /// </summary>
-        /// <remarks>
-        /// This is following https://github.com/neuecc/MemcachedTranscoder.
-        /// </remarks>
-        /// <returns>The type name.</returns>
-        /// <param name="type">Type.</param>
-        internal static string BuildTypeName(Type type)
-        {
-            return SubtractFullNameRegex.Replace(type.AssemblyQualifiedName, "");
-        }
+        }              
     }
 }

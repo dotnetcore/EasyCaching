@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using System;
     using Xunit;
+    using ProtoBuf;
 
     public abstract class BaseSerializerTest
     {
@@ -50,8 +51,10 @@
     }
 
     [Serializable]
+    [ProtoContract]
     public class Model
     {
+        [ProtoMember(1)]
         public string Prop { get; set; }
     }
 }
