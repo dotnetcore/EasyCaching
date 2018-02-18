@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Sync.RabbitMQ
+﻿namespace EasyCaching.Bus.RabbitMQ
 {
     using EasyCaching.Core.Internal;
 

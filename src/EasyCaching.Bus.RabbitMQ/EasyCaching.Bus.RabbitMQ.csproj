@@ -22,5 +22,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
   </ItemGroup>
 </Project>

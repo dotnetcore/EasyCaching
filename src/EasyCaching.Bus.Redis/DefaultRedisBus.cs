@@ -1,10 +1,9 @@
-﻿namespace EasyCaching.Sync.Redis
-{
-    using System;
-    using System.Threading.Tasks;
+﻿namespace EasyCaching.Bus.Redis
+{    
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using StackExchange.Redis;
+    using System.Threading.Tasks;
 
     public class DefaultRedisBus : IEasyCachingBus
     {
@@ -45,69 +44,34 @@
         }
 
         /// <summary>
-        /// Publish the specified channel, cacheKey, cacheValue and expiration.
-        /// </summary>
-        /// <returns>The publish.</returns>
-        /// <param name="channel">Channel.</param>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        public void Publish<T>(string channel, string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(channel, nameof(channel));
-
-            //TODO : Handle Parameters
-            EasyCachingMessage message = new EasyCachingMessage()
-            {
-                CacheKey = cacheKey,
-                CacheValue = cacheValue,
-                Expiration = expiration
-            };
-
-            _subscriber.Publish(channel, _serializer.Serialize(message));
-        }
-
-        /// <summary>
-        /// Publishs the async.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="channel">Channel.</param>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        public async Task PublishAsync<T>(string channel, string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(channel, nameof(channel));
-
-            //TODO : Handle Parameters
-            EasyCachingMessage message = new EasyCachingMessage()
-            {
-                CacheKey = cacheKey,
-                CacheValue = cacheValue,
-                Expiration = expiration
-            };
-
-            await _subscriber.PublishAsync(channel, _serializer.Serialize(message));
-        }
-
-        /// <summary>
         /// Subscribe the specified channel and notifyType.
         /// </summary>
         /// <returns>The subscribe.</returns>
         /// <param name="channel">Channel.</param>
-        /// <param name="notifyType">Notify type.</param>
-        public void Subscribe(string channel, NotifyType notifyType)
+        public void Subscribe(string channel)
         {
-            switch (notifyType)
+            _subscriber.Subscribe(channel,SubscribeHandle);
+        }
+
+        /// <summary>
+        /// Subscribes the handle.
+        /// </summary>
+        /// <param name="channel">Channel.</param>
+        /// <param name="value">Value.</param>
+        private void SubscribeHandle(RedisChannel channel, RedisValue value)
+        {
+            var message = _serializer.Deserialize<EasyCachingMessage>(value);
+
+            switch(message.NotifyType)
             {
-                case NotifyType.Add:
-                    _subscriber.Subscribe(channel, CacheAddAction);
+                case NotifyType.Add:                    
+                    _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
                     break;
                 case NotifyType.Update:
-                    _subscriber.Subscribe(channel, CacheUpdateAction);
+                    _localCachingProvider.Refresh(message.CacheKey, message.CacheValue, message.Expiration);
                     break;
                 case NotifyType.Delete:
-                    _subscriber.Subscribe(channel, CacheDeleteAction);
+                    _localCachingProvider.Remove(message.CacheKey);
                     break;
             }
         }
@@ -117,61 +81,35 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="channel">Channel.</param>
-        /// <param name="notifyType">Notify type.</param>
-        public async Task SubscribeAsync(string channel, NotifyType notifyType)
+        public async Task SubscribeAsync(string channel)
         {
-            switch (notifyType)
-            {
-                case NotifyType.Add:
-                    await _subscriber.SubscribeAsync(channel, CacheAddAction);
-                    break;
-                case NotifyType.Update:
-                    await _subscriber.SubscribeAsync(channel, CacheUpdateAction);
-                    break;
-                case NotifyType.Delete:
-                    await _subscriber.SubscribeAsync(channel, CacheDeleteAction);
-                    break;
-            }
+            await _subscriber.SubscribeAsync(channel, SubscribeHandle);           
         }
 
         /// <summary>
-        /// Caches the delete action.
+        /// Publish the specified channel and message.
         /// </summary>
+        /// <returns>The publish.</returns>
         /// <param name="channel">Channel.</param>
-        /// <param name="value">Value.</param>
-        private void CacheDeleteAction(RedisChannel channel, RedisValue value)
+        /// <param name="message">Message.</param>
+        public void Publish(string channel, EasyCachingMessage message)
         {
-            var message = _serializer.Deserialize<EasyCachingMessage>(value);
+            ArgumentCheck.NotNullOrWhiteSpace(channel, nameof(channel));
 
-            //TODO : remove local cache
-            _localCachingProvider.Remove(message.CacheKey);
+            _subscriber.Publish(channel, _serializer.Serialize(message));
         }
 
         /// <summary>
-        /// Caches the add action.
+        /// Publishs the async.
         /// </summary>
+        /// <returns>The async.</returns>
         /// <param name="channel">Channel.</param>
-        /// <param name="value">Value.</param>
-        private void CacheAddAction(RedisChannel channel, RedisValue value)
+        /// <param name="message">Message.</param>
+        public async Task PublishAsync(string channel, EasyCachingMessage message)
         {
-            var message = _serializer.Deserialize<EasyCachingMessage>(value);
+            ArgumentCheck.NotNullOrWhiteSpace(channel, nameof(channel));
 
-            //TODO : add local cache
-            _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
-        }
-
-        /// <summary>
-        /// Caches the update action.
-        /// </summary>
-        /// <param name="channel">Channel.</param>
-        /// <param name="value">Value.</param>
-        private void CacheUpdateAction(RedisChannel channel, RedisValue value)
-        {
-            var message = _serializer.Deserialize<EasyCachingMessage>(value);
-
-            //TODO : update local cache
-            _localCachingProvider.Remove(message.CacheKey);
-            _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
+            await _subscriber.PublishAsync(channel, _serializer.Serialize(message));
         }
     }
 }

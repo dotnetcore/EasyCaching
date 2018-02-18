@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Sync.Redis
+﻿namespace EasyCaching.Bus.Redis
 {
     using StackExchange.Redis;
 

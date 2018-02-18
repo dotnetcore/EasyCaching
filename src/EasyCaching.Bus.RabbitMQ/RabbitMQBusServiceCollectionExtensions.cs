@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Bus.Redis
+﻿namespace EasyCaching.Bus.RabbitMQ
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
@@ -7,30 +7,29 @@
     using System;
 
     /// <summary>
-    /// Redis bus service collection extensions.
+    /// RabbitMQ Bus service collection extensions.
     /// </summary>
-    public static class RedisBusServiceCollectionExtensions
+    public static class RabbitMQBusServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the default redis bus.
+        /// Adds the default rabbitMQ Bus.
         /// </summary>
-        /// <returns>The default redis bus.</returns>
+        /// <returns>The default rabbit MQB us.</returns>
         /// <param name="services">Services.</param>
         /// <param name="optionsAction">Options action.</param>
-        public static IServiceCollection AddDefaultRedisBus(this IServiceCollection services, Action<RedisBusOptions> optionsAction)
+        public static IServiceCollection AddDefaultRabbitMQBus(this IServiceCollection services, Action<RabbitMQBusOptions> optionsAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
             ArgumentCheck.NotNull(optionsAction, nameof(optionsAction));
 
-            var options = new RedisBusOptions();
+            var options = new RabbitMQBusOptions();
             optionsAction?.Invoke(options);
             services.AddSingleton(options);
 
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-            services.TryAddSingleton<IEasyCachingBus, DefaultRedisBus>();
+            services.TryAddSingleton<IConnectionChannelPool, ConnectionChannelPool>();
+            services.TryAddSingleton<IEasyCachingBus, DefaultRabbitMQBus>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-            services.TryAddSingleton<IRedisSubscriberProvider, RedisSubscriberProvider>();
-            //services.TryAddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
 
             return services;
         }

@@ -1,7 +1,5 @@
-﻿namespace EasyCaching.Sync.Redis
+﻿namespace EasyCaching.Bus.Redis
 {
-    using EasyCaching.Core.Internal;
-    using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
 
@@ -24,9 +22,9 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisDatabaseProvider"/> class.
         /// </summary>
         /// <param name="options">Options.</param>
-        public RedisSubscriberProvider(IOptions<RedisBusOptions> options)
+        public RedisSubscriberProvider(RedisBusOptions options)
         {
-            _options = options.Value;
+            _options = options;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
         }
 
