@@ -24,7 +24,7 @@
             {                
                 op.AddServer("127.0.0.1",11211);
                 //specify the Transcoder use messagepack .
-                op.Transcoder = new MessagePackFormatterTranscoder(new DefaultMessagePackSerializer()) ;
+                op.Transcoder = new FormatterTranscoder(new DefaultMessagePackSerializer()) ;
             });
         }
 
