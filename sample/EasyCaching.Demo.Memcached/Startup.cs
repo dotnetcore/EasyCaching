@@ -19,12 +19,13 @@
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddDefaultMessagePackSerializer();
+
             services.AddDefaultMemcached(op=>
             {                
                 op.AddServer("127.0.0.1",11211);
                 //specify the Transcoder use messagepack .
-                op.Transcoder = new FormatterTranscoder(new DefaultMessagePackSerializer()) ;
+                op.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
+                op.SerializationType = "EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer,EasyCaching.Serialization.MessagePack";
             });
         }
 

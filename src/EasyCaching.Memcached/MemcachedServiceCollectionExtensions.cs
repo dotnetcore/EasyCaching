@@ -19,7 +19,7 @@
         /// <returns>The default redis cache.</returns>
         /// <param name="services">Services.</param>
         /// <param name="options">Options.</param>
-        public static IServiceCollection AddDefaultMemcached(this IServiceCollection services, Action<MemcachedClientOptions> options)
+        public static IServiceCollection AddDefaultMemcached(this IServiceCollection services, Action<EasyCachingMemcachedClientOptions> options)
         {
             ArgumentCheck.NotNull(services, nameof(services));
 
@@ -27,7 +27,7 @@
 
             services.AddOptions();
             services.Configure(options);
-            services.TryAddTransient<IMemcachedClientConfiguration, MemcachedClientConfiguration>();
+            services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
             services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
 
@@ -42,7 +42,7 @@
         /// <returns>The default memcached for hybrid.</returns>
         /// <param name="services">Services.</param>
         /// <param name="options">Options.</param>
-        public static IServiceCollection AddDefaultMemcachedForHybrid(this IServiceCollection services, Action<MemcachedClientOptions> options)
+        public static IServiceCollection AddDefaultMemcachedForHybrid(this IServiceCollection services, Action<EasyCachingMemcachedClientOptions> options)
         {
             ArgumentCheck.NotNull(services, nameof(services));
             ArgumentCheck.NotNull(options, nameof(options));
@@ -50,7 +50,7 @@
             services.AddOptions();
             services.Configure(options);
 
-            services.TryAddTransient<IMemcachedClientConfiguration, MemcachedClientConfiguration>();
+            services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
             services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
 
