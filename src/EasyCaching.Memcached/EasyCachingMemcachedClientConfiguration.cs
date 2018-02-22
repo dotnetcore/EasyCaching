@@ -17,7 +17,7 @@
         private Type nodeLocator;
         private ITranscoder _transcoder;
         private IMemcachedKeyTransformer keyTransformer;
-        private ILogger<MemcachedClientConfiguration> _logger;
+        private ILogger<EasyCachingMemcachedClientConfiguration> _logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:MemcachedClientConfiguration"/> class.
@@ -31,7 +31,7 @@
                 throw new ArgumentNullException(nameof(optionsAccessor));
             }
 
-            _logger = loggerFactory.CreateLogger<MemcachedClientConfiguration>();
+            _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
 
             var options = optionsAccessor.Value;
             Servers = new List<EndPoint>();
@@ -129,18 +129,38 @@
             {
                 try
                 {
+                    //Rewrite for FormatterTranscoder.
+                    //And looking forward for a more good wey for this.
+
+                    Type tmpType = null;
+
                     if (options.Transcoder == "BinaryFormatterTranscoder")
-                        options.Transcoder = "Enyim.Caching.Memcached.Transcoders.BinaryFormatterTranscoder";
-
-                    var serializationType = Type.GetType(options.SerializationType) ;
-                    if(serializationType!=null)
                     {
-                        var serializer = Activator.CreateInstance(serializationType) as IEasyCachingSerializer;
+                        options.Transcoder = "Enyim.Caching.Memcached.Transcoders.BinaryFormatterTranscoder,Enyim.Caching";
+                        tmpType = typeof(Enyim.Caching.Memcached.Transcoders.BinaryFormatterTranscoder);
+                    }
 
-                        var transcoderType = Type.GetType(options.Transcoder);
+                    if(!string.IsNullOrWhiteSpace(options.SerializationType))
+                    {
+                        var serializationType = Type.GetType(options.SerializationType);
+                        if (serializationType != null)
+                        {
+                            var serializer = Activator.CreateInstance(serializationType) as IEasyCachingSerializer;
+
+                            var transcoderType = Type.GetType(options.Transcoder);
+                            if (transcoderType != null)
+                            {
+                                Transcoder = Activator.CreateInstance(transcoderType, serializer) as ITranscoder;
+                                _logger.LogDebug($"Use '{options.Transcoder}'");
+                            }
+                        }
+                    }                  
+                    else
+                    {
+                        var transcoderType = tmpType ?? Type.GetType(options.Transcoder);
                         if (transcoderType != null)
                         {
-                            Transcoder = Activator.CreateInstance(transcoderType,serializer) as ITranscoder;
+                            Transcoder = Activator.CreateInstance(transcoderType) as ITranscoder;
                             _logger.LogDebug($"Use '{options.Transcoder}'");
                         }
                     }
@@ -168,10 +188,10 @@
         }
 
         /// <summary>
-        /// Adds a new server to the pool.
+        /// Adds the server.
         /// </summary>
-        /// <param name="address">The host name or IP address of the server.</param>
-        /// <param name="port">The port number of the memcached instance.</param>
+        /// <param name="host">Host.</param>
+        /// <param name="port">Port.</param>
         public void AddServer(string host, int port)
         {
             this.Servers.Add(ConfigurationHelper.ResolveToEndPoint(host, port));
