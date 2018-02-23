@@ -298,10 +298,9 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            foreach (var server in _servers)
-            {
-                this.HandleKeyDelWithTran(server, prefix);
-            }
+            var redisKeys = this.SearchRedisKeys(prefix);
+
+            _cache.KeyDelete(redisKeys);    
         }
 
         /// <summary>
@@ -314,65 +313,35 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            foreach (var server in _servers)
-            {
-                await this.HandleKeyDelWithTranAsync(server, prefix);
-            }
+            var redisKeys = this.SearchRedisKeys(prefix);
+
+            await _cache.KeyDeleteAsync(redisKeys);    
         }
 
         /// <summary>
-        /// Delete keys of Redis using transaction.
+        /// Searchs the redis keys.
         /// </summary>
-        /// <param name="server">Server.</param>
-        /// <param name="prefix">Prefix.</param>
-        private void HandleKeyDelWithTran(IServer server, string prefix)
+        /// <returns>The redis keys.</returns>
+        /// <param name="pattern">Pattern.</param>
+        private RedisKey[] SearchRedisKeys(string pattern)
         {
-            int count = 1;
+            var keys = new HashSet<RedisKey>();
+
+            int nextCursor = 0;
             do
             {
-                var keys = server.Keys(pattern: prefix, pageSize: 100);
-                count = keys.Count();
-                if (count > 0)
-                {
-                    var tran = _cache.CreateTransaction();
+                RedisResult redisResult = _cache.Execute("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
+                var innerResult = (RedisResult[])redisResult;
 
-                    tran.KeyDeleteAsync(keys.ToArray());
+                nextCursor = int.Parse((string)innerResult[0]);
 
-                    tran.Execute(CommandFlags.FireAndForget);
-                }
+                List<RedisKey> resultLines = ((RedisKey[])innerResult[1]).ToList();
+
+                keys.UnionWith(resultLines);
             }
-            while (count <= 0);
-        }
+            while (nextCursor != 0);
 
-        /// <summary>
-        /// Delete keys of Redis using transaction async.
-        /// </summary>
-        /// <returns>The key del with tran async.</returns>
-        /// <param name="server">Server.</param>
-        /// <param name="prefix">Prefix.</param>
-        private async Task HandleKeyDelWithTranAsync(IServer server, string prefix)
-        {
-            int count = 1;
-            do
-            {
-                var keys = server.Keys(pattern: prefix, pageSize: 100);
-                count = keys.Count();
-                if (count > 0)
-                {
-                    var tran = _cache.CreateTransaction();
-
-                    Task delTask = tran.KeyDeleteAsync(keys.ToArray());
-
-                    Task execTask = tran.ExecuteAsync(CommandFlags.FireAndForget);
-
-                    await Task.WhenAll(delTask, execTask);
-
-                    //await tran.KeyDeleteAsync(keys.ToArray());
-
-                    //await tran.ExecuteAsync(CommandFlags.FireAndForget);
-                }
-            }
-            while (count <= 0);
+            return keys.ToArray();
         }
 
         /// <summary>
