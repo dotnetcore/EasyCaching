@@ -364,5 +364,45 @@
 
             return prefix;
         }
+
+        public void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAll(IEnumerable<string> cacheKeys)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
