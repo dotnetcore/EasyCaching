@@ -385,12 +385,12 @@
             throw new NotImplementedException();
         }
 
-        public IEnumerable<CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
+        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
         {
             throw new NotImplementedException();
         }

@@ -167,7 +167,7 @@
         /// <returns>The by prefix.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        IEnumerable<CacheValue<T>> GetByPrefix<T>(string prefix) where T : class;
+        IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class;
 
         /// <summary>
         /// Gets the by prefix async.
@@ -175,7 +175,7 @@
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<IEnumerable<CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class;
+        Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class;
 
         /// <summary>
         /// Removes all.

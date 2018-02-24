@@ -373,19 +373,19 @@
         /// <returns>The by prefix.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public IEnumerable<CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
+        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
         {
-            var list = new List<CacheValue<T>>();
+            var map = new Dictionary<string, CacheValue<T>>();
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
             if (keys.Count() > 0)
             {                
                 foreach (var item in keys)
                 {
-                    list.Add(this.Get<T>(item));
+                    map[item] = this.Get<T>(item);
                 }
             }
-            return list;
+            return map;
         }
 
         /// <summary>
@@ -394,23 +394,21 @@
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public Task<IEnumerable<CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
         {            
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
 
-            var tasks = new List<Task<CacheValue<T>>>();
+            var map = new Dictionary<string, Task<CacheValue<T>>>();
 
             if (keys.Count() > 0)
             {
-                foreach (var item in keys)
-                {
-                    tasks.Add(GetAsync<T>(item));
-                }
+                foreach (string key in keys)
+                    map[key] = GetAsync<T>(key);
             }
 
-            return Task.WhenAll(tasks)
-               .ContinueWith<IEnumerable<CacheValue<T>>>(t=>
-                    tasks.Select(x=>x.Result).ToList(), TaskContinuationOptions.OnlyOnRanToCompletion);
+            return Task.WhenAll(map.Values)
+                .ContinueWith<IDictionary<string, CacheValue<T>>>(t =>
+                    map.ToDictionary(k => k.Key, v => v.Value.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         /// <summary>
