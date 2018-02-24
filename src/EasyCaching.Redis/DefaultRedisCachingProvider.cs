@@ -300,7 +300,7 @@
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
-            _cache.KeyDelete(redisKeys);    
+            _cache.KeyDelete(redisKeys);
         }
 
         /// <summary>
@@ -315,7 +315,7 @@
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
-            await _cache.KeyDeleteAsync(redisKeys);    
+            await _cache.KeyDeleteAsync(redisKeys);
         }
 
         /// <summary>
@@ -365,44 +365,162 @@
             return prefix;
         }
 
-        public void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class
+        /// <summary>
+        /// Sets all.
+        /// </summary>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
-            throw new NotImplementedException();
+            var batch = _cache.CreateBatch();
+
+            foreach (var item in values)
+                batch.StringSetAsync(item.Key, _serializer.Serialize(item.Value), expiration);
+
+            batch.Execute();
         }
 
-        public Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class
+        /// <summary>
+        /// Sets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
-            throw new NotImplementedException();
+            var tasks = new List<Task>();
+
+            foreach (var item in values)
+                tasks.Add(SetAsync(item.Key, item.Value, expiration));
+
+            await Task.WhenAll(tasks);
         }
 
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
         {
-            throw new NotImplementedException();
+            var keyArray = cacheKeys.ToArray();
+            var values = _cache.StringGet(keyArray.Select(k => (RedisKey)k).ToArray());
+
+            var result = new Dictionary<string, CacheValue<T>>();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                var cachedValue = values[i];
+                if (!cachedValue.IsNull)
+                    result.Add(keyArray[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
+                else
+                    result.Add(keyArray[i], CacheValue<T>.NoValue);
+            }
+
+            return result;
         }
 
-        public Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
+        /// <summary>
+        /// Gets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
         {
-            throw new NotImplementedException();
+            var keyArray = cacheKeys.ToArray();
+            var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey)k).ToArray());
+
+            var result = new Dictionary<string, CacheValue<T>>();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                var cachedValue = values[i];
+                if (!cachedValue.IsNull)
+                    result.Add(keyArray[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
+                else
+                    result.Add(keyArray[i], CacheValue<T>.NoValue);
+            }
+
+            return result;
         }
 
+        /// <summary>
+        /// Gets the by prefix.
+        /// </summary>
+        /// <returns>The by prefix.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
         {
-            throw new NotImplementedException();
+            prefix = this.HandlePrefix(prefix);
+
+            var redisKeys = this.SearchRedisKeys(prefix);
+
+            var values = _cache.StringGet(redisKeys).ToArray();
+
+            var result = new Dictionary<string, CacheValue<T>>();
+            for (int i = 0; i < redisKeys.Length; i++)
+            {
+                var cachedValue = values[i];
+                if (!cachedValue.IsNull)
+                    result.Add(redisKeys[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
+                else
+                    result.Add(redisKeys[i], CacheValue<T>.NoValue);
+            }
+
+            return result;
         }
 
-        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        /// <summary>
+        /// Gets the by prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
         {
-            throw new NotImplementedException();
+            prefix = this.HandlePrefix(prefix);
+
+            var redisKeys = this.SearchRedisKeys(prefix);
+
+            var values = (await _cache.StringGetAsync(redisKeys)).ToArray();
+
+            var result = new Dictionary<string, CacheValue<T>>();
+            for (int i = 0; i < redisKeys.Length; i++)
+            {
+                var cachedValue = values[i];
+                if (!cachedValue.IsNull)
+                    result.Add(redisKeys[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
+                else
+                    result.Add(redisKeys[i], CacheValue<T>.NoValue);
+            }
+
+            return result;
         }
 
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="cacheKeys">Cache keys.</param>
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
-            throw new NotImplementedException();
+            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
+            if (redisKeys.Length > 0)
+                _cache.KeyDelete(redisKeys);
         }
 
-        public Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        /// <summary>
+        /// Removes all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
-            throw new NotImplementedException();
+            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
+            if (redisKeys.Length > 0)
+                await _cache.KeyDeleteAsync(redisKeys);
         }
     }
 }
