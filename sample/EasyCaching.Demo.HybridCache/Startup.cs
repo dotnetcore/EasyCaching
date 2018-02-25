@@ -42,7 +42,7 @@
                 {
                     if(key.Equals(HybridCachingKeyType.LocalKey))
                     {
-                        return factory.GetService<InMemoryCachingProvider>();
+                        return factory.GetService<DefaultInMemoryCachingProvider>();
                     }
                     else if(key.Equals(HybridCachingKeyType.DistributedKey))
                     {

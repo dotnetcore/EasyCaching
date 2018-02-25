@@ -14,7 +14,7 @@ namespace EasyCaching.UnitTests
         public MemoryCachingProviderTest()
         {
             var cache = new MemoryCache(new MemoryCacheOptions());
-            _provider = new InMemoryCachingProvider(cache);
+            _provider = new DefaultInMemoryCachingProvider(cache);
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 

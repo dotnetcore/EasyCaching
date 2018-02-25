@@ -11,7 +11,7 @@
     /// <summary>
     /// MemoryCaching provider.
     /// </summary>
-    public class InMemoryCachingProvider : IEasyCachingProvider
+    public class DefaultInMemoryCachingProvider : IEasyCachingProvider
     {
         /// <summary>
         /// The MemoryCache.
@@ -34,7 +34,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
         /// </summary>
         /// <param name="cache">Microsoft MemoryCache.</param>
-        public InMemoryCachingProvider(IMemoryCache cache)
+        public DefaultInMemoryCachingProvider(IMemoryCache cache)
         {
             this._cache = cache;
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
@@ -294,10 +294,11 @@
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
             if (keys.Count() > 0)
             {
+                var tasks = new List<Task>();
                 foreach (var item in keys)
-                {
-                    await this.RemoveAsync(item);
-                }
+                    tasks.Add(RemoveAsync(item));
+
+                await Task.WhenAll(tasks);
             }
         }
 

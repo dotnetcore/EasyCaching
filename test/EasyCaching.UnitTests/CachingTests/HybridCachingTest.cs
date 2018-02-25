@@ -34,7 +34,7 @@
 
             var serviceAccessor = A.Fake<Func<string, IEasyCachingProvider>>();
 
-            A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new InMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
+            A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
             A.CallTo(() => serviceAccessor(HybridCachingKeyType.DistributedKey)).Returns(new DefaultRedisCachingProvider(fakeDbProvider,serializer));
 
             _provider = new HybridCachingProvider(serviceAccessor);
