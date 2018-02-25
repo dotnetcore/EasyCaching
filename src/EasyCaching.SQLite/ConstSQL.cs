@@ -27,6 +27,20 @@
                     WHERE [cachekey] = @cachekey AND [expiration] > strftime('%s','now')";
 
         /// <summary>
+        /// The getallsql.
+        /// </summary>
+        public const string GETALLSQL = @"SELECT [cachekey],[cachevalue]
+                    FROM [easycaching]
+                    WHERE [cachekey] IN (@cachekey) AND [expiration] > strftime('%s','now')";
+        
+        /// <summary>
+        /// The getbyprefixsql.
+        /// </summary>
+        public const string GETBYPREFIXSQL = @"SELECT [cachekey],[cachevalue]
+                    FROM [easycaching]
+                    WHERE [cachekey] LIKE @cachekey AND [expiration] > strftime('%s','now')";
+
+        /// <summary>
         /// The removesql.
         /// </summary>
         public const string REMOVESQL = @"DELETE FROM [easycaching] WHERE [cachekey] = @cachekey ";
