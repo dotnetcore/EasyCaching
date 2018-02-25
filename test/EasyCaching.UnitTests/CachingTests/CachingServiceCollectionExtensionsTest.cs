@@ -58,7 +58,7 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var provider = serviceProvider.GetService<IEasyCachingProvider>();
 
-            Assert.IsType<SQLiteCachingProvider>(provider);
+            Assert.IsType<DefaultSQLiteCachingProvider>(provider);
         }
 
         [Fact]
@@ -168,7 +168,7 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var func = serviceProvider.GetService<Func<string, IEasyCachingProvider>>();
 
-            Assert.IsType<SQLiteCachingProvider>(func(HybridCachingKeyType.LocalKey));
+            Assert.IsType<DefaultSQLiteCachingProvider>(func(HybridCachingKeyType.LocalKey));
         }
 
         [Fact]
@@ -200,7 +200,7 @@
                     }
                     else if (type == 3)
                     {
-                        return factory.GetService<SQLiteCachingProvider>();
+                        return factory.GetService<DefaultSQLiteCachingProvider>();
                     }
                     else
                     {

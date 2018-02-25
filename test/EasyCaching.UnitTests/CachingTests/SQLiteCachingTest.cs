@@ -32,7 +32,7 @@
             }
             conn.Execute(ConstSQL.CREATESQL);
 
-            _provider = new SQLiteCachingProvider(_dbProvider);
+            _provider = new DefaultSQLiteCachingProvider(_dbProvider);
             _defaultTs = TimeSpan.FromSeconds(50);
         }
 

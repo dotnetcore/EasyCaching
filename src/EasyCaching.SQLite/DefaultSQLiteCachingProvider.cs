@@ -12,7 +12,7 @@
     /// <summary>
     /// SQLiteCaching provider.
     /// </summary>
-    public class SQLiteCachingProvider : IEasyCachingProvider
+    public class DefaultSQLiteCachingProvider : IEasyCachingProvider
     {
         /// <summary>
         /// The cache.
@@ -28,7 +28,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
         /// </summary>
         /// <param name="dbProvider">dbProvider.</param>
-        public SQLiteCachingProvider(ISQLiteDatabaseProvider dbProvider)
+        public DefaultSQLiteCachingProvider(ISQLiteDatabaseProvider dbProvider)
         {
             this._dbProvider = dbProvider;
             this._cache = _dbProvider.GetConnection();
