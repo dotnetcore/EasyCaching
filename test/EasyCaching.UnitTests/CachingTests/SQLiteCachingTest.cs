@@ -6,6 +6,8 @@
     using System;
     using Xunit;
     using System.Threading.Tasks;
+    using System.Collections.Generic;
+    using System.Linq;
 
     public class SQLiteCachingTest : BaseCachingProviderTest
     {
@@ -233,6 +235,145 @@
             Assert.False(res1.HasValue);
             Assert.False(res2.HasValue);
             Assert.True(res3.HasValue);
+        }
+
+        [Fact]
+        public void SetAll_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            _provider.SetAll(dict, _defaultTs);
+
+            var res1 = _provider.Get<string>("key:1");
+            var res2 = _provider.Get<string>("key:2");
+
+            Assert.Equal("value1", res1.Value);
+            Assert.Equal("value2", res2.Value);
+        }
+
+        [Fact]
+        public async Task SetAllAsync_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            await _provider.SetAllAsync(dict, _defaultTs);
+
+            var res1 = _provider.Get<string>("key:1");
+            var res2 = _provider.Get<string>("key:2");
+
+            Assert.Equal("value1", res1.Value);
+            Assert.Equal("value2", res2.Value);
+        }
+
+        [Fact]
+        public void GetAll_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            _provider.SetAll(dict, _defaultTs);
+
+            var res = _provider.GetAll<string>(new List<string> { "key:1", "key:2" });
+
+            Assert.Equal(2, res.Count);
+
+            Assert.True(res.Select(x => x.Key).Contains("key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("key:2"));
+            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+        }
+
+        [Fact]
+        public async Task GetAllAsync_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            _provider.SetAll(dict, _defaultTs);
+
+            var res = await _provider.GetAllAsync<string>(new List<string> { "key:1", "key:2" });
+
+            Assert.Equal(2, res.Count);
+
+            Assert.True(res.Select(x => x.Key).Contains("key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("key:2"));
+            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+        }
+
+        [Fact]
+        public void GetByPrefix_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            _provider.SetAll(dict, _defaultTs);
+
+            string prefix = "key:";
+
+            var res = _provider.GetByPrefix<string>(prefix);
+
+            Assert.Equal(2, res.Count);
+            Assert.True(res.Select(x => x.Key).Contains("key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("key:2"));
+            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+        }
+
+        [Fact]
+        public async Task GetByPrefixAsync_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            _provider.SetAll(dict, _defaultTs);
+
+            string prefix = "key:";
+
+            var res = await _provider.GetByPrefixAsync<string>(prefix);
+
+            Assert.Equal(2, res.Count);
+            Assert.True(res.Select(x => x.Key).Contains("key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("key:2"));
+            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+        }
+
+        [Fact]
+        public void RemoveAll_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            _provider.SetAll(dict, _defaultTs);
+
+            _provider.RemoveAll(new List<string> { "key:1", "key:2" });
+
+            var res1 = _provider.Get<string>("key:1");
+            var res2 = _provider.Get<string>("key:2");
+
+            Assert.False(res1.HasValue);
+            Assert.False(res2.HasValue);
+        }
+
+        [Fact]
+        public async Task RemoveAllAsync_Should_Succeed()
+        {
+            var dict = GetMultiDict();
+
+            _provider.SetAll(dict, _defaultTs);
+
+            await _provider.RemoveAllAsync(new List<string> { "key:1", "key:2" });
+
+            var res1 = _provider.Get<string>("key:1");
+            var res2 = _provider.Get<string>("key:2");
+
+            Assert.False(res1.HasValue);
+            Assert.False(res2.HasValue);
+        }
+              
+        private Dictionary<string, string> GetMultiDict()
+        {
+            return new Dictionary<string, string>()
+            {
+                {"key:1","value1"},
+                {"key:2","value2"}
+            };
         }
     }
 }

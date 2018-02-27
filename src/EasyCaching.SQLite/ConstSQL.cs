@@ -31,7 +31,7 @@
         /// </summary>
         public const string GETALLSQL = @"SELECT [cachekey],[cachevalue]
                     FROM [easycaching]
-                    WHERE [cachekey] IN (@cachekey) AND [expiration] > strftime('%s','now')";
+                    WHERE [cachekey] IN @cachekey AND [expiration] > strftime('%s','now')";
         
         /// <summary>
         /// The getbyprefixsql.

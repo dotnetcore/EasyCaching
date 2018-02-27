@@ -394,7 +394,7 @@
 
             var list = _cache.Query(ConstSQL.GETALLSQL, new
             {
-                cachekey = string.Join(",", cacheKeys)
+                cachekey = cacheKeys.ToArray()
             }).ToList();
 
             return GetDict<T>(list);
@@ -413,7 +413,7 @@
 
             var list = (await _cache.QueryAsync(ConstSQL.GETALLSQL, new
             {
-                cachekey = string.Join(",", cacheKeys)
+                cachekey = cacheKeys.ToArray()
             })).ToList();
 
             return GetDict<T>(list);
