@@ -12,16 +12,7 @@
     /// Default protobuf serializer.
     /// </summary>
     public class DefaultProtobufSerializer : IEasyCachingSerializer
-    {        
-        /// <summary>
-        /// The read cache.
-        /// </summary>
-        static readonly ConcurrentDictionary<ArraySegment<byte>, Type> readCache = new ConcurrentDictionary<ArraySegment<byte>, Type>(new ByteSegmentComparer());
-        /// <summary>
-        /// The write cache.
-        /// </summary>
-        static readonly ConcurrentDictionary<Type, byte[]> writeCache = new ConcurrentDictionary<Type, byte[]>();
-
+    {
         /// <summary>
         /// Deserialize the specified bytes.
         /// </summary>
@@ -33,24 +24,6 @@
             using (MemoryStream ms = new MemoryStream(bytes))
             {
                 return Serializer.Deserialize<T>(ms);
-            }
-        }
-
-        /// <summary>
-        /// Deserializes the object.
-        /// </summary>
-        /// <returns>The object.</returns>
-        /// <param name="value">Value.</param>
-        public object DeserializeObject(ArraySegment<byte> value)
-        {
-            var raw = value.Array;
-            var count = value.Count;
-            var offset = value.Offset;
-            var type = ReadType(raw, ref offset, ref count);
-
-            using (var ms = new MemoryStream(raw, offset, count, writable: false))
-            {                
-                return Serializer.NonGeneric.Deserialize(type, ms);
             }
         }
 
@@ -69,6 +42,7 @@
             }
         }
 
+        #region Mainly For Memcached       
         /// <summary>
         /// Serializes the object.
         /// </summary>
@@ -82,6 +56,24 @@
                 Serializer.NonGeneric.Serialize(ms, obj);
 
                 return new ArraySegment<byte>(ms.ToArray(), 0, (int)ms.Length);
+            }
+        }
+
+        /// <summary>
+        /// Deserializes the object.
+        /// </summary>
+        /// <returns>The object.</returns>
+        /// <param name="value">Value.</param>
+        public object DeserializeObject(ArraySegment<byte> value)
+        {
+            var raw = value.Array;
+            var count = value.Count;
+            var offset = value.Offset;
+            var type = ReadType(raw, ref offset, ref count);
+
+            using (var ms = new MemoryStream(raw, offset, count, writable: false))
+            {
+                return Serializer.NonGeneric.Deserialize(type, ms);
             }
         }
 
@@ -109,20 +101,10 @@
 
             // avoid encode string
             var key = new ArraySegment<byte>(buffer, keyOffset, len);
-            Type type;
-            if (!readCache.TryGetValue(key, out type))
-            {
-                var typeName = Encoding.UTF8.GetString(key.Array, key.Offset, key.Count);
-                type = Type.GetType(typeName, throwOnError: true);
 
-                // create ArraySegment has only typeName
-                var cacheBuffer = new byte[key.Count];
-                Buffer.BlockCopy(key.Array, key.Offset, cacheBuffer, 0, key.Count);
-                key = new ArraySegment<byte>(cacheBuffer, 0, cacheBuffer.Length);
-                readCache.TryAdd(key, type);
-            }
+            var typeName = Encoding.UTF8.GetString(key.Array, key.Offset, key.Count);
 
-            return type;
+            return Type.GetType(typeName, throwOnError: true);
         }
 
         /// <summary>
@@ -132,12 +114,8 @@
         /// <param name="type">Type.</param>
         private void WriteType(MemoryStream ms, Type type)
         {
-            var typeArray = writeCache.GetOrAdd(type, x =>
-            {
-                var typeName = TypeHelper.BuildTypeName(x);
-                var buffer = Encoding.UTF8 .GetBytes(typeName);
-                return buffer;
-            });
+            var typeName = TypeHelper.BuildTypeName(type);
+            var typeArray = Encoding.UTF8.GetBytes(typeName);
 
             var len = typeArray.Length;
             // BinaryWrite Int32
@@ -147,6 +125,7 @@
             ms.WriteByte((byte)(len >> 24));
             // BinaryWrite String
             ms.Write(typeArray, 0, len);
-        } 
+        }
+        #endregion
     }
 }

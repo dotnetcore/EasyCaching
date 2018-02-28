@@ -13,8 +13,9 @@
     /// </summary>
     public class DefaultJsonSerializer : IEasyCachingSerializer
     {
-        static readonly ConcurrentDictionary<string, Type> readCache = new ConcurrentDictionary<string, Type>();
-        static readonly ConcurrentDictionary<Type, string> writeCache = new ConcurrentDictionary<Type, string>();
+        /// <summary>
+        /// The json serializer.
+        /// </summary>
         static readonly JsonSerializer jsonSerializer = new JsonSerializer();
 
         /// <summary>
@@ -30,37 +31,6 @@
             using (var jtr = new JsonTextReader(sr))
             {
                 return jsonSerializer.Deserialize<T>(jtr);
-            }
-        }
-
-        /// <summary>
-        /// Deserializes the object.
-        /// </summary>
-        /// <returns>The object.</returns>
-        /// <param name="value">Value.</param>
-        public object DeserializeObject(ArraySegment<byte> value)
-        {
-            using (var ms = new MemoryStream(value.Array, value.Offset, value.Count, writable: false))
-            using (var tr = new StreamReader(ms))
-            using (var jr = new JsonTextReader(tr))
-            {
-                jr.Read();
-                if (jr.TokenType == JsonToken.StartArray)
-                {
-                    // read type
-                    var typeName = jr.ReadAsString();
-                    var type = readCache.GetOrAdd(typeName, x => Type.GetType(x, throwOnError: true)); // Get type or Register type
-
-                    // read object
-                    jr.Read();
-                    var deserializedValue = jsonSerializer.Deserialize(jr, type);
-
-                    return deserializedValue;
-                }
-                else
-                {
-                    throw new InvalidDataException("JsonTranscoder only supports [\"TypeName\", object]");
-                }
             }
         }
 
@@ -82,7 +52,7 @@
                 return ms.ToArray();
             }
         }
-
+        #region Mainly For Memcached  
         /// <summary>
         /// Serializes the object.
         /// </summary>
@@ -90,8 +60,7 @@
         /// <param name="obj">Object.</param>
         public ArraySegment<byte> SerializeObject(object obj)
         {
-            var type = obj.GetType();
-            var typeName = writeCache.GetOrAdd(type, TypeHelper.BuildTypeName); // Get type or Register type
+            var typeName = TypeHelper.BuildTypeName(obj.GetType()); // Get type 
 
             using (var ms = new MemoryStream())
             using (var tw = new StreamWriter(ms))
@@ -107,6 +76,36 @@
 
                 return new ArraySegment<byte>(ms.ToArray(), 0, (int)ms.Length);
             }
-        }              
+        }
+
+        /// <summary>
+        /// Deserializes the object.
+        /// </summary>
+        /// <returns>The object.</returns>
+        /// <param name="value">Value.</param>
+        public object DeserializeObject(ArraySegment<byte> value)
+        {
+            using (var ms = new MemoryStream(value.Array, value.Offset, value.Count, writable: false))
+            using (var tr = new StreamReader(ms))
+            using (var jr = new JsonTextReader(tr))
+            {
+                jr.Read();
+                if (jr.TokenType == JsonToken.StartArray)
+                {
+                    // read type
+                    var typeName = jr.ReadAsString();
+                    var type = Type.GetType(typeName, throwOnError: true);// Get type
+
+                    // read object
+                    jr.Read();
+                    return jsonSerializer.Deserialize(jr, type);
+                }
+                else
+                {
+                    throw new InvalidDataException("JsonTranscoder only supports [\"TypeName\", object]");
+                }
+            }
+        }
+        #endregion           
     }
 }
