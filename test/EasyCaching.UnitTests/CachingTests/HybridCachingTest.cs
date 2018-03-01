@@ -41,53 +41,53 @@
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        [Fact]
-        protected override void SetAll_Should_Succeed()
-        {
+        //[Fact]
+        //protected override void SetAll_Should_Succeed()
+        //{
 
-        }
+        //}
 
-        [Fact]
-        protected override async Task SetAllAsync_Should_Succeed()
-        {
-            await Task.FromResult(1);
-        }
+        //[Fact]
+        //protected override async Task SetAllAsync_Should_Succeed()
+        //{
+        //    await Task.FromResult(1);
+        //}
 
-        [Fact]
-        protected override void GetAll_Should_Succeed()
-        {
+        //[Fact]
+        //protected override void GetAll_Should_Succeed()
+        //{
 
-        }
+        //}
 
-        [Fact]
-        protected override async Task GetAllAsync_Should_Succeed()
-        {
-            await Task.FromResult(1);
-        }
+        //[Fact]
+        //protected override async Task GetAllAsync_Should_Succeed()
+        //{
+        //    await Task.FromResult(1);
+        //}
 
-        [Fact]
-        protected override void GetByPrefix_Should_Succeed()
-        {
+        //[Fact]
+        //protected override void GetByPrefix_Should_Succeed()
+        //{
 
-        }
+        //}
 
-        [Fact]
-        protected override async Task GetByPrefixAsync_Should_Succeed()
-        {
-            await Task.FromResult(1);
-        }
+        //[Fact]
+        //protected override async Task GetByPrefixAsync_Should_Succeed()
+        //{
+        //    await Task.FromResult(1);
+        //}
 
-        [Fact]
-        protected override void RemoveAll_Should_Succeed()
-        {
+        //[Fact]
+        //protected override void RemoveAll_Should_Succeed()
+        //{
 
-        }
+        //}
 
-        [Fact]
-        protected override async Task RemoveAllAsync_Should_Succeed()
-        {
-            await Task.FromResult(1);
-        }
+        //[Fact]
+        //protected override async Task RemoveAllAsync_Should_Succeed()
+        //{
+        //    await Task.FromResult(1);
+        //}
 
 
     }
