@@ -2,10 +2,7 @@
 {
     using EasyCaching.Core;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
-    using System.Collections.Generic;
-    using System.Reflection;
 
     /// <summary>
     /// Protobuf serializer service collection extensions.
@@ -24,7 +21,7 @@
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultProtobufSerializer>();
+            services.AddSingleton<IEasyCachingSerializer, DefaultProtobufSerializer>();
 
             return services;
         }
