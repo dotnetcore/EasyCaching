@@ -1,4 +1,4 @@
-# Welcome to Ocelot
+# Welcome to EasyCaching
 
 Thanks for taking a look at the EasyCaching documentation. 
 
