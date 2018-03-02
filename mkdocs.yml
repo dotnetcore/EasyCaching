@@ -15,4 +15,7 @@ pages:
     - AspectCore : AspectCore.md
     - Castle : Castle.md
 - Caching Serializer:
+    - BinaryFormatrer : BinaryFormatrer.md
     - MessagePack : MessagePack.md
+    - Json : Json.md
+    - Protobuf : Protobuf.md
