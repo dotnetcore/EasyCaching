@@ -4,9 +4,11 @@
     using EasyCaching.Core.Internal;
     using Enyim.Caching;
     using System;
+    using System.Collections.Generic;
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
+    using System.Linq;
 
     /// <summary>
     /// Default memcached caching provider.
@@ -322,6 +324,133 @@
             }
 
             return cacheKey;
+        }
+
+        /// <summary>
+        /// Sets all.
+        /// </summary>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            foreach (var item in values)
+            {
+                Set(item.Key, item.Value, expiration);
+            }
+        }
+
+        /// <summary>
+        /// Sets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            var tasks = new List<Task>();
+            foreach (var item in values)
+            {
+                tasks.Add(SetAsync(item.Key, item.Value, expiration));
+            }
+            await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            var values = _memcachedClient.Get<T>(cacheKeys);
+            var result = new Dictionary<string, CacheValue<T>>();
+
+            foreach (var item in values)
+            {
+                if (item.Value != null)
+                    result.Add(item.Key,new CacheValue<T>(item.Value, true));                
+                else
+                    result.Add(item.Key,CacheValue<T>.NoValue);                                                 
+            }
+            
+            return result; 
+        }
+
+        /// <summary>
+        /// Gets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            var values = await _memcachedClient.GetAsync<T>(cacheKeys);
+            var result = new Dictionary<string, CacheValue<T>>();
+
+            foreach (var item in values)
+            {
+                if (item.Value != null)
+                    result.Add(item.Key,new CacheValue<T>(item.Value, true));                
+                else
+                    result.Add(item.Key,CacheValue<T>.NoValue);                                                 
+            }
+            
+            return result; 
+        }
+
+        /// <summary>
+        /// Gets the by prefix.
+        /// </summary>
+        /// <returns>The by prefix.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Gets the by prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public void RemoveAll(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            foreach (var item in cacheKeys.Distinct())
+                Remove(item);            
+        }
+
+        /// <summary>
+        /// Removes all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            var tasks = new List<Task>();
+            foreach (var item in cacheKeys.Distinct())
+                tasks.Add(RemoveAsync(item));            
+
+            await Task.WhenAll(tasks);
         }
     }
 }

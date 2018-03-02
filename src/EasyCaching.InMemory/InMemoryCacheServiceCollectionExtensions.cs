@@ -20,7 +20,7 @@
             ArgumentCheck.NotNull(services, nameof(services));
 
             services.AddMemoryCache();
-            services.TryAddSingleton<IEasyCachingProvider, InMemoryCachingProvider>();
+            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
 
             return services;
         }
@@ -35,7 +35,7 @@
             ArgumentCheck.NotNull(services, nameof(services));
 
             services.AddMemoryCache();
-            services.TryAddSingleton<InMemoryCachingProvider>();
+            services.TryAddSingleton<DefaultInMemoryCachingProvider>();
 
             //services.AddSingleton(factory =>
             //{

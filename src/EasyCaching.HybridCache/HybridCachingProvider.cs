@@ -1,8 +1,10 @@
 ﻿namespace EasyCaching.HybridCache
-{ 
+{
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;    
+    using EasyCaching.Core.Internal;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -51,13 +53,13 @@
         /// <param name="cacheKey">Cache key.</param>
         public bool Exists(string cacheKey)
         {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey,nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             var flag = false;
-            
+
             flag = _localCachingProvider.Exists(cacheKey);
 
-            if(!flag)
+            if (!flag)
             {
                 flag = _distributedCachingProvider.Exists(cacheKey);
             }
@@ -118,7 +120,7 @@
             {
                 Set(cacheKey, item, expiration);
                 return new CacheValue<T>(item, true);
-            }        
+            }
             else
             {
                 //TODO : Set a null value to cache!!
@@ -270,7 +272,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            _localCachingProvider.Set(cacheKey,cacheValue,expiration);
+            _localCachingProvider.Set(cacheKey, cacheValue, expiration);
             _distributedCachingProvider.Set(cacheKey, cacheValue, expiration);
         }
 
@@ -351,6 +353,225 @@
 
             await _localCachingProvider.RemoveByPrefixAsync(prefix);
             await _distributedCachingProvider.RemoveByPrefixAsync(prefix);
+        }
+
+        /// <summary>
+        /// Sets all.
+        /// </summary>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            _localCachingProvider.SetAll(values, expiration);
+
+            try
+            {
+                _distributedCachingProvider.SetAll(values, expiration);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Sets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            await _localCachingProvider.SetAllAsync(values, expiration);
+            try
+            {
+                await _distributedCachingProvider.SetAllAsync(values, expiration);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            var localDict = _localCachingProvider.GetAll<T>(cacheKeys);
+
+            //not find in local caching.
+            var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
+
+            if (localNotFindKeys.Count() <= 0)
+            {
+                return localDict;
+            }
+
+            try
+            {
+                foreach (var item in localNotFindKeys)
+                    localDict.Remove(item);
+
+                var disDict = _distributedCachingProvider.GetAll<T>(localNotFindKeys);
+                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+
+            return localDict;
+        }
+
+        /// <summary>
+        /// Gets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            var localDict = await _localCachingProvider.GetAllAsync<T>(cacheKeys);
+
+            //not find in local caching.
+            var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
+
+            if (localNotFindKeys.Count() <= 0)
+            {
+                return localDict;
+            }
+
+            try
+            {
+                foreach (var item in localNotFindKeys)
+                    localDict.Remove(item);
+
+                var disDict = await _distributedCachingProvider.GetAllAsync<T>(cacheKeys);
+                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+
+            return localDict;
+        }
+
+        /// <summary>
+        /// Gets the by prefix.
+        /// </summary>
+        /// <returns>The by prefix.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
+        {
+            var localDict = _localCachingProvider.GetByPrefix<T>(prefix);
+
+            //not find in local caching.
+            var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
+
+            if (localNotFindKeys.Count() <= 0)
+            {
+                return localDict;
+            }
+
+            try
+            {
+                foreach (var item in localNotFindKeys)
+                    localDict.Remove(item);
+
+                var disDict = _distributedCachingProvider.GetByPrefix<T>(prefix);
+                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+
+            return localDict;
+        }
+
+        /// <summary>
+        /// Gets the by prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        {
+            var localDict = await _localCachingProvider.GetByPrefixAsync<T>(prefix);
+
+            //not find in local caching.
+            var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
+
+            if (localNotFindKeys.Count() <= 0)
+            {
+                return localDict;
+            }
+
+            try
+            {
+                foreach (var item in localNotFindKeys)
+                    localDict.Remove(item);
+
+                var disDict = await _distributedCachingProvider.GetByPrefixAsync<T>(prefix);
+                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+
+            return localDict;
+        }
+
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public void RemoveAll(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            _localCachingProvider.RemoveAll(cacheKeys);
+
+            try
+            {
+                _distributedCachingProvider.RemoveAll(cacheKeys);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Removes all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            await _localCachingProvider.RemoveAllAsync(cacheKeys);
+
+            try
+            {
+                await _distributedCachingProvider.RemoveAllAsync(cacheKeys);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
         }
     }
 }

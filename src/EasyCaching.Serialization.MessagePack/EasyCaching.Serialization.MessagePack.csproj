@@ -8,7 +8,7 @@
     <Description>
       EasyCaching.Serialization.MessagePack based on EasyCaching.Core and MessagePack.
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization</PackageTags>
+    <PackageTags>Caching,Serialization,MessagePack</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>

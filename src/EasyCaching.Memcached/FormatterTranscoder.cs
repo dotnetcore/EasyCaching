@@ -5,9 +5,9 @@ namespace EasyCaching.Memcached
     using System;
 
     /// <summary>
-    /// Message pack formatter transcoder.
+    /// Formatter transcoder.
     /// </summary>
-    public class MessagePackFormatterTranscoder : DefaultTranscoder
+    public class FormatterTranscoder : DefaultTranscoder
     {    
         /// <summary>
         /// The serializer.
@@ -15,10 +15,10 @@ namespace EasyCaching.Memcached
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.MessagePackFormatterTranscoder"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.FormatterTranscoder"/> class.
         /// </summary>
         /// <param name="serializer">Serializer.</param>
-        public MessagePackFormatterTranscoder(IEasyCachingSerializer serializer)
+        public FormatterTranscoder(IEasyCachingSerializer serializer)
         {
             this._serializer = serializer;
         }        

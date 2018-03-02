@@ -4,13 +4,14 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Caching.Memory;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
     /// MemoryCaching provider.
     /// </summary>
-    public class InMemoryCachingProvider : IEasyCachingProvider
+    public class DefaultInMemoryCachingProvider : IEasyCachingProvider
     {
         /// <summary>
         /// The MemoryCache.
@@ -33,7 +34,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
         /// </summary>
         /// <param name="cache">Microsoft MemoryCache.</param>
-        public InMemoryCachingProvider(IMemoryCache cache)
+        public DefaultInMemoryCachingProvider(IMemoryCache cache)
         {
             this._cache = cache;
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
@@ -293,11 +294,156 @@
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
             if (keys.Count() > 0)
             {
+                var tasks = new List<Task>();
+                foreach (var item in keys)
+                    tasks.Add(RemoveAsync(item));
+
+                await Task.WhenAll(tasks);
+            }
+        }
+
+        /// <summary>
+        /// Sets all.
+        /// </summary>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            if (values == null || values.Count == 0)
+                return;
+
+            foreach (var entry in values)
+                this.Set(entry.Key, entry.Value, expiration);
+        }
+
+        /// <summary>
+        /// Sets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            if (values == null || values.Count == 0)
+                return;
+
+            var tasks = new List<Task>();
+            foreach (var entry in values)
+                tasks.Add(SetAsync(entry.Key, entry.Value,expiration));
+
+            await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            var map = new Dictionary<string, CacheValue<T>>();
+            foreach (string key in cacheKeys)
+                map[key] = Get<T>(key);
+
+            return map;
+        }
+
+        /// <summary>
+        /// Gets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            var map = new Dictionary<string, Task<CacheValue<T>>>();
+            foreach (string key in cacheKeys)
+                map[key] = GetAsync<T>(key);
+
+            return Task.WhenAll(map.Values)
+                .ContinueWith<IDictionary<string, CacheValue<T>>>(t =>
+                    map.ToDictionary(k => k.Key, v => v.Value.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
+        /// <summary>
+        /// Gets the by prefix.
+        /// </summary>
+        /// <returns>The by prefix.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
+        {
+            var map = new Dictionary<string, CacheValue<T>>();
+
+            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (keys.Count() > 0)
+            {                
                 foreach (var item in keys)
                 {
-                    await this.RemoveAsync(item);
+                    map[item] = this.Get<T>(item);
                 }
             }
+            return map;
+        }
+
+        /// <summary>
+        /// Gets the by prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        {            
+            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            var map = new Dictionary<string, Task<CacheValue<T>>>();
+
+            if (keys.Count() > 0)
+            {
+                foreach (string key in keys)
+                    map[key] = GetAsync<T>(key);
+            }
+
+            return Task.WhenAll(map.Values)
+                .ContinueWith<IDictionary<string, CacheValue<T>>>(t =>
+                    map.ToDictionary(k => k.Key, v => v.Value.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public void RemoveAll(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            foreach (var item in cacheKeys.Distinct())
+            {
+                _cache.Remove(item);
+            }
+        }
+
+        /// <summary>
+        /// Removes all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            var tasks = new List<Task>();
+            foreach (var item in cacheKeys.Distinct())
+            {
+                tasks.Add(RemoveAsync(item));
+            }
+
+            await Task.WhenAll(tasks);
         }
     }
 }

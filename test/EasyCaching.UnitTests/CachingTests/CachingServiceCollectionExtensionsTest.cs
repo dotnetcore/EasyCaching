@@ -22,7 +22,7 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
 
-            Assert.IsType<InMemoryCachingProvider>(cachingProvider);
+            Assert.IsType<DefaultInMemoryCachingProvider>(cachingProvider);
         }
 
         [Fact]
@@ -58,7 +58,7 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var provider = serviceProvider.GetService<IEasyCachingProvider>();
 
-            Assert.IsType<SQLiteCachingProvider>(provider);
+            Assert.IsType<DefaultSQLiteCachingProvider>(provider);
         }
 
         [Fact]
@@ -92,7 +92,7 @@
                 {
                     if (key.Equals(HybridCachingKeyType.LocalKey))
                     {
-                        return factory.GetService<InMemoryCachingProvider>();
+                        return factory.GetService<DefaultInMemoryCachingProvider>();
                     }
                     else if (key.Equals(HybridCachingKeyType.DistributedKey))
                     {
@@ -126,7 +126,7 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var func = serviceProvider.GetService<Func<string, IEasyCachingProvider>>();
 
-            Assert.IsType<InMemoryCachingProvider>(func(HybridCachingKeyType.LocalKey));
+            Assert.IsType<DefaultInMemoryCachingProvider>(func(HybridCachingKeyType.LocalKey));
         }
 
         [Fact]
@@ -168,7 +168,7 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var func = serviceProvider.GetService<Func<string, IEasyCachingProvider>>();
 
-            Assert.IsType<SQLiteCachingProvider>(func(HybridCachingKeyType.LocalKey));
+            Assert.IsType<DefaultSQLiteCachingProvider>(func(HybridCachingKeyType.LocalKey));
         }
 
         [Fact]
@@ -196,11 +196,11 @@
                 {
                     if (type == 1)
                     {
-                        return factory.GetService<InMemoryCachingProvider>();
+                        return factory.GetService<DefaultInMemoryCachingProvider>();
                     }
                     else if (type == 3)
                     {
-                        return factory.GetService<SQLiteCachingProvider>();
+                        return factory.GetService<DefaultSQLiteCachingProvider>();
                     }
                     else
                     {

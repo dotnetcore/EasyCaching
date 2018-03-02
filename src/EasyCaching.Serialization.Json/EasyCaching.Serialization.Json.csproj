@@ -2,6 +2,22 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Owners>Catcher Wong</Owners>
+    <Authors>Catcher Wong</Authors>    
+    <Version>0.1.0</Version>
+    <Description>
+      EasyCaching.Serialization.Json based on EasyCaching.Core and Newtonsoft.Json.
+    </Description>
+    <PackageTags>Caching,Serialization,Json</PackageTags>
+    <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
+    <PackageReleaseNotes>      
+      v0.1.0 
+      1. Init.
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

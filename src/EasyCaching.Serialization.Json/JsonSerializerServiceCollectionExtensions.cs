@@ -2,7 +2,6 @@
 {
     using EasyCaching.Core;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
     /// <summary>
@@ -22,7 +21,7 @@
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultJsonSerializer>();
+            services.AddSingleton<IEasyCachingSerializer, DefaultJsonSerializer>();
 
             return services;
         }

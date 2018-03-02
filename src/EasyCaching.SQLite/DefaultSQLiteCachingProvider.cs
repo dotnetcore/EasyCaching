@@ -5,13 +5,14 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Data.Sqlite;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
     /// <summary>
     /// SQLiteCaching provider.
     /// </summary>
-    public class SQLiteCachingProvider : IEasyCachingProvider
+    public class DefaultSQLiteCachingProvider : IEasyCachingProvider
     {
         /// <summary>
         /// The cache.
@@ -27,7 +28,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
         /// </summary>
         /// <param name="dbProvider">dbProvider.</param>
-        public SQLiteCachingProvider(ISQLiteDatabaseProvider dbProvider)
+        public DefaultSQLiteCachingProvider(ISQLiteDatabaseProvider dbProvider)
         {
             this._dbProvider = dbProvider;
             this._cache = _dbProvider.GetConnection();
@@ -91,9 +92,9 @@
                 cachekey = cacheKey
             }).FirstOrDefault();
 
-            if(!string.IsNullOrWhiteSpace(dbResult))
+            if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult),true);
+                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
 
             var item = dataRetriever?.Invoke();
@@ -181,7 +182,7 @@
         public async Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-           
+
             var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
             {
                 cachekey = cacheKey
@@ -208,7 +209,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _cache.Execute(ConstSQL.REMOVESQL,new { cachekey = cacheKey });
+            _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = cacheKey });
         }
 
         /// <summary>
@@ -237,7 +238,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            _cache.Execute(ConstSQL.SETSQL,new
+            _cache.Execute(ConstSQL.SETSQL, new
             {
                 cachekey = cacheKey,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
@@ -322,7 +323,186 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix ,"%")  });
+            await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
+        }
+
+        /// <summary>
+        /// Sets all.
+        /// </summary>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            if (values == null || values.Count() <= 0)
+                return;
+
+            var tran = _cache.BeginTransaction();
+
+            foreach (var item in values)
+            {
+                _cache.Execute(ConstSQL.SETSQL, new
+                {
+                    cachekey = item.Key,
+                    cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(item.Value),
+                    expiration = expiration.Ticks / 10000000
+                }, tran);
+            }
+
+            tran.Commit();
+        }
+
+        /// <summary>
+        /// Sets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="values">Values.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        {
+            if (values == null || values.Count() <= 0)
+                return;
+
+            var tran = _cache.BeginTransaction();
+            var tasks = new List<Task<int>>();
+
+            foreach (var item in values)
+            {
+                tasks.Add(_cache.ExecuteAsync(ConstSQL.SETSQL, new
+                {
+                    cachekey = item.Key,
+                    cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(item.Value),
+                    expiration = expiration.Ticks / 10000000
+                }, tran));
+            }
+            await Task.WhenAll(tasks);
+
+            tran.Commit();
+        }
+
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return new Dictionary<string, CacheValue<T>>();
+
+            var list = _cache.Query(ConstSQL.GETALLSQL, new
+            {
+                cachekey = cacheKeys.ToArray()
+            }).ToList();
+
+            return GetDict<T>(list);
+        }
+
+        /// <summary>
+        /// Gets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return new Dictionary<string, CacheValue<T>>();
+
+            var list = (await _cache.QueryAsync(ConstSQL.GETALLSQL, new
+            {
+                cachekey = cacheKeys.ToArray()
+            })).ToList();
+
+            return GetDict<T>(list);
+        }
+
+        private IDictionary<string, CacheValue<T>> GetDict<T>(List<dynamic> list) where T : class
+        {
+            var result = new Dictionary<string, CacheValue<T>>();
+            foreach (var item in list)
+            {
+                if (!string.IsNullOrWhiteSpace(item.cachekey))
+                    result.Add(item.cachekey, new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(item.cachevalue), true));
+                else
+                    result.Add(item.cachekey, CacheValue<T>.NoValue);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the by prefix.
+        /// </summary>
+        /// <returns>The by prefix.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            var list = _cache.Query(ConstSQL.GETBYPREFIXSQL, new
+            {
+                cachekey = string.Concat(prefix, "%")
+            }).ToList();
+
+            return GetDict<T>(list);
+        }
+
+        /// <summary>
+        /// Gets the by prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            var list = (await _cache.QueryAsync(ConstSQL.GETBYPREFIXSQL, new
+            {
+                cachekey = string.Concat(prefix, "%")
+            })).ToList();
+
+            return GetDict<T>(list);
+        }
+
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public void RemoveAll(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            var tran = _cache.BeginTransaction();
+
+            foreach (var item in cacheKeys)
+                _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = item }, tran);
+
+            tran.Commit();
+        }
+
+        /// <summary>
+        /// Removes all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        {
+            if (cacheKeys == null || cacheKeys.Count() <= 0)
+                return;
+
+            var tran = _cache.BeginTransaction();
+            var tasks = new List<Task<int>>();
+
+            foreach (var item in cacheKeys)
+                tasks.Add(_cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = item }, tran));
+
+            await Task.WhenAll(tasks);
+            tran.Commit();
         }
     }
 }
