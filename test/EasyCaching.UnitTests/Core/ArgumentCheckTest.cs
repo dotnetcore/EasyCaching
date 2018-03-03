@@ -3,6 +3,7 @@
     using EasyCaching.Core.Internal;
     using System;
     using Xunit;
+    using System.Collections.Generic;
 
     public class ArgumentCheckTest
     {
@@ -52,7 +53,7 @@
         public void NotNegativeOrZero_Should_Throw_ArgumentOutOfRangeException_When_Argument_Is_Zero()
         {
             var ts = TimeSpan.Zero;
-                Assert.Throws<ArgumentOutOfRangeException>(() => ArgumentCheck.NotNegativeOrZero(ts, nameof(ts)));
+            Assert.Throws<ArgumentOutOfRangeException>(() => ArgumentCheck.NotNegativeOrZero(ts, nameof(ts)));
         }
 
         [Fact]
@@ -60,6 +61,58 @@
         {
             var ts = new TimeSpan(0, 0, 1);
             var ex = Record.Exception(() => ArgumentCheck.NotNegativeOrZero(ts, nameof(ts)));
+
+            Assert.Null(ex);
+        }
+
+        [Fact]
+        public void NotNullAndCountGTZero_List_Should_Throw_ArgumentNullException_When_Argument_Is_Null()
+        {
+            List<string> list = null;
+
+            Assert.Throws<ArgumentNullException>(() => ArgumentCheck.NotNullAndCountGTZero(list, nameof(list)));
+        }
+
+        [Fact]
+        public void NotNullAndCountGTZero_List_Should_Throw_ArgumentNullException_When_Argument_Is_Empty()
+        {
+            var list = new List<string>();
+
+            Assert.Throws<ArgumentNullException>(() => ArgumentCheck.NotNullAndCountGTZero(list, nameof(list)));
+        }
+
+        [Fact]
+        public void NotNullAndCountGTZero_List_Should_Not_Throw_ArgumentNullException_When_Argument_Is_NotNull_And_Empty()
+        {
+            var list = new List<string> { "abc" };
+
+            var ex = Record.Exception(() => ArgumentCheck.NotNullAndCountGTZero(list, nameof(list)));
+
+            Assert.Null(ex);
+        }
+
+        [Fact]
+        public void NotNullAndCountGTZero_Dict_Should_Throw_ArgumentNullException_When_Argument_Is_Null()
+        {
+            Dictionary<string, string> dict = null;
+
+            Assert.Throws<ArgumentNullException>(() => ArgumentCheck.NotNullAndCountGTZero(dict, nameof(dict)));
+        }
+
+        [Fact]
+        public void NotNullAndCountGTZero_Dict_Should_Throw_ArgumentNullException_When_Argument_Is_Empty()
+        {
+            var dict = new Dictionary<string, string>();
+
+            Assert.Throws<ArgumentNullException>(() => ArgumentCheck.NotNullAndCountGTZero(dict, nameof(dict)));
+        }
+
+        [Fact]
+        public void NotNullAndCountGTZero_Dict_Should_Not_Throw_ArgumentNullException_When_Argument_Is_NotNull_And_Empty()
+        {
+            var dict = new Dictionary<string, string> { { "abc", "123" } };
+
+            var ex = Record.Exception(() => ArgumentCheck.NotNullAndCountGTZero(dict, nameof(dict)));
 
             Assert.Null(ex);
         }

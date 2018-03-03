@@ -334,6 +334,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+
             foreach (var item in values)
             {
                 Set(item.Key, item.Value, expiration);
@@ -349,6 +352,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+
             var tasks = new List<Task>();
             foreach (var item in values)
             {
@@ -365,6 +371,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var values = _memcachedClient.Get<T>(cacheKeys);
             var result = new Dictionary<string, CacheValue<T>>();
 
@@ -387,6 +395,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+            
             var values = await _memcachedClient.GetAsync<T>(cacheKeys);
             var result = new Dictionary<string, CacheValue<T>>();
 
@@ -429,8 +439,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             foreach (var item in cacheKeys.Distinct())
                 Remove(item);            
@@ -443,8 +452,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var tasks = new List<Task>();
             foreach (var item in cacheKeys.Distinct())

@@ -310,8 +310,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
-            if (values == null || values.Count == 0)
-                return;
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
             foreach (var entry in values)
                 this.Set(entry.Key, entry.Value, expiration);
@@ -326,8 +326,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
-            if (values == null || values.Count == 0)
-                return;
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
             var tasks = new List<Task>();
             foreach (var entry in values)
@@ -344,6 +344,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var map = new Dictionary<string, CacheValue<T>>();
             foreach (string key in cacheKeys)
                 map[key] = Get<T>(key);
@@ -359,6 +361,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var map = new Dictionary<string, Task<CacheValue<T>>>();
             foreach (string key in cacheKeys)
                 map[key] = GetAsync<T>(key);
@@ -376,6 +380,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var map = new Dictionary<string, CacheValue<T>>();
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
@@ -397,6 +403,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
         {            
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
 
             var map = new Dictionary<string, Task<CacheValue<T>>>();
@@ -418,8 +426,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             foreach (var item in cacheKeys.Distinct())
             {
@@ -434,8 +441,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var tasks = new List<Task>();
             foreach (var item in cacheKeys.Distinct())

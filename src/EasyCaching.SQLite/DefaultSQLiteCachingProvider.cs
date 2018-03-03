@@ -334,8 +334,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
-            if (values == null || values.Count() <= 0)
-                return;
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
             var tran = _cache.BeginTransaction();
 
@@ -361,8 +361,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
-            if (values == null || values.Count() <= 0)
-                return;
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
             var tran = _cache.BeginTransaction();
             var tasks = new List<Task<int>>();
@@ -389,8 +389,7 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return new Dictionary<string, CacheValue<T>>();
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var list = _cache.Query(ConstSQL.GETALLSQL, new
             {
@@ -408,8 +407,7 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return new Dictionary<string, CacheValue<T>>();
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var list = (await _cache.QueryAsync(ConstSQL.GETALLSQL, new
             {
@@ -419,6 +417,12 @@
             return GetDict<T>(list);
         }
 
+        /// <summary>
+        /// Gets the dict.
+        /// </summary>
+        /// <returns>The dict.</returns>
+        /// <param name="list">List.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
         private IDictionary<string, CacheValue<T>> GetDict<T>(List<dynamic> list) where T : class
         {
             var result = new Dictionary<string, CacheValue<T>>();
@@ -474,8 +478,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var tran = _cache.BeginTransaction();
 
@@ -492,8 +495,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var tran = _cache.BeginTransaction();
             var tasks = new List<Task<int>>();

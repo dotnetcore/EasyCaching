@@ -22,6 +22,13 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
+        public void Prefix_Equal_Asterisk_Should_Throw_ArgumentException()
+        {
+            Assert.Throws<ArgumentException>(()=>_provider.RemoveByPrefix("*"));
+        }
+
+
+        [Fact]
         public void Issues16_DateTimeTest()
         {
             var model = new Model

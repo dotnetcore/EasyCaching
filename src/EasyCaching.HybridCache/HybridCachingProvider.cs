@@ -363,6 +363,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+
             _localCachingProvider.SetAll(values, expiration);
 
             try
@@ -384,6 +387,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+            
             await _localCachingProvider.SetAllAsync(values, expiration);
             try
             {
@@ -403,6 +409,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var localDict = _localCachingProvider.GetAll<T>(cacheKeys);
 
             //not find in local caching.
@@ -437,6 +445,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var localDict = await _localCachingProvider.GetAllAsync<T>(cacheKeys);
 
             //not find in local caching.
@@ -471,6 +481,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var localDict = _localCachingProvider.GetByPrefix<T>(prefix);
 
             //not find in local caching.
@@ -505,6 +517,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var localDict = await _localCachingProvider.GetByPrefixAsync<T>(prefix);
 
             //not find in local caching.
@@ -537,8 +551,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             _localCachingProvider.RemoveAll(cacheKeys);
 
@@ -559,8 +572,7 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
-            if (cacheKeys == null || cacheKeys.Count() <= 0)
-                return;
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             await _localCachingProvider.RemoveAllAsync(cacheKeys);
 

@@ -322,26 +322,39 @@
         /// Searchs the redis keys.
         /// </summary>
         /// <returns>The redis keys.</returns>
+        /// <remarks>
+        /// If your Redis Servers support command SCAN , 
+        /// IServer.Keys will use command SCAN to find out the keys.
+        /// Following 
+        /// https://github.com/StackExchange/StackExchange.Redis/blob/master/StackExchange.Redis/StackExchange/Redis/RedisServer.cs#L289
+        /// </remarks>
         /// <param name="pattern">Pattern.</param>
         private RedisKey[] SearchRedisKeys(string pattern)
         {
-            var keys = new HashSet<RedisKey>();
+            var keys = new List<RedisKey>();
 
-            int nextCursor = 0;
-            do
-            {
-                RedisResult redisResult = _cache.Execute("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
-                var innerResult = (RedisResult[])redisResult;
+            foreach (var server in _servers)
+                keys.AddRange(server.Keys(pattern: pattern));
 
-                nextCursor = int.Parse((string)innerResult[0]);
+            return keys.Distinct().ToArray();
 
-                List<RedisKey> resultLines = ((RedisKey[])innerResult[1]).ToList();
+            //var keys = new HashSet<RedisKey>();
 
-                keys.UnionWith(resultLines);
-            }
-            while (nextCursor != 0);
+            //int nextCursor = 0;
+            //do
+            //{
+            //    RedisResult redisResult = _cache.Execute("SCAN", nextCursor.ToString(), "MATCH", pattern, "COUNT", "1000");
+            //    var innerResult = (RedisResult[])redisResult;
 
-            return keys.ToArray();
+            //    nextCursor = int.Parse((string)innerResult[0]);
+
+            //    List<RedisKey> resultLines = ((RedisKey[])innerResult[1]).ToList();
+
+            //    keys.UnionWith(resultLines);
+            //}
+            //while (nextCursor != 0);
+
+            //return keys.ToArray();
         }
 
         /// <summary>
@@ -353,7 +366,7 @@
         {
             // Forbid
             if (prefix.Equals("*"))
-                throw new ArgumentException("the prefix should not to *");
+                throw new ArgumentException("the prefix should not equal to *");
 
             // Don't start with *
             prefix = new System.Text.RegularExpressions.Regex("^\\*+").Replace(prefix, "");
@@ -373,6 +386,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+            
             var batch = _cache.CreateBatch();
 
             foreach (var item in values)
@@ -390,6 +406,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+            
             var tasks = new List<Task>();
 
             foreach (var item in values)
@@ -406,6 +425,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var keyArray = cacheKeys.ToArray();
             var values = _cache.StringGet(keyArray.Select(k => (RedisKey)k).ToArray());
 
@@ -430,6 +451,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var keyArray = cacheKeys.ToArray();
             var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey)k).ToArray());
 
@@ -454,6 +477,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             prefix = this.HandlePrefix(prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
@@ -481,6 +506,8 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             prefix = this.HandlePrefix(prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
@@ -506,6 +533,8 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
             if (redisKeys.Length > 0)
                 _cache.KeyDelete(redisKeys);
@@ -518,6 +547,8 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
             if (redisKeys.Length > 0)
                 await _cache.KeyDeleteAsync(redisKeys);

@@ -1,6 +1,9 @@
 ﻿namespace EasyCaching.Core.Internal
 {
     using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Argument check.
@@ -28,7 +31,7 @@
         /// <param name="argumentName">Argument name.</param>
         /// <exception cref="ArgumentNullException">
         public static void NotNullOrWhiteSpace(string argument, string argumentName)
-        {            
+        {
             if (string.IsNullOrWhiteSpace(argument))
             {
                 throw new ArgumentNullException(argumentName);
@@ -45,6 +48,33 @@
             if (argument <= TimeSpan.Zero)
             {
                 throw new ArgumentOutOfRangeException(argumentName);
+            }
+        }
+
+        /// <summary>
+        /// Nots the null and count gt Zero.
+        /// </summary>
+        /// <param name="argument">Argument.</param>
+        /// <param name="argumentName">Argument name.</param>
+        public static void NotNullAndCountGTZero<T>(IEnumerable<T> argument, string argumentName)
+        {
+            if (argument == null || argument.Count() <= 0)
+            {
+                throw new ArgumentNullException(argumentName);
+            }
+        }
+
+
+        /// <summary>
+        /// Nots the null and count gt Zero.
+        /// </summary>
+        /// <param name="argument">Argument.</param>
+        /// <param name="argumentName">Argument name.</param>
+        public static void NotNullAndCountGTZero<T>(IDictionary<string, T> argument, string argumentName)
+        {
+            if (argument == null || argument.Count() <= 0)
+            {
+                throw new ArgumentNullException(argumentName);
             }
         }
     }
