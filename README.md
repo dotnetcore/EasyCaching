@@ -15,23 +15,40 @@ EasyCaching is a open source caching library that contains basic usages and some
 
 ## Nuget Packages
 
+### Core
+
 | Package Name |  Version | Downloads
 |--------------|  ------- | ----
 | EasyCaching.Core | ![](https://img.shields.io/nuget/v/EasyCaching.Core.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Core.svg)
+
+### Provider
+
+| Package Name |  Version | Downloads
+|--------------|  ------- | ----
 | EasyCaching.InMemory | ![](https://img.shields.io/nuget/v/EasyCaching.InMemory.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.InMemory.svg)
 | EasyCaching.Redis | ![](https://img.shields.io/nuget/v/EasyCaching.Redis.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Redis.svg)
 | EasyCaching.Memcached | ![](https://img.shields.io/nuget/v/EasyCaching.Memcached.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Memcached.svg)
 | EasyCaching.SQLite | ![](https://img.shields.io/nuget/v/EasyCaching.SQLite.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.SQLite.svg)
-| EasyCaching.Serialization.MessagePack | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.MessagePack.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.MessagePack.svg)
+| EasyCaching.HybridCache  | ![](https://img.shields.io/nuget/v/EasyCaching.HybridCache.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.HybridCache.svg)
+
+### Interceptor
+
+| Package Name |  Version | Downloads
+|--------------|  ------- | ----
 | EasyCaching.Interceptor.Castle | ![](https://img.shields.io/nuget/v/EasyCaching.Interceptor.Castle.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Interceptor.Castle.svg)
 | EasyCaching.Interceptor.AspectCore | ![](https://img.shields.io/nuget/v/EasyCaching.Interceptor.AspectCore.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Interceptor.AspectCore.svg)
-| EasyCaching.HybridCache  | ![](https://img.shields.io/nuget/v/EasyCaching.HybridCache.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.HybridCache.svg)
+
+### Serializer
+
+| Package Name |  Version | Downloads
+|--------------|  ------- | ----
+| EasyCaching.Serialization.MessagePack | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.MessagePack.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.MessagePack.svg)
+| EasyCaching.Serialization.Json | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Json.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Json.svg)
+| EasyCaching.Serialization.Protobuf | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Protobuf.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Protobuf.svg)
 
 ## Basci Usages 
 
-### #1 Caching APIs usage
-
-#### Step 1 : Install the package
+### Step 1 : Install the package
 
 Choose one kinds of caching type that you needs and install it via Nuget.
 
@@ -42,7 +59,7 @@ Install-Package EasyCaching.SQLite
 Install-Package EasyCaching.Memcached
 ```
 
-#### Step 2 : Config in your Startup class
+### Step 2 : Config in your Startup class
 
 Different types of caching hvae their own way to config.
 
@@ -72,7 +89,8 @@ public class Startup
         //{                
         //    option.AddServer("127.0.0.1",11211);
         //    //specify the Transcoder use messagepack .
-        //    option.Transcoder = new MessagePackFormatterTranscoder(new DefaultMessagePackSerializer()) ;
+        //    op.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
+        //    op.SerializationType = "EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer,EasyCaching.Serialization.MessagePack";
         //});
         
         //4. SQLite Cache
@@ -90,7 +108,7 @@ public class Startup
 }
 ```
 
-####  Step 3 : Write code in you controller 
+###  Step 3 : Write code in you controller 
 
 ```csharp
 [Route("api/[controller]")]
@@ -134,228 +152,53 @@ public class ValuesController : Controller
         _provider.Refresh("demo", "123", TimeSpan.FromMinutes(1));
 
         //Refresh Async
-        await _provider.RefreshAsync("demo", "123", TimeSpan.FromMinutes(1));               
-    }
-}
-```
+        await _provider.RefreshAsync("demo", "123", TimeSpan.FromMinutes(1)); 
+        
+        //RemoveByPrefix
+        _provider.RemoveByPrefix("prefix");
 
-### #2 Caching Serializer
+        //RemoveByPrefixAsync
+        await _provider.RemoveByPrefixAsync("prefix");
 
-Serializer is mainly building for distributed caching . 
-
-Redis Caching has implemented a default serializer that uses **System.Runtime.Serialization.Formatters.Binary** to handle serialization and deserialization .
-
-Memcahced Caching is based on [EnyimMemcachedCore](https://github.com/cnblogs/EnyimMemcachedCore) , it also has a default serializer named **BinaryFormatterTranscoder** .
-
-[EasyCaching.Serialization.MessagePack]() is an extension package providing MessagePack serialization for distributed caches
-
-How to use ?
-
-#### Step 1 : Install packages via Nuget
-
-```
-Install-Package EasyCaching.Serialization.MessagePack
-```
-
-#### Step 2 : Config in Startup class 
-
-```csharp
-
-public class Startup
-{
-    //...
-    
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddMvc();
-        //1. For Redis
-        services.AddDefaultRedisCache(option=>
-        {                
-            option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            option.Password = "";       
-        });
-        services.AddDefaultMessagePackSerializer();
-        //2. For Memcached
-        //services.AddDefaultMemcached(op=>
-        //{                
-        //    op.AddServer("127.0.0.1",11211);
-        //
-        //    op.Transcoder = new MessagePackFormatterTranscoder(new DefaultMessagePackSerializer()) ;
-        //});
-        //services.AddDefaultMessagePackSerializer();
-    }
-}
-```
-
-### #3 Others
-
-coming soon !
-
-## Advanced Usages
-
-### #1 Caching Interceptor
-
-EasyCaching contains three attributes(`EasyCachingAble`,`EasyCachingPut`,`EasyCachingEvict`) to handle interceptor. 
-
-- EasyCachingAble : triggers cache population
-- EasyCachingPut : updates the cache without interfering with the method execution
-- EasyCachingEvict : triggers cache eviction
-
-And EasyCaching provide two implementations of caching interceptor, one is based on Castle, the other one is based on AspectCore.
-
-The following example use Castle to show how to config.
-
-#### Step 1 : Define you service class
-
-```csharp
-public interface IDateTimeService 
-{        
-    string GetCurrentUtcTime();
-}
-
-//IEasyCaching is important for this!!
-public class DateTimeService : IDateTimeService ,  IEasyCaching
-{        
-    [EasyCachingInterceptor(Expiration = 10)]
-    public string GetCurrentUtcTime()
-    {
-        return System.DateTime.UtcNow.ToString();
-    }
-
-    [EasyCachingEvict(CacheKeyPrefix = "CastleExample")]
-    public string EvictTest()
-    {
-        return "EvictTest";
-    }
-
-    [EasyCachingPut(CacheKeyPrefix = "CastleExample")]
-    public string PutTest(int num)
-    {
-        return $"PutTest-{num}";
-    }
-}
-```
-
-#### Step 2 : Config in Startup class 
-
-```csharp
-public class Startup
-{
-    //...
-
-    public IServiceProvider ConfigureServices(IServiceCollection services)
-    {
-        //..
-
-        //service 
-        services.AddTransient<IDateTimeService,DateTimeService>();
-
-        //Choose one of caching provider that you want to use.
-        services.AddDefaultInMemoryCache();
-
-        //CastleInterceptor
-        return services.ConfigureCastleInterceptor();
-    }
-}
-```
-
-#### Step 3 : Write code in you controller 
-
-```csharp
-[Route("api/[controller]")]
-public class ValuesController : Controller
-{
-    private readonly IDateTimeService _service;
-
-    public ValuesController(IDateTimeService service)
-    {
-        this._service = service;
-    }
-
-    [HttpGet]
-    public string Get()
-    {
-        _service.GetCurrentUtcTime();
-        _service.EvictTest();
-        _service.PutTest();
-        return "";
-    }
-}
-```
-
-### #3 Hybrid Caching
-
-Hybrid Caching is mainly building for combine local caching and distributed caching. It is called 2-tiers caching.
-
-#### Step 1 : Install the package
-
-```
-Install-Package EasyCaching.HybridCache
-```
-
-#### Step 2 : Config in startup class
-
-```csharp
-public void ConfigureServices(IServiceCollection services)
-{
-    //...
-    //1. Add local caching
-    services.AddDefaultInMemoryCacheForHybrid();
-    //2. Add distributed caching
-    services.AddDefaultRedisCacheForHybrid(option =>
-    {
-        option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-        option.Password = "";
-    });
-    //3. Add hybrid caching
-    services.AddDefaultHybridCache();
-    //4. Important step for different impls of only one interface .
-    services.AddSingleton(factory =>
-    {
-        Func<string, IEasyCachingProvider> accesor = key =>
+        //SetAll
+        _provider.SetAll(new Dictionary<string, string>()
         {
-            if(key.Equals(HybridCachingKeyType.LocalKey))
-            {
-                return factory.GetService<InMemoryCachingProvider>();
-            }
-            else if(key.Equals(HybridCachingKeyType.DistributedKey))
-            {
-                return factory.GetService<DefaultRedisCachingProvider>();
-            }
-            else
-            {
-                throw new KeyNotFoundException();
-            }
-        };
-        return accesor;
-    });
-}
-```
+            {"key:1","value1"},
+            {"key:2","value2"}
+        }, TimeSpan.FromMinutes(1));
 
-#### Step 2: Calling the HybridCachingProvider
+        //SetAllAsync
+        await _provider.SetAllAsync(new Dictionary<string, string>()
+        {
+            {"key:1","value1"},
+            {"key:2","value2"}
+        }, TimeSpan.FromMinutes(1));
 
-```csharp
-[Route("api/[controller]")]
-public class ValuesController : Controller
-{
-    private readonly IHybridCachingProvider _provider;
+        //GetAll
+        var res = _provider.GetAll(new List<string> { "key:1", "key:2" });
 
-    public ValuesController(IHybridCachingProvider provider)
-    {
-        this._provider = provider;
-    }
-    
-    [HttpGet]    
-    public string Get()
-    {
-        _provider.xxx();
+        //GetAllAsync
+        var res = await _provider.GetAllAsync(new List<string> { "key:1", "key:2" });
+        
+        //GetByPrefix
+        var res = _provider.GetByPrefix<T>("prefix");
+        
+        //GetByPrefixAsync
+        var res = await _provider.GetByPrefixAsync<T>("prefix");
+        
+        //RemoveAll
+        _provider.RemoveAll(new List<string> { "key:1", "key:2" });
+
+        //RemoveAllAsync
+        awiat _provider.RemoveAllAsync(new List<string> { "key:1", "key:2" });
+        
     }
 }
 ```
 
-### #4 Others
+## Documentation
 
-coming soon !
+For more helpful information about EasyCaching, please click [here](http://easycaching.readthedocs.io/en/latest/) for EasyCaching's documentation. 
 
 ## Examples
 
@@ -380,6 +223,10 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 - [x] Remove/RemoveAsync
 - [x] Refresh/RefreshAsync
 - [x] RemoveByPrefix/RemoveByPrefixAsync
+- [x] SetAll/SetAllAsync
+- [x] GetAll/GetAllAsync
+- [x] GetByPrefix/GetByPrefixAsync
+- [x] RemoveAll/RemoveAllAsync
 - [ ] Flush/FlushAsync(whether is in need ? )
 - [ ] Others...
 
@@ -387,29 +234,30 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 
 - [x] BinaryFormatter
 - [x] MessagePack
-- [ ] Json
+- [x] Json
+- [x] ProtoBuf
 - [ ] Others...
 
 ### Caching Interceptor
 
-Not support Hybird Caching provider yet .
-
-- AspectCore
-    1. [x] EasyCachingAble
-    2. [x] EasyCachingPut
-    3. [x] EasyCachingEvict
-- Castle
-    1. [x] EasyCachingAble
-    2. [x] EasyCachingPut
-    3. [x] EasyCachingEvict
-- Others ..
+- [x] AspectCore
+- [x] Castle
+- [ ] Others ..
     
+1. EasyCachingAble
+2. EasyCachingPut
+3. EasyCachingEvict
+
+> Note: Not support Hybird Caching provider yet.
+
+### Caching Bus
+
+- [ ] Redis
+- [ ] RabbitMQ
 
 ### Others
 
-- [ ] Documents(Writing..)
 - [ ] Configuration
-- [ ] Bus
 - [ ] Caching Region
 - [ ] Caching Statistics
 - [ ] UI Manager
@@ -417,4 +265,6 @@ Not support Hybird Caching provider yet .
 - [ ] Caching Warm Up 
 - [ ] ...
 
+## Contributing
 
+Pull requests, issues and commentary! 
