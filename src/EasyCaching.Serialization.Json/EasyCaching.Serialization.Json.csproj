@@ -14,9 +14,8 @@
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
-    <PackageReleaseNotes>      
-      v0.1.0 
-      1. Init.
+    <PackageReleaseNotes>            
+      Init.
     </PackageReleaseNotes>
   </PropertyGroup>
 

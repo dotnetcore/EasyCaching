@@ -4,22 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <Description>    
       EasyCaching.HybridCache combines local caching and distributed caching.           
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization,Hybrid</PackageTags>
+    <PackageTags>Caching,Cache,Synchronization,Hybrid</PackageTags>
     <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes> 
-      v0.1.1
-      1. RemoveByPrefix(Async). 
-
-      v0.1.0 
-      1. Init.
+      Add some new caching APIs.
     </PackageReleaseNotes>
   </PropertyGroup>
 

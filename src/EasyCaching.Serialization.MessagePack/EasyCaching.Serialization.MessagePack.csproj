@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <Description>
       EasyCaching.Serialization.MessagePack based on EasyCaching.Core and MessagePack.
     </Description>
@@ -15,11 +15,7 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      v0.1.1       
-      1. Add SerializeObject and DeserializeObject methods.
-
-      v0.1.0 
-      1. Init.
+      Fix bug of AddDefaultMessagePackSerializer.
     </PackageReleaseNotes>
   </PropertyGroup>
 
