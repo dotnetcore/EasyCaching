@@ -666,12 +666,12 @@
         [Fact]
         protected virtual void SetAll_Should_Succeed()
         {
-            var dict = GetMultiDict();
+            var dict = GetMultiDict("setall:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res1 = _provider.Get<string>("key:1");
-            var res2 = _provider.Get<string>("key:2");
+            var res1 = _provider.Get<string>("setall:key:1");
+            var res2 = _provider.Get<string>("setall:key:2");
 
             Assert.Equal("value1", res1.Value);
             Assert.Equal("value2", res2.Value);
@@ -680,12 +680,12 @@
         [Fact]
         protected virtual async Task SetAllAsync_Should_Succeed()
         {
-            var dict = GetMultiDict();
+            var dict = GetMultiDict("setallasync:");
 
             await _provider.SetAllAsync(dict, _defaultTs);
 
-            var res1 = _provider.Get<string>("key:1");
-            var res2 = _provider.Get<string>("key:2");
+            var res1 = _provider.Get<string>("setallasync:key:1");
+            var res2 = _provider.Get<string>("setallasync:key:2");
 
             Assert.Equal("value1", res1.Value);
             Assert.Equal("value2", res2.Value);
@@ -696,37 +696,37 @@
         [Fact]
         protected virtual void GetAll_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "key:1", "key:2" });
-            var dict = GetMultiDict();
+            _provider.RemoveAll(new List<string> { "getall:key:1", "getall:key:2" });
+            var dict = GetMultiDict("getall:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res = _provider.GetAll<string>(new List<string> { "key:1", "key:2" });
+            var res = _provider.GetAll<string>(new List<string> { "getall:key:1", "getall:key:2" });
 
             Assert.Equal(2, res.Count);
 
-            Assert.True(res.Select(x => x.Key).Contains("key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("key:2"));
-            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.True(res.Select(x => x.Key).Contains("getall:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getall:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getall:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "getall:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
         }
 
         [Fact]
         protected virtual async Task GetAllAsync_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "key:1", "key:2" });
-            var dict = GetMultiDict();
+            _provider.RemoveAll(new List<string> { "getallasync:key:1", "getallasync:key:2" });
+            var dict = GetMultiDict("getallasync:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res = await _provider.GetAllAsync<string>(new List<string> { "key:1", "key:2" });
+            var res = await _provider.GetAllAsync<string>(new List<string> { "getallasync:key:1", "getallasync:key:2" });
 
             Assert.Equal(2, res.Count);
 
-            Assert.True(res.Select(x => x.Key).Contains("key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("key:2"));
-            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.True(res.Select(x => x.Key).Contains("getallasync:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getallasync:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
         }
         #endregion
 
@@ -734,39 +734,39 @@
         [Fact]
         protected virtual void GetByPrefix_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "key:1", "key:2" });
-            var dict = GetMultiDict();
+            _provider.RemoveAll(new List<string> { "getbyprefix:key:1", "getbyprefix:key:2" });
+            var dict = GetMultiDict("getbyprefix:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            string prefix = "key:";
+            string prefix = "getbyprefix:key:";
 
             var res = _provider.GetByPrefix<string>(prefix);
 
             Assert.Equal(2, res.Count);
-            Assert.True(res.Select(x => x.Key).Contains("key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("key:2"));
-            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.True(res.Select(x => x.Key).Contains("getbyprefix:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getbyprefix:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getbyprefix:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "getbyprefix:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
         }
 
         [Fact]
         protected virtual async Task GetByPrefixAsync_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "key:1", "key:2" });
-            var dict = GetMultiDict();
+            _provider.RemoveAll(new List<string> { "getbyprefixasync:key:1", "getbyprefixasync:key:2" });
+            var dict = GetMultiDict("getbyprefixasync:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            string prefix = "key:";
+            string prefix = "getbyprefixasync:key:";
 
             var res = await _provider.GetByPrefixAsync<string>(prefix);
 
             Assert.Equal(2, res.Count);
-            Assert.True(res.Select(x => x.Key).Contains("key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("key:2"));
-            Assert.Equal(res.Where(x => x.Key == "key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.True(res.Select(x => x.Key).Contains("getbyprefixasync:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getbyprefixasync:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
+            Assert.Equal(res.Where(x => x.Key == "getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
         }
         #endregion    
 
@@ -774,14 +774,14 @@
         [Fact]
         protected virtual void RemoveAll_Should_Succeed()
         {
-            var dict = GetMultiDict();
+            var dict = GetMultiDict("removeall:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            _provider.RemoveAll(new List<string> { "key:1", "key:2" });
+            _provider.RemoveAll(new List<string> { "removeall:key:1", "removeall:key:2" });
 
-            var res1 = _provider.Get<string>("key:1");
-            var res2 = _provider.Get<string>("key:2");
+            var res1 = _provider.Get<string>("removeall:key:1");
+            var res2 = _provider.Get<string>("removeall:key:2");
 
             Assert.False(res1.HasValue);
             Assert.False(res2.HasValue);
@@ -790,14 +790,14 @@
         [Fact]
         protected virtual async Task RemoveAllAsync_Should_Succeed()
         {
-            var dict = GetMultiDict();
+            var dict = GetMultiDict("removeallasync:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            await _provider.RemoveAllAsync(new List<string> { "key:1", "key:2" });
+            await _provider.RemoveAllAsync(new List<string> { "removeallasync:key:1", "removeallasync:key:2" });
 
-            var res1 = _provider.Get<string>("key:1");
-            var res2 = _provider.Get<string>("key:2");
+            var res1 = _provider.Get<string>("removeallasync:key:1");
+            var res2 = _provider.Get<string>("removeallasync:key:2");
 
             Assert.False(res1.HasValue);
             Assert.False(res2.HasValue);
@@ -805,12 +805,12 @@
         #endregion
 
         #region common method
-        protected Dictionary<string, string> GetMultiDict()
+        protected Dictionary<string, string> GetMultiDict(string prefix = "")
         {
             return new Dictionary<string, string>()
             {
-                {"key:1","value1"},
-                {"key:2","value2"}
+                {string.Concat(prefix,"key:1"), "value1"},
+                {string.Concat(prefix,"key:2"), "value2"}
             };
         }
 
