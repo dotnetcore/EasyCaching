@@ -261,7 +261,7 @@
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
 
-            var val = _provider.Get<string>(cacheKey);            
+            var val = _provider.Get<string>(cacheKey);
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue, val.Value);
         }
@@ -278,7 +278,35 @@
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue, val.Value);
         }
-      
+
+        [Fact]
+        protected virtual void Set_Object_Value_And_Get_Cached_Value_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = new Product { Id = 999, Name = "product999" };
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _provider.Get<Product>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue.Id, val.Value.Id);
+            Assert.Equal(cacheValue.Name, val.Value.Name);
+        }
+
+        [Fact]
+        protected virtual async Task Set_Object_Value_And_Get_Cached_Value_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = new Product { Id = 999, Name = "product999" };
+
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var val = await _provider.GetAsync<Product>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue.Id, val.Value.Id);
+            Assert.Equal(cacheValue.Name, val.Value.Name);
+        }
+
         #endregion
 
         #region Get/GetAsync
@@ -768,6 +796,27 @@
             Assert.Equal(res.Where(x => x.Key == "getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
             Assert.Equal(res.Where(x => x.Key == "getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
         }
+
+        [Fact]
+        protected virtual void GetByPrefix_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
+        {
+            string prefix = Guid.NewGuid().ToString();
+
+            var res = _provider.GetByPrefix<string>(prefix);
+
+            Assert.Equal(0, res.Count);
+        }
+
+        [Fact]
+        protected virtual async Task GetByPrefixAsync_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
+        {
+            string prefix = Guid.NewGuid().ToString();
+
+            var res = await _provider.GetByPrefixAsync<string>(prefix);
+
+            Assert.Equal(0, res.Count);
+        }
+
         #endregion    
 
         #region RemoveAll/RemoveAllAsync

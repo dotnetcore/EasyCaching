@@ -15,13 +15,20 @@
             services.AddDefaultMemcached(options =>
             {
                 options.AddServer("127.0.0.1", 11211);
+                options.Transcoder = "BinaryFormatterTranscoder";
+                //options.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
+                //DefaultMessagePackSerializer
+                //options.SerializationType = "EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer,EasyCaching.Serialization.MessagePack";
+                //DefaultJsonSerializer
+                //options.SerializationType = "EasyCaching.Serialization.Json.DefaultJsonSerializer,EasyCaching.Serialization.Json";
+                //DefaultProtobufSerializer
+                //options.SerializationType = "EasyCaching.Serialization.Protobuf.DefaultProtobufSerializer,EasyCaching.Serialization.Protobuf";
             });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(50);
         }
-
 
         [Fact]
         protected override void RemoveByPrefix_Should_Succeed()
@@ -96,6 +103,19 @@
             await Task.FromResult(1);
         }
 
+        [Fact]
+        protected override void GetByPrefix_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
+        {
+
+        }
+
+        [Fact]
+        protected override async Task GetByPrefixAsync_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
+        {
+            await Task.FromResult(1);
+        }
+
+
         private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
         {
             var pre = _provider.Get<string>(prefix);
@@ -119,4 +139,3 @@
         }
     }
 }
-                                         
