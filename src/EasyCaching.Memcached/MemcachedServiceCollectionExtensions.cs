@@ -1,9 +1,10 @@
 ﻿namespace EasyCaching.Memcached
-{    
+{
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Enyim.Caching;
     using Enyim.Caching.Configuration;
+    using Enyim.Caching.Memcached;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
@@ -22,16 +23,20 @@
         public static IServiceCollection AddDefaultMemcached(this IServiceCollection services, Action<EasyCachingMemcachedClientOptions> options)
         {
             ArgumentCheck.NotNull(services, nameof(services));
-
             ArgumentCheck.NotNull(options, nameof(options));
 
             services.AddOptions();
             services.Configure(options);
+
             services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
             services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
 
-            services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();            
+            services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
+
+            services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
 
             return services;
         }
@@ -53,6 +58,10 @@
             services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
             services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
+
+            services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
 
             services.TryAddSingleton<DefaultMemcachedCachingProvider>();
 

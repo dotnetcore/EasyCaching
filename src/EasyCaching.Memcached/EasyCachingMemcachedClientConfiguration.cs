@@ -16,7 +16,7 @@
         // these are lazy initialized in the getters
         private Type nodeLocator;
         private ITranscoder _transcoder;
-        private IMemcachedKeyTransformer keyTransformer;
+        private IMemcachedKeyTransformer _keyTransformer;
         private ILogger<EasyCachingMemcachedClientConfiguration> _logger;
 
         /// <summary>
@@ -24,7 +24,9 @@
         /// </summary>
         public EasyCachingMemcachedClientConfiguration(
             ILoggerFactory loggerFactory,
-            IOptions<EasyCachingMemcachedClientOptions> optionsAccessor)
+            IOptions<EasyCachingMemcachedClientOptions> optionsAccessor,
+            ITranscoder transcoder = null,
+            IMemcachedKeyTransformer keyTransformer = null)
         {
             if (optionsAccessor == null)
             {
@@ -103,21 +105,10 @@
                 }
             }
 
-            if (!string.IsNullOrEmpty(options.KeyTransformer))
+            if (keyTransformer != null)
             {
-                try
-                {
-                    var keyTransformerType = Type.GetType(options.KeyTransformer);
-                    if (keyTransformerType != null)
-                    {
-                        KeyTransformer = Activator.CreateInstance(keyTransformerType) as IMemcachedKeyTransformer;
-                        _logger.LogDebug($"Use '{options.KeyTransformer}' KeyTransformer");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(new EventId(), ex, $"Unable to load '{options.KeyTransformer}' KeyTransformer");
-                }
+                this.KeyTransformer = keyTransformer;
+                _logger.LogDebug($"Use KeyTransformer Type : '{keyTransformer.ToString()}'");
             }
 
             if (NodeLocator == null)
@@ -125,51 +116,10 @@
                 NodeLocator = options.Servers.Count > 1 ? typeof(DefaultNodeLocator) : typeof(SingleNodeLocator);
             }
 
-            if (!string.IsNullOrEmpty(options.Transcoder))
+            if (transcoder != null)
             {
-                try
-                {
-                    //Rewrite for FormatterTranscoder.
-                    //And looking forward for a more good wey for this.
-
-                    Type tmpType = null;
-
-                    if (options.Transcoder == "BinaryFormatterTranscoder")
-                    {
-                        options.Transcoder = "Enyim.Caching.Memcached.Transcoders.BinaryFormatterTranscoder,Enyim.Caching";
-                        tmpType = typeof(Enyim.Caching.Memcached.Transcoders.BinaryFormatterTranscoder);
-                    }
-
-                    if(!string.IsNullOrWhiteSpace(options.SerializationType))
-                    {
-                        var serializationType = Type.GetType(options.SerializationType);
-                        if (serializationType != null)
-                        {
-                            var serializer = Activator.CreateInstance(serializationType) as IEasyCachingSerializer;
-
-                            var transcoderType = Type.GetType(options.Transcoder);
-                            if (transcoderType != null)
-                            {
-                                Transcoder = Activator.CreateInstance(transcoderType, serializer) as ITranscoder;
-                                _logger.LogDebug($"Use '{options.Transcoder}'");
-                            }
-                        }
-                    }                  
-                    else
-                    {
-                        var transcoderType = tmpType ?? Type.GetType(options.Transcoder);
-                        if (transcoderType != null)
-                        {
-                            Transcoder = Activator.CreateInstance(transcoderType) as ITranscoder;
-                            _logger.LogDebug($"Use '{options.Transcoder}'");
-                        }
-                    }
-
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(new EventId(), ex, $"Unable to load '{options.Transcoder}'");
-                }
+                this._transcoder = transcoder;
+                _logger.LogDebug($"Use Transcoder Type : '{transcoder.ToString()}'");
             }
 
             if (options.NodeLocatorFactory != null)
@@ -217,8 +167,8 @@
         /// </summary>
         public IMemcachedKeyTransformer KeyTransformer
         {
-            get { return this.keyTransformer ?? (this.keyTransformer = new DefaultKeyTransformer()); }
-            set { this.keyTransformer = value; }
+            get { return this._keyTransformer ?? (this._keyTransformer = new DefaultKeyTransformer()); }
+            set { this._keyTransformer = value; }
         }
 
         /// <summary>

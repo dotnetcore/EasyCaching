@@ -5,9 +5,9 @@ namespace EasyCaching.Memcached
     using System;
 
     /// <summary>
-    /// Formatter transcoder.
+    /// EasyCaching transcoder.
     /// </summary>
-    public class FormatterTranscoder : DefaultTranscoder
+    public class EasyCachingTranscoder : DefaultTranscoder
     {    
         /// <summary>
         /// The serializer.
@@ -18,7 +18,7 @@ namespace EasyCaching.Memcached
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.FormatterTranscoder"/> class.
         /// </summary>
         /// <param name="serializer">Serializer.</param>
-        public FormatterTranscoder(IEasyCachingSerializer serializer)
+        public EasyCachingTranscoder(IEasyCachingSerializer serializer)
         {
             this._serializer = serializer;
         }        
@@ -31,6 +31,17 @@ namespace EasyCaching.Memcached
         protected override ArraySegment<byte> SerializeObject(object value)
         {            
             return _serializer.SerializeObject(value);            
+        }
+
+        /// <summary>
+        /// Deserialize the specified item.
+        /// </summary>
+        /// <returns>The deserialize.</returns>
+        /// <param name="item">Item.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public override T Deserialize<T>(CacheItem item)
+        {
+            return (T)base.Deserialize(item);
         }
 
         /// <summary>
