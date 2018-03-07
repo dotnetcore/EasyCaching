@@ -23,10 +23,9 @@
             services.AddDefaultMemcached(op=>
             {                
                 op.AddServer("127.0.0.1",11211);
-                //specify the Transcoder use messagepack .
-                op.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
-                op.SerializationType = "EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer,EasyCaching.Serialization.MessagePack";
             });
+            //specify the Transcoder use messagepack .
+            services.AddDefaultMessagePackSerializer();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

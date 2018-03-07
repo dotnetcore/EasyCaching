@@ -15,14 +15,6 @@
             services.AddDefaultMemcached(options =>
             {
                 options.AddServer("127.0.0.1", 11211);
-                options.Transcoder = "BinaryFormatterTranscoder";
-                //options.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
-                //DefaultMessagePackSerializer
-                //options.SerializationType = "EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer,EasyCaching.Serialization.MessagePack";
-                //DefaultJsonSerializer
-                //options.SerializationType = "EasyCaching.Serialization.Json.DefaultJsonSerializer,EasyCaching.Serialization.Json";
-                //DefaultProtobufSerializer
-                //options.SerializationType = "EasyCaching.Serialization.Protobuf.DefaultProtobufSerializer,EasyCaching.Serialization.Protobuf";
             });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
