@@ -25,9 +25,8 @@ public class Startup
         {                
             option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             option.Password = "";                                                  
-        });
-        //put after AddDefaultRedisCache
-        //in order to replace DefaultBinaryFormatterSerializer
+        });        
+        //specify to use messagepack serializer
         services.AddDefaultMessagePackSerializer();
     }
 }
@@ -46,11 +45,10 @@ public class Startup
 
         services.AddDefaultMemcached(op=>
         {                
-            op.AddServer("127.0.0.1",11211);
-            //specify the Transcoder use messagepack .
-            op.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
-            op.SerializationType = "EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer,EasyCaching.Serialization.MessagePack";
+            op.AddServer("127.0.0.1",11211);                        
         });
+        //specify the Transcoder use messagepack serializer.
+        services.AddDefaultMessagePackSerializer();
     }
 }
 ```

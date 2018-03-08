@@ -26,8 +26,7 @@ public class Startup
             option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             option.Password = "";                                                  
         });
-        //put after AddDefaultRedisCache
-        //in order to replace DefaultBinaryFormatterSerializer
+        //specify to use json serializer
         services.AddDefaultJsonSerializer();
     }
 }
@@ -46,11 +45,10 @@ public class Startup
 
         services.AddDefaultMemcached(op=>
         {                
-            op.AddServer("127.0.0.1",11211);
-            //specify the Transcoder use json .
-            op.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
-            op.SerializationType = "EasyCaching.Serialization.Json.DefaultJsonSerializer,EasyCaching.Serialization.Json";
+            op.AddServer("127.0.0.1",11211);           
         });
+        //specify the Transcoder use json serializer.
+        services.AddDefaultJsonSerializer();
     }
 }
 ```
