@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.4</Version>
+    <Version>0.1.5</Version>
     <Description>
       EasyCaching.Memcached based on EasyCaching.Core and EnyimMemcachedCore
     </Description>
@@ -15,9 +15,7 @@
     <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>      
-      1. Update EnyimMemcachedCore to version 2.1.0.2.
-      2. Add some new caching APIs.
-      3. Make some change of Transcoder.
+      Simplify the usage of Memcached Transcoder
     </PackageReleaseNotes>
   </PropertyGroup>
 
