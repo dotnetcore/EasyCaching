@@ -87,10 +87,7 @@ public class Startup
         //3. Memcached Cache
         //services.AddDefaultMemcached(option=>
         //{                
-        //    option.AddServer("127.0.0.1",11211);
-        //    //specify the Transcoder use messagepack .
-        //    op.Transcoder = "EasyCaching.Memcached.FormatterTranscoder,EasyCaching.Memcached" ;
-        //    op.SerializationType = "EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer,EasyCaching.Serialization.MessagePack";
+        //    option.AddServer("127.0.0.1",11211);        
         //});
         
         //4. SQLite Cache
