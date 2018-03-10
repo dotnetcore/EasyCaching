@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.J
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.Protobuf", "src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj", "{3AAEDDBA-5037-4061-84E5-667F89C11F8E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.PerformanceTests", "test\EasyCaching.PerformanceTests\EasyCaching.PerformanceTests.csproj", "{0631F74C-8AFA-4B16-A50F-A5E437226265}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,10 @@ Global
 		{3AAEDDBA-5037-4061-84E5-667F89C11F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3AAEDDBA-5037-4061-84E5-667F89C11F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3AAEDDBA-5037-4061-84E5-667F89C11F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0631F74C-8AFA-4B16-A50F-A5E437226265}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0631F74C-8AFA-4B16-A50F-A5E437226265}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0631F74C-8AFA-4B16-A50F-A5E437226265}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0631F74C-8AFA-4B16-A50F-A5E437226265}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
@@ -162,5 +168,6 @@ Global
 		{E287B21A-9025-46D0-B67B-19DA2C0BBC8E} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 		{F0302BE8-188A-4EAF-8391-514CA9352DB3} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{3AAEDDBA-5037-4061-84E5-667F89C11F8E} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{0631F74C-8AFA-4B16-A50F-A5E437226265} = {EBB55F65-7D07-4281-8D5E-7B0CA88E1AD0}
 	EndGlobalSection
 EndGlobal
