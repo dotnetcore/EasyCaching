@@ -12,14 +12,14 @@
 
     [MemoryDiagnoser]
     [AllStatisticsColumn]
-    public class SerializerBenchmark
+    public abstract class SerializerBenchmark
     {
         private DefaultJsonSerializer _json = new DefaultJsonSerializer();
         private DefaultMessagePackSerializer _messagepack = new DefaultMessagePackSerializer();
         private DefaultProtobufSerializer _protobuf = new DefaultProtobufSerializer();
         private DefaultBinaryFormatterSerializer _binary = new DefaultBinaryFormatterSerializer();
-        private MyPoco _single;
-        private List<MyPoco> _list;
+        protected MyPoco _single;
+        protected List<MyPoco> _list;
         private int _count;
 
         [GlobalSetup]
@@ -38,96 +38,82 @@
             _list = items;
         }
 
-        #region  single
         [Benchmark]
-        public void JsonSerializer_Single()
+        public void BinaryFormatter()
         {
-            var data = _json.Serialize(_single);
-            var result = _json.Deserialize<MyPoco>(data);
-            if (result == null)
-            {
-                throw new Exception();
-            }
+            Exec(_binary);
         }
 
         [Benchmark]
-        public void MsgSerializer_Single()
+        public void Json()
         {
-            var data = _messagepack.Serialize(_single);
-            var result = _messagepack.Deserialize<MyPoco>(data);
-            if (result == null)
-            {
-                throw new Exception();
-            }
+            Exec(_json);
         }
 
         [Benchmark]
-        public void ProSerializer_Single()
+        public void MessagePack()
         {
-            var data = _protobuf.Serialize(_single);
-            var result = _protobuf.Deserialize<MyPoco>(data);
-            if (result == null)
-            {
-                throw new Exception();
-            }
+            Exec(_messagepack);
         }
 
         [Benchmark]
-        public void BinSerializer_Single()
+        public void Protobuf()
         {
-            var data = _binary.Serialize(_single);
-            var result = _binary.Deserialize<MyPoco>(data);
-            if (result == null)
-            {
-                throw new Exception();
-            }
-        }
-        #endregion
-
-        #region  multi
-        [Benchmark]
-        public void JsonSerializer_Multi()
-        {
-            var data = _json.Serialize(_list);
-            var result = _json.Deserialize<List<MyPoco>>(data);
-            if (result == null)
-            {
-                throw new Exception();
-            }
+            Exec(_protobuf);
         }
 
-        [Benchmark]
-        public void MsgSerializer_Multi()
-        {
-            var data = _messagepack.Serialize(_list);
-            var result = _messagepack.Deserialize<List<MyPoco>>(data);
-            if (result == null)
-            {
-                throw new Exception();
-            }
-        }
+        protected abstract void Exec(IEasyCachingSerializer serializer);
+    }
 
-        [Benchmark]
-        public void ProSerializer_Multi()
+    public class SerializeSingleObject2BytesBenchmark : SerializerBenchmark
+    {
+        protected override void Exec(IEasyCachingSerializer serializer)
         {
-            var data = _protobuf.Serialize(_list);
-            var result = _protobuf.Deserialize<List<MyPoco>>(data);
+            var data = serializer.Serialize(_single);
+            var result = serializer.Deserialize<MyPoco>(data);
             if (result == null)
             {
                 throw new Exception();
             }
         }
+    }
 
-        [Benchmark]
-        public void BinSerializer_Multi()
+    public class SerializeMultiObject2BytesBenchmark  : SerializerBenchmark
+    {
+        protected override void Exec(IEasyCachingSerializer serializer)
         {
-            var data = _binary.Serialize(_list);
-            var result = _binary.Deserialize<List<MyPoco>>(data);
+            var data = serializer.Serialize(_list);
+            var result = serializer.Deserialize<List<MyPoco>>(data);
             if (result == null)
             {
                 throw new Exception();
             }
         }
-        #endregion
+    }
+
+    public class SerializerSingleObject2ArraySegmentBenchmark : SerializerBenchmark
+    {
+        protected override void Exec(IEasyCachingSerializer serializer)
+        {
+            var data = serializer.SerializeObject(_single);
+            var result = serializer.DeserializeObject(data);
+            if (result == null)
+            {
+                throw new Exception();
+            }
+        }
+    }
+
+    public class SerializerMultiObject2ArraySegmentBenchmark : SerializerBenchmark
+    {
+        protected override void Exec(IEasyCachingSerializer serializer)
+        {
+            var data = serializer.SerializeObject(_list);
+            var result = serializer.DeserializeObject(data);
+            if (result == null)
+            {
+                throw new Exception();
+            }
+        }
     }
 }
