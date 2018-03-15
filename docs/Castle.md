@@ -1,1 +1,121 @@
-coming soon!
+# Caching Intercept via Castle
+
+EasyCaching.Interceptor.Castle is a caching intercept library which is based on **EasyCaching.Core** and **Castle.Core**.
+
+When using this library, it can help us to separate the operation between business logic and caching logic.
+
+# How to use ?
+
+Before using **EasyCaching.Interceptor.Castle**, we should specify which type of caching you want to use!! In this document, we will use EasyCaching.InMemory for example.
+
+## 1. Install the package via Nuget
+
+```
+Install-Package EasyCaching.Interceptor.Castle 
+
+Install-Package EasyCaching.InMemory
+```
+## 2. Define services
+
+### 2.1 Define the interface
+
+Just define a regular interface.
+
+```csharp
+public interface IDemoService 
+{        
+    string GetCurrentUtcTime();
+
+    string PutSomething(string str);
+
+    void DeleteSomething(int id);
+}
+```
+
+This implement must inherit **IEasyCaching** by default. And we need to add `EasyCachingAble`,`EasyCachingPut` and `EasyCachingEvict` to the methods that we want to simplify the caching operation.
+
+- EasyCachingAble , Read from cached items
+- EasyCachingPut , Update the cached item
+- EasyCachingEvict , Remove one cached item or multi cached items
+
+```csharp
+public class DemoService : IDemoService ,  IEasyCaching
+{
+    [EasyCachingEvict(IsBefore = true)]
+    public void DeleteSomething(int id)
+    {
+        System.Console.WriteLine("Handle delete something..");
+    }
+
+    [EasyCachingAble(Expiration = 10)]
+    public string GetCurrentUtcTime()
+    {
+        return System.DateTime.UtcNow.ToString();
+    }
+
+    [EasyCachingPut(CacheKeyPrefix = "Castle")]
+    public string PutSomething(string str)
+    {
+        return str;
+    }
+}
+```
+
+## 3. Config in Startup class
+
+```csharp
+public class Startup
+{
+   //others...
+
+    public IServiceProvider ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IDemoService, DemoService>();
+
+        services.AddDefaultInMemoryCache();
+
+        services.AddMvc();
+
+        return services.ConfigureCastleInterceptor();
+    } 
+}
+```
+
+### 3. Call the service
+
+The following code shows how to use in ASP.NET Core Web API.
+
+```csharp
+[Route("api/[controller]")]
+public class ValuesController : Controller
+{
+    private readonly IDemoService _service;
+
+    public ValuesController(IDemoService service)
+    {
+        this._service = service;
+    }
+
+    [HttpGet]
+    public string Get()
+    {
+        if(type == 1)
+        {
+            return _service.GetCurrentUtcTime();   
+        }
+        else if(type == 2)
+        {
+            _service.DeleteSomething(1);
+            return "ok";
+        }
+        else if(type == 3)
+        {
+            return _service.PutSomething("123");
+        }
+        else
+        {
+            return "other";
+        }                
+    }
+}
+```
