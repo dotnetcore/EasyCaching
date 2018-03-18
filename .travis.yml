@@ -21,6 +21,7 @@ osx_image: xcode9.1
 branches:
   only:
     - master
+    - dev
  
 script:
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
