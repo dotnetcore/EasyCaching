@@ -84,6 +84,23 @@
         }
 
         [Fact]
+        public void CacheKey_Length_GT_250_Should_Call_SHA1()
+        {
+            var cacheKey = "";
+            var part = "1000000000";
+
+            for (int i = 0; i < 26; i++)
+                cacheKey += part;
+
+            var cacheValue = "value";
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _provider.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
+        }
+
+        [Fact]
         protected override void GetByPrefix_Should_Succeed()
         {
 

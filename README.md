@@ -1,17 +1,17 @@
-![](https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png)
+![](media/easycaching-icon.png?raw=true)
 
 EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
 
 [![Coverage Status](https://coveralls.io/repos/github/catcherwong/EasyCaching/badge.svg?branch=master)](https://coveralls.io/github/catcherwong/EasyCaching?branch=master)
-
-[![GitHub license](https://img.shields.io/github/license/catcherwong/EasyCaching.svg)](https://github.com/catcherwong/EasyCaching/blob/master/LICENSE)
+[![Member project of .NET China Foundation](https://img.shields.io/badge/member_project_of-.NET_CHINA-red.svg?style=flat&colorB=9E20C8)](https://github.com/dotnetcore)
+[![GitHub license](https://img.shields.io/github/license/dotnetcore/EasyCaching.svg)](https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE)
 
 ## CI Build Status
 
 | Platform | Build Server | Status  |
 |--------- |------------- |---------|
-| AppVeyor |  Windows |[![Build status](https://ci.appveyor.com/api/projects/status/ji7513h4uv4ysq2i?svg=true)](https://ci.appveyor.com/project/catcherwong/easycaching) |
-| Travis   | Linux/OSX | [![Build Status](https://travis-ci.org/catcherwong/EasyCaching.svg?branch=master)](https://travis-ci.org/catcherwong/EasyCaching) |    
+| AppVeyor |  Windows |[![Build status](https://ci.appveyor.com/api/projects/status/4x6qal9c1r10wn6x?svg=true)](https://ci.appveyor.com/project/catcherwong/easycaching-48okb) |
+| Travis   | Linux/OSX | [![Build Status](https://travis-ci.org/dotnetcore/EasyCaching.svg?branch=master)](https://travis-ci.org/dotnetcore/EasyCaching) |    
 
 ## Nuget Packages
 
