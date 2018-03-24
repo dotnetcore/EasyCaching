@@ -484,7 +484,7 @@
         /// </summary>
         public void Flush()
         {
-            //noe flush memory at once, just causes all items to expire
+            //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();
         }
     }

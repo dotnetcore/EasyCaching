@@ -876,15 +876,15 @@
         protected virtual void Flush_Should_Succeed()
         {
             for (var i = 0; i < 5; i++)
-                _provider.Set($"key{i}", $"value{i}", _defaultTs);
+                _provider.Set($"flush:{i}", $"value{i}", _defaultTs);
 
             for (var i = 0; i < 5; i++)
-                Assert.Equal($"value{i}", _provider.Get<string>($"key{i}").Value);
+                Assert.Equal($"value{i}", _provider.Get<string>($"flush:{i}").Value);
 
             _provider.Flush();
 
             for (var i = 0; i < 5; i++)
-                Assert.False(_provider.Get<string>($"key{i}").HasValue);
+                Assert.False(_provider.Get<string>($"flush:{i}").HasValue);
         }
         #endregion
 
@@ -893,13 +893,14 @@
         protected virtual void Get_Count_Without_Prefix_Should_Succeed()
         {
             _provider.Flush();
+            var rd = Guid.NewGuid().ToString();
 
             for (var i = 0; i < 5; i++)
-                _provider.Set($"key{i}", $"value{i}", _defaultTs);
+                _provider.Set($"{rd}:getcount:{i}", $"value{i}", _defaultTs);
 
             Assert.Equal(5, _provider.GetCount());
 
-            _provider.Remove("key4");
+            _provider.Remove($"{rd}:getcount:4");
 
             Assert.Equal(4, _provider.GetCount());
         }
@@ -908,15 +909,16 @@
         protected virtual void Get_Count_With_Prefix_Should_Succeed()
         {
             _provider.Flush();
+            var rd = Guid.NewGuid().ToString();
 
             for (var i = 0; i < 5; i++)
-                _provider.Set($"getcount:withprefix:{i}", $"value{i}", _defaultTs);
+                _provider.Set($"{rd}:getcount:withprefix:{i}", $"value{i}", _defaultTs);
 
-            Assert.Equal(5, _provider.GetCount("getcount:withprefix:"));
+            Assert.Equal(5, _provider.GetCount($"{rd}:getcount:withprefix:"));
 
-            _provider.Remove("getcount:withprefix:1");
+            _provider.Remove($"{rd}:getcount:withprefix:1");
 
-            Assert.Equal(4, _provider.GetCount("getcount:withprefix:"));
+            Assert.Equal(4, _provider.GetCount($"{rd}:getcount:withprefix:"));
         }
         #endregion
 
