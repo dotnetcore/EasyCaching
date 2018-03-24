@@ -19,6 +19,7 @@
         {
             RedisCacheOptions options = new RedisCacheOptions()
             {
+                AllowAdmin = true,
                 //Password = ""
             };
 
