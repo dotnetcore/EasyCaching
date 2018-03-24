@@ -585,5 +585,32 @@
                 System.Console.WriteLine(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            return Math.Max(_localCachingProvider.GetCount(prefix), _distributedCachingProvider.GetCount(prefix));
+        }
+
+        /// <summary>
+        /// Flush this instance.
+        /// </summary>
+        public void Flush()
+        {
+            _localCachingProvider.Flush();
+
+            try
+            {
+                _distributedCachingProvider.Flush();
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+        }
     }
 }

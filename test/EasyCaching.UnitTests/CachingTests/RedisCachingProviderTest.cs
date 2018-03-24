@@ -27,6 +27,20 @@ namespace EasyCaching.UnitTests
             Assert.Throws<ArgumentException>(()=>_provider.RemoveByPrefix("*"));
         }
 
+        [Fact]
+        public void Fulsh_Should_Fail_When_AllowAdmin_Is_False()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddDefaultRedisCache(options =>
+            {
+                options.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            });
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var provider = serviceProvider.GetService<IEasyCachingProvider>();
+
+            Assert.Throws<StackExchange.Redis.RedisCommandException>(() => provider.Flush());
+        }
+
 
         [Fact]
         public void Issues16_DateTimeTest()

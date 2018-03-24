@@ -455,5 +455,31 @@
 
             await Task.WhenAll(tasks);
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            return string.IsNullOrWhiteSpace(prefix) 
+                    ? _cacheKeys.Count 
+                    : _cacheKeys.Count(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase)); 
+        }
+
+        /// <summary>
+        /// Flush this instance.
+        /// </summary>
+        public void Flush()
+        {
+            ////new instance
+            //_cache = new MemoryCache(new MemoryCacheOptions());
+
+            foreach (var item in _cacheKeys)
+                _cache.Remove(item);
+
+            _cacheKeys.Clear();
+        }
     }
 }

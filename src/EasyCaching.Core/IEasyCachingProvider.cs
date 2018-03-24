@@ -189,5 +189,17 @@
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         Task RemoveAllAsync(IEnumerable<string> cacheKeys);
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        int GetCount(string prefix = "");
+
+        /// <summary>
+        /// Flush this instance.
+        /// </summary>
+        void Flush();
     }
 }

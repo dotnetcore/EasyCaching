@@ -460,5 +460,32 @@
 
             await Task.WhenAll(tasks);
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            if(string.IsNullOrWhiteSpace(prefix))
+            {
+                //Inaccurate, sometimes, memcached just causes items to expire but not free up or flush memory at once.
+                return int.Parse(_memcachedClient.Stats().GetRaw("curr_items").FirstOrDefault().Value);
+            }
+            else
+            {
+                return 0;
+            }  
+        }
+
+        /// <summary>
+        /// Flush this instance.
+        /// </summary>
+        public void Flush()
+        {
+            //noe flush memory at once, just causes all items to expire
+            _memcachedClient.FlushAll();
+        }
     }
 }

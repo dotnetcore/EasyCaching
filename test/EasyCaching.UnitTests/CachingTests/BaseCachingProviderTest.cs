@@ -871,6 +871,56 @@
         }
         #endregion
 
+        #region Flush
+        [Fact]
+        protected virtual void Flush_Should_Succeed()
+        {
+            for (var i = 0; i < 5; i++)
+                _provider.Set($"key{i}", $"value{i}", _defaultTs);
+
+            for (var i = 0; i < 5; i++)
+                Assert.Equal($"value{i}", _provider.Get<string>($"key{i}").Value);
+
+            _provider.Flush();
+
+            for (var i = 0; i < 5; i++)
+                Assert.False(_provider.Get<string>($"key{i}").HasValue);
+        }
+        #endregion
+
+        #region GetCount
+        [Fact]
+        protected virtual void Get_Count_Without_Prefix_Should_Succeed()
+        {
+            _provider.Flush();
+
+            for (var i = 0; i < 5; i++)
+                _provider.Set($"key{i}", $"value{i}", _defaultTs);
+
+            Assert.Equal(5, _provider.GetCount());
+
+            _provider.Remove("key4");
+
+            Assert.Equal(4, _provider.GetCount());
+        }
+
+        [Fact]
+        protected virtual void Get_Count_With_Prefix_Should_Succeed()
+        {
+            _provider.Flush();
+
+            for (var i = 0; i < 5; i++)
+                _provider.Set($"getcount:withprefix:{i}", $"value{i}", _defaultTs);
+
+            Assert.Equal(5, _provider.GetCount("getcount:withprefix:"));
+
+            _provider.Remove("getcount:withprefix:1");
+
+            Assert.Equal(4, _provider.GetCount("getcount:withprefix:"));
+        }
+        #endregion
+
+
         #region common method
         protected Dictionary<string, string> GetMultiDict(string prefix = "")
         {
