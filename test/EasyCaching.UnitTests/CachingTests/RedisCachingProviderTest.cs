@@ -15,6 +15,7 @@ namespace EasyCaching.UnitTests
             services.AddDefaultRedisCache(options =>
             {
                 options.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                options.AllowAdmin = true;
             });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
@@ -24,7 +25,7 @@ namespace EasyCaching.UnitTests
         [Fact]
         public void Prefix_Equal_Asterisk_Should_Throw_ArgumentException()
         {
-            Assert.Throws<ArgumentException>(()=>_provider.RemoveByPrefix("*"));
+            Assert.Throws<ArgumentException>(() => _provider.RemoveByPrefix("*"));
         }
 
         [Fact]
@@ -50,7 +51,7 @@ namespace EasyCaching.UnitTests
                 Dt = Convert.ToDateTime("2018-02-12 12:11:00")
             };
 
-            _provider.Set("activity",model,_defaultTs);
+            _provider.Set("activity", model, _defaultTs);
 
             var res = _provider.Get<Model>("activity");
 
