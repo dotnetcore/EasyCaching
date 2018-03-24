@@ -125,6 +125,18 @@
         }
 
 
+        [Fact]
+        protected override void Get_Count_Without_Prefix_Should_Succeed()
+        {
+
+        }
+
+        [Fact]
+        protected override void Get_Count_With_Prefix_Should_Succeed()
+        {
+
+        }
+
         private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
         {
             var pre = _provider.Get<string>(prefix);

@@ -4,26 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.2</Version>
+    <Version>0.2.0</Version>
     <Description>
       Caching Interceptor based on EasyCaching.Core and Castle
     </Description>
     <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization</PackageTags>
-    <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
-    <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      v0.1.2
-      1. Enable IsAll when using Evict. 
-
-      v0.1.1
-      1. Get caching with data retriever =&gt; without data retriever .
-      2. Introduct Able , Put And Evict.
-
-      v 0.1.0 
-      Init.
+      Add some extension methods. 
     </PackageReleaseNotes>
   </PropertyGroup>
 

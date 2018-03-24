@@ -66,6 +66,7 @@
                 Password = _options.Password,
                 Ssl = _options.IsSsl,
                 SslHost = _options.SslHost,
+                AllowAdmin = _options.AllowAdmin
             };
 
             foreach (var endpoint in _options.Endpoints)

@@ -506,5 +506,28 @@
             await Task.WhenAll(tasks);
             tran.Commit();
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return _cache.ExecuteScalar<int>(ConstSQL.COUNTALLSQL);
+            }
+            else
+            {
+                return _cache.ExecuteScalar<int>(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
+            }
+        }
+
+        /// <summary>
+        /// Flush this instance.
+        /// </summary>
+        public void Flush() => _cache.Execute(ConstSQL.FLUSHSQL);  
+
     }
 }

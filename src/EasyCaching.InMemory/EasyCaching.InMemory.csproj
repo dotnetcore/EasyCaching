@@ -4,18 +4,18 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.4</Version>
+    <Version>0.2.0</Version>
     <Description>
       In-memory cache based on EasyCaching.Core and Microsoft.Extensions.Caching.Memory      
     </Description>
     <PackageTags>Caching,Cache,In-Memory</PackageTags>
-    <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
-    <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      Add some new caching APIs.
+      Implement GetCount and Flush.
     </PackageReleaseNotes>
   </PropertyGroup>
 

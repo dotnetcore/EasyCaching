@@ -553,5 +553,36 @@
             if (redisKeys.Length > 0)
                 await _cache.KeyDeleteAsync(redisKeys);
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            if(string.IsNullOrWhiteSpace(prefix))
+            {
+                var allCount = 0;
+
+                foreach (var server in _servers)
+                    allCount += (int)server.DatabaseSize(_cache.Database);
+
+                return allCount;
+            }            
+
+            return this.SearchRedisKeys(this.HandlePrefix(prefix)).Length;  
+        }
+
+        /// <summary>
+        /// Flush this instance.
+        /// </summary>
+        public void Flush()
+        {
+            foreach (var server in _servers)
+            {
+                server.FlushDatabase(_cache.Database);
+            }
+        }
     }
 }
