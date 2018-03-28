@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.Demo.Interceptor.AspectCore.Controllers
 {
+    using System.Threading.Tasks;
     using EasyCaching.Demo.Interceptor.AspectCore.Services;
     using Microsoft.AspNetCore.Mvc;
 
@@ -32,6 +33,20 @@
             else
             {
                 return "wait";
+            }
+        }
+
+        [HttpGet]
+        [Route("async")]
+        public async Task<string> GetAsync(int type = 1)
+        {
+            if (type == 1)
+            {
+                return await _service.GetUtcTimeAsync();
+            }           
+            else
+            {
+                return await Task.FromResult<string>("wait");
             }
         }
     }

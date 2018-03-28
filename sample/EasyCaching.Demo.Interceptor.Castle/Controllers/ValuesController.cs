@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.Demo.Interceptor.Castle.Controllers
 {
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
 
     [Route("api/[controller]")]
@@ -31,6 +32,20 @@
             else
             {
                 return "wait";
+            }
+        }
+
+        [HttpGet]
+        [Route("async")]
+        public async Task<string> GetAsync(int type = 1)
+        {
+            if (type == 1)
+            {
+                return await _service.GetUtcTimeAsync();
+            }
+            else
+            {
+                return await Task.FromResult<string>("wait");
             }
         }
     }
