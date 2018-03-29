@@ -13,8 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Memcached\EasyCaching.Memcached.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.SQLite\EasyCaching.SQLite.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
 </Project>

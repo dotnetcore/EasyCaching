@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,7 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.SQLite\EasyCaching.SQLite.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
   </ItemGroup>
 </Project>

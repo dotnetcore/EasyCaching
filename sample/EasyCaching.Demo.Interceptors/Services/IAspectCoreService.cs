@@ -1,9 +1,9 @@
-﻿namespace EasyCaching.Demo.Interceptor.AspectCore.Services
+﻿namespace EasyCaching.Demo.Interceptors.Services
 {
     using EasyCaching.Core.Internal;
     using System.Threading.Tasks;
     
-    public interface IDateTimeService : EasyCaching.Core.Internal.IEasyCaching
+    public interface IAspectCoreService : EasyCaching.Core.Internal.IEasyCaching
     {
         [EasyCachingAble(Expiration = 10)]
         string GetCurrentUtcTime();
@@ -18,7 +18,7 @@
         Task<string> GetUtcTimeAsync();
     }
 
-    public class DateTimeService : IDateTimeService
+    public class AspectCoreService : IAspectCoreService
     {
         public void DeleteSomething(int id)
         {
@@ -27,7 +27,7 @@
 
         public string GetCurrentUtcTime()
         {
-            return System.DateTime.UtcNow.ToString();
+            return System.DateTimeOffset.UtcNow.ToString();
         }
 
         public async Task<string> GetUtcTimeAsync()

@@ -1,10 +1,10 @@
-﻿namespace EasyCaching.Demo.Interceptor.Castle
-{
+﻿namespace EasyCaching.Demo.Interceptors.Services
+{    
     using System.Threading.Tasks;
     using EasyCaching.Core.Internal;
-    
-    public interface IDateTimeService 
-    {        
+
+    public interface ICastleService
+    {
         string GetCurrentUtcTime();
 
         string PutSomething(string str);
@@ -14,7 +14,7 @@
         Task<string> GetUtcTimeAsync();
     }
 
-    public class DateTimeService : IDateTimeService ,  IEasyCaching
+    public class CastleService : ICastleService, IEasyCaching
     {
         [EasyCachingEvict(IsBefore = true)]
         public void DeleteSomething(int id)
