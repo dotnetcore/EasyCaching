@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.Providers"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.Interceptors", "sample\EasyCaching.Demo.Interceptors\EasyCaching.Demo.Interceptors.csproj", "{F7DD4826-1375-42B3-97BA-37685460282E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.ResponseCaching", "sample\EasyCaching.Demo.ResponseCaching\EasyCaching.Demo.ResponseCaching.csproj", "{2AFDA79E-C034-4BC2-921D-5C7082924281}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,10 @@ Global
 		{F7DD4826-1375-42B3-97BA-37685460282E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7DD4826-1375-42B3-97BA-37685460282E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7DD4826-1375-42B3-97BA-37685460282E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AFDA79E-C034-4BC2-921D-5C7082924281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AFDA79E-C034-4BC2-921D-5C7082924281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AFDA79E-C034-4BC2-921D-5C7082924281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AFDA79E-C034-4BC2-921D-5C7082924281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
@@ -141,5 +147,6 @@ Global
 		{261EE728-4965-4C0E-B99B-3B188442263A} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{4193DF5A-E034-4917-83F4-380E8D7DCF83} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 		{F7DD4826-1375-42B3-97BA-37685460282E} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
+		{2AFDA79E-C034-4BC2-921D-5C7082924281} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 	EndGlobalSection
 EndGlobal
