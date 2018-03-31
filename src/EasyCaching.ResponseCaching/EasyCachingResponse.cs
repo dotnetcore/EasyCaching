@@ -7,7 +7,7 @@
     /// EasyCaching response.
     /// </summary>
     [Serializable]
-    internal class EasyCachingResponse
+    internal class EasyCachingResponse : Microsoft.AspNetCore.ResponseCaching.Internal.IResponseCacheEntry
     {
         public DateTimeOffset Created { get; set; }
 

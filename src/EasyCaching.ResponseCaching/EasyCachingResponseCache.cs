@@ -39,22 +39,24 @@
         /// <param name="key">Key.</param>
         public IResponseCacheEntry Get(string key)
         {
-            var entry = _provider.Get<EasyCachingResponse>(key);
+            var entry = _provider.Get<IResponseCacheEntry>(key);
 
             if (entry.HasValue)
             {
-                return new CachedResponse
+                var val = entry.Value as EasyCachingResponse;
+                if (val != null)
                 {
-                    Created = entry.Value.Created,
-                    StatusCode = entry.Value.StatusCode,
-                    Headers = new HeaderDictionary(entry.Value.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value))),
-                    Body = new MemoryStream(entry.Value.Body)
-                };
+                    return new CachedResponse
+                    {
+                        Created = val.Created,
+                        StatusCode = val.StatusCode,
+                        Headers = new HeaderDictionary(val.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value))),
+                        Body = new MemoryStream(val.Body)
+                    };
+                }
             }
-            else
-            {
-                return entry as IResponseCacheEntry;
-            }
+
+            return entry as IResponseCacheEntry;
         }
 
         /// <summary>
@@ -64,22 +66,24 @@
         /// <param name="key">Key.</param>
         public async Task<IResponseCacheEntry> GetAsync(string key)
         {
-            var entry = await _provider.GetAsync<EasyCachingResponse>(key);
+            var entry = await _provider.GetAsync<IResponseCacheEntry>(key);
 
             if (entry.HasValue)
             {
-                return new CachedResponse
+                var val = entry.Value as EasyCachingResponse;
+                if (val != null)
                 {
-                    Created = entry.Value.Created,
-                    StatusCode = entry.Value.StatusCode,
-                    Headers = new HeaderDictionary(entry.Value.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value))),
-                    Body = new MemoryStream(entry.Value.Body)
-                };
+                    return new CachedResponse
+                    {
+                        Created = val.Created,
+                        StatusCode = val.StatusCode,
+                        Headers = new HeaderDictionary(val.Headers.ToDictionary(x => x.Key, x => new StringValues(x.Value))),
+                        Body = new MemoryStream(val.Body)
+                    };
+                }
             }
-            else
-            {
-                return entry as IResponseCacheEntry;
-            }
+
+            return entry as IResponseCacheEntry;
         }
 
         /// <summary>
