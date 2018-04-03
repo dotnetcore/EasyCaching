@@ -575,7 +575,7 @@
         }
 
         /// <summary>
-        /// Flush this instance.
+        /// Flush All Cached Item.
         /// </summary>
         public void Flush()
         {
@@ -583,6 +583,22 @@
             {
                 server.FlushDatabase(_cache.Database);
             }
+        }
+
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        public async Task FlushAsync()
+        {
+            var tasks = new List<Task>();
+
+            foreach (var server in _servers)
+            {
+                tasks.Add(server.FlushDatabaseAsync(_cache.Database));
+            }
+
+            await Task.WhenAll(tasks);
         }
     }
 }

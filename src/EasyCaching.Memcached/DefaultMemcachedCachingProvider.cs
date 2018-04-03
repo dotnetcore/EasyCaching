@@ -6,9 +6,9 @@
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Linq;
 
     /// <summary>
     /// Default memcached caching provider.
@@ -480,12 +480,22 @@
         }
 
         /// <summary>
-        /// Flush this instance.
+        /// Flush All Cached Item.
         /// </summary>
         public void Flush()
         {
             //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();
         }
+
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        public async Task FlushAsync()
+        {                        
+            await _memcachedClient.FlushAllAsync();
+        }
+
     }
 }
