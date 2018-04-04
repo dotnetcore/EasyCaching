@@ -12,6 +12,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
     <PackageReference Include="FakeItEasy" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />    
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,8 +27,10 @@
     <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.ResponseCaching\EasyCaching.ResponseCaching.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />
+    <Folder Include="ResponseCachingTests\" />
   </ItemGroup>
 </Project>

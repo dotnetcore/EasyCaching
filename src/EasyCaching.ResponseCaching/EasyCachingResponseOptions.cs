@@ -1,11 +1,12 @@
 ﻿namespace EasyCaching.ResponseCaching
 {
+    using Microsoft.AspNetCore.ResponseCaching;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// EasyCaching response option.
     /// </summary>
-    public class EasyCachingResponseOption
+    public class EasyCachingResponseOptions : ResponseCachingOptions
     {
         /// <summary>
         /// Gets or sets the services.

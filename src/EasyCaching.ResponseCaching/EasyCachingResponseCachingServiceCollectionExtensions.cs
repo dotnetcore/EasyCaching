@@ -35,14 +35,14 @@
         /// <returns>The easy caching response caching.</returns>
         /// <param name="services">Services.</param>
         /// <param name="action">Action.</param>
-        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services, Action<EasyCachingResponseOption> action)
+        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services, Action<EasyCachingResponseOptions> action)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            var option = new EasyCachingResponseOption { Services = services };
+            var option = new EasyCachingResponseOptions { Services = services };
 
             action(option);
 
