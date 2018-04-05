@@ -56,7 +56,7 @@
                 }
             }
 
-            return entry as IResponseCacheEntry;
+            return entry.Value as IResponseCacheEntry;
         }
 
         /// <summary>
@@ -83,7 +83,7 @@
                 }
             }
 
-            return entry as IResponseCacheEntry;
+            return entry.Value as IResponseCacheEntry;
         }
 
         /// <summary>
@@ -157,12 +157,17 @@
         /// <param name="stream">Stream.</param>
         private byte[] GetBytes(Stream stream)
         {
-            int responseLengthInBytes = (int)stream.Length;
+            int count = (int)stream.Length;
             long oldPosition = stream.Position;
             stream.Position = 0;
-            byte[] body = new byte[responseLengthInBytes];
-            stream.Read(body, 0, responseLengthInBytes);
-            stream.Position = oldPosition;
+            byte[] body = new byte[count];
+
+            //for HEAD method
+            if (count > 0)
+            {
+                stream.Read(body, 0, count);
+                stream.Position = oldPosition;
+            }
 
             return body;
         }

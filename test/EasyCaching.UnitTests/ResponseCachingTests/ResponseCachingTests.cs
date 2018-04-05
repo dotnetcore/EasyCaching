@@ -4,7 +4,6 @@
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using EasyCaching.ResponseCaching;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Features;
@@ -13,11 +12,13 @@
     using Microsoft.Net.Http.Headers;
     using Xunit;
 
+    //borrowed from https://github.com/aspnet/ResponseCaching/blob/dev/test/Microsoft.AspNetCore.ResponseCaching.Tests/ResponseCachingTests.cs
+
     public class ResponseCachingTests
     {
         [Theory]
         [InlineData("GET")]
-        //[InlineData("HEAD")]
+        [InlineData("HEAD")]
         public async void ServesCachedContent_IfAvailable(string method)
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -37,7 +38,7 @@
 
         [Theory]
         [InlineData("GET")]
-        //[InlineData("HEAD")]
+        [InlineData("HEAD")]
         public async void ServesFreshContent_IfNotAvailable(string method)
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -73,7 +74,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesFreshContent_Head_Get()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -91,7 +92,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesFreshContent_Get_Head()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -111,7 +112,7 @@
 
         [Theory]
         [InlineData("GET")]
-        //[InlineData("HEAD")]
+        [InlineData("HEAD")]
         public async void ServesFreshContent_If_CacheControlNoCache(string method)
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -140,7 +141,7 @@
 
         [Theory]
         [InlineData("GET")]
-        //[InlineData("HEAD")]
+        [InlineData("HEAD")]
         public async void ServesFreshContent_If_PragmaNoCache(string method)
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -169,7 +170,7 @@
 
         [Theory]
         [InlineData("GET")]
-        //[InlineData("HEAD")]
+        [InlineData("HEAD")]
         public async void ServesCachedContent_If_PathCasingDiffers(string method)
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -189,7 +190,7 @@
 
         [Theory]
         [InlineData("GET")]
-        //[InlineData("HEAD")]
+        [InlineData("HEAD")]
         public async void ServesFreshContent_If_ResponseExpired(string method)
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -228,7 +229,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_IfVaryHeader_Matches()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Response.Headers[HeaderNames.Vary] = HeaderNames.From);
@@ -267,7 +268,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_IfVaryQueryKeys_Matches()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Features.Get<Microsoft.AspNetCore.ResponseCaching.IResponseCachingFeature>().VaryByQueryKeys = new[] { "query" });
@@ -285,7 +286,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_IfVaryQueryKeysExplicit_Matches_QueryKeyCaseInsensitive()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Features.Get<Microsoft.AspNetCore.ResponseCaching.IResponseCachingFeature>().VaryByQueryKeys = new[] { "QueryA", "queryb" });
@@ -303,7 +304,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_IfVaryQueryKeyStar_Matches_QueryKeyCaseInsensitive()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Features.Get<IResponseCachingFeature>().VaryByQueryKeys = new[] { "*" });
@@ -321,7 +322,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_IfVaryQueryKeyExplicit_Matches_OrderInsensitive()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Features.Get<IResponseCachingFeature>().VaryByQueryKeys = new[] { "QueryB", "QueryA" });
@@ -339,7 +340,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_IfVaryQueryKeyStar_Matches_OrderInsensitive()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Features.Get<IResponseCachingFeature>().VaryByQueryKeys = new[] { "*" });
@@ -669,7 +670,7 @@
         [Fact]
         public async void ServesCachedContent_IfBodySize_IsCacheable()
         {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(options: new EasyCachingResponseOptions()
+            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(options: new ResponseCachingOptions()
             {
                 MaximumBodySize = 100
             });
@@ -690,7 +691,7 @@
         [Fact]
         public async void ServesFreshContent_IfBodySize_IsNotCacheable()
         {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(options: new EasyCachingResponseOptions()
+            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(options: new ResponseCachingOptions()
             {
                 MaximumBodySize = 1
             });
@@ -708,10 +709,10 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesFreshContent_CaseSensitivePaths_IsNotCacheable()
         {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(options: new EasyCachingResponseOptions()
+            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(options: new ResponseCachingOptions()
             {
                 UseCaseSensitivePaths = true
             });
@@ -729,7 +730,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_WithoutReplacingCachedVaryBy_OnCacheMiss()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Response.Headers[HeaderNames.Vary] = HeaderNames.From);
@@ -782,7 +783,7 @@
             }
         }
 
-        //[Fact]
+        [Fact]
         public async void ServesCachedContent_IfCachedVaryByNotUpdated_OnCacheMiss()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Response.Headers[HeaderNames.Vary] = context.Request.Headers[HeaderNames.Pragma]);

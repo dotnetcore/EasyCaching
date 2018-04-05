@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.ResponseCaching
 {
+    using Microsoft.AspNetCore.ResponseCaching;
     using Microsoft.AspNetCore.ResponseCaching.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -35,16 +36,14 @@
         /// <returns>The easy caching response caching.</returns>
         /// <param name="services">Services.</param>
         /// <param name="action">Action.</param>
-        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services, Action<EasyCachingResponseOptions> action)
+        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services, Action<ResponseCachingOptions> action)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            var option = new EasyCachingResponseOptions { Services = services };
-
-            action(option);
+            services.Configure(action);
 
             services.TryAddSingleton<IResponseCachingPolicyProvider, ResponseCachingPolicyProvider>();
             services.TryAddSingleton<IResponseCachingKeyProvider, ResponseCachingKeyProvider>();

@@ -11,21 +11,14 @@
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Http.Features;
     using EasyCaching.ResponseCaching;
-
     using Microsoft.Extensions.DependencyInjection;
-
     using Microsoft.Net.Http.Headers;
-
     using EasyCaching.InMemory;
-
+    using Microsoft.AspNetCore.ResponseCaching;
 
     public class ResponseCachingTestUtils
     {
-        static ResponseCachingTestUtils()
-        {
-            // Force sharding in tests
-            //StreamUtilities.BodySegmentSize = 10;
-        }
+        //borrowed from https://github.com/aspnet/ResponseCaching/blob/dev/test/Microsoft.AspNetCore.ResponseCaching.Tests/TestUtils.cs
 
         private static bool TestRequestDelegate(HttpContext context, string guid)
         {
@@ -78,11 +71,11 @@
             }
             return Task.CompletedTask;
         }
-               
+
 
         internal static IEnumerable<IWebHostBuilder> CreateBuildersWithResponseCaching(
             Action<IApplicationBuilder> configureDelegate = null,
-            EasyCachingResponseOptions options = null,
+            ResponseCachingOptions options = null,
             Action<HttpContext> contextAction = null)
         {
             return CreateBuildersWithResponseCaching(configureDelegate, options, new RequestDelegate[]
@@ -102,7 +95,7 @@
 
         private static IEnumerable<IWebHostBuilder> CreateBuildersWithResponseCaching(
             Action<IApplicationBuilder> configureDelegate = null,
-            EasyCachingResponseOptions options = null,
+            ResponseCachingOptions options = null,
             IEnumerable<RequestDelegate> requestDelegates = null)
         {
             if (configureDelegate == null)
@@ -120,7 +113,6 @@
 
             foreach (var requestDelegate in requestDelegates)
             {
-                // Test with in memory ResponseCache
                 yield return new WebHostBuilder()
                     .ConfigureServices(services =>
                     {
@@ -130,10 +122,10 @@
                             {
                                 responseCachingOptions.MaximumBodySize = options.MaximumBodySize;
                                 responseCachingOptions.UseCaseSensitivePaths = options.UseCaseSensitivePaths;
-                                //responseCachingOptions.SystemClock = options.SystemClock;
                             }
-                            responseCachingOptions.Services.AddDefaultInMemoryCache();
                         });
+                        // Test with in memory ResponseCache
+                        services.AddDefaultInMemoryCache();
                     })
                     .Configure(app =>
                     {
@@ -143,8 +135,6 @@
                     });
             }
         }
-
-
 
         public static HttpRequestMessage CreateRequest(string method, string requestUri)
         {
@@ -171,8 +161,6 @@
         }
     }
 
-
-
     internal class DummySendFileFeature : IHttpSendFileFeature
     {
         public Task SendFileAsync(string path, long offset, long? count, CancellationToken cancellation)
@@ -180,6 +168,4 @@
             return Task.CompletedTask;
         }
     }
-
-   
 }

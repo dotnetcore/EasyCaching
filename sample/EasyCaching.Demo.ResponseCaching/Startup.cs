@@ -20,7 +20,8 @@
         {
             services.AddMvc();
 
-            services.AddEasyCachingResponseCaching(x => x.Services.AddDefaultInMemoryCache());
+            services.AddEasyCachingResponseCaching();
+            services.AddDefaultInMemoryCache();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
