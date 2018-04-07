@@ -871,7 +871,7 @@
         }
         #endregion
 
-        #region Flush
+        #region Flush/FlushAsync
         [Fact]
         protected virtual void Flush_Should_Succeed()
         {
@@ -882,6 +882,21 @@
                 Assert.Equal($"value{i}", _provider.Get<string>($"flush:{i}").Value);
 
             _provider.Flush();
+
+            for (var i = 0; i < 5; i++)
+                Assert.False(_provider.Get<string>($"flush:{i}").HasValue);
+        }
+
+        [Fact]
+        protected virtual async Task FlushAsync_Should_Succeed()
+        {
+            for (var i = 0; i < 5; i++)
+                _provider.Set($"flush:{i}", $"value{i}", _defaultTs);
+
+            for (var i = 0; i < 5; i++)
+                Assert.Equal($"value{i}", _provider.Get<string>($"flush:{i}").Value);
+
+            await _provider.FlushAsync();
 
             for (var i = 0; i < 5; i++)
                 Assert.False(_provider.Get<string>($"flush:{i}").HasValue);

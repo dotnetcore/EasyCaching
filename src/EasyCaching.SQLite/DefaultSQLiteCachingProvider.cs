@@ -525,9 +525,14 @@
         }
 
         /// <summary>
-        /// Flush this instance.
+        /// Flush All Cached Item.
         /// </summary>
-        public void Flush() => _cache.Execute(ConstSQL.FLUSHSQL);  
+        public void Flush() => _cache.Execute(ConstSQL.FLUSHSQL);
 
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        public async Task FlushAsync() => await _cache.ExecuteAsync(ConstSQL.FLUSHSQL);
     }
 }

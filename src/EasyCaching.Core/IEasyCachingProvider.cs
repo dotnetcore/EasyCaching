@@ -198,8 +198,14 @@
         int GetCount(string prefix = "");
 
         /// <summary>
-        /// Flush this instance.
+        /// Flush All Cached Item.
         /// </summary>
         void Flush();
+
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        Task FlushAsync();
     }
 }

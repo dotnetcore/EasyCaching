@@ -2,6 +2,7 @@ namespace EasyCaching.UnitTests.Infrastructure
 {
     using EasyCaching.Core.Internal;
     using System;
+    using System.Threading.Tasks;
 
     public interface ICastleExampleService
     {
@@ -9,16 +10,24 @@ namespace EasyCaching.UnitTests.Infrastructure
 
         long GetCurrentUTCTick();
 
-        string PutTest(int num,string str = "123");
+        string PutTest(int num, string str = "123");
 
         string EvictTest();
 
         string EvictAllTest();
+
+        Task<string> AbleTestAsync();
+
+        Task EvictTestAsync();
+
+        Task<string> PutTestAsync(int num, string str = "123");
+
     }
 
     public class CastleExampleService : ICastleExampleService, IEasyCaching
     {
-        [EasyCachingEvict(CacheKeyPrefix = "CastleExample",IsAll = true)]
+
+        [EasyCachingEvict(CacheKeyPrefix = "CastleExample", IsAll = true)]
         public string EvictAllTest()
         {
             return "EvictAllTest";
@@ -29,6 +38,7 @@ namespace EasyCaching.UnitTests.Infrastructure
         {
             return "EvictTest";
         }
+
 
         [EasyCachingAble(Expiration = 1)]
         public string GetCurrentUTC()
@@ -46,6 +56,24 @@ namespace EasyCaching.UnitTests.Infrastructure
         {
             return $"PutTest-{num}";
         }
+
+        [EasyCachingAble(Expiration = 1)]
+        public async Task<string> AbleTestAsync()
+        {
+            return await Task.FromResult("I am task");
+        }
+
+        [EasyCachingEvict(CacheKeyPrefix = "CastleExample")]
+        public async Task EvictTestAsync()
+        {
+            await Task.CompletedTask;
+        }
+
+        [EasyCachingPut(CacheKeyPrefix = "CastleExample")]
+        public async Task<string> PutTestAsync(int num, string str)
+        {
+            return await Task.FromResult($"PutTestAsync-{num}");
+        }
     }
 
     public interface IAspectCoreExampleService : IEasyCaching
@@ -58,11 +86,20 @@ namespace EasyCaching.UnitTests.Infrastructure
         [EasyCachingEvict(CacheKeyPrefix = "AspectCoreExample")]
         string EvictTest();
 
-        [EasyCachingEvict(CacheKeyPrefix = "AspectCoreExample",IsAll = true)]
+        [EasyCachingEvict(CacheKeyPrefix = "AspectCoreExample", IsAll = true)]
         string EvictAllTest();
 
         [EasyCachingPut(CacheKeyPrefix = "AspectCoreExample")]
-        string PutTest(int num , string str="123");
+        string PutTest(int num, string str = "123");
+
+        [EasyCachingAble(Expiration = 1)]
+        Task<string> AbleTestAsync();
+
+        [EasyCachingEvict(CacheKeyPrefix = "AspectCoreExample")]
+        Task EvictTestAsync();
+
+        [EasyCachingPut(CacheKeyPrefix = "AspectCoreExample")]
+        Task<string> PutTestAsync(int num, string str = "123");
     }
 
     public class AspectCoreExampleService : IAspectCoreExampleService
@@ -87,9 +124,24 @@ namespace EasyCaching.UnitTests.Infrastructure
             return DateTime.UtcNow.Ticks;
         }
 
-        public string PutTest(int num , string str)
+        public string PutTest(int num, string str)
         {
             return $"PutTest-{num}";
+        }
+
+        public async Task<string> AbleTestAsync()
+        {
+            return await Task.FromResult("I am task");
+        }
+
+        public async Task EvictTestAsync()
+        {
+            await Task.CompletedTask;
+        }
+
+        public async Task<string> PutTestAsync(int num, string str)
+        {
+            return await Task.FromResult($"PutTestAsync-{num}");
         }
     }
 }

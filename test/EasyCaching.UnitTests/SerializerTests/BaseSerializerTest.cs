@@ -10,7 +10,7 @@
         protected IEasyCachingSerializer _serializer;
 
         [Fact]
-        public void Serialize_Should_Succeed()
+        public void Serialize_Object_Should_Succeed()
         {
             var res = _serializer.Serialize(new Model { Prop = "abc" });
 
@@ -18,7 +18,7 @@
         }
 
         [Fact]
-        public void Deserialize_Should_Succeed()
+        public void Deserialize_Object_Should_Succeed()
         {
             var bytes = _serializer.Serialize(new Model { Prop = "abc" });
 
@@ -48,6 +48,30 @@
 
             Assert.Equal("abc", desObj.Prop);
         }
+
+
+        [Theory]
+        [InlineData("N2L7KXa084WvelONYjkJ_traBMCCvy_UKmpUUzlrQ0EA2yNp3Iz6eSUrRG0bhaR_viswd50vDuPkY5nG43d1gbm-olT2KRMxOsVE08RfeD9lvK9lMguNG9kpIkKGZEjIf8Jv2m9fFhf8bnNa-yQH3g")]
+        [InlineData("123abc")]
+        public void Serialize_String_Should_Succeed(string str)
+        {
+            var res = _serializer.Serialize(str);
+
+            Assert.NotEmpty(res);
+        }
+
+        [Theory]
+        [InlineData("N2L7KXa084WvelONYjkJ_traBMCCvy_UKmpUUzlrQ0EA2yNp3Iz6eSUrRG0bhaR_viswd50vDuPkY5nG43d1gbm-olT2KRMxOsVE08RfeD9lvK9lMguNG9kpIkKGZEjIf8Jv2m9fFhf8bnNa-yQH3g")]
+        [InlineData("123abc")]
+        public void Deserialize_String_Should_Succeed(string str)
+        {
+            var bytes = _serializer.Serialize(str);
+
+            var res = _serializer.Deserialize<string>(bytes);
+
+            Assert.Equal(str, res);
+        }
+
     }
 
     [Serializable]

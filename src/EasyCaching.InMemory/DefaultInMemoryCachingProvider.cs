@@ -469,7 +469,7 @@
         }
 
         /// <summary>
-        /// Flush this instance.
+        /// Flush All Cached Item.
         /// </summary>
         public void Flush()
         {
@@ -480,6 +480,16 @@
                 _cache.Remove(item);
 
             _cacheKeys.Clear();
+        }
+
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        public async Task FlushAsync()
+        {
+            Flush();
+            await Task.CompletedTask;
         }
     }
 }

@@ -9,6 +9,7 @@ namespace EasyCaching.UnitTests
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public abstract class BaseAspectCoreInterceptorTest
@@ -115,6 +116,56 @@ namespace EasyCaching.UnitTests
 
             Assert.False(after1.HasValue);
             Assert.False(after2.HasValue);
+        }
+
+        [Fact]
+        protected virtual async Task Interceptor_Able_Attribute_Task_Method_Should_Succeed()
+        {
+            var tick1 = await _service.AbleTestAsync();
+
+            Thread.Sleep(1);
+
+            var tick2 = await _service.AbleTestAsync();
+
+            Assert.Equal(tick1, tick2);
+        }
+
+        [Fact]
+        protected virtual async Task Interceptor_Put_With_Task_Method_Should_Succeed()
+        {
+            var str = await _service.PutTestAsync(1);
+
+            System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("PutTestAsync");
+
+            var key = _keyGenerator.GetCacheKey(method, new object[] { 1, "123" }, "AspectCoreExample");
+
+            var value = _cachingProvider.Get<Task<string>>(key);
+
+            Assert.True(value.HasValue);
+            Assert.Equal(str, value.Value.Result);
+        }
+
+        [Fact]
+        protected virtual async Task Interceptor_Evict_With_Task_Method_Should_Succeed()
+        {
+            System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("EvictTest");
+
+            var key = _keyGenerator.GetCacheKey(method, null, "AspectCoreExample");
+
+            var cachedValue = Guid.NewGuid().ToString();
+
+            _cachingProvider.Set(key, cachedValue, TimeSpan.FromSeconds(30));
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.True(value.HasValue);
+            Assert.Equal(cachedValue, value.Value);
+
+            await _service.EvictTestAsync();
+
+            var after = _cachingProvider.Get<string>(key);
+
+            Assert.False(after.HasValue);
         }
     }
 
