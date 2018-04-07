@@ -2,7 +2,7 @@
 {
     using Microsoft.AspNetCore.Mvc;
     using System;
-    
+
     public class HomeController : Controller
     {
         [ResponseCache(Duration = 20)]
@@ -20,6 +20,14 @@
             {
                 LastUpdated = DateTimeOffset.UtcNow.ToString()
             });
+        }
+
+        //not cached by query
+        //[ResponseCache(Duration = 20)]
+        [ResponseCache(Duration = 30, VaryByQueryKeys = new string[] { "page" })]
+        public IActionResult List(int page = 0)
+        {
+            return Content(page.ToString());
         }
     }
 }
