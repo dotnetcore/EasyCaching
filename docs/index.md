@@ -2,9 +2,9 @@
 
 Thanks for taking a look at the EasyCaching documentation. 
 
-![](https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png)
+![](https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/easycaching-icon.png)
 
-EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
+EasyCaching is an open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
 
 # Nuget Packages
 
