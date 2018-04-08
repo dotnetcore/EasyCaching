@@ -47,6 +47,12 @@ EasyCaching is an open source caching library that contains basic usages and som
 | EasyCaching.Serialization.Json | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Json.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Json.svg)
 | EasyCaching.Serialization.Protobuf | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Protobuf.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Protobuf.svg)
 
+### Others
+
+| Package Name |  Version | Downloads
+|--------------|  ------- | ----
+| EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)
+
 ## Basci Usages 
 
 ### Step 1 : Install the package
