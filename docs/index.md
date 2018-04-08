@@ -2,9 +2,9 @@
 
 Thanks for taking a look at the EasyCaching documentation. 
 
-![](https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png)
+![](https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/easycaching-icon.png)
 
-EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
+EasyCaching is an open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
 
 # Nuget Packages
 
@@ -39,3 +39,8 @@ EasyCaching is a open source caching library that contains basic usages and some
 | EasyCaching.Serialization.Json | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Json.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Json.svg)
 | EasyCaching.Serialization.Protobuf | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Protobuf.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Protobuf.svg)
 
+## Others
+
+| Package Name |  Version | Downloads
+|--------------|  ------- | ----
+| EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)

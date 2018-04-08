@@ -1,6 +1,6 @@
 ![](media/easycaching-icon.png?raw=true)
 
-EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
+EasyCaching is an open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
 
 [![Coverage Status](https://coveralls.io/repos/github/catcherwong/EasyCaching/badge.svg?branch=master)](https://coveralls.io/github/catcherwong/EasyCaching?branch=master)
 [![Member project of .NET China Foundation](https://img.shields.io/badge/member_project_of-.NET_CHINA-red.svg?style=flat&colorB=9E20C8)](https://github.com/dotnetcore)
@@ -46,6 +46,12 @@ EasyCaching is a open source caching library that contains basic usages and some
 | EasyCaching.Serialization.MessagePack | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.MessagePack.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.MessagePack.svg)
 | EasyCaching.Serialization.Json | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Json.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Json.svg)
 | EasyCaching.Serialization.Protobuf | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Protobuf.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Protobuf.svg)
+
+### Others
+
+| Package Name |  Version | Downloads
+|--------------|  ------- | ----
+| EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)
 
 ## Basci Usages 
 
@@ -211,6 +217,7 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 - [x] SQLite
 - [x] Memcached
 - [x] Hybrid(Combine local caching and distributed caching)
+- [ ] Disk
 - [ ] Others...
 
 ### Basic Caching API
@@ -225,7 +232,8 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 - [x] GetAll/GetAllAsync
 - [x] GetByPrefix/GetByPrefixAsync
 - [x] RemoveAll/RemoveAllAsync
-- [ ] Flush/FlushAsync(whether is in need ? )
+- [x] GetCount
+- [x] Flush/FlushAsync
 - [ ] Others...
 
 ### Serializer Extensions 
@@ -266,7 +274,6 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 ## Contributing
 
 Pull requests, issues and commentary! 
-
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdotnetcore%2FEasyCaching.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdotnetcore%2FEasyCaching?ref=badge_large)
