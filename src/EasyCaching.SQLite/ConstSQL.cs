@@ -58,6 +58,25 @@
                     WHERE [cachekey] = @cachekey AND [expiration] > strftime('%s','now')";
 
         /// <summary>
+        /// The countallsql.
+        /// </summary>
+        public const string COUNTALLSQL = @"SELECT COUNT(1)
+            FROM [easycaching]
+            WHERE [expiration] > strftime('%s','now')";
+
+        /// <summary>
+        /// The countprefixsql.
+        /// </summary>
+        public const string COUNTPREFIXSQL = @"SELECT COUNT(1)
+            FROM [easycaching]
+            WHERE [cachekey] like @cachekey AND [expiration] > strftime('%s','now')";
+
+        /// <summary>
+        /// The flushsql.
+        /// </summary>
+        public const string FLUSHSQL = @"DELETE FROM [easycaching]";
+
+        /// <summary>
         /// The createsql.
         /// </summary>
         public const string CREATESQL = @"CREATE TABLE IF NOT EXISTS [easycaching] (

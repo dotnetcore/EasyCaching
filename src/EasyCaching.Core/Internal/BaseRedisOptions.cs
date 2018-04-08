@@ -47,5 +47,12 @@
         /// The endpoints.
         /// </value>
         public IList<ServerEndPoint> Endpoints { get; } = new List<ServerEndPoint>();
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="T:EasyCaching.Core.Internal.BaseRedisOptions"/>
+        /// allow admin.
+        /// </summary>
+        /// <value><c>true</c> if allow admin; otherwise, <c>false</c>.</value>
+        public bool AllowAdmin { get; set; } = false;
     }
 }

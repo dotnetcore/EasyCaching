@@ -22,7 +22,6 @@
             _defaultTs = TimeSpan.FromSeconds(50);
         }
 
-
         [Fact]
         protected override void RemoveByPrefix_Should_Succeed()
         {
@@ -85,6 +84,23 @@
         }
 
         [Fact]
+        public void CacheKey_Length_GT_250_Should_Call_SHA1()
+        {
+            var cacheKey = "";
+            var part = "1000000000";
+
+            for (int i = 0; i < 26; i++)
+                cacheKey += part;
+
+            var cacheValue = "value";
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _provider.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
+        }
+
+        [Fact]
         protected override void GetByPrefix_Should_Succeed()
         {
 
@@ -94,6 +110,31 @@
         protected override async Task GetByPrefixAsync_Should_Succeed()
         {
             await Task.FromResult(1);
+        }
+
+        [Fact]
+        protected override void GetByPrefix_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
+        {
+
+        }
+
+        [Fact]
+        protected override async Task GetByPrefixAsync_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
+        {
+            await Task.FromResult(1);
+        }
+
+
+        [Fact]
+        protected override void Get_Count_Without_Prefix_Should_Succeed()
+        {
+
+        }
+
+        [Fact]
+        protected override void Get_Count_With_Prefix_Should_Succeed()
+        {
+
         }
 
         private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
@@ -119,4 +160,3 @@
         }
     }
 }
-                                         

@@ -585,5 +585,50 @@
                 System.Console.WriteLine(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            return Math.Max(_localCachingProvider.GetCount(prefix), _distributedCachingProvider.GetCount(prefix));
+        }
+
+        /// <summary>
+        /// Flush All Cached Item.
+        /// </summary>
+        public void Flush()
+        {
+            _localCachingProvider.Flush();
+
+            try
+            {
+                _distributedCachingProvider.Flush();
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        public async Task FlushAsync()
+        {
+            await _localCachingProvider.FlushAsync();
+
+            try
+            {
+                await _distributedCachingProvider.FlushAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex.Message);
+            }
+        }
     }
 }

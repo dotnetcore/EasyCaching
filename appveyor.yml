@@ -53,11 +53,11 @@ test_script:
     
 after_test:
 - ps: >-
-    if ($env:APPVEYOR_REPO_BRANCH -eq "master" -Or $env:APPVEYOR_PULL_REQUEST_NUMBER)
+    if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
     {       
       tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths
     }
     else 
     {
-      echo "not master branch or Pull Request...."
+      echo "not master branch...."
     }

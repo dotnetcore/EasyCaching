@@ -130,7 +130,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await Task.Run(() => { return _cache.Get(cacheKey) as T; });
+            var result = await Task.FromResult((T)_cache.Get(cacheKey));
 
             if (result != null)
                 return new CacheValue<T>(result, true);
@@ -161,9 +161,11 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await Task.Run(() => _cache.Remove(cacheKey));
-
-            _cacheKeys.TryRemove(cacheKey);
+            await Task.Run(() =>
+            {
+                _cache.Remove(cacheKey);
+                _cacheKeys.TryRemove(cacheKey);
+            });
         }
 
         /// <summary>
@@ -200,9 +202,11 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            await Task.Run(() => _cache.Set(cacheKey, cacheValue, expiration));
-
-            _cacheKeys.Add(cacheKey);
+            await Task.Run(() =>
+            {
+                _cache.Set(cacheKey, cacheValue, expiration);
+                _cacheKeys.Add(cacheKey);
+            });
         }
 
         /// <summary>
@@ -226,7 +230,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return await Task.Run(() => { return _cache.TryGetValue(cacheKey, out object value); });
+            return await Task.FromResult(_cache.TryGetValue(cacheKey, out object value));
         }
 
         /// <summary>
@@ -272,8 +276,8 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(),StringComparison.OrdinalIgnoreCase));
-            if(keys.Count()>0)
+            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (keys.Count() > 0)
             {
                 foreach (var item in keys)
                 {
@@ -331,7 +335,7 @@
 
             var tasks = new List<Task>();
             foreach (var entry in values)
-                tasks.Add(SetAsync(entry.Key, entry.Value,expiration));
+                tasks.Add(SetAsync(entry.Key, entry.Value, expiration));
 
             await Task.WhenAll(tasks);
         }
@@ -386,7 +390,7 @@
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
             if (keys.Count() > 0)
-            {                
+            {
                 foreach (var item in keys)
                 {
                     map[item] = this.Get<T>(item);
@@ -402,7 +406,7 @@
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
-        {            
+        {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
@@ -450,6 +454,42 @@
             }
 
             await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            return string.IsNullOrWhiteSpace(prefix) 
+                    ? _cacheKeys.Count 
+                    : _cacheKeys.Count(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase)); 
+        }
+
+        /// <summary>
+        /// Flush All Cached Item.
+        /// </summary>
+        public void Flush()
+        {
+            ////new instance
+            //_cache = new MemoryCache(new MemoryCacheOptions());
+
+            foreach (var item in _cacheKeys)
+                _cache.Remove(item);
+
+            _cacheKeys.Clear();
+        }
+
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        public async Task FlushAsync()
+        {
+            Flush();
+            await Task.CompletedTask;
         }
     }
 }

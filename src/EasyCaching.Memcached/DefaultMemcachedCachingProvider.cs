@@ -6,9 +6,9 @@
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography;
+    using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Linq;
 
     /// <summary>
     /// Default memcached caching provider.
@@ -214,11 +214,11 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public Task<bool> ExistsAsync(string cacheKey)
+        public async Task<bool> ExistsAsync(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return Task.Run(() => { return _memcachedClient.TryGet(this.HandleCacheKey(cacheKey), out object obj); });
+            return await Task.FromResult(_memcachedClient.TryGet(this.HandleCacheKey(cacheKey), out object obj));
         }
 
         /// <summary>
@@ -379,12 +379,12 @@
             foreach (var item in values)
             {
                 if (item.Value != null)
-                    result.Add(item.Key,new CacheValue<T>(item.Value, true));                
+                    result.Add(item.Key, new CacheValue<T>(item.Value, true));
                 else
-                    result.Add(item.Key,CacheValue<T>.NoValue);                                                 
+                    result.Add(item.Key, CacheValue<T>.NoValue);
             }
-            
-            return result; 
+
+            return result;
         }
 
         /// <summary>
@@ -396,19 +396,19 @@
         public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
-            
+
             var values = await _memcachedClient.GetAsync<T>(cacheKeys);
             var result = new Dictionary<string, CacheValue<T>>();
 
             foreach (var item in values)
             {
                 if (item.Value != null)
-                    result.Add(item.Key,new CacheValue<T>(item.Value, true));                
+                    result.Add(item.Key, new CacheValue<T>(item.Value, true));
                 else
-                    result.Add(item.Key,CacheValue<T>.NoValue);                                                 
+                    result.Add(item.Key, CacheValue<T>.NoValue);
             }
-            
-            return result; 
+
+            return result;
         }
 
         /// <summary>
@@ -442,7 +442,7 @@
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             foreach (var item in cacheKeys.Distinct())
-                Remove(item);            
+                Remove(item);
         }
 
         /// <summary>
@@ -456,9 +456,46 @@
 
             var tasks = new List<Task>();
             foreach (var item in cacheKeys.Distinct())
-                tasks.Add(RemoveAsync(item));            
+                tasks.Add(RemoveAsync(item));
 
             await Task.WhenAll(tasks);
         }
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public int GetCount(string prefix = "")
+        {
+            if(string.IsNullOrWhiteSpace(prefix))
+            {
+                //Inaccurate, sometimes, memcached just causes items to expire but not free up or flush memory at once.
+                return int.Parse(_memcachedClient.Stats().GetRaw("curr_items").FirstOrDefault().Value);
+            }
+            else
+            {
+                return 0;
+            }  
+        }
+
+        /// <summary>
+        /// Flush All Cached Item.
+        /// </summary>
+        public void Flush()
+        {
+            //not flush memory at once, just causes all items to expire
+            _memcachedClient.FlushAll();
+        }
+
+        /// <summary>
+        /// Flush All Cached Item async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        public async Task FlushAsync()
+        {                        
+            await _memcachedClient.FlushAllAsync();
+        }
+
     }
 }

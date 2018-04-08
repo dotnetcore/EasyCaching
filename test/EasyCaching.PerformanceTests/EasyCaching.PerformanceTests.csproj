@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.13" />    
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+  </ItemGroup>
+
+   <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Memcached\EasyCaching.Memcached.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.SQLite\EasyCaching.SQLite.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj" />
+  </ItemGroup>
+</Project>

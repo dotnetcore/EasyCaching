@@ -4,6 +4,6 @@
 
     public class EasyCachingMemcachedClientOptions : MemcachedClientOptions
     {
-        public string SerializationType { get; set; }
+        //public string SerializationType { get; set; }
     }
 }
