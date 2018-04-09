@@ -23,6 +23,11 @@
         private IEasyCachingProvider _distributedCachingProvider;
 
         /// <summary>
+        /// The caching providers.
+        /// </summary>
+        private readonly IEnumerable<IEasyCachingProvider> _providers;
+
+        /// <summary>
         /// The service accessor.
         /// </summary>
         private readonly Func<string, IEasyCachingProvider> _serviceAccessor;
@@ -37,6 +42,15 @@
 
             this._localCachingProvider = _serviceAccessor(HybridCachingKeyType.LocalKey);
             this._distributedCachingProvider = _serviceAccessor(HybridCachingKeyType.DistributedKey);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
+        /// </summary>
+        /// <param name="providers">Providers.</param>
+        public HybridCachingProvider(IEnumerable<IEasyCachingProvider> providers)
+        {
+            this._providers = providers;
         }
 
         /// <summary>
@@ -57,12 +71,19 @@
 
             var flag = false;
 
-            flag = _localCachingProvider.Exists(cacheKey);
-
-            if (!flag)
+            foreach (var provider in _providers)
             {
-                flag = _distributedCachingProvider.Exists(cacheKey);
+                flag = provider.Exists(cacheKey);
+
+                if(flag) break;                
             }
+
+            //flag = _localCachingProvider.Exists(cacheKey);
+
+            //if (!flag)
+            //{
+            //    flag = _distributedCachingProvider.Exists(cacheKey);
+            //}
 
             return flag;
         }
@@ -241,8 +262,13 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _localCachingProvider.Remove(cacheKey);
-            _distributedCachingProvider.Remove(cacheKey);
+            foreach (var provider in _providers)
+            {
+                provider.Remove(cacheKey);
+            }
+
+            //_localCachingProvider.Remove(cacheKey);
+            //_distributedCachingProvider.Remove(cacheKey);
         }
 
         /// <summary>
@@ -254,8 +280,17 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _localCachingProvider.RemoveAsync(cacheKey);
-            await _distributedCachingProvider.RemoveAsync(cacheKey);
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
+            {
+                tasks.Add(provider.RemoveAsync(cacheKey));
+            }
+
+            await Task.WhenAll(tasks);
+
+            //await _localCachingProvider.RemoveAsync(cacheKey);
+            //await _distributedCachingProvider.RemoveAsync(cacheKey);
         }
 
         /// <summary>
@@ -272,8 +307,13 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            _localCachingProvider.Set(cacheKey, cacheValue, expiration);
-            _distributedCachingProvider.Set(cacheKey, cacheValue, expiration);
+            foreach (var provider in _providers)
+            {
+                provider.Set(cacheKey,cacheValue,expiration);
+            }
+
+            //_localCachingProvider.Set(cacheKey, cacheValue, expiration);
+            //_distributedCachingProvider.Set(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -290,8 +330,17 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            await _localCachingProvider.SetAsync(cacheKey, cacheValue, expiration);
-            await _distributedCachingProvider.SetAsync(cacheKey, cacheValue, expiration);
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
+            {
+                tasks.Add( provider.SetAsync(cacheKey, cacheValue, expiration));
+            }
+
+            await Task.WhenAll(tasks);
+
+            //await _localCachingProvider.SetAsync(cacheKey, cacheValue, expiration);
+            //await _distributedCachingProvider.SetAsync(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -338,8 +387,13 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _localCachingProvider.RemoveByPrefix(prefix);
-            _distributedCachingProvider.RemoveByPrefix(prefix);
+            foreach (var provider in _providers)
+            {
+                provider.RemoveByPrefix(prefix);
+            }
+
+            //_localCachingProvider.RemoveByPrefix(prefix);
+            //_distributedCachingProvider.RemoveByPrefix(prefix);
         }
 
         /// <summary>
@@ -351,8 +405,17 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            await _localCachingProvider.RemoveByPrefixAsync(prefix);
-            await _distributedCachingProvider.RemoveByPrefixAsync(prefix);
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
+            {
+                tasks.Add(provider.RemoveByPrefixAsync(prefix));
+            }
+
+            await Task.WhenAll(tasks);
+
+            //await _localCachingProvider.RemoveByPrefixAsync(prefix);
+            //await _distributedCachingProvider.RemoveByPrefixAsync(prefix);
         }
 
         /// <summary>
@@ -366,16 +429,21 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            _localCachingProvider.SetAll(values, expiration);
+            foreach (var provider in _providers)
+            {
+                provider.SetAll(values, expiration);
+            }
 
-            try
-            {
-                _distributedCachingProvider.SetAll(values, expiration);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+            //_localCachingProvider.SetAll(values, expiration);
+
+            //try
+            //{
+            //    _distributedCachingProvider.SetAll(values, expiration);
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine(ex.Message);
+            //}
         }
 
         /// <summary>
@@ -389,16 +457,25 @@
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
-            
-            await _localCachingProvider.SetAllAsync(values, expiration);
-            try
+
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
             {
-                await _distributedCachingProvider.SetAllAsync(values, expiration);
+                tasks.Add(provider.SetAllAsync(values, expiration));
             }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+
+            await Task.WhenAll(tasks);
+
+            //await _localCachingProvider.SetAllAsync(values, expiration);
+            //try
+            //{
+            //    await _distributedCachingProvider.SetAllAsync(values, expiration);
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine(ex.Message);
+            //}
         }
 
         /// <summary>
@@ -553,16 +630,21 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            _localCachingProvider.RemoveAll(cacheKeys);
+            foreach (var provider in _providers)
+            {
+                provider.RemoveAll(cacheKeys);
+            }
 
-            try
-            {
-                _distributedCachingProvider.RemoveAll(cacheKeys);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+            //_localCachingProvider.RemoveAll(cacheKeys);
+
+            //try
+            //{
+            //    _distributedCachingProvider.RemoveAll(cacheKeys);
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine(ex.Message);
+            //}
         }
 
         /// <summary>
@@ -574,16 +656,25 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            await _localCachingProvider.RemoveAllAsync(cacheKeys);
+            var tasks = new List<Task>();
 
-            try
+            foreach (var provider in _providers)
             {
-                await _distributedCachingProvider.RemoveAllAsync(cacheKeys);
+                tasks.Add(provider.RemoveAllAsync(cacheKeys));
             }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+
+            await Task.WhenAll(tasks);
+
+            //await _localCachingProvider.RemoveAllAsync(cacheKeys);
+
+            //try
+            //{
+            //    await _distributedCachingProvider.RemoveAllAsync(cacheKeys);
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine(ex.Message);
+            //}
         }
 
         /// <summary>
@@ -601,16 +692,21 @@
         /// </summary>
         public void Flush()
         {
-            _localCachingProvider.Flush();
+            foreach (var provider in _providers)
+            {
+                provider.Flush();
+            }
 
-            try
-            {
-                _distributedCachingProvider.Flush();
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+            //_localCachingProvider.Flush();
+
+            //try
+            //{
+            //    _distributedCachingProvider.Flush();
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine(ex.Message);
+            //}
         }
 
         /// <summary>
@@ -619,16 +715,25 @@
         /// <returns>The async.</returns>
         public async Task FlushAsync()
         {
-            await _localCachingProvider.FlushAsync();
+            var tasks = new List<Task>();
 
-            try
+            foreach (var provider in _providers)
             {
-                await _distributedCachingProvider.FlushAsync();
+                tasks.Add(provider.FlushAsync());
             }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+
+            await Task.WhenAll(tasks);
+
+            //await _localCachingProvider.FlushAsync();
+
+            //try
+            //{
+            //    await _distributedCachingProvider.FlushAsync();
+            //}
+            //catch (Exception ex)
+            //{
+            //    System.Console.WriteLine(ex.Message);
+            //}
         }
     }
 }
