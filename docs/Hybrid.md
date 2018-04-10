@@ -65,9 +65,9 @@ The following code show how to use EasyCachingProvider in ASP.NET Core Web API.
 [Route("api/[controller]")]
 public class ValuesController : Controller
 {
-    private readonly IEasyCachingProvider _provider;
+    private readonly IHybridCachingProvider _provider;
 
-    public ValuesController(IEasyCachingProvider provider)
+    public ValuesController(IHybridCachingProvider provider)
     {
         this._provider = provider;
     }
