@@ -10,7 +10,6 @@
     using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Xunit;
 
     public class HybridCachingTest : BaseCachingProviderTest
@@ -33,12 +32,16 @@
 
             var serializer = new DefaultBinaryFormatterSerializer();
 
-            var serviceAccessor = A.Fake<Func<string, IEasyCachingProvider>>();
+            //var serviceAccessor = A.Fake<Func<string, IEasyCachingProvider>>();
 
-            A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
-            A.CallTo(() => serviceAccessor(HybridCachingKeyType.DistributedKey)).Returns(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
+            //A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
+            //A.CallTo(() => serviceAccessor(HybridCachingKeyType.DistributedKey)).Returns(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
 
-            _provider = new HybridCachingProvider(serviceAccessor);
+            var providers = new List<IEasyCachingProvider>();
+            providers.Add(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
+            providers.Add(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
+
+            _provider = new HybridCachingProvider(providers);
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
