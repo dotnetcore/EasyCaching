@@ -16,5 +16,11 @@ namespace EasyCaching.UnitTests
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
         }
+
+        [Fact]
+        public void Deault_MaxRdSecond_Should_Be_120()
+        {
+            Assert.Equal(120, _provider.MaxRdSecond);
+        }
     }
 }

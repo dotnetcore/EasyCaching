@@ -34,10 +34,33 @@
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
+        /// The options.
+        /// </summary>
+        private readonly RedisOptions _options;
+
+        /// <summary>
         /// <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> 
         /// is distributed cache.
         /// </summary>
         public bool IsDistributedCache => false;
+
+        /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order => _options.Order;
+
+        /// <summary>
+        /// Gets the max random second.
+        /// </summary>
+        /// <value>The max rd second.</value>
+        public int MaxRdSecond => _options.MaxRdSecond;
+
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
+        public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
@@ -46,15 +69,17 @@
         /// <param name="serializer">Serializer.</param>
         public DefaultRedisCachingProvider(
             IRedisDatabaseProvider dbProvider,
-            IEasyCachingSerializer serializer)
+            IEasyCachingSerializer serializer,
+            RedisOptions options)
         {
             ArgumentCheck.NotNull(dbProvider, nameof(dbProvider));
             ArgumentCheck.NotNull(serializer, nameof(serializer));
 
-            _dbProvider = dbProvider;
-            _serializer = serializer;
-            _cache = _dbProvider.GetDatabase();
-            _servers = _dbProvider.GetServerList();
+            this._dbProvider = dbProvider;
+            this._serializer = serializer;
+            this._options = options;
+            this._cache = _dbProvider.GetDatabase();
+            this._servers = _dbProvider.GetServerList();
         }
 
         /// <summary>
@@ -203,6 +228,12 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
             _cache.StringSet(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
@@ -222,6 +253,12 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
 
             await _cache.StringSetAsync(
                     cacheKey,

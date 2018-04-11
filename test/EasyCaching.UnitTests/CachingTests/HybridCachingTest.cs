@@ -16,7 +16,7 @@
     {
         public HybridCachingTest()
         {
-            RedisCacheOptions options = new RedisCacheOptions()
+            RedisDBOptions options = new RedisDBOptions()
             {
                 AllowAdmin = true,
                 //Password = ""
@@ -24,7 +24,7 @@
 
             options.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
 
-            var fakeOption = A.Fake<IOptions<RedisCacheOptions>>();
+            var fakeOption = A.Fake<IOptions<RedisDBOptions>>();
 
             A.CallTo(() => fakeOption.Value).Returns(options);
 
@@ -37,9 +37,11 @@
             //A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
             //A.CallTo(() => serviceAccessor(HybridCachingKeyType.DistributedKey)).Returns(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
 
-            var providers = new List<IEasyCachingProvider>();
-            providers.Add(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
-            providers.Add(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
+            var providers = new List<IEasyCachingProvider>
+            {
+                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new InMemoryOptions()),
+                new DefaultRedisCachingProvider(fakeDbProvider, serializer, new RedisOptions())
+            };
 
             _provider = new HybridCachingProvider(providers);
             _defaultTs = TimeSpan.FromSeconds(30);

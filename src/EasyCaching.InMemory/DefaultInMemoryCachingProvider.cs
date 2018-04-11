@@ -11,12 +11,14 @@
     /// <summary>
     /// MemoryCaching provider.
     /// </summary>
-    public class DefaultInMemoryCachingProvider : IEasyCachingProvider
+    public class DefaultInMemoryCachingProvider : IEasyCachingProvider, IEasyCachingInfo
     {
         /// <summary>
         /// The MemoryCache.
         /// </summary>
         private readonly IMemoryCache _cache;
+
+        private readonly InMemoryOptions _options;
 
         /// <summary>
         /// The cache keys.
@@ -31,12 +33,33 @@
         public bool IsDistributedCache => false;
 
         /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order => _options.Order;
+
+        /// <summary>
+        /// Gets the max random second.
+        /// </summary>
+        /// <value>The max rd second.</value>
+        public int MaxRdSecond => _options.MaxRdSecond;
+
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
+        public CachingProviderType CachingProviderType => _options.CachingProviderType;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
         /// </summary>
         /// <param name="cache">Microsoft MemoryCache.</param>
-        public DefaultInMemoryCachingProvider(IMemoryCache cache)
+        public DefaultInMemoryCachingProvider(
+            IMemoryCache cache, 
+            InMemoryOptions options)
         {
             this._cache = cache;
+            this._options = options;
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
         }
 
@@ -61,7 +84,7 @@
             result = dataRetriever?.Invoke();
 
             if (result != null)
-            {
+            {                
                 Set(cacheKey, result, expiration);
                 return new CacheValue<T>(result, true);
             }
@@ -92,7 +115,7 @@
             result = await dataRetriever?.Invoke();
 
             if (result != null)
-            {
+            {               
                 Set(cacheKey, result, expiration);
                 return new CacheValue<T>(result, true);
             }
@@ -182,6 +205,12 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            if(MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
             _cache.Set(cacheKey, cacheValue, expiration);
 
             _cacheKeys.Add(cacheKey);
@@ -201,6 +230,12 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
 
             await Task.Run(() =>
             {
@@ -245,8 +280,8 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
-
-            this.Remove(cacheKey);
+                      
+            this.Remove(cacheKey);                
             this.Set(cacheKey, cacheValue, expiration);
         }
 
@@ -262,7 +297,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
-            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));                    
 
             await this.RemoveAsync(cacheKey);
             await this.SetAsync(cacheKey, cacheValue, expiration);

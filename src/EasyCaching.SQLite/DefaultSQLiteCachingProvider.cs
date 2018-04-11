@@ -19,6 +19,8 @@
         /// </summary>
         private ISQLiteDatabaseProvider _dbProvider;
 
+        private readonly SQLiteOptions _options;
+
         /// <summary>
         /// The cache.
         /// </summary>
@@ -28,9 +30,12 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
         /// </summary>
         /// <param name="dbProvider">dbProvider.</param>
-        public DefaultSQLiteCachingProvider(ISQLiteDatabaseProvider dbProvider)
+        public DefaultSQLiteCachingProvider(
+            ISQLiteDatabaseProvider dbProvider,
+            SQLiteOptions options)
         {
             this._dbProvider = dbProvider;
+            this._options = options;
             this._cache = _dbProvider.GetConnection();
         }
 
@@ -39,6 +44,12 @@
         /// </summary>
         /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
         public bool IsDistributedCache => false;
+
+        public int Order => _options.Order;
+
+        public int MaxRdSecond => _options.MaxRdSecond;
+
+        public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
         /// <summary>
         /// Exists the specified cacheKey.
@@ -238,6 +249,12 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
             _cache.Execute(ConstSQL.SETSQL, new
             {
                 cachekey = cacheKey,
@@ -260,6 +277,12 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
 
             await _cache.ExecuteAsync(ConstSQL.SETSQL, new
             {

@@ -60,6 +60,12 @@
         /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
         public bool IsDistributedCache => true;
 
+        public int Order => throw new NotImplementedException();
+
+        public int MaxRdSecond => throw new NotImplementedException();
+
+        public CachingProviderType CachingProviderType => throw new NotImplementedException();
+
         /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>

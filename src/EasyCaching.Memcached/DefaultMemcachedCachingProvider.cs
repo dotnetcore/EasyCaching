@@ -20,19 +20,30 @@
         /// </summary>
         private readonly IMemcachedClient _memcachedClient;
 
+        private readonly MemcachedOptions _options;
+
         /// <summary>
         /// <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/>
         /// is distributed cache.
         /// </summary>
         public bool IsDistributedCache => true;
 
+        public int Order => _options.Order;
+
+        public int MaxRdSecond => _options.MaxRdSecond;
+
+        public CachingProviderType CachingProviderType => _options.CachingProviderType;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
         /// <param name="memcachedClient">Memcached client.</param>
-        public DefaultMemcachedCachingProvider(IMemcachedClient memcachedClient)
+        public DefaultMemcachedCachingProvider(
+            IMemcachedClient memcachedClient,
+            MemcachedOptions options)
         {
             this._memcachedClient = memcachedClient;
+            this._options = options;
         }
 
         /// <summary>
@@ -177,6 +188,12 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
             _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }
 
@@ -193,6 +210,12 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
 
             await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }

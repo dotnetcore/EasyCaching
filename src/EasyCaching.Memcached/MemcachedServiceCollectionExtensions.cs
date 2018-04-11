@@ -25,8 +25,42 @@
             ArgumentCheck.NotNull(services, nameof(services));
             ArgumentCheck.NotNull(options, nameof(options));
 
+            var providerOptioin = new MemcachedOptions();
+
+            return services.AddDefaultMemcached(options, x=>
+            {
+                x.CachingProviderType = providerOptioin.CachingProviderType;
+                x.MaxRdSecond = providerOptioin.MaxRdSecond;
+                x.Order = providerOptioin.Order;
+
+            });
+            //services.AddOptions();
+            //services.Configure(options);
+
+            //services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
+            //services.TryAddSingleton<MemcachedClient, MemcachedClient>();
+            //services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
+
+            //services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
+            //services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            //services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
+
+            //services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
+
+            //return services;
+        }
+
+        public static IServiceCollection AddDefaultMemcached(this IServiceCollection services, Action<EasyCachingMemcachedClientOptions> options, Action<MemcachedOptions> providerAction)
+        {
+            ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNull(options, nameof(options));
+
             services.AddOptions();
             services.Configure(options);
+
+            var providerOptioin = new MemcachedOptions();
+            providerAction(providerOptioin);
+            services.AddSingleton(providerOptioin);
 
             services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
@@ -40,6 +74,7 @@
 
             return services;
         }
+
 
         /// <summary>
         /// Adds the default memcached for hybrid.

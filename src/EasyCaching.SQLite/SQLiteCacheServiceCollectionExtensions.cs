@@ -18,13 +18,39 @@
         /// <returns>The default redis cache.</returns>
         /// <param name="services">Services.</param>
         /// <param name="optionsAction">Options action.</param>
-        public static IServiceCollection AddSQLiteCache(this IServiceCollection services, Action<SQLiteCacheOption> optionsAction)
+        public static IServiceCollection AddSQLiteCache(this IServiceCollection services, Action<SQLiteDBOption> optionsAction)
+        {
+            //ArgumentCheck.NotNull(services, nameof(services));
+            //ArgumentCheck.NotNull(optionsAction, nameof(optionsAction));
+
+            var providerOptions = new SQLiteOptions();
+            return services.AddSQLiteCache(optionsAction,x=>
+            {
+                x.CachingProviderType = providerOptions.CachingProviderType;
+                x.MaxRdSecond = providerOptions.MaxRdSecond;
+                x.Order = providerOptions.Order;
+            });
+
+            //services.AddOptions();
+            //services.Configure(optionsAction);
+            //services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();
+            //services.TryAddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
+
+            //return services;
+        }
+
+        public static IServiceCollection AddSQLiteCache(this IServiceCollection services, Action<SQLiteDBOption> dbAction,Action<SQLiteOptions> providerAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
-            ArgumentCheck.NotNull(optionsAction, nameof(optionsAction));
+            ArgumentCheck.NotNull(dbAction, nameof(dbAction));
 
             services.AddOptions();
-            services.Configure(optionsAction);
+            services.Configure(dbAction);
+
+            var providerOptions = new SQLiteOptions();
+            providerAction(providerOptions);
+            services.AddSingleton(providerOptions);
+
             services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();
             services.TryAddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
 
@@ -37,7 +63,7 @@
         /// <returns>The SQL ite cache for hybrid.</returns>
         /// <param name="services">Services.</param>
         /// <param name="optionsAction">Options action.</param>
-        public static IServiceCollection AddSQLiteCacheForHybrid(this IServiceCollection services, Action<SQLiteCacheOption> optionsAction)
+        public static IServiceCollection AddSQLiteCacheForHybrid(this IServiceCollection services, Action<SQLiteDBOption> optionsAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
             ArgumentCheck.NotNull(optionsAction, nameof(optionsAction));

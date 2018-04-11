@@ -4,6 +4,7 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using System;
 
     /// <summary>
     /// In memory cache service collection extensions.
@@ -19,11 +20,32 @@
         {
             ArgumentCheck.NotNull(services, nameof(services));
 
+            var option = new InMemoryOptions();
+
+            return services.AddDefaultInMemoryCache(x=>
+            {
+                x.CachingProviderType = option.CachingProviderType;
+                x.MaxRdSecond = option.MaxRdSecond;
+                x.Order = option.Order;
+            });
+            //return services;
+        }
+
+        public static IServiceCollection AddDefaultInMemoryCache(this IServiceCollection services, Action<InMemoryOptions> optionSetup)
+        {
+            ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNull(optionSetup, nameof(optionSetup));
+
+            var option = new InMemoryOptions();
+            optionSetup(option);
+            services.AddSingleton(option);
+
             services.AddMemoryCache();
             services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
 
             return services;
         }
+
 
         /// <summary>
         /// Adds the default in memory cache for hybrid.
