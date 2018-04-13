@@ -11,7 +11,7 @@
     /// Hybrid caching provider.
     /// </summary>
     public class HybridCachingProvider : IHybridCachingProvider
-    {      
+    {              
         /// <summary>
         /// The caching providers.
         /// </summary>
@@ -23,18 +23,21 @@
         /// <param name="providers">Providers.</param>
         public HybridCachingProvider(IEnumerable<IEasyCachingProvider> providers)
         {
-            if(providers == null || providers.Count() <=0)
+            if(providers == null || !providers.Any())
             {
                 throw new ArgumentNullException(nameof(providers));
             }
 
-            //Not greater than 3
+            //2-level and 3-level are enough for hybrid
             if(providers.Count() > 3)
             {
                 throw new ArgumentOutOfRangeException(nameof(providers));   
             }
 
+            //
             this._providers = providers.OrderBy(x=>x.Order);
+
+            //TODO: local cache should subscribe the remote cache
         }
 
         /// <summary>
@@ -509,7 +512,7 @@
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }
@@ -544,7 +547,7 @@
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }
@@ -579,7 +582,7 @@
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }
@@ -614,7 +617,7 @@
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }

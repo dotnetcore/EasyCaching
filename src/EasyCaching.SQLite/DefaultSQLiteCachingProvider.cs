@@ -19,12 +19,15 @@
         /// </summary>
         private ISQLiteDatabaseProvider _dbProvider;
 
+        /// <summary>
+        /// The options.
+        /// </summary>
         private readonly SQLiteOptions _options;
 
         /// <summary>
         /// The cache.
         /// </summary>
-        private SqliteConnection _cache;
+        private readonly SqliteConnection _cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
@@ -45,10 +48,22 @@
         /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
         public bool IsDistributedCache => false;
 
+        /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
         public int Order => _options.Order;
 
+        /// <summary>
+        /// Gets the max random second.
+        /// </summary>
+        /// <value>The max random second.</value>
         public int MaxRdSecond => _options.MaxRdSecond;
 
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
         /// <summary>

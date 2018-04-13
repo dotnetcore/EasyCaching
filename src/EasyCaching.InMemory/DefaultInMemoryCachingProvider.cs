@@ -11,13 +11,16 @@
     /// <summary>
     /// MemoryCaching provider.
     /// </summary>
-    public class DefaultInMemoryCachingProvider : IEasyCachingProvider, IEasyCachingInfo
+    public class DefaultInMemoryCachingProvider : IEasyCachingProvider
     {
         /// <summary>
         /// The MemoryCache.
         /// </summary>
         private readonly IMemoryCache _cache;
 
+        /// <summary>
+        /// The options.
+        /// </summary>
         private readonly InMemoryOptions _options;
 
         /// <summary>
@@ -76,9 +79,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _cache.Get(cacheKey) as T;
-
-            if (result != null)
+            if (_cache.Get(cacheKey) is T result)
                 return new CacheValue<T>(result, true);
 
             result = dataRetriever?.Invoke();
@@ -107,9 +108,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _cache.Get(cacheKey) as T;
-
-            if (result != null)
+            if (_cache.Get(cacheKey) is T result)
                 return new CacheValue<T>(result, true);
 
             result = await dataRetriever?.Invoke();
@@ -135,9 +134,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _cache.Get(cacheKey) as T;
-
-            if (result != null)
+            if (_cache.Get(cacheKey) is T result)
                 return new CacheValue<T>(result, true);
             else
                 return CacheValue<T>.NoValue;
@@ -312,7 +309,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
-            if (keys.Count() > 0)
+            if (keys.Any())
             {
                 foreach (var item in keys)
                 {
@@ -331,7 +328,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
-            if (keys.Count() > 0)
+            if (keys.Any())
             {
                 var tasks = new List<Task>();
                 foreach (var item in keys)
@@ -424,7 +421,7 @@
             var map = new Dictionary<string, CacheValue<T>>();
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
-            if (keys.Count() > 0)
+            if (keys.Any())
             {
                 foreach (var item in keys)
                 {
@@ -448,7 +445,7 @@
 
             var map = new Dictionary<string, Task<CacheValue<T>>>();
 
-            if (keys.Count() > 0)
+            if (keys.Any())
             {
                 foreach (string key in keys)
                     map[key] = GetAsync<T>(key);

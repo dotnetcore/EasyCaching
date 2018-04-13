@@ -226,25 +226,4 @@
         /// <value>The type of the caching provider.</value>
         Internal.CachingProviderType CachingProviderType { get; }
     }
-
-    public interface IEasyCachingInfo
-    {
-        ///// <summary>
-        ///// Gets the order.
-        ///// </summary>
-        ///// <value>The order.</value>
-        //int Order { get; }
-
-        ///// <summary>
-        ///// Gets the max rd second.
-        ///// </summary>
-        ///// <value>The max random second.</value>
-        //int MaxRdSecond { get; }
-
-        ///// <summary>
-        ///// Gets the type of the caching provider.
-        ///// </summary>
-        ///// <value>The type of the caching provider.</value>
-        //Internal.CachingProviderType CachingProviderType { get; }
-    }
 }

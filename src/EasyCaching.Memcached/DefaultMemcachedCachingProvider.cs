@@ -20,6 +20,9 @@
         /// </summary>
         private readonly IMemcachedClient _memcachedClient;
 
+        /// <summary>
+        /// The options.
+        /// </summary>
         private readonly MemcachedOptions _options;
 
         /// <summary>
@@ -28,10 +31,22 @@
         /// </summary>
         public bool IsDistributedCache => true;
 
+        /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
         public int Order => _options.Order;
 
+        /// <summary>
+        /// Gets the max rd second.
+        /// </summary>
+        /// <value>The max rd second.</value>
         public int MaxRdSecond => _options.MaxRdSecond;
 
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
         /// <summary>
@@ -59,8 +74,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey)) as T;
-            if (result != null)
+            if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
                 return new CacheValue<T>(result, true);
             }
@@ -118,8 +132,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey)) as T;
-            if (result != null)
+            if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
                 return new CacheValue<T>(result, true);
             }
