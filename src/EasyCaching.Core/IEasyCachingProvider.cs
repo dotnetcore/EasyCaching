@@ -224,6 +224,6 @@
         /// Gets the type of the caching provider.
         /// </summary>
         /// <value>The type of the caching provider.</value>
-        Internal.CachingProviderType CachingProviderType { get; }
+        CachingProviderType CachingProviderType { get; }
     }
 }

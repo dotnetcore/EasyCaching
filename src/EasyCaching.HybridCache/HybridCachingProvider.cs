@@ -11,11 +11,36 @@
     /// Hybrid caching provider.
     /// </summary>
     public class HybridCachingProvider : IHybridCachingProvider
-    {              
+    {
         /// <summary>
         /// The caching providers.
         /// </summary>
         private readonly IEnumerable<IEasyCachingProvider> _providers;
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> is
+        /// distributed cache.
+        /// </summary>
+        /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
+        public bool IsDistributedCache => throw new NotImplementedException();
+
+        /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order => throw new NotImplementedException();
+
+        /// <summary>
+        /// Gets the max rd second.
+        /// </summary>
+        /// <value>The max rd second.</value>
+        public int MaxRdSecond => throw new NotImplementedException();
+
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
+        public CachingProviderType CachingProviderType => throw new NotImplementedException();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
@@ -23,35 +48,22 @@
         /// <param name="providers">Providers.</param>
         public HybridCachingProvider(IEnumerable<IEasyCachingProvider> providers)
         {
-            if(providers == null || !providers.Any())
+            if (providers == null || !providers.Any())
             {
                 throw new ArgumentNullException(nameof(providers));
             }
 
             //2-level and 3-level are enough for hybrid
-            if(providers.Count() > 3)
+            if (providers.Count() > 3)
             {
-                throw new ArgumentOutOfRangeException(nameof(providers));   
+                throw new ArgumentOutOfRangeException(nameof(providers));
             }
 
             //
-            this._providers = providers.OrderBy(x=>x.Order);
+            this._providers = providers.OrderBy(x => x.Order);
 
             //TODO: local cache should subscribe the remote cache
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> is
-        /// distributed cache.
-        /// </summary>
-        /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
-        public bool IsDistributedCache => true;
-
-        public int Order => throw new NotImplementedException();
-
-        public int MaxRdSecond => throw new NotImplementedException();
-
-        public CachingProviderType CachingProviderType => throw new NotImplementedException();
 
         /// <summary>
         /// Exists the specified cacheKey.
@@ -68,16 +80,16 @@
 
             flag = local.Exists(cacheKey);
 
-            if(!flag)
-            {       
+            if (!flag)
+            {
                 //remote
                 foreach (var provider in _providers.Skip(1))
                 {
                     flag = provider.Exists(cacheKey);
 
                     if (flag) break;
-                }             
-            }                       
+                }
+            }
 
             return flag;
         }
@@ -97,17 +109,17 @@
 
             flag = await local.ExistsAsync(cacheKey);
 
-            if (!flag) 
+            if (!flag)
             {
                 //remote
                 foreach (var provider in _providers.Skip(1))
                 {
                     flag = provider.Exists(cacheKey);
-                    
+
                     if (flag) break;
-                }                
+                }
             }
-        
+
             return flag;
         }
 
@@ -126,9 +138,9 @@
 
             var local = _providers.FirstOrDefault();
 
-            CacheValue<T> cachedValue = local.Get(cacheKey,dataRetriever,expiration);
+            CacheValue<T> cachedValue = local.Get(cacheKey, dataRetriever, expiration);
 
-            if(cachedValue.HasValue)
+            if (cachedValue.HasValue)
             {
                 return cachedValue;
             }
@@ -282,7 +294,7 @@
                 return CacheValue<T>.NoValue;
             }
 
-            return cachedValue;                      
+            return cachedValue;
         }
 
         /// <summary>
@@ -347,7 +359,7 @@
             foreach (var provider in _providers.Skip(1))
             {
                 provider.Set(cacheKey, cacheValue, expiration);
-            }                    
+            }
         }
 
         /// <summary>
@@ -372,7 +384,7 @@
             foreach (var provider in _providers.Skip(1))
             {
                 provider.Set(cacheKey, cacheValue, expiration);
-            }   
+            }
         }
 
         /// <summary>
@@ -427,7 +439,7 @@
             foreach (var provider in _providers.Skip(1))
             {
                 provider.RemoveByPrefix(prefix);
-            }   
+            }
         }
 
         /// <summary>
@@ -447,7 +459,7 @@
             foreach (var provider in _providers.Skip(1))
             {
                 provider.RemoveByPrefix(prefix);
-            }                        
+            }
         }
 
         /// <summary>
@@ -469,7 +481,7 @@
             foreach (var provider in _providers.Skip(1))
             {
                 provider.SetAll(values, expiration);
-            }   
+            }
         }
 
         /// <summary>
@@ -492,7 +504,7 @@
             foreach (var provider in _providers.Skip(1))
             {
                 provider.SetAll(values, expiration);
-            }                       
+            }
         }
 
         /// <summary>
@@ -527,7 +539,7 @@
                 localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
             }
 
-            return localDict;                      
+            return localDict;
         }
 
         /// <summary>
@@ -562,7 +574,7 @@
                 localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
             }
 
-            return localDict;    
+            return localDict;
         }
 
         /// <summary>
@@ -586,7 +598,7 @@
             {
                 return localDict;
             }
-         
+
             foreach (var item in localNotFindKeys)
                 localDict.Remove(item);
 
@@ -597,7 +609,7 @@
                 localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
             }
 
-            return localDict;          
+            return localDict;
         }
 
         /// <summary>
@@ -641,12 +653,12 @@
         /// <param name="cacheKeys">Cache keys.</param>
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
-            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));                      
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var local = _providers.FirstOrDefault();
 
             local.RemoveAll(cacheKeys);
-                      
+
             //remote
             foreach (var provider in _providers.Skip(1))
             {
@@ -715,7 +727,7 @@
                 tasks.Add(provider.FlushAsync());
             }
 
-            await Task.WhenAll(tasks);                   
+            await Task.WhenAll(tasks);
         }
     }
 }
