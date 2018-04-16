@@ -76,19 +76,11 @@
 
             var flag = false;
 
-            var local = _providers.FirstOrDefault();
-
-            flag = local.Exists(cacheKey);
-
-            if (!flag)
+            foreach (var provider in _providers)
             {
-                //remote
-                foreach (var provider in _providers.Skip(1))
-                {
-                    flag = provider.Exists(cacheKey);
+                flag = provider.Exists(cacheKey);
 
-                    if (flag) break;
-                }
+                if (flag) break;
             }
 
             return flag;
@@ -104,23 +96,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             var flag = false;
-
-            var local = _providers.FirstOrDefault();
-
-            flag = await local.ExistsAsync(cacheKey);
-
-            if (!flag)
+                       
+            foreach (var provider in _providers)
             {
-                //remote
-                foreach (var provider in _providers.Skip(1))
-                {
-                    flag = provider.Exists(cacheKey);
+                flag = provider.Exists(cacheKey);
 
-                    if (flag) break;
-                }
+                if (flag) break;
             }
 
-            return flag;
+            return await Task.FromResult(flag);
         }
 
         /// <summary>
@@ -136,17 +120,9 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var local = _providers.FirstOrDefault();
-
-            CacheValue<T> cachedValue = local.Get(cacheKey, dataRetriever, expiration);
-
-            if (cachedValue.HasValue)
-            {
-                return cachedValue;
-            }
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            CacheValue<T> cachedValue = null;
+                   
+            foreach (var provider in _providers)
             {
                 cachedValue = provider.Get(cacheKey, dataRetriever, expiration);
 
@@ -184,17 +160,9 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var local = _providers.FirstOrDefault();
-
-            CacheValue<T> cachedValue = local.Get<T>(cacheKey);
-
-            if (cachedValue.HasValue)
-            {
-                return cachedValue;
-            }
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            CacheValue<T> cachedValue = null;
+                       
+            foreach (var provider in _providers)
             {
                 cachedValue = provider.Get<T>(cacheKey);
 
@@ -225,17 +193,9 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var local = _providers.FirstOrDefault();
+            CacheValue<T> cachedValue = null;
 
-            CacheValue<T> cachedValue = await local.GetAsync(cacheKey, dataRetriever, expiration);
-
-            if (cachedValue.HasValue)
-            {
-                return cachedValue;
-            }
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
                 cachedValue = provider.Get<T>(cacheKey);
 
@@ -254,9 +214,7 @@
                     return new CacheValue<T>(retriever, true);
                 }
                 else
-                {
-                    //TODO : Set a null value to cache!!
-
+                {                    
                     return CacheValue<T>.NoValue;
                 }
             }
@@ -274,12 +232,9 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var local = _providers.FirstOrDefault();
+            CacheValue<T> cachedValue = null;
 
-            CacheValue<T> cachedValue = await local.GetAsync<T>(cacheKey);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
                 cachedValue = provider.Get<T>(cacheKey);
 
@@ -294,7 +249,7 @@
                 return CacheValue<T>.NoValue;
             }
 
-            return cachedValue;
+            return await Task.FromResult(cachedValue);
         }
 
         /// <summary>
@@ -306,12 +261,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var local = _providers.FirstOrDefault();
-
-            local.Remove(cacheKey);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
                 provider.Remove(cacheKey);
             }
@@ -326,15 +276,14 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var local = _providers.FirstOrDefault();
+            var tasks = new List<Task>();
 
-            await local.RemoveAsync(cacheKey);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
-                provider.Remove(cacheKey);
+                tasks.Add(provider.RemoveAsync(cacheKey));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -351,12 +300,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var local = _providers.FirstOrDefault();
-
-            local.Set(cacheKey, cacheValue, expiration);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
                 provider.Set(cacheKey, cacheValue, expiration);
             }
@@ -376,15 +320,14 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var local = _providers.FirstOrDefault();
+            var tasks = new List<Task>();
 
-            await local.SetAsync(cacheKey, cacheValue, expiration);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
-                provider.Set(cacheKey, cacheValue, expiration);
+                tasks.Add(provider.SetAsync(cacheKey, cacheValue, expiration));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -430,13 +373,8 @@
         public void RemoveByPrefix(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-
-            var local = _providers.FirstOrDefault();
-
-            local.RemoveByPrefix(prefix);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+                    
+            foreach (var provider in _providers)
             {
                 provider.RemoveByPrefix(prefix);
             }
@@ -451,15 +389,14 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var local = _providers.FirstOrDefault();
+            var tasks = new List<Task>();
 
-            await local.RemoveByPrefixAsync(prefix);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
-                provider.RemoveByPrefix(prefix);
+                tasks.Add(provider.RemoveByPrefixAsync(prefix));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -473,12 +410,7 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var local = _providers.FirstOrDefault();
-
-            local.SetAll(values, expiration);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
                 provider.SetAll(values, expiration);
             }
@@ -496,15 +428,14 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var local = _providers.FirstOrDefault();
+            var tasks = new List<Task>();
 
-            await local.SetAllAsync(values, expiration);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
-                provider.SetAll(values, expiration);
+                tasks.Add(provider.SetAllAsync(values, expiration));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -655,12 +586,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var local = _providers.FirstOrDefault();
-
-            local.RemoveAll(cacheKeys);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
                 provider.RemoveAll(cacheKeys);
             }
@@ -674,16 +600,15 @@
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+                      
+            var tasks = new List<Task>();
 
-            var local = _providers.FirstOrDefault();
-
-            await local.RemoveAllAsync(cacheKeys);
-
-            //remote
-            foreach (var provider in _providers.Skip(1))
+            foreach (var provider in _providers)
             {
-                provider.RemoveAll(cacheKeys);
+                tasks.Add(provider.RemoveAllAsync(cacheKeys));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
