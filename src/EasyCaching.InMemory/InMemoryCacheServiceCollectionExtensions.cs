@@ -4,6 +4,7 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using System;
 
     /// <summary>
     /// In memory cache service collection extensions.
@@ -11,47 +12,41 @@
     public static class InMemoryCacheServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds the default in memory cache.
+        /// Adds the default in-memory cache.
         /// </summary>
-        /// <returns>The default in memory cache.</returns>
+        /// <returns>The default in-memory cache.</returns>
         /// <param name="services">Services.</param>
         public static IServiceCollection AddDefaultInMemoryCache(this IServiceCollection services)
-        {
-            ArgumentCheck.NotNull(services, nameof(services));
+        {            
+            var option = new InMemoryOptions();
 
-            services.AddMemoryCache();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
-
-            return services;
+            return services.AddDefaultInMemoryCache(x=>
+            {
+                x.CachingProviderType = option.CachingProviderType;
+                x.MaxRdSecond = option.MaxRdSecond;
+                x.Order = option.Order;
+            });
         }
 
         /// <summary>
-        /// Adds the default in memory cache for hybrid.
+        /// Adds the default in-memory cache.
         /// </summary>
-        /// <returns>The default in memory cache for hybrid.</returns>
+        /// <returns>The default in-memory cache.</returns>
         /// <param name="services">Services.</param>
-        public static IServiceCollection AddDefaultInMemoryCacheForHybrid(this IServiceCollection services)
+        /// <param name="optionSetup">Option setup.</param>
+        public static IServiceCollection AddDefaultInMemoryCache(
+            this IServiceCollection services, 
+            Action<InMemoryOptions> optionSetup)
         {
             ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNull(optionSetup, nameof(optionSetup));
+
+            var option = new InMemoryOptions();
+            optionSetup(option);
+            services.AddSingleton(option);
 
             services.AddMemoryCache();
-            services.TryAddSingleton<DefaultInMemoryCachingProvider>();
-
-            //services.AddSingleton(factory =>
-            //{
-            //    Func<string, IEasyCachingProvider> accesor = key =>
-            //    {
-            //        if(key.Equals(HybridCachingKeyType.LocalKey))
-            //        {
-            //            return factory.GetService<InMemoryCachingProvider>();
-            //        }     
-            //        else
-            //        {
-            //            throw new KeyNotFoundException();
-            //        }
-            //    };
-            //    return accesor;
-            //});
+            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
 
             return services;
         }

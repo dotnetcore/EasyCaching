@@ -20,13 +20,43 @@
         /// <returns>The default redis cache.</returns>
         /// <param name="services">Services.</param>
         /// <param name="options">Options.</param>
-        public static IServiceCollection AddDefaultMemcached(this IServiceCollection services, Action<EasyCachingMemcachedClientOptions> options)
+        public static IServiceCollection AddDefaultMemcached(
+            this IServiceCollection services, 
+            Action<EasyCachingMemcachedClientOptions> options)
+        {
+            var providerOptioin = new MemcachedOptions();
+
+            return services.AddDefaultMemcached(options, x =>
+            {
+                x.CachingProviderType = providerOptioin.CachingProviderType;
+                x.MaxRdSecond = providerOptioin.MaxRdSecond;
+                x.Order = providerOptioin.Order;
+
+            });
+        }
+
+        /// <summary>
+        /// Adds the default memcached.
+        /// </summary>
+        /// <returns>The default memcached.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="providerAction">Provider action.</param>
+        public static IServiceCollection AddDefaultMemcached(
+            this IServiceCollection services,
+            Action<EasyCachingMemcachedClientOptions> options,
+            Action<MemcachedOptions> providerAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
             ArgumentCheck.NotNull(options, nameof(options));
+            ArgumentCheck.NotNull(providerAction, nameof(providerAction));
 
             services.AddOptions();
             services.Configure(options);
+
+            var providerOptioin = new MemcachedOptions();
+            providerAction(providerOptioin);
+            services.AddSingleton(providerOptioin);
 
             services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
@@ -39,49 +69,6 @@
             services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
 
             return services;
-        }
-
-        /// <summary>
-        /// Adds the default memcached for hybrid.
-        /// </summary>
-        /// <returns>The default memcached for hybrid.</returns>
-        /// <param name="services">Services.</param>
-        /// <param name="options">Options.</param>
-        public static IServiceCollection AddDefaultMemcachedForHybrid(this IServiceCollection services, Action<EasyCachingMemcachedClientOptions> options)
-        {
-            ArgumentCheck.NotNull(services, nameof(services));
-            ArgumentCheck.NotNull(options, nameof(options));
-
-            services.AddOptions();
-            services.Configure(options);
-
-            services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
-            services.TryAddSingleton<MemcachedClient, MemcachedClient>();
-            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
-
-            services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-            services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
-
-            services.TryAddSingleton<DefaultMemcachedCachingProvider>();
-
-            //services.AddSingleton(factory =>
-            //{
-            //    Func<string, IEasyCachingProvider> accesor = key =>
-            //    {
-            //        if (key.Equals(HybridCachingKeyType.DistributedKey))
-            //        {
-            //            return factory.GetService<DefaultMemcachedCachingProvider>();
-            //        }
-            //        else
-            //        {
-            //            throw new KeyNotFoundException();
-            //        }
-            //    };
-            //    return accesor;
-            //});                     
-
-            return services;
-        }
+        }                    
     }
 }

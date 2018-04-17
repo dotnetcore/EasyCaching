@@ -13,38 +13,57 @@
     public class HybridCachingProvider : IHybridCachingProvider
     {
         /// <summary>
-        /// The local caching provider.
+        /// The caching providers.
         /// </summary>
-        private IEasyCachingProvider _localCachingProvider;
-
-        /// <summary>
-        /// The distributed caching provider.
-        /// </summary>
-        private IEasyCachingProvider _distributedCachingProvider;
-
-        /// <summary>
-        /// The service accessor.
-        /// </summary>
-        private readonly Func<string, IEasyCachingProvider> _serviceAccessor;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
-        /// </summary>
-        /// <param name="serviceAccessor">Service accessor.</param>
-        public HybridCachingProvider(Func<string, IEasyCachingProvider> serviceAccessor)
-        {
-            _serviceAccessor = serviceAccessor;
-
-            this._localCachingProvider = _serviceAccessor(HybridCachingKeyType.LocalKey);
-            this._distributedCachingProvider = _serviceAccessor(HybridCachingKeyType.DistributedKey);
-        }
+        private readonly IEnumerable<IEasyCachingProvider> _providers;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> is
         /// distributed cache.
         /// </summary>
         /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
-        public bool IsDistributedCache => true;
+        public bool IsDistributedCache => throw new NotImplementedException();
+
+        /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order => throw new NotImplementedException();
+
+        /// <summary>
+        /// Gets the max rd second.
+        /// </summary>
+        /// <value>The max rd second.</value>
+        public int MaxRdSecond => throw new NotImplementedException();
+
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
+        public CachingProviderType CachingProviderType => throw new NotImplementedException();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
+        /// </summary>
+        /// <param name="providers">Providers.</param>
+        public HybridCachingProvider(IEnumerable<IEasyCachingProvider> providers)
+        {
+            if (providers == null || !providers.Any())
+            {
+                throw new ArgumentNullException(nameof(providers));
+            }
+
+            //2-level and 3-level are enough for hybrid
+            if (providers.Count() > 3)
+            {
+                throw new ArgumentOutOfRangeException(nameof(providers));
+            }
+
+            //
+            this._providers = providers.OrderBy(x => x.Order);
+
+            //TODO: local cache should subscribe the remote cache
+        }
 
         /// <summary>
         /// Exists the specified cacheKey.
@@ -57,11 +76,11 @@
 
             var flag = false;
 
-            flag = _localCachingProvider.Exists(cacheKey);
-
-            if (!flag)
+            foreach (var provider in _providers)
             {
-                flag = _distributedCachingProvider.Exists(cacheKey);
+                flag = provider.Exists(cacheKey);
+
+                if (flag) break;
             }
 
             return flag;
@@ -77,15 +96,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             var flag = false;
-
-            flag = await _localCachingProvider.ExistsAsync(cacheKey);
-
-            if (!flag)
+                       
+            foreach (var provider in _providers)
             {
-                flag = await _distributedCachingProvider.ExistsAsync(cacheKey);
+                flag = provider.Exists(cacheKey);
+
+                if (flag) break;
             }
 
-            return flag;
+            return await Task.FromResult(flag);
         }
 
         /// <summary>
@@ -101,32 +120,34 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var value = _localCachingProvider.Get<T>(cacheKey);
-
-            if (value.HasValue)
+            CacheValue<T> cachedValue = null;
+                   
+            foreach (var provider in _providers)
             {
-                return value;
+                cachedValue = provider.Get(cacheKey, dataRetriever, expiration);
+
+                if (cachedValue.HasValue)
+                {
+                    break;
+                }
             }
 
-            value = _distributedCachingProvider.Get<T>(cacheKey);
-
-            if (value.HasValue)
+            if (!cachedValue.HasValue)
             {
-                return value;
+                var retriever = dataRetriever?.Invoke();
+                if (retriever != null)
+                {
+                    Set(cacheKey, retriever, expiration);
+                    return new CacheValue<T>(retriever, true);
+                }
+                else
+                {
+                    //TODO : Set a null value to cache!!
+                    return CacheValue<T>.NoValue;
+                }
             }
 
-            var item = dataRetriever?.Invoke();
-            if (item != null)
-            {
-                Set(cacheKey, item, expiration);
-                return new CacheValue<T>(item, true);
-            }
-            else
-            {
-                //TODO : Set a null value to cache!!
-
-                return CacheValue<T>.NoValue;
-            }
+            return cachedValue;
         }
 
         /// <summary>
@@ -139,25 +160,24 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var value = _localCachingProvider.Get<T>(cacheKey);
-
-            if (value.HasValue)
+            CacheValue<T> cachedValue = null;
+                       
+            foreach (var provider in _providers)
             {
-                return value;
+                cachedValue = provider.Get<T>(cacheKey);
+
+                if (cachedValue.HasValue)
+                {
+                    break;
+                }
             }
 
-            value = _distributedCachingProvider.Get<T>(cacheKey);
-
-            if (value.HasValue)
+            if (!cachedValue.HasValue)
             {
-                return value;
-            }
-            else
-            {
-                //TODO : Set a null value to cache!!
-
                 return CacheValue<T>.NoValue;
             }
+
+            return cachedValue;
         }
 
         /// <summary>
@@ -173,32 +193,33 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var value = await _localCachingProvider.GetAsync<T>(cacheKey);
+            CacheValue<T> cachedValue = null;
 
-            if (value.HasValue)
+            foreach (var provider in _providers)
             {
-                return value;
+                cachedValue = provider.Get<T>(cacheKey);
+
+                if (cachedValue.HasValue)
+                {
+                    break;
+                }
             }
 
-            value = await _distributedCachingProvider.GetAsync<T>(cacheKey);
-
-            if (value.HasValue)
+            if (!cachedValue.HasValue)
             {
-                return value;
+                var retriever = await dataRetriever?.Invoke();
+                if (retriever != null)
+                {
+                    await SetAsync(cacheKey, retriever, expiration);
+                    return new CacheValue<T>(retriever, true);
+                }
+                else
+                {                    
+                    return CacheValue<T>.NoValue;
+                }
             }
 
-            var item = await dataRetriever?.Invoke();
-            if (item != null)
-            {
-                await SetAsync(cacheKey, item, expiration);
-                return new CacheValue<T>(item, true);
-            }
-            else
-            {
-                //TODO : Set a null value to cache!!
-
-                return CacheValue<T>.NoValue;
-            }
+            return cachedValue;
         }
 
         /// <summary>
@@ -211,25 +232,24 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var value = await _localCachingProvider.GetAsync<T>(cacheKey);
+            CacheValue<T> cachedValue = null;
 
-            if (value.HasValue)
+            foreach (var provider in _providers)
             {
-                return value;
+                cachedValue = provider.Get<T>(cacheKey);
+
+                if (cachedValue.HasValue)
+                {
+                    break;
+                }
             }
 
-            value = await _distributedCachingProvider.GetAsync<T>(cacheKey);
-
-            if (value.HasValue)
+            if (!cachedValue.HasValue)
             {
-                return value;
-            }
-            else
-            {
-                //TODO : Set a null value to cache!!
-
                 return CacheValue<T>.NoValue;
             }
+
+            return await Task.FromResult(cachedValue);
         }
 
         /// <summary>
@@ -241,8 +261,10 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _localCachingProvider.Remove(cacheKey);
-            _distributedCachingProvider.Remove(cacheKey);
+            foreach (var provider in _providers)
+            {
+                provider.Remove(cacheKey);
+            }
         }
 
         /// <summary>
@@ -254,8 +276,14 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _localCachingProvider.RemoveAsync(cacheKey);
-            await _distributedCachingProvider.RemoveAsync(cacheKey);
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
+            {
+                tasks.Add(provider.RemoveAsync(cacheKey));
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -272,8 +300,10 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            _localCachingProvider.Set(cacheKey, cacheValue, expiration);
-            _distributedCachingProvider.Set(cacheKey, cacheValue, expiration);
+            foreach (var provider in _providers)
+            {
+                provider.Set(cacheKey, cacheValue, expiration);
+            }
         }
 
         /// <summary>
@@ -290,8 +320,14 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            await _localCachingProvider.SetAsync(cacheKey, cacheValue, expiration);
-            await _distributedCachingProvider.SetAsync(cacheKey, cacheValue, expiration);
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
+            {
+                tasks.Add(provider.SetAsync(cacheKey, cacheValue, expiration));
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -337,9 +373,11 @@
         public void RemoveByPrefix(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-
-            _localCachingProvider.RemoveByPrefix(prefix);
-            _distributedCachingProvider.RemoveByPrefix(prefix);
+                    
+            foreach (var provider in _providers)
+            {
+                provider.RemoveByPrefix(prefix);
+            }
         }
 
         /// <summary>
@@ -351,8 +389,14 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            await _localCachingProvider.RemoveByPrefixAsync(prefix);
-            await _distributedCachingProvider.RemoveByPrefixAsync(prefix);
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
+            {
+                tasks.Add(provider.RemoveByPrefixAsync(prefix));
+            }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -366,15 +410,9 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            _localCachingProvider.SetAll(values, expiration);
-
-            try
+            foreach (var provider in _providers)
             {
-                _distributedCachingProvider.SetAll(values, expiration);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
+                provider.SetAll(values, expiration);
             }
         }
 
@@ -389,16 +427,15 @@
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
-            
-            await _localCachingProvider.SetAllAsync(values, expiration);
-            try
+
+            var tasks = new List<Task>();
+
+            foreach (var provider in _providers)
             {
-                await _distributedCachingProvider.SetAllAsync(values, expiration);
+                tasks.Add(provider.SetAllAsync(values, expiration));
             }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -411,27 +448,26 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var localDict = _localCachingProvider.GetAll<T>(cacheKeys);
+            var local = _providers.FirstOrDefault();
+
+            var localDict = local.GetAll<T>(cacheKeys);
 
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }
 
-            try
-            {
-                foreach (var item in localNotFindKeys)
-                    localDict.Remove(item);
+            foreach (var item in localNotFindKeys)
+                localDict.Remove(item);
 
-                var disDict = _distributedCachingProvider.GetAll<T>(localNotFindKeys);
-                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
-            }
-            catch (Exception ex)
+            //remote
+            foreach (var provider in _providers.Skip(1))
             {
-                System.Console.WriteLine(ex.Message);
+                var disDict = provider.GetAll<T>(localNotFindKeys);
+                localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
             }
 
             return localDict;
@@ -447,27 +483,26 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var localDict = await _localCachingProvider.GetAllAsync<T>(cacheKeys);
+            var local = _providers.FirstOrDefault();
+
+            var localDict = await local.GetAllAsync<T>(cacheKeys);
 
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }
 
-            try
-            {
-                foreach (var item in localNotFindKeys)
-                    localDict.Remove(item);
+            foreach (var item in localNotFindKeys)
+                localDict.Remove(item);
 
-                var disDict = await _distributedCachingProvider.GetAllAsync<T>(cacheKeys);
-                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
-            }
-            catch (Exception ex)
+            //remote
+            foreach (var provider in _providers.Skip(1))
             {
-                System.Console.WriteLine(ex.Message);
+                var disDict = provider.GetAll<T>(localNotFindKeys);
+                localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
             }
 
             return localDict;
@@ -483,27 +518,26 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var localDict = _localCachingProvider.GetByPrefix<T>(prefix);
+            var local = _providers.FirstOrDefault();
+
+            var localDict = local.GetByPrefix<T>(prefix);
 
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }
 
-            try
-            {
-                foreach (var item in localNotFindKeys)
-                    localDict.Remove(item);
+            foreach (var item in localNotFindKeys)
+                localDict.Remove(item);
 
-                var disDict = _distributedCachingProvider.GetByPrefix<T>(prefix);
-                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
-            }
-            catch (Exception ex)
+            //remote
+            foreach (var provider in _providers.Skip(1))
             {
-                System.Console.WriteLine(ex.Message);
+                var disDict = provider.GetAll<T>(localNotFindKeys);
+                localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
             }
 
             return localDict;
@@ -519,27 +553,26 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var localDict = await _localCachingProvider.GetByPrefixAsync<T>(prefix);
+            var local = _providers.FirstOrDefault();
+
+            var localDict = await local.GetByPrefixAsync<T>(prefix);
 
             //not find in local caching.
             var localNotFindKeys = localDict.Where(x => !x.Value.HasValue).Select(x => x.Key);
 
-            if (localNotFindKeys.Count() <= 0)
+            if (!localNotFindKeys.Any())
             {
                 return localDict;
             }
 
-            try
-            {
-                foreach (var item in localNotFindKeys)
-                    localDict.Remove(item);
+            foreach (var item in localNotFindKeys)
+                localDict.Remove(item);
 
-                var disDict = await _distributedCachingProvider.GetByPrefixAsync<T>(prefix);
-                return localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
-            }
-            catch (Exception ex)
+            //remote
+            foreach (var provider in _providers.Skip(1))
             {
-                System.Console.WriteLine(ex.Message);
+                var disDict = provider.GetAll<T>(localNotFindKeys);
+                localDict.Concat(disDict).ToDictionary(k => k.Key, v => v.Value);
             }
 
             return localDict;
@@ -553,15 +586,9 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            _localCachingProvider.RemoveAll(cacheKeys);
-
-            try
+            foreach (var provider in _providers)
             {
-                _distributedCachingProvider.RemoveAll(cacheKeys);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
+                provider.RemoveAll(cacheKeys);
             }
         }
 
@@ -573,17 +600,15 @@
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+                      
+            var tasks = new List<Task>();
 
-            await _localCachingProvider.RemoveAllAsync(cacheKeys);
+            foreach (var provider in _providers)
+            {
+                tasks.Add(provider.RemoveAllAsync(cacheKeys));
+            }
 
-            try
-            {
-                await _distributedCachingProvider.RemoveAllAsync(cacheKeys);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -593,7 +618,14 @@
         /// <param name="prefix">Prefix.</param>
         public int GetCount(string prefix = "")
         {
-            return Math.Max(_localCachingProvider.GetCount(prefix), _distributedCachingProvider.GetCount(prefix));
+            var list = new List<int>();
+
+            foreach (var provider in _providers)
+            {
+                list.Add(provider.GetCount(prefix));
+            }
+
+            return list.OrderByDescending(x => x).FirstOrDefault();
         }
 
         /// <summary>
@@ -601,15 +633,9 @@
         /// </summary>
         public void Flush()
         {
-            _localCachingProvider.Flush();
-
-            try
+            foreach (var provider in _providers)
             {
-                _distributedCachingProvider.Flush();
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
+                provider.Flush();
             }
         }
 
@@ -619,16 +645,14 @@
         /// <returns>The async.</returns>
         public async Task FlushAsync()
         {
-            await _localCachingProvider.FlushAsync();
+            var tasks = new List<Task>();
 
-            try
+            foreach (var provider in _providers)
             {
-                await _distributedCachingProvider.FlushAsync();
+                tasks.Add(provider.FlushAsync());
             }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex.Message);
-            }
+
+            await Task.WhenAll(tasks);
         }
     }
 }

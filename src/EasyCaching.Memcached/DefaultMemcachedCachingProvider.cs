@@ -21,18 +21,44 @@
         private readonly IMemcachedClient _memcachedClient;
 
         /// <summary>
+        /// The options.
+        /// </summary>
+        private readonly MemcachedOptions _options;
+
+        /// <summary>
         /// <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/>
         /// is distributed cache.
         /// </summary>
         public bool IsDistributedCache => true;
 
         /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order => _options.Order;
+
+        /// <summary>
+        /// Gets the max rd second.
+        /// </summary>
+        /// <value>The max rd second.</value>
+        public int MaxRdSecond => _options.MaxRdSecond;
+
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
+        public CachingProviderType CachingProviderType => _options.CachingProviderType;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
         /// <param name="memcachedClient">Memcached client.</param>
-        public DefaultMemcachedCachingProvider(IMemcachedClient memcachedClient)
+        public DefaultMemcachedCachingProvider(
+            IMemcachedClient memcachedClient,
+            MemcachedOptions options)
         {
             this._memcachedClient = memcachedClient;
+            this._options = options;
         }
 
         /// <summary>
@@ -48,8 +74,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey)) as T;
-            if (result != null)
+            if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
                 return new CacheValue<T>(result, true);
             }
@@ -107,8 +132,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey)) as T;
-            if (result != null)
+            if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
                 return new CacheValue<T>(result, true);
             }
@@ -177,6 +201,12 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
             _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }
 
@@ -193,6 +223,12 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
 
             await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }

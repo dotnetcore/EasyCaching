@@ -47,35 +47,21 @@
 
             ////5. Important step for using Hybrid Cache
             ////5.1. Local Cache
-            //services.AddDefaultInMemoryCacheForHybrid();
+            //services.AddDefaultInMemoryCache(x=>
+            //{
+            //    x.Order = 1;
+            //});
             ////5.2 Distributed Cache
-            //services.AddDefaultRedisCacheForHybrid(option =>
+            //services.AddDefaultRedisCache(option =>
             //{
             //    option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             //    option.Password = "";
+            //}, x=>
+            //{
+            //    x.Order = 2;//this value should greater than local caching provider
             //});
             ////5.3 Hybrid
             //services.AddDefaultHybridCache();
-            ////5.4 Singleton
-            //services.AddSingleton(factory =>
-            //{
-            //    Func<string, IEasyCachingProvider> accesor = key =>
-            //    {
-            //        if (key.Equals(HybridCachingKeyType.LocalKey))
-            //        {
-            //            return factory.GetService<DefaultInMemoryCachingProvider>();
-            //        }
-            //        else if (key.Equals(HybridCachingKeyType.DistributedKey))
-            //        {
-            //            return factory.GetService<DefaultRedisCachingProvider>();
-            //        }
-            //        else
-            //        {
-            //            throw new Exception();
-            //        }
-            //    };
-            //    return accesor;
-            //});
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

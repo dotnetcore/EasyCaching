@@ -43,8 +43,7 @@
 
             if (entry.HasValue)
             {
-                var val = entry.Value as EasyCachingResponse;
-                if (val != null)
+                if (entry.Value is EasyCachingResponse val)
                 {
                     return new CachedResponse
                     {
@@ -70,8 +69,7 @@
 
             if (entry.HasValue)
             {
-                var val = entry.Value as EasyCachingResponse;
-                if (val != null)
+                if (entry.Value is EasyCachingResponse val)
                 {
                     return new CachedResponse
                     {
@@ -95,8 +93,7 @@
         /// <param name="validFor">Valid for.</param>
         public void Set(string key, IResponseCacheEntry entry, TimeSpan validFor)
         {
-            var cachedResponse = entry as CachedResponse;
-            if (cachedResponse != null)
+            if (entry is CachedResponse cachedResponse)
             {
                 _provider.Set(
                     key,
@@ -127,8 +124,7 @@
         /// <param name="validFor">Valid for.</param>
         public async Task SetAsync(string key, IResponseCacheEntry entry, TimeSpan validFor)
         {
-            var cachedResponse = entry as CachedResponse;
-            if (cachedResponse != null)
+            if (entry is CachedResponse cachedResponse)
             {
                 await _provider.SetAsync(
                     key,

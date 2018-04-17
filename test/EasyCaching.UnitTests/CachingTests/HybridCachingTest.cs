@@ -10,14 +10,13 @@
     using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Xunit;
 
     public class HybridCachingTest : BaseCachingProviderTest
     {
         public HybridCachingTest()
         {
-            RedisCacheOptions options = new RedisCacheOptions()
+            RedisDBOptions options = new RedisDBOptions()
             {
                 AllowAdmin = true,
                 //Password = ""
@@ -25,7 +24,7 @@
 
             options.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
 
-            var fakeOption = A.Fake<IOptions<RedisCacheOptions>>();
+            var fakeOption = A.Fake<IOptions<RedisDBOptions>>();
 
             A.CallTo(() => fakeOption.Value).Returns(options);
 
@@ -33,12 +32,18 @@
 
             var serializer = new DefaultBinaryFormatterSerializer();
 
-            var serviceAccessor = A.Fake<Func<string, IEasyCachingProvider>>();
+            //var serviceAccessor = A.Fake<Func<string, IEasyCachingProvider>>();
 
-            A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
-            A.CallTo(() => serviceAccessor(HybridCachingKeyType.DistributedKey)).Returns(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
+            //A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
+            //A.CallTo(() => serviceAccessor(HybridCachingKeyType.DistributedKey)).Returns(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
 
-            _provider = new HybridCachingProvider(serviceAccessor);
+            var providers = new List<IEasyCachingProvider>
+            {
+                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new InMemoryOptions()),
+                new DefaultRedisCachingProvider(fakeDbProvider, serializer, new RedisOptions())
+            };
+
+            _provider = new HybridCachingProvider(providers);
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 

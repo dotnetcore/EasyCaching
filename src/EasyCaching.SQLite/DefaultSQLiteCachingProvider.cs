@@ -20,17 +20,25 @@
         private ISQLiteDatabaseProvider _dbProvider;
 
         /// <summary>
+        /// The options.
+        /// </summary>
+        private readonly SQLiteOptions _options;
+
+        /// <summary>
         /// The cache.
         /// </summary>
-        private SqliteConnection _cache;
+        private readonly SqliteConnection _cache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
         /// </summary>
         /// <param name="dbProvider">dbProvider.</param>
-        public DefaultSQLiteCachingProvider(ISQLiteDatabaseProvider dbProvider)
+        public DefaultSQLiteCachingProvider(
+            ISQLiteDatabaseProvider dbProvider,
+            SQLiteOptions options)
         {
             this._dbProvider = dbProvider;
+            this._options = options;
             this._cache = _dbProvider.GetConnection();
         }
 
@@ -39,6 +47,24 @@
         /// </summary>
         /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
         public bool IsDistributedCache => false;
+
+        /// <summary>
+        /// Gets the order.
+        /// </summary>
+        /// <value>The order.</value>
+        public int Order => _options.Order;
+
+        /// <summary>
+        /// Gets the max random second.
+        /// </summary>
+        /// <value>The max random second.</value>
+        public int MaxRdSecond => _options.MaxRdSecond;
+
+        /// <summary>
+        /// Gets the type of the caching provider.
+        /// </summary>
+        /// <value>The type of the caching provider.</value>
+        public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
         /// <summary>
         /// Exists the specified cacheKey.
@@ -238,6 +264,12 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
             _cache.Execute(ConstSQL.SETSQL, new
             {
                 cachekey = cacheKey,
@@ -260,6 +292,12 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
 
             await _cache.ExecuteAsync(ConstSQL.SETSQL, new
             {

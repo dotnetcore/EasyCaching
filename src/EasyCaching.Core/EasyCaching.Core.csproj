@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>   
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Description>          
       EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
     </Description>
@@ -15,7 +15,8 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>      
-      Add GetCount and Flush for providers.
+      1. Add FlushAsync for providers.
+      2. Add BaseProviderOptions.
     </PackageReleaseNotes>
   </PropertyGroup>
 

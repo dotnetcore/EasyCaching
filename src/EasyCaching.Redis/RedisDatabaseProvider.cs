@@ -15,7 +15,7 @@
         /// <summary>
         /// The options.
         /// </summary>
-        private readonly RedisCacheOptions _options;
+        private readonly RedisDBOptions _options;
 
         /// <summary>
         /// The connection multiplexer.
@@ -26,7 +26,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisDatabaseProvider"/> class.
         /// </summary>
         /// <param name="options">Options.</param>
-        public RedisDatabaseProvider(IOptions<RedisCacheOptions> options)
+        public RedisDatabaseProvider(IOptions<RedisDBOptions> options)
         {
             _options = options.Value;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);

@@ -5,7 +5,7 @@
     /// <summary>
     /// Redis cache options.
     /// </summary>
-    public class RedisCacheOptions : BaseRedisOptions
+    public class RedisDBOptions : BaseRedisOptions
     {        
         /// <summary>
         /// Gets or sets the Redis database index the cache will use.
