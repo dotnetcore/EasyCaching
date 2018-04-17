@@ -15,7 +15,8 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      Implement GetCount and Flush.
+      1. Implement FlushAsync.
+      2. Add a new ServiceCollectionExtension method.
     </PackageReleaseNotes>
   </PropertyGroup>
 

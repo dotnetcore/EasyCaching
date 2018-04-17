@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <Description>      
       EasyCaching.Redis based on EasyCaching.Core and StackExchange.Redis
     </Description>
@@ -15,7 +15,8 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>      
-     Implement GetCount and Flush.
+      1. Implement FlushAsync.
+      2. Add a new ServiceCollectionExtension method.
     </PackageReleaseNotes>
   </PropertyGroup>
 
