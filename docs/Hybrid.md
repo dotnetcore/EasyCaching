@@ -25,34 +25,23 @@ public class Startup
     {
         services.AddMvc();
         
-        services.AddDefaultInMemoryCacheForHybrid();
-        services.AddDefaultRedisCacheForHybrid(option =>
+        //Important step for using Hybrid Cache
+        //1. Local Cache
+        services.AddDefaultInMemoryCache(x=>
+        {
+            x.Order = 1;
+        });
+        //2. Distributed Cache
+        services.AddDefaultRedisCache(option =>
         {
             option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             option.Password = "";
-        });
-
-        services.AddDefaultHybridCache();
-
-        services.AddSingleton(factory =>
+        }, x=>
         {
-            Func<string, IEasyCachingProvider> accesor = key =>
-            {
-                if(key.Equals(HybridCachingKeyType.LocalKey))
-                {
-                    return factory.GetService<DefaultInMemoryCachingProvider>();
-                }
-                else if(key.Equals(HybridCachingKeyType.DistributedKey))
-                {
-                    return factory.GetService<DefaultRedisCachingProvider>();
-                }
-                else
-                {
-                    throw new KeyNotFoundException();
-                }
-            };
-            return accesor;
+            x.Order = 2;//this value should greater than local caching provider
         });
+        //3. Hybrid
+        services.AddDefaultHybridCache();
     }
 }
 ```
