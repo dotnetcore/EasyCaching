@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -27,6 +28,11 @@
         /// The cache keys.
         /// </summary>
         private readonly ConcurrentCollections.ConcurrentHashSet<string> _cacheKeys;
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger _logger;
 
         /// <summary>
         /// <see cref="T:EasyCaching.InMemory.InMemoryCachingProvider"/> 
@@ -59,10 +65,12 @@
         /// <param name="cache">Microsoft MemoryCache.</param>
         public DefaultInMemoryCachingProvider(
             IMemoryCache cache, 
-            InMemoryOptions options)
+            InMemoryOptions options,
+            ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
             this._options = options;
+            this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
         }
 
@@ -80,7 +88,10 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (_cache.Get(cacheKey) is T result)
+            {
+                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
+            }
 
             result = dataRetriever?.Invoke();
 
@@ -91,6 +102,7 @@
             }
             else
             {
+                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -109,7 +121,10 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (_cache.Get(cacheKey) is T result)
+            {
+                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
+            }
 
             result = await dataRetriever?.Invoke();
 
@@ -120,6 +135,7 @@
             }
             else
             {
+                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -135,9 +151,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             if (_cache.Get(cacheKey) is T result)
+            {
+                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
+            }
             else
+            {
+                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
+            }
         }
 
         /// <summary>
@@ -153,9 +175,15 @@
             var result = await Task.FromResult((T)_cache.Get(cacheKey));
 
             if (result != null)
+            {
+                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
+            }
             else
+            {
+                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
+            }
         }
 
         /// <summary>
@@ -309,6 +337,9 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            _logger.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+
             if (keys.Any())
             {
                 foreach (var item in keys)
@@ -328,6 +359,9 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            _logger.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+
             if (keys.Any())
             {
                 var tasks = new List<Task>();
@@ -366,6 +400,7 @@
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
             var tasks = new List<Task>();
+
             foreach (var entry in values)
                 tasks.Add(SetAsync(entry.Key, entry.Value, expiration));
 
@@ -382,7 +417,10 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
+            _logger.LogInformation($"GetAll : cacheKeys = {string.Join(",", cacheKeys)}");
+
             var map = new Dictionary<string, CacheValue<T>>();
+
             foreach (string key in cacheKeys)
                 map[key] = Get<T>(key);
 
@@ -399,7 +437,10 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
+            _logger.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",",cacheKeys)}");
+
             var map = new Dictionary<string, Task<CacheValue<T>>>();
+
             foreach (string key in cacheKeys)
                 map[key] = GetAsync<T>(key);
 
@@ -420,7 +461,10 @@
 
             var map = new Dictionary<string, CacheValue<T>>();
 
+            _logger.LogInformation($"GetByPrefix : prefix = {prefix}");
+
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+
             if (keys.Any())
             {
                 foreach (var item in keys)
@@ -440,6 +484,8 @@
         public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            _logger.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
 
@@ -464,6 +510,8 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
+            _logger.LogInformation($"RemoveAll : cacheKeys = {string.Join(",", cacheKeys)}");
+
             foreach (var item in cacheKeys.Distinct())
             {
                 _cache.Remove(item);
@@ -478,6 +526,8 @@
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
+            _logger.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",",cacheKeys)}");
 
             var tasks = new List<Task>();
             foreach (var item in cacheKeys.Distinct())
@@ -507,6 +557,7 @@
         {
             ////new instance
             //_cache = new MemoryCache(new MemoryCacheOptions());
+            _logger.LogInformation("Flush");
 
             foreach (var item in _cacheKeys)
                 _cache.Remove(item);
@@ -520,6 +571,7 @@
         /// <returns>The async.</returns>
         public async Task FlushAsync()
         {
+            _logger.LogInformation("FlushAsync");
             Flush();
             await Task.CompletedTask;
         }
