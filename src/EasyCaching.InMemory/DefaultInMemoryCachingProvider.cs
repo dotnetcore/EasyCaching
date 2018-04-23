@@ -89,7 +89,7 @@
 
             if (_cache.Get(cacheKey) is T result)
             {
-                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
             }
 
@@ -102,7 +102,7 @@
             }
             else
             {
-                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -122,7 +122,7 @@
 
             if (_cache.Get(cacheKey) is T result)
             {
-                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
             }
 
@@ -135,7 +135,7 @@
             }
             else
             {
-                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -152,12 +152,12 @@
 
             if (_cache.Get(cacheKey) is T result)
             {
-                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
             }
             else
             {
-                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -176,12 +176,12 @@
 
             if (result != null)
             {
-                _logger.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(result, true);
             }
             else
             {
-                _logger.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -338,7 +338,7 @@
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
 
-            _logger.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+            _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
             if (keys.Any())
             {
@@ -360,7 +360,7 @@
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
 
-            _logger.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
             if (keys.Any())
             {
@@ -417,7 +417,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            _logger.LogInformation($"GetAll : cacheKeys = {string.Join(",", cacheKeys)}");
+            _logger?.LogInformation($"GetAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
             var map = new Dictionary<string, CacheValue<T>>();
 
@@ -437,7 +437,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            _logger.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",",cacheKeys)}");
+            _logger?.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",",cacheKeys)}");
 
             var map = new Dictionary<string, Task<CacheValue<T>>>();
 
@@ -461,7 +461,7 @@
 
             var map = new Dictionary<string, CacheValue<T>>();
 
-            _logger.LogInformation($"GetByPrefix : prefix = {prefix}");
+            _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
 
@@ -485,7 +485,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _logger.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
+            _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
 
             var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
 
@@ -510,7 +510,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            _logger.LogInformation($"RemoveAll : cacheKeys = {string.Join(",", cacheKeys)}");
+            _logger?.LogInformation($"RemoveAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
             foreach (var item in cacheKeys.Distinct())
             {
@@ -527,7 +527,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            _logger.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",",cacheKeys)}");
+            _logger?.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",",cacheKeys)}");
 
             var tasks = new List<Task>();
             foreach (var item in cacheKeys.Distinct())
@@ -557,7 +557,7 @@
         {
             ////new instance
             //_cache = new MemoryCache(new MemoryCacheOptions());
-            _logger.LogInformation("Flush");
+            _logger?.LogInformation("Flush");
 
             foreach (var item in _cacheKeys)
                 _cache.Remove(item);
@@ -571,7 +571,7 @@
         /// <returns>The async.</returns>
         public async Task FlushAsync()
         {
-            _logger.LogInformation("FlushAsync");
+            _logger?.LogInformation("FlushAsync");
             Flush();
             await Task.CompletedTask;
         }
