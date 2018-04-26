@@ -194,7 +194,7 @@ public class ValuesController : Controller
         _provider.RemoveAll(new List<string> { "key:1", "key:2" });
 
         //RemoveAllAsync
-        awiat _provider.RemoveAllAsync(new List<string> { "key:1", "key:2" });
+        await _provider.RemoveAllAsync(new List<string> { "key:1", "key:2" });
         
     }
 }
