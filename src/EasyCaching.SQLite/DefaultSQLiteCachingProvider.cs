@@ -4,6 +4,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Data.Sqlite;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -25,6 +26,11 @@
         private readonly SQLiteOptions _options;
 
         /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger _logger;
+
+        /// <summary>
         /// The cache.
         /// </summary>
         private readonly SqliteConnection _cache;
@@ -35,10 +41,12 @@
         /// <param name="dbProvider">dbProvider.</param>
         public DefaultSQLiteCachingProvider(
             ISQLiteDatabaseProvider dbProvider,
-            SQLiteOptions options)
+            SQLiteOptions options,
+            ILoggerFactory loggerFactory = null)
         {
             this._dbProvider = dbProvider;
             this._options = options;
+            this._logger = loggerFactory.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
         }
 
@@ -120,6 +128,7 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
 
@@ -132,6 +141,7 @@
             }
             else
             {
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -158,6 +168,7 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
 
@@ -170,6 +181,7 @@
             }
             else
             {
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -191,10 +203,12 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
             else
             {
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -218,10 +232,12 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
             else
             {
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -350,6 +366,8 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
+            _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+
             _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
         }
 
@@ -360,6 +378,8 @@
         public async Task RemoveByPrefixAsync(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
             await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
         }
