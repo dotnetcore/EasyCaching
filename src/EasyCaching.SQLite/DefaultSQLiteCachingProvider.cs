@@ -46,7 +46,7 @@
         {
             this._dbProvider = dbProvider;
             this._options = options;
-            this._logger = loggerFactory.CreateLogger<DefaultSQLiteCachingProvider>();
+            this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
         }
 
