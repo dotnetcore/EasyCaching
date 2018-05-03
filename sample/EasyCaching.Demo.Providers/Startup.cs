@@ -28,7 +28,7 @@
             services.AddMvc();
 
             //1. Important step for using InMemory Cache
-            services.AddDefaultInMemoryCache();
+            services.AddDefaultInMemoryCache(x=> { x.EnableLogging = true; });
 
             ////2. Important step for using Memcached Cache
             //services.AddDefaultMemcached(op =>
