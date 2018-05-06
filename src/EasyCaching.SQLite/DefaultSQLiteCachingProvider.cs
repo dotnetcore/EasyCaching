@@ -128,7 +128,9 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
 
@@ -141,7 +143,9 @@
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -168,7 +172,9 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
 
@@ -181,7 +187,9 @@
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -203,12 +211,16 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -232,12 +244,16 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -366,7 +382,8 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
             _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
         }
@@ -379,7 +396,8 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
             await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
         }

@@ -84,7 +84,9 @@
 
             if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
 
@@ -96,7 +98,9 @@
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -117,7 +121,9 @@
             var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
 
@@ -129,7 +135,9 @@
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -146,12 +154,16 @@
 
             if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -169,12 +181,16 @@
             var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
             else
             {
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -325,7 +341,8 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
-            _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -352,7 +369,8 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
-            _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -540,7 +558,9 @@
         /// </summary>
         public void Flush()
         {
-            _logger?.LogInformation("Memcached -- Flush");
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Memcached -- Flush");
+
             //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();
         }
@@ -550,8 +570,10 @@
         /// </summary>
         /// <returns>The async.</returns>
         public async Task FlushAsync()
-        {                        
-            _logger?.LogInformation("Memcached -- FlushAsync");
+        {   
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Memcached -- FlushAsync");
+
             await _memcachedClient.FlushAllAsync();
         }
 
