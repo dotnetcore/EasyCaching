@@ -1,7 +1,5 @@
 ﻿namespace EasyCaching.Core.Internal
 {
-    using System;
-
     /// <summary>
     /// Base provider options.
     /// </summary>
@@ -11,7 +9,7 @@
         /// Gets or sets the type of the caching provider.
         /// </summary>
         /// <remarks>
-        /// Reserved, do not used.
+        /// Reserved, not used yet.
         /// </remarks>
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType { get; set; }
@@ -32,8 +30,12 @@
         /// Mainly for hybird
         /// </remarks>
         /// <value>The order.</value>
-        public int Order { get; set; } 
+        public int Order { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether enable logging.
+        /// </summary>
+        /// <value><c>true</c> if enable logging; otherwise, <c>false</c>.</value>
+        public bool EnableLogging { get; set; }
     }
-
-
 }

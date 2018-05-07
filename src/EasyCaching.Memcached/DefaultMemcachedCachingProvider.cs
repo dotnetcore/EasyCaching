@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Enyim.Caching;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Security.Cryptography;
@@ -24,6 +25,11 @@
         /// The options.
         /// </summary>
         private readonly MemcachedOptions _options;
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger _logger;
 
         /// <summary>
         /// <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/>
@@ -55,10 +61,12 @@
         /// <param name="memcachedClient">Memcached client.</param>
         public DefaultMemcachedCachingProvider(
             IMemcachedClient memcachedClient,
-            MemcachedOptions options)
+            MemcachedOptions options,
+            ILoggerFactory loggerFactory = null)
         {
             this._memcachedClient = memcachedClient;
             this._options = options;
+            this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
         }
 
         /// <summary>
@@ -76,6 +84,9 @@
 
             if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
 
@@ -87,6 +98,9 @@
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -107,6 +121,9 @@
             var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
 
@@ -118,6 +135,9 @@
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -134,10 +154,16 @@
 
             if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -155,10 +181,16 @@
             var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 return new CacheValue<T>(result, true);
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -309,6 +341,9 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+
             if (oldPrefixKey.Equals(newValue))
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
@@ -333,6 +368,9 @@
             var oldPrefixKey = _memcachedClient.Get(prefix)?.ToString();
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -520,6 +558,9 @@
         /// </summary>
         public void Flush()
         {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Memcached -- Flush");
+
             //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();
         }
@@ -529,7 +570,10 @@
         /// </summary>
         /// <returns>The async.</returns>
         public async Task FlushAsync()
-        {                        
+        {   
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Memcached -- FlushAsync");
+
             await _memcachedClient.FlushAllAsync();
         }
 

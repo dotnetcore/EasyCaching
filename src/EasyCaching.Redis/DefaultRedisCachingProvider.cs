@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
+    using Microsoft.Extensions.Logging;
     using StackExchange.Redis;
     using System;
     using System.Collections.Generic;
@@ -32,6 +33,11 @@
         /// The serializer.
         /// </summary>
         private readonly IEasyCachingSerializer _serializer;
+
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger _logger;
 
         /// <summary>
         /// The options.
@@ -70,7 +76,8 @@
         public DefaultRedisCachingProvider(
             IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer,
-            RedisOptions options)
+            RedisOptions options,
+            ILoggerFactory loggerFactory = null)
         {
             ArgumentCheck.NotNull(dbProvider, nameof(dbProvider));
             ArgumentCheck.NotNull(serializer, nameof(serializer));
@@ -78,6 +85,7 @@
             this._dbProvider = dbProvider;
             this._serializer = serializer;
             this._options = options;
+            this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
         }
@@ -98,6 +106,9 @@
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
@@ -110,6 +121,9 @@
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -130,6 +144,9 @@
             var result = await _cache.StringGetAsync(cacheKey);
             if (!result.IsNull)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
@@ -142,6 +159,9 @@
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -159,11 +179,17 @@
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -181,11 +207,17 @@
             var result = await _cache.StringGetAsync(cacheKey);
             if (!result.IsNull)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -335,6 +367,9 @@
 
             prefix = this.HandlePrefix(prefix);
 
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+
             var redisKeys = this.SearchRedisKeys(prefix);
 
             _cache.KeyDelete(redisKeys);
@@ -349,6 +384,9 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             prefix = this.HandlePrefix(prefix);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
@@ -616,6 +654,9 @@
         /// </summary>
         public void Flush()
         {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Redis -- Flush");
+
             foreach (var server in _servers)
             {
                 server.FlushDatabase(_cache.Database);
@@ -628,6 +669,9 @@
         /// <returns>The async.</returns>
         public async Task FlushAsync()
         {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Redis -- FlushAsync");
+
             var tasks = new List<Task>();
 
             foreach (var server in _servers)
