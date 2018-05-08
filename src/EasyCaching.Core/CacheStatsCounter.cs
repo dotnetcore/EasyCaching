@@ -37,12 +37,12 @@
         /// Gets the hited count.
         /// </summary>
         /// <returns>The hited count.</returns>
-        public long GetHitedCount() => _hitedCount;
+        public long GetHitedCount() => Interlocked.Read(ref _hitedCount);
 
         /// <summary>
         /// Gets the missed count.
         /// </summary>
         /// <returns>The missed count.</returns>
-        public long GetMissedCount() => _missedCount;
+        public long GetMissedCount() => Interlocked.Read(ref _missedCount);
     }
 }
