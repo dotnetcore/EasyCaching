@@ -68,6 +68,8 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
+        public CacheStats CacheStats => throw new NotImplementedException();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>

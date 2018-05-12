@@ -42,6 +42,8 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => throw new NotImplementedException();
 
+        public CacheStats CacheStats => throw new NotImplementedException();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
         /// </summary>

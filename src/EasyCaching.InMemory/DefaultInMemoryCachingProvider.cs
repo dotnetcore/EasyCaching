@@ -59,6 +59,10 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
+        private readonly CacheStats _cacheStats;
+
+        public CacheStats CacheStats => _cacheStats;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
         /// </summary>
@@ -72,6 +76,8 @@
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
+
+            this._cacheStats = new CacheStats();
         }
 
         /// <summary>
@@ -92,8 +98,15 @@
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
+                CacheStats.OnHit();
+
                 return new CacheValue<T>(result, true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             result = dataRetriever?.Invoke();
 
@@ -103,10 +116,7 @@
                 return new CacheValue<T>(result, true);
             }
             else
-            {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+            {                
                 return CacheValue<T>.NoValue;
             }
         }
@@ -129,8 +139,15 @@
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
+                CacheStats.OnHit();
+
                 return new CacheValue<T>(result, true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             result = await dataRetriever?.Invoke();
 
@@ -140,10 +157,7 @@
                 return new CacheValue<T>(result, true);
             }
             else
-            {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+            {                
                 return CacheValue<T>.NoValue;
             }
         }
@@ -163,12 +177,16 @@
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
+                CacheStats.OnHit();
+
                 return new CacheValue<T>(result, true);
             }
             else
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                CacheStats.OnMiss();
 
                 return CacheValue<T>.NoValue;
             }
@@ -191,12 +209,16 @@
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
+                CacheStats.OnHit();
+
                 return new CacheValue<T>(result, true);
             }
             else
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                CacheStats.OnMiss();
 
                 return CacheValue<T>.NoValue;
             }

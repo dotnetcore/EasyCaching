@@ -74,6 +74,8 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
+        public CacheStats CacheStats => throw new NotImplementedException();
+
         /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>

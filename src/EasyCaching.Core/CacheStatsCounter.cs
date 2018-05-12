@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.Core
 {
+    using System.Collections.Concurrent;
     using System.Threading;
 
     /// <summary>
@@ -7,42 +8,67 @@
     /// </summary>
     public class CacheStatsCounter
     {
-        /// <summary>
-        /// The hited count.
-        /// </summary>
-        private long _hitedCount = 0;
-
-        /// <summary>
-        /// The missed count.
-        /// </summary>
-        private long _missedCount = 0;
-
-        /// <summary>
-        /// Increments the hited.
-        /// </summary>
-        public void IncrementHited()
+        private long[] _counters = new long[2];
+    
+        public void Increment(StatsType statsType)
         {
-            Interlocked.Increment(ref _hitedCount);
+            Interlocked.Increment(ref _counters[(int)statsType]);
+        }            
+
+        public long Get(StatsType statsType)
+        {
+            return Interlocked.Read(ref _counters[(int)statsType]);
+        }
+    }
+
+    public enum StatsType
+    {
+        Hit = 0,
+
+        Missed = 1,
+    }
+
+    public class CacheStats
+    {
+        private readonly ConcurrentDictionary<string, CacheStatsCounter> _counters;
+
+        private const string DEFAULT_KEY = "easycahing_catche_stats";
+
+
+        public CacheStats()
+        {
+            _counters = new ConcurrentDictionary<string, CacheStatsCounter>();
         }
 
-        /// <summary>
-        /// Increments the missed.
-        /// </summary>
-        public void IncrementMissed()
+        public void OnHit()
         {
-            Interlocked.Increment(ref _missedCount);
+            GetCounter().Increment(StatsType.Hit);
         }
 
-        /// <summary>
-        /// Gets the hited count.
-        /// </summary>
-        /// <returns>The hited count.</returns>
-        public long GetHitedCount() => Interlocked.Read(ref _hitedCount);
+        public void OnMiss()
+        {
+            GetCounter().Increment(StatsType.Missed);
+        }
 
-        /// <summary>
-        /// Gets the missed count.
-        /// </summary>
-        /// <returns>The missed count.</returns>
-        public long GetMissedCount() => Interlocked.Read(ref _missedCount);
+        public long GetStatistic(StatsType statsType)
+        {
+            return GetCounter().Get(statsType);
+        }
+
+        private CacheStatsCounter GetCounter()
+        {
+            if (!_counters.TryGetValue(DEFAULT_KEY, out CacheStatsCounter counter))
+            {
+                counter = new CacheStatsCounter();
+                if (_counters.TryAdd(DEFAULT_KEY, counter))
+                {
+                    return counter;
+                }
+
+                return GetCounter();
+            }
+
+            return counter;
+        }
     }
 }
