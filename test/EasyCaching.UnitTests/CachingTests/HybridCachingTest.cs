@@ -59,6 +59,16 @@
 
         }
 
+        [Fact]
+        protected override void OnHit_Should_Return_One_And_OnMiss_Should_Return_Zero()
+        {
+            
+        }
 
+        [Fact]
+        protected override void OnHit_Should_Return_Zero_And_OnMiss_Should_Return_One()
+        {
+
+        }
     }
 }
