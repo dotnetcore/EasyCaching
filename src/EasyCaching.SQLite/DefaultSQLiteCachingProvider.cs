@@ -48,6 +48,7 @@
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
+            this._cacheStats = new CacheStats();
         }
 
         /// <summary>
@@ -74,7 +75,9 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
-        public CacheStats CacheStats => throw new NotImplementedException();
+        private readonly CacheStats _cacheStats;
+
+        public CacheStats CacheStats => _cacheStats;
 
         /// <summary>
         /// Exists the specified cacheKey.
@@ -133,8 +136,15 @@
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
+                CacheStats.OnHit();
+
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             var item = dataRetriever?.Invoke();
 
@@ -145,9 +155,6 @@
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
                 return CacheValue<T>.NoValue;
             }
         }
@@ -177,8 +184,15 @@
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
+                CacheStats.OnHit();
+
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             var item = await dataRetriever?.Invoke();
 
@@ -188,10 +202,7 @@
                 return new CacheValue<T>(item, true);
             }
             else
-            {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+            {                
                 return CacheValue<T>.NoValue;
             }
         }
@@ -213,6 +224,8 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
@@ -220,6 +233,8 @@
             }
             else
             {
+                CacheStats.OnMiss();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
@@ -246,6 +261,8 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
+                CacheStats.OnHit();
+                
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
@@ -253,6 +270,8 @@
             }
             else
             {
+                CacheStats.OnMiss();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
