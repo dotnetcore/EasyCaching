@@ -74,5 +74,16 @@
                     return "default";
             }
         }
+
+        // GET api/values/stats
+        [HttpGet]
+        [Route("stats")]
+        public string Stats()
+        {
+            var hit = _provider.CacheStats.GetStatistic(StatsType.Hit);
+            var missed = _provider.CacheStats.GetStatistic(StatsType.Missed);
+
+            return $"hit={hit},missed={missed}";
+        }
     }
 }
