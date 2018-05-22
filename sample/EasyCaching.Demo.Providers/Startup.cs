@@ -43,8 +43,10 @@
             //    option.Password = "";
             //});
 
-            ////4. Important step for using SQLite Cache
+            //4. Important step for using SQLite Cache
             //services.AddSQLiteCache(option => { });
+
+            //services.AddSQLiteCache(Configuration,option=>{});
 
             ////5. Important step for using Hybrid Cache
             ////5.1. Local Cache
