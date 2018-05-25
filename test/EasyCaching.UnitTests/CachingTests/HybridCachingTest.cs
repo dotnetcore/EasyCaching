@@ -39,7 +39,7 @@
 
             var providers = new List<IEasyCachingProvider>
             {
-                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new InMemoryOptions()),
+                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new OptionsWrapper<InMemoryOptions>(new InMemoryOptions())),
                 new DefaultRedisCachingProvider(fakeDbProvider, serializer, new RedisOptions())
             };
 

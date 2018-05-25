@@ -4,6 +4,7 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -69,11 +70,11 @@
         /// <param name="cache">Microsoft MemoryCache.</param>
         public DefaultInMemoryCachingProvider(
             IMemoryCache cache,
-            InMemoryOptions options,
+            IOptions<InMemoryOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
-            this._options = options;
+            this._options = options.Value;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
 

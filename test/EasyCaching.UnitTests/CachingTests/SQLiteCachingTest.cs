@@ -3,6 +3,7 @@
     using Dapper;
     using EasyCaching.SQLite;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
     using System;
 
     public class SQLiteCachingTest : BaseCachingProviderTest
@@ -30,7 +31,7 @@
             }
             conn.Execute(ConstSQL.CREATESQL);
 
-            _provider = new DefaultSQLiteCachingProvider(_dbProvider, new SQLiteOptions());
+            _provider = new DefaultSQLiteCachingProvider(_dbProvider, new OptionsWrapper<SQLiteOptions>(new SQLiteOptions()));
             _defaultTs = TimeSpan.FromSeconds(30);
         }
     }

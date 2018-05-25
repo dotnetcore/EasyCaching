@@ -30,6 +30,8 @@
             //1. Important step for using InMemory Cache
             services.AddDefaultInMemoryCache(x=> { x.EnableLogging = true; });
 
+            //services.AddDefaultInMemoryCache(Configuration);
+
             ////2. Important step for using Memcached Cache
             //services.AddDefaultMemcached(op =>
             //{
