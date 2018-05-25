@@ -61,26 +61,35 @@
         }             
 
         /// <summary>
-        /// 
+        /// Adds the SQLite cache.
         /// </summary>
+        /// <returns>The SQL ite cache.</returns>
+        /// <![CDATA[
+        /// "easycaching": {
+        ///     "CachingProviderType": 3,
+        ///     "MaxRdSecond": 120,
+        ///     "Order": 2,
+        ///     "dbconfig": {            
+        ///         "FileName": "my.db"
+        ///     }
+        /// }
+        /// ]]>
         /// <param name="services">Services.</param>
         /// <param name="configuration">Configuration.</param>
         public static IServiceCollection AddSQLiteCache(
            this IServiceCollection services,
-            IConfiguration configuration,
-            Action<SQLiteDBOption> optionsAction)
+            IConfiguration configuration)
         {
-            var config = configuration.GetSection("easycaching");
-            services.Configure<SQLiteDBOption>(config);
+            var dbConfig = configuration.GetSection("easycaching");
+            services.Configure<SQLiteOptions>(dbConfig);
 
-            var providerOptions = new SQLiteOptions();
+            var sqliteConfig = configuration.GetSection("easycaching:dbconfig");
+            services.Configure<SQLiteDBOption>(sqliteConfig);
 
-            return services.AddSQLiteCache(optionsAction, x =>
-            {
-                x.CachingProviderType = providerOptions.CachingProviderType;
-                x.MaxRdSecond = providerOptions.MaxRdSecond;
-                x.Order = providerOptions.Order;
-            });                      
+            services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();
+            services.TryAddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
+
+            return services;
         }
     }
 }

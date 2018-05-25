@@ -5,6 +5,7 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Data.Sqlite;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -41,11 +42,11 @@
         /// <param name="dbProvider">dbProvider.</param>
         public DefaultSQLiteCachingProvider(
             ISQLiteDatabaseProvider dbProvider,
-            SQLiteOptions options,
+            IOptions<SQLiteOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             this._dbProvider = dbProvider;
-            this._options = options;
+            this._options = options.Value;
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
