@@ -66,7 +66,7 @@
            this IServiceCollection services,
             IConfiguration configuration)
         {
-            var dbConfig = configuration.GetSection("easycaching");
+            var dbConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
             services.Configure<InMemoryOptions>(dbConfig);
 
             services.AddMemoryCache();

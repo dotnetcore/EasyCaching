@@ -64,6 +64,7 @@
         /// Adds the SQLite cache.
         /// </summary>
         /// <returns>The SQL ite cache.</returns>
+        /// <example>
         /// <![CDATA[
         /// "easycaching": {
         ///     "CachingProviderType": 3,
@@ -74,16 +75,17 @@
         ///     }
         /// }
         /// ]]>
+        /// </example>
         /// <param name="services">Services.</param>
         /// <param name="configuration">Configuration.</param>
         public static IServiceCollection AddSQLiteCache(
            this IServiceCollection services,
             IConfiguration configuration)
         {
-            var dbConfig = configuration.GetSection("easycaching");
+            var dbConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
             services.Configure<SQLiteOptions>(dbConfig);
 
-            var sqliteConfig = configuration.GetSection("easycaching:dbconfig");
+            var sqliteConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);
             services.Configure<SQLiteDBOption>(sqliteConfig);
 
             services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();

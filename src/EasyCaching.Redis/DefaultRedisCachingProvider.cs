@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
     using System.Collections.Generic;
@@ -80,7 +81,7 @@
         public DefaultRedisCachingProvider(
             IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer,
-            RedisOptions options,
+            IOptions<RedisOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             ArgumentCheck.NotNull(dbProvider, nameof(dbProvider));
@@ -88,7 +89,7 @@
 
             this._dbProvider = dbProvider;
             this._serializer = serializer;
-            this._options = options;
+            this._options = options.Value;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
