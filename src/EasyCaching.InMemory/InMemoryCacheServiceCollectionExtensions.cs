@@ -2,8 +2,10 @@
 {    
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Options;
     using System;
 
     /// <summary>
@@ -43,7 +45,29 @@
 
             var option = new InMemoryOptions();
             optionSetup(option);
-            services.AddSingleton(option);
+            //services.AddSingleton(option);
+
+            services.AddSingleton<IOptions<InMemoryOptions>>(new OptionsWrapper<InMemoryOptions>(option));
+
+
+            services.AddMemoryCache();
+            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the default in-memory cache.
+        /// </summary>
+        /// <returns>The default in memory cache.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="configuration">Configuration.</param>
+        public static IServiceCollection AddDefaultInMemoryCache(
+           this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            var dbConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
+            services.Configure<InMemoryOptions>(dbConfig);
 
             services.AddMemoryCache();
             services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();

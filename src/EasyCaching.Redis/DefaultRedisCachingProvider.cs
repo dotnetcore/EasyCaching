@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
     using System.Collections.Generic;
@@ -68,6 +69,10 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
+        private readonly CacheStats _cacheStats;
+
+        public CacheStats CacheStats => _cacheStats;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
@@ -76,7 +81,7 @@
         public DefaultRedisCachingProvider(
             IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer,
-            RedisOptions options,
+            IOptions<RedisOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             ArgumentCheck.NotNull(dbProvider, nameof(dbProvider));
@@ -84,10 +89,11 @@
 
             this._dbProvider = dbProvider;
             this._serializer = serializer;
-            this._options = options;
+            this._options = options.Value;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
+            this._cacheStats = new CacheStats();
         }
 
         /// <summary>
@@ -106,12 +112,19 @@
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             var item = dataRetriever?.Invoke();
             if (item != null)
@@ -120,10 +133,7 @@
                 return new CacheValue<T>(item, true);
             }
             else
-            {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+            {                
                 return CacheValue<T>.NoValue;
             }
         }
@@ -144,12 +154,19 @@
             var result = await _cache.StringGetAsync(cacheKey);
             if (!result.IsNull)
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             var item = await dataRetriever?.Invoke();
             if (item != null)
@@ -159,9 +176,6 @@
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
                 return CacheValue<T>.NoValue;
             }
         }
@@ -179,6 +193,8 @@
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
@@ -187,6 +203,8 @@
             }
             else
             {
+                CacheStats.OnMiss();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
@@ -207,6 +225,8 @@
             var result = await _cache.StringGetAsync(cacheKey);
             if (!result.IsNull)
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
@@ -215,6 +235,8 @@
             }
             else
             {
+                CacheStats.OnMiss();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
@@ -436,7 +458,7 @@
         /// Handles the prefix of CacheKey.
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>
-        /// <exception cref="ArgumentException">
+        /// <exception cref="ArgumentException"></exception>
         private string HandlePrefix(string prefix)
         {
             // Forbid

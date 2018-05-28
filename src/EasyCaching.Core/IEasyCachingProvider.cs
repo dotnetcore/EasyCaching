@@ -225,5 +225,11 @@
         /// </summary>
         /// <value>The type of the caching provider.</value>
         CachingProviderType CachingProviderType { get; }
+
+        /// <summary>
+        /// Gets or sets the cache stats.
+        /// </summary>
+        /// <value>The get stats.</value>
+        CacheStats CacheStats { get; }
     }
 }

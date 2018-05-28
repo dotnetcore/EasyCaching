@@ -39,8 +39,8 @@
 
             var providers = new List<IEasyCachingProvider>
             {
-                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new InMemoryOptions()),
-                new DefaultRedisCachingProvider(fakeDbProvider, serializer, new RedisOptions())
+                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new OptionsWrapper<InMemoryOptions>(new InMemoryOptions())),
+                new DefaultRedisCachingProvider(fakeDbProvider, serializer, new OptionsWrapper<RedisOptions>(new RedisOptions()))
             };
 
             _provider = new HybridCachingProvider(providers);
@@ -59,6 +59,16 @@
 
         }
 
+        [Fact]
+        protected override void OnHit_Should_Return_One_And_OnMiss_Should_Return_Zero()
+        {
+            
+        }
 
+        [Fact]
+        protected override void OnHit_Should_Return_Zero_And_OnMiss_Should_Return_One()
+        {
+
+        }
     }
 }

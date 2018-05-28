@@ -55,6 +55,10 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
+        private readonly CacheStats _cacheStats;
+
+        public CacheStats CacheStats => _cacheStats;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
@@ -67,6 +71,8 @@
             this._memcachedClient = memcachedClient;
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
+
+            this._cacheStats = new CacheStats();
         }
 
         /// <summary>
@@ -84,11 +90,18 @@
 
             if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 return new CacheValue<T>(result, true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             var item = dataRetriever?.Invoke();
             if (item != null)
@@ -98,9 +111,6 @@
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
                 return CacheValue<T>.NoValue;
             }
         }
@@ -121,11 +131,18 @@
             var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 return new CacheValue<T>(result, true);
             }
+
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             var item = await dataRetriever?.Invoke();
             if (item != null)
@@ -134,10 +151,7 @@
                 return new CacheValue<T>(item, true);
             }
             else
-            {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+            {              
                 return CacheValue<T>.NoValue;
             }
         }
@@ -154,6 +168,8 @@
 
             if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
+                CacheStats.OnHit();
+                
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
@@ -161,6 +177,8 @@
             }
             else
             {
+                CacheStats.OnMiss();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
@@ -181,6 +199,8 @@
             var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
             if (result != null)
             {
+                CacheStats.OnHit();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
@@ -188,6 +208,8 @@
             }
             else
             {
+                CacheStats.OnMiss();
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 

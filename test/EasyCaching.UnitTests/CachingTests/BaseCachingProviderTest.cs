@@ -991,5 +991,32 @@
             return func;
         }
         #endregion
+
+        [Fact]
+        protected virtual void OnHit_Should_Return_One_And_OnMiss_Should_Return_Zero()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            _provider.Set(cacheKey, "onhit", _defaultTs);
+            _provider.Get<string>(cacheKey);
+
+            var hitRes = _provider.CacheStats.GetStatistic(StatsType.Hit);
+            var missedRes = _provider.CacheStats.GetStatistic(StatsType.Missed);
+
+            Assert.Equal(1, hitRes);
+            Assert.Equal(0, missedRes);
+        }
+
+        [Fact]
+        protected virtual void OnHit_Should_Return_Zero_And_OnMiss_Should_Return_One()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            _provider.Get<string>(cacheKey);
+
+            var hitRes = _provider.CacheStats.GetStatistic(StatsType.Hit);
+            var missedRes = _provider.CacheStats.GetStatistic(StatsType.Missed);
+
+            Assert.Equal(0, hitRes);
+            Assert.Equal(1, missedRes);
+        }
     }
 }

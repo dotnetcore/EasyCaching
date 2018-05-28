@@ -30,6 +30,8 @@
             //1. Important step for using InMemory Cache
             services.AddDefaultInMemoryCache(x=> { x.EnableLogging = true; });
 
+            //services.AddDefaultInMemoryCache(Configuration);
+
             ////2. Important step for using Memcached Cache
             //services.AddDefaultMemcached(op =>
             //{
@@ -43,8 +45,10 @@
             //    option.Password = "";
             //});
 
-            ////4. Important step for using SQLite Cache
+            //4. Important step for using SQLite Cache
             //services.AddSQLiteCache(option => { });
+
+            //services.AddSQLiteCache(Configuration,option=>{});
 
             ////5. Important step for using Hybrid Cache
             ////5.1. Local Cache
