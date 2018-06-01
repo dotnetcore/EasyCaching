@@ -42,11 +42,11 @@
         /// <param name="dbProvider">dbProvider.</param>
         public DefaultSQLiteCachingProvider(
             ISQLiteDatabaseProvider dbProvider,
-            IOptions<SQLiteOptions> options,
+            IOptionsMonitor<SQLiteOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             this._dbProvider = dbProvider;
-            this._options = options.Value;
+            this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();

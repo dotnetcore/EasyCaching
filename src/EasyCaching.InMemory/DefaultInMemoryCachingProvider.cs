@@ -70,11 +70,11 @@
         /// <param name="cache">Microsoft MemoryCache.</param>
         public DefaultInMemoryCachingProvider(
             IMemoryCache cache,
-            IOptions<InMemoryOptions> options,
+            IOptionsMonitor<InMemoryOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
-            this._options = options.Value;
+            this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
 

@@ -24,23 +24,18 @@
 
             options.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
 
-            var fakeOption = A.Fake<IOptions<RedisDBOptions>>();
+            var fakeOption = A.Fake<IOptionsMonitor<RedisDBOptions>>();
 
-            A.CallTo(() => fakeOption.Value).Returns(options);
+            A.CallTo(() => fakeOption.CurrentValue).Returns(options);
 
             var fakeDbProvider = A.Fake<RedisDatabaseProvider>(option => option.WithArgumentsForConstructor(new object[] { fakeOption }));
 
             var serializer = new DefaultBinaryFormatterSerializer();
 
-            //var serviceAccessor = A.Fake<Func<string, IEasyCachingProvider>>();
-
-            //A.CallTo(() => serviceAccessor(HybridCachingKeyType.LocalKey)).Returns(new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions())));
-            //A.CallTo(() => serviceAccessor(HybridCachingKeyType.DistributedKey)).Returns(new DefaultRedisCachingProvider(fakeDbProvider, serializer));
-
             var providers = new List<IEasyCachingProvider>
             {
-                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new OptionsWrapper<InMemoryOptions>(new InMemoryOptions())),
-                new DefaultRedisCachingProvider(fakeDbProvider, serializer, new OptionsWrapper<RedisOptions>(new RedisOptions()))
+                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new TestOptionMonitorWrapper<InMemoryOptions>(new InMemoryOptions())),
+                new DefaultRedisCachingProvider(fakeDbProvider, serializer, new TestOptionMonitorWrapper<RedisOptions>(new RedisOptions()))
             };
 
             _provider = new HybridCachingProvider(providers);
