@@ -16,15 +16,11 @@
     {
         public HybridCachingTest()
         {
-            RedisDBOptions options = new RedisDBOptions()
-            {
-                AllowAdmin = true,
-                //Password = ""
-            };
+            RedisOptions options = new RedisOptions();
+            options.DBConfig.AllowAdmin = true;
+            options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
 
-            options.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-
-            var fakeOption = A.Fake<IOptionsMonitor<RedisDBOptions>>();
+            var fakeOption = A.Fake<IOptionsMonitor<RedisOptions>>();
 
             A.CallTo(() => fakeOption.CurrentValue).Returns(options);
 
