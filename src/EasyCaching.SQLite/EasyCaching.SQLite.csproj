@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../../build/version.props" />
+  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.2.1</Version>
+    <Version>$(EasyCachingSQLitePackageVersion)</Version>
     <Description>
       EasyCaching.SQLite based on EasyCaching.Core and Microsoft.Data.SQLite
     </Description>
@@ -15,8 +16,7 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      1. Implement FlushAsync.
-      2. Add a new ServiceCollectionExtension method.
+      $(EasyCachingSQLitePackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 

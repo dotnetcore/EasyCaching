@@ -1,0 +1,46 @@
+<Project>
+	<PropertyGroup>
+		<EasyCachingCorePackageNotes>
+        1. Add FlushAsync for providers.
+        2. Add BaseProviderOptions.
+        </EasyCachingCorePackageNotes>
+		<EasyCachingMemcachedPackageNotes>
+        1. Implement FlushAsync.
+        2. Add a new ServiceCollectionExtension method.
+        </EasyCachingMemcachedPackageNotes>
+		<EasyCachingRedisPackageNotes>
+        1. Implement FlushAsync.
+        2. Add a new ServiceCollectionExtension method.
+        </EasyCachingRedisPackageNotes>
+		<EasyCachingSQLitePackageNotes>
+        1. Implement FlushAsync.
+        2. Add a new ServiceCollectionExtension method.
+        </EasyCachingSQLitePackageNotes>
+		<EasyCachingInMemoryPackageNotes>
+        1. Implement FlushAsync.
+        2. Add a new ServiceCollectionExtension method.
+        </EasyCachingInMemoryPackageNotes>
+		<EasyCachingHybridPackageNotes>
+        1. Refactor;
+        2. Simplify the configuration of Hybrid;
+        </EasyCachingHybridPackageNotes>
+		<EasyCachingAspectCorePackageNotes>
+        Add some extension methods.
+        </EasyCachingAspectCorePackageNotes>
+		<EasyCachingCastlePackageNotes>
+        Add some extension methods. 
+        </EasyCachingCastlePackageNotes>
+		<EasyCachingResponseCachingPackageNotes>
+        Use pattern matching to simplify something.
+        </EasyCachingResponseCachingPackageNotes>
+		<EasyCachingJsonPackageNotes>
+        Init.
+        </EasyCachingJsonPackageNotes>
+		<EasyCachingMessagePackPackageNotes>
+        Fix bug of AddDefaultMessagePackSerializer.
+        </EasyCachingMessagePackPackageNotes>
+		<EasyCachingProtobufPackageNotes>
+        Init.
+        </EasyCachingProtobufPackageNotes>
+	</PropertyGroup>
+</Project>
