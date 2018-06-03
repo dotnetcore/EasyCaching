@@ -10,6 +10,7 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Default memcached caching provider.
@@ -65,11 +66,11 @@
         /// <param name="memcachedClient">Memcached client.</param>
         public DefaultMemcachedCachingProvider(
             IMemcachedClient memcachedClient,
-            MemcachedOptions options,
+            IOptionsMonitor<MemcachedOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             this._memcachedClient = memcachedClient;
-            this._options = options;
+            this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
 
             this._cacheStats = new CacheStats();

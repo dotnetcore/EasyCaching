@@ -26,9 +26,9 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisDatabaseProvider"/> class.
         /// </summary>
         /// <param name="options">Options.</param>
-        public RedisDatabaseProvider(IOptionsMonitor<RedisDBOptions> options)
+        public RedisDatabaseProvider(IOptionsMonitor<RedisOptions> options)
         {
-            _options = options.CurrentValue;
+            _options = options.CurrentValue.DBConfig;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
         }
 

@@ -14,7 +14,7 @@
             IServiceCollection services = new ServiceCollection();
             services.AddDefaultMemcached(options =>
             {
-                options.AddServer("127.0.0.1", 11211);
+                options.DBConfig.AddServer("127.0.0.1", 11211);
             });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();

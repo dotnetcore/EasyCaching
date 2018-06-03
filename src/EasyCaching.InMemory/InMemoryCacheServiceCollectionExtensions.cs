@@ -5,7 +5,6 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Options;
     using System;
 
     /// <summary>
@@ -35,21 +34,17 @@
         /// </summary>
         /// <returns>The default in-memory cache.</returns>
         /// <param name="services">Services.</param>
-        /// <param name="optionSetup">Option setup.</param>
+        /// <param name="providerAction">Option.</param>
         public static IServiceCollection AddDefaultInMemoryCache(
             this IServiceCollection services, 
-            Action<InMemoryOptions> optionSetup)
+            Action<InMemoryOptions> providerAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
-            ArgumentCheck.NotNull(optionSetup, nameof(optionSetup));
+            ArgumentCheck.NotNull(providerAction, nameof(providerAction));
 
-            var option = new InMemoryOptions();
-            optionSetup(option);
-            //services.AddSingleton(option);
-
-            services.AddSingleton<IOptions<InMemoryOptions>>(new OptionsWrapper<InMemoryOptions>(option));
-
-
+            services.AddOptions();
+            services.Configure(providerAction);
+                       
             services.AddMemoryCache();
             services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
 

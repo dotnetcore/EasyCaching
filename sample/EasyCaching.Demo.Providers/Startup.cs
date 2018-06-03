@@ -27,8 +27,8 @@
         {
             services.AddMvc();
 
-            //1. Important step for using InMemory Cache
-            services.AddDefaultInMemoryCache(x=> { x.EnableLogging = true; });
+            ////1. Important step for using InMemory Cache
+            //services.AddDefaultInMemoryCache(x=> { x.EnableLogging = true; });
 
             //services.AddDefaultInMemoryCache(Configuration);
 
@@ -46,7 +46,10 @@
             //});
 
             //4. Important step for using SQLite Cache
-            //services.AddSQLiteCache(option => { });
+            services.AddSQLiteCache(option => 
+            {
+                option.DBConfig = new SQLiteDBOptions { FileName="my.db" };
+            });
 
             //services.AddSQLiteCache(Configuration,option=>{});
 
@@ -81,8 +84,8 @@
             ////2. Important step for using Memcached Cache
             //app.UseDefaultMemcached();
 
-            ////4. Important step for using SQLite Cache
-            //app.UseSQLiteCache();
+            //4. Important step for using SQLite Cache
+            app.UseSQLiteCache();
 
             app.UseMvc();
         }

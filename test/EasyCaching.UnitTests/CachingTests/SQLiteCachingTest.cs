@@ -14,10 +14,13 @@
             IServiceCollection services = new ServiceCollection();
             services.AddSQLiteCache(options =>
             {
-                options.FileName = "";
-                options.FilePath = "";
-                options.CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default;
-                options.OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory;
+                options.DBConfig = new SQLiteDBOptions
+                {                     
+                    FileName = "",
+                    FilePath = "",
+                    CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default,
+                    OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory,
+                };
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();

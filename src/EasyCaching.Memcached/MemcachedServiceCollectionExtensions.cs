@@ -20,44 +20,16 @@
         /// </summary>
         /// <returns>The default redis cache.</returns>
         /// <param name="services">Services.</param>
-        /// <param name="options">Options.</param>
-        public static IServiceCollection AddDefaultMemcached(
-            this IServiceCollection services, 
-            Action<EasyCachingMemcachedClientOptions> options)
-        {
-            var providerOptioin = new MemcachedOptions();
-
-            return services.AddDefaultMemcached(options, x =>
-            {
-                x.CachingProviderType = providerOptioin.CachingProviderType;
-                x.MaxRdSecond = providerOptioin.MaxRdSecond;
-                x.Order = providerOptioin.Order;
-
-            });
-        }
-
-        /// <summary>
-        /// Adds the default memcached.
-        /// </summary>
-        /// <returns>The default memcached.</returns>
-        /// <param name="services">Services.</param>
-        /// <param name="options">Options.</param>
-        /// <param name="providerAction">Provider action.</param>
+        /// <param name="providerAction">Options.</param>
         public static IServiceCollection AddDefaultMemcached(
             this IServiceCollection services,
-            Action<EasyCachingMemcachedClientOptions> options,
             Action<MemcachedOptions> providerAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
-            ArgumentCheck.NotNull(options, nameof(options));
             ArgumentCheck.NotNull(providerAction, nameof(providerAction));
 
             services.AddOptions();
-            services.Configure(options);
-
-            var providerOptioin = new MemcachedOptions();
-            providerAction(providerOptioin);
-            services.AddSingleton(providerOptioin);
+            services.Configure(providerAction);
 
             services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
@@ -110,8 +82,8 @@
             var cacheConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
             services.Configure<MemcachedOptions>(cacheConfig);
 
-            var redisConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);
-            services.Configure<EasyCachingMemcachedClientOptions>(redisConfig);
+            //var memcachedConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);
+            //services.Configure<EasyCachingMemcachedClientOptions>(memcachedConfig);
 
             services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
             services.TryAddSingleton<MemcachedClient, MemcachedClient>();
