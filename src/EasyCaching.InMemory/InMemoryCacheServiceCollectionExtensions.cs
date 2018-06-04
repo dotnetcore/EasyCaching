@@ -54,6 +54,17 @@
         /// <summary>
         /// Adds the default in-memory cache.
         /// </summary>
+        /// <example>
+        /// <![CDATA[
+        /// "easycaching": {
+        ///     "inmemory": {
+        ///         "CachingProviderType": 3,
+        ///         "MaxRdSecond": 120,
+        ///         "Order": 2
+        ///     }
+        /// }
+        /// ]]>
+        /// </example>
         /// <returns>The default in memory cache.</returns>
         /// <param name="services">Services.</param>
         /// <param name="configuration">Configuration.</param>
@@ -61,7 +72,7 @@
            this IServiceCollection services,
             IConfiguration configuration)
         {
-            var dbConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
+            var dbConfig = configuration.GetSection(EasyCachingConstValue.InMemorySection);
             services.Configure<InMemoryOptions>(dbConfig);
 
             services.AddMemoryCache();

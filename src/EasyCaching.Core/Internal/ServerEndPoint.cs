@@ -6,7 +6,7 @@
     public class ServerEndPoint
     {     
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.ServerEndPoint"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Internal.ServerEndPoint"/> class.
         /// </summary>
         /// <param name="host">Host.</param>
         /// <param name="port">Port.</param>
@@ -18,6 +18,14 @@
             Port = port;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Internal.ServerEndPoint"/> class.
+        /// </summary>
+        public ServerEndPoint()
+        {
+            
+        }
+         
         /// <summary>
         /// Gets or sets the port.
         /// </summary>

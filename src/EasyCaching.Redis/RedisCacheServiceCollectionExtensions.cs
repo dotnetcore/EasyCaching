@@ -40,22 +40,24 @@
         /// <example>
         /// <![CDATA[
         /// "easycaching": {
-        ///     "CachingProviderType": 3,
-        ///     "MaxRdSecond": 120,
-        ///     "Order": 2,
-        ///     "dbconfig": {            
-        ///         "Password": null,
-        ///         "IsSsl": false,
-        ///         "SslHost": null,
-        ///         "ConnectionTimeout": 5000,
-        ///         "AllowAdmin": true,
-        ///         "Endpoints": [
-        ///             {
-        ///                 "Host": "localhost",
-        ///                 "Port": 6739
-        ///             }
-        ///         ],
-        ///         "Database": 0
+        ///     "redis":{
+        ///         "CachingProviderType": 2,
+        ///         "MaxRdSecond": 120,
+        ///         "Order": 2,
+        ///         "dbconfig": {            
+        ///             "Password": null,
+        ///             "IsSsl": false,
+        ///             "SslHost": null,
+        ///             "ConnectionTimeout": 5000,
+        ///             "AllowAdmin": true,
+        ///             "Endpoints": [
+        ///                 {
+        ///                     "Host": "localhost",
+        ///                     "Port": 6739
+        ///                 }
+        ///             ],
+        ///             "Database": 0
+        ///         }
         ///     }
         /// }      
         /// ]]>
@@ -67,7 +69,7 @@
            this IServiceCollection services,
             IConfiguration configuration)
         {
-            var cacheConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
+            var cacheConfig = configuration.GetSection(EasyCachingConstValue.RedisSection);
             services.Configure<RedisOptions>(cacheConfig);
 
             //var redisConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);

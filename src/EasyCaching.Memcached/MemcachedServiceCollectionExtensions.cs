@@ -50,24 +50,26 @@
         /// <example>
         /// <![CDATA[
         /// "easycaching": {
-        ///     "CachingProviderType": 3,
-        ///     "MaxRdSecond": 120,
-        ///     "Order": 2,
-        ///     "dbconfig": {            
-        ///         "Servers": [
-        ///          {
-        ///             "Address": "memcached",
-        ///             "Port": 11211
-        ///           }
-        ///         ],
-        ///         "socketPool": {
-        ///           "minPoolSize": "5",
-        ///           "maxPoolSize": "25",
-        ///           "connectionTimeout": "00:00:15",
-        ///           "receiveTimeout": "00:00:15",
-        ///           "deadTimeout": "00:00:15",
-        ///           "queueTimeout": "00:00:00.150"
-        ///         } 
+        ///     "memcached":{
+        ///         "CachingProviderType": 3,
+        ///         "MaxRdSecond": 120,
+        ///         "Order": 2,
+        ///         "dbconfig": {            
+        ///             "Servers": [
+        ///                 {
+        ///                 "Address": "memcached",
+        ///                 "Port": 11211
+        ///                 }
+        ///             ],
+        ///             "socketPool": {
+        ///                 "minPoolSize": "5",
+        ///                 "maxPoolSize": "25",
+        ///                 "connectionTimeout": "00:00:15",
+        ///                 "receiveTimeout": "00:00:15",
+        ///                 "deadTimeout": "00:00:15",
+        ///                 "queueTimeout": "00:00:00.150"
+        ///             } 
+        ///         }
         ///     }
         /// }      
         /// ]]>
@@ -79,7 +81,7 @@
            this IServiceCollection services,
             IConfiguration configuration)
         {
-            var cacheConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
+            var cacheConfig = configuration.GetSection(EasyCachingConstValue.MemcachedSection);
             services.Configure<MemcachedOptions>(cacheConfig);
 
             //var memcachedConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);

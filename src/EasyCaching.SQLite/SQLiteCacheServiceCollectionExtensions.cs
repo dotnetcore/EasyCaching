@@ -41,11 +41,13 @@
         /// <example>
         /// <![CDATA[
         /// "easycaching": {
-        ///     "CachingProviderType": 3,
-        ///     "MaxRdSecond": 120,
-        ///     "Order": 2,
-        ///     "dbconfig": {            
-        ///         "FileName": "my.db"
+        ///     "sqlite": {
+        ///         "CachingProviderType": 3,
+        ///         "MaxRdSecond": 120,
+        ///         "Order": 2,
+        ///         "dbconfig": {            
+        ///             "FileName": "my.db"
+        ///         }
         ///     }
         /// }
         /// ]]>
@@ -56,7 +58,7 @@
            this IServiceCollection services,
             IConfiguration configuration)
         {
-            var dbConfig = configuration.GetSection(EasyCachingConstValue.ConfigSection);
+            var dbConfig = configuration.GetSection(EasyCachingConstValue.SQLiteSection);
             services.Configure<SQLiteOptions>(dbConfig);
 
             services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();
