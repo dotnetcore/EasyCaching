@@ -1,28 +1,34 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-        1. Add FlushAsync for providers.
-        2. Add BaseProviderOptions.
+        1. Logging.
+        2. Stats.
+        3. Configuration.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Implement FlushAsync.
-        2. Add a new ServiceCollectionExtension method.
+        1. Logging.
+        2. Stats.
+        3. Configuration.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-        1. Implement FlushAsync.
-        2. Add a new ServiceCollectionExtension method.
+        1. Logging.
+        2. Stats.
+        3. Configuration.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Implement FlushAsync.
-        2. Add a new ServiceCollectionExtension method.
+        1. Logging.
+        2. Stats.
+        3. Configuration.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Implement FlushAsync.
-        2. Add a new ServiceCollectionExtension method.
+        1. Logging.
+        2. Stats.
+        3. Configuration.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Refactor;
-        2. Simplify the configuration of Hybrid;
+        1. Logging.
+        2. Stats.
+        3. Configuration.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         Add some extension methods.
