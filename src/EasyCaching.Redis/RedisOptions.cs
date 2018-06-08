@@ -9,5 +9,7 @@
         {
             this.CachingProviderType = CachingProviderType.Redis;
         }
+
+        public RedisDBOptions DBConfig { get; set; } = new RedisDBOptions();
     }
 }

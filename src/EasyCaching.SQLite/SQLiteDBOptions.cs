@@ -7,7 +7,7 @@
     /// <summary>
     /// SQLite cache option.
     /// </summary>
-    public class SQLiteDBOption
+    public class SQLiteDBOptions
     {
         /// <summary>
         /// Gets or sets the file path.

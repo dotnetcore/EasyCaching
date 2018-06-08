@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../../build/version.props" />
+  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.2.1</Version>
+    <Version>$(EasyCachingInMemoryPackageVersion)</Version>
     <Description>
       In-memory cache based on EasyCaching.Core and Microsoft.Extensions.Caching.Memory      
     </Description>
@@ -15,8 +16,7 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-      1. Implement FlushAsync.
-      2. Add a new ServiceCollectionExtension method.
+      $(EasyCachingInMemoryPackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 
@@ -27,6 +27,5 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="ConcurrentHashSet" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.1" />
   </ItemGroup>
 </Project>

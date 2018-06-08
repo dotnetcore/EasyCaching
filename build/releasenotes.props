@@ -1,0 +1,52 @@
+<Project>
+	<PropertyGroup>
+		<EasyCachingCorePackageNotes>
+        1. Logging.
+        2. Stats.
+        3. Configuration.
+        </EasyCachingCorePackageNotes>
+		<EasyCachingMemcachedPackageNotes>
+        1. Logging.
+        2. Stats.
+        3. Configuration.
+        </EasyCachingMemcachedPackageNotes>
+		<EasyCachingRedisPackageNotes>
+        1. Logging.
+        2. Stats.
+        3. Configuration.
+        </EasyCachingRedisPackageNotes>
+		<EasyCachingSQLitePackageNotes>
+        1. Logging.
+        2. Stats.
+        3. Configuration.
+        </EasyCachingSQLitePackageNotes>
+		<EasyCachingInMemoryPackageNotes>
+        1. Logging.
+        2. Stats.
+        3. Configuration.
+        </EasyCachingInMemoryPackageNotes>
+		<EasyCachingHybridPackageNotes>
+        1. Logging.
+        2. Stats.
+        3. Configuration.
+        </EasyCachingHybridPackageNotes>
+		<EasyCachingAspectCorePackageNotes>
+        Add some extension methods.
+        </EasyCachingAspectCorePackageNotes>
+		<EasyCachingCastlePackageNotes>
+        Add some extension methods. 
+        </EasyCachingCastlePackageNotes>
+		<EasyCachingResponseCachingPackageNotes>
+        Use pattern matching to simplify something.
+        </EasyCachingResponseCachingPackageNotes>
+		<EasyCachingJsonPackageNotes>
+        Init.
+        </EasyCachingJsonPackageNotes>
+		<EasyCachingMessagePackPackageNotes>
+        Fix bug of AddDefaultMessagePackSerializer.
+        </EasyCachingMessagePackPackageNotes>
+		<EasyCachingProtobufPackageNotes>
+        Init.
+        </EasyCachingProtobufPackageNotes>
+	</PropertyGroup>
+</Project>

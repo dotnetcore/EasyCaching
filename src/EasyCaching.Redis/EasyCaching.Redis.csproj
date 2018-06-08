@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../../build/version.props" />
+  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.2.1</Version>
+    <Version>$(EasyCachingRedisPackageVersion)</Version>
     <Description>      
       EasyCaching.Redis based on EasyCaching.Core and StackExchange.Redis
     </Description>
@@ -15,16 +16,13 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>      
-      1. Implement FlushAsync.
-      2. Add a new ServiceCollectionExtension method.
+      $(EasyCachingRedisPackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="2.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />

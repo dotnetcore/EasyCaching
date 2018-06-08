@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Net;
-    using EasyCaching.Core;
     using Enyim.Caching.Configuration;
     using Enyim.Caching.Memcached;
     using Enyim.Caching.Memcached.Protocol.Binary;
@@ -24,7 +23,7 @@
         /// </summary>
         public EasyCachingMemcachedClientConfiguration(
             ILoggerFactory loggerFactory,
-            IOptions<EasyCachingMemcachedClientOptions> optionsAccessor,
+            IOptionsMonitor<MemcachedOptions> optionsAccessor,
             ITranscoder transcoder = null,
             IMemcachedKeyTransformer keyTransformer = null)
         {
@@ -35,7 +34,7 @@
 
             _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
 
-            var options = optionsAccessor.Value;
+            var options = optionsAccessor.CurrentValue.DBConfig;
             Servers = new List<EndPoint>();
             foreach (var server in options.Servers)
             {

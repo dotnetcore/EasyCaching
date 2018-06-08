@@ -11,8 +11,23 @@
         public const string ConfigSection = "easycaching";
 
         /// <summary>
-        /// The config child section.
+        /// The redis section.
         /// </summary>
-        public const string ConfigChildSection = "easycaching:dbconfig";
+        public const string RedisSection = "easycaching:redis";
+
+        /// <summary>
+        /// The memcached section.
+        /// </summary>
+        public const string MemcachedSection = "easycaching:memcached";
+
+        /// <summary>
+        /// The SQLite section.
+        /// </summary>
+        public const string SQLiteSection = "easycaching:sqlite";
+
+        /// <summary>
+        /// The in-memory section.
+        /// </summary>
+        public const string InMemorySection = "easycaching:inmemory";         
     }
 }

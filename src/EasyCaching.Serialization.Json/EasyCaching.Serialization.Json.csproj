@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../../build/version.props" />
+  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.0</Version>
+    <Version>$(EasyCachingJsonPackageVersion)</Version>
     <Description>
       EasyCaching.Serialization.Json based on EasyCaching.Core and Newtonsoft.Json.
     </Description>
@@ -15,7 +16,7 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>            
-      Init.
+      $(EasyCachingJsonPackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 
