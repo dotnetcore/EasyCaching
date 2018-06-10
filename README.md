@@ -84,26 +84,54 @@ public class Startup
         //1. In-Memory Cache
         services.AddDefaultInMemoryCache();
         
-        //2. Redis Cache
-        //services.AddDefaultRedisCache(option=>
-        //{                
-        //    option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-        //    option.Password = "";
-        //});
+        //Read from appsetting.json
+        //services.AddDefaultInMemoryCache(Configuration);
         
-        //3. Memcached Cache
-        //services.AddDefaultMemcached(option=>
-        //{                
-        //    option.AddServer("127.0.0.1",11211);        
+        ////2. Important step for using Memcached Cache
+        //services.AddDefaultMemcached(op =>
+        //{
+        //    op.DBConfig.AddServer("127.0.0.1", 11211);
         //});
-        
-        //4. SQLite Cache
-        //services.AddSQLiteCache(option=>{});
+
+        //services.AddDefaultMemcached(Configuration);
+
+        //3. Important step for using Redis Cache
+        //services.AddDefaultRedisCache(option =>
+        //{
+        //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+        //    option.DBConfig.Password = "";
+        //});
+
+        //services.AddDefaultRedisCache(Configuration);
+
+        ////4. Important step for using SQLite Cache
+        //services.AddSQLiteCache(option => 
+        //{
+        //    option.DBConfig = new SQLiteDBOptions { FileName="my.db" };
+        //});
+
+        //services.AddSQLiteCache(Configuration);
+
+        ////5. Important step for using Hybrid Cache
+        ////5.1. Local Cache
+        //services.AddDefaultInMemoryCache(x=>
+        //{
+        //    x.Order = 1;
+        //});
+        ////5.2 Distributed Cache
+        //services.AddDefaultRedisCache(option =>
+        //{
+        //    option.Order = 2;
+        //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+        //    option.DBConfig.Password = "";
+        //});
+        ////5.3 Hybrid
+        //services.AddDefaultHybridCache();
     }
     
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-        //3. Memcache Cache
+        //2. Memcache Cache
         //app.UseDefaultMemcached();
     
         //4. SQLite Cache
@@ -146,56 +174,7 @@ public class ValuesController : Controller
         //Get Async    
         var res = await _provider.GetAsync("demo",async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));   
                 
-        //Remove
-        _provider.Remove("demo");
-
-        //Remove Async
-        await _provider.RemoveAsync("demo");
-           
-        //Refresh
-        _provider.Refresh("demo", "123", TimeSpan.FromMinutes(1));
-
-        //Refresh Async
-        await _provider.RefreshAsync("demo", "123", TimeSpan.FromMinutes(1)); 
-        
-        //RemoveByPrefix
-        _provider.RemoveByPrefix("prefix");
-
-        //RemoveByPrefixAsync
-        await _provider.RemoveByPrefixAsync("prefix");
-
-        //SetAll
-        _provider.SetAll(new Dictionary<string, string>()
-        {
-            {"key:1","value1"},
-            {"key:2","value2"}
-        }, TimeSpan.FromMinutes(1));
-
-        //SetAllAsync
-        await _provider.SetAllAsync(new Dictionary<string, string>()
-        {
-            {"key:1","value1"},
-            {"key:2","value2"}
-        }, TimeSpan.FromMinutes(1));
-
-        //GetAll
-        var res = _provider.GetAll(new List<string> { "key:1", "key:2" });
-
-        //GetAllAsync
-        var res = await _provider.GetAllAsync(new List<string> { "key:1", "key:2" });
-        
-        //GetByPrefix
-        var res = _provider.GetByPrefix<T>("prefix");
-        
-        //GetByPrefixAsync
-        var res = await _provider.GetByPrefixAsync<T>("prefix");
-        
-        //RemoveAll
-        _provider.RemoveAll(new List<string> { "key:1", "key:2" });
-
-        //RemoveAllAsync
-        await _provider.RemoveAllAsync(new List<string> { "key:1", "key:2" });
-        
+        //others ....
     }
 }
 ```
@@ -263,11 +242,11 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 
 ### Others
 
-- [ ] Configuration
+- [x] Configuration
 - [ ] Caching Region
-- [ ] Caching Statistics
+- [x] Caching Statistics
 - [ ] UI Manager
-- [ ] Logger
+- [x] Logger
 - [ ] Caching Warm Up 
 - [ ] ...
 
