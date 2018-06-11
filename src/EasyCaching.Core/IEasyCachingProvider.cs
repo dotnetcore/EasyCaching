@@ -17,7 +17,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Sets the specified cacheKey, cacheValue and expiration async.
@@ -27,7 +27,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Get the specified cacheKey, dataRetriever and expiration.
@@ -55,7 +55,7 @@
         /// <returns>The get.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        CacheValue<T> Get<T>(string cacheKey) where T : class;
+        CacheValue<T> Get<T>(string cacheKey);// where T : class;
 
         /// <summary>
         /// Gets the specified cacheKey async.
@@ -63,7 +63,7 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class;
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey);// where T : class;
 
         /// <summary>
         /// Remove the specified cacheKey.

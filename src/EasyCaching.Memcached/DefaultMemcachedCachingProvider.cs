@@ -163,7 +163,7 @@
         /// <returns>The get.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public CacheValue<T> Get<T>(string cacheKey) where T : class
+        public CacheValue<T> Get<T>(string cacheKey)// where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -193,7 +193,7 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey)// where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -250,7 +250,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration)// where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -273,7 +273,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)// where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));

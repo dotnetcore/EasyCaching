@@ -325,6 +325,31 @@
             Assert.Equal(cacheValue.Name, val.Value.Name);
         }
 
+        [Fact]
+        protected virtual void Set_And_Get_Value_Type_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _provider.Get<int>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue, val.Value);
+        }
+
+        [Fact]
+        protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            await  _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var val = await _provider.GetAsync<int>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue, val.Value);
+        }
         #endregion
 
         #region Get/GetAsync
