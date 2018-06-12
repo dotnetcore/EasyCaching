@@ -16,6 +16,10 @@ Install-Package EasyCaching.Redis
 
 ### 2. Config in Startup class
 
+There are two options you can choose when you config the caching provider.
+
+First of all, we can config by C# code.
+
 ```csharp
 public class Startup
 {
@@ -28,9 +32,52 @@ public class Startup
         //Important step for Redis Caching       
         services.AddDefaultRedisCache(option=>
         {                
-            option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            option.Password = "";
+            option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            option.DBConfig.Password = "";
         });
+    }
+}
+```
+
+What's more, we also can read the configuration from `appsettings.json`.
+
+```cs
+public class Startup
+{
+    //...
+    
+    public void ConfigureServices(IServiceCollection services)
+    {
+        //other services.
+
+        //Important step for Redis Caching
+        services.AddDefaultRedisCache(Configuration); 
+    }
+}
+```
+
+And what we add in `appsettings.json` are as following:
+
+```JSON
+"easycaching": {
+    "redis": {
+        "CachingProviderType": 2,
+        "MaxRdSecond": 120,
+        "Order": 2,
+        "dbconfig": {
+            "Password": null,
+            "IsSsl": false,
+            "SslHost": null,
+            "ConnectionTimeout": 5000,
+            "AllowAdmin": true,
+            "Endpoints": [
+                {
+                    "Host": "localhost",
+                    "Port": 6739
+                }
+            ],
+            "Database": 0
+        }
     }
 }
 ```
