@@ -14,6 +14,10 @@ Install-Package EasyCaching.InMemory
 
 ### 2. Config in Startup class
 
+There are two options you can choose when you config the caching provider.
+
+First of all, we can config by C# code.
+
 ```csharp
 public class Startup
 {
@@ -25,6 +29,35 @@ public class Startup
 
         //Important step for In-Memory Caching
         services.AddDefaultInMemoryCache(); 
+    }
+}
+```
+
+What's more, we also can read the configuration from `appsettings.json`.
+
+```csharp
+public class Startup
+{
+    //...
+    
+    public void ConfigureServices(IServiceCollection services)
+    {
+        //other services.
+
+        //Important step for In-Memory Caching
+        services.AddDefaultInMemoryCache(Configuration); 
+    }
+}
+```
+
+And what we add in `appsettings.json` are as following:
+
+```JSON
+"easycaching": {
+    "inmemory": {
+        "CachingProviderType": 1,
+        "MaxRdSecond": 120,
+        "Order": 2,
     }
 }
 ```
