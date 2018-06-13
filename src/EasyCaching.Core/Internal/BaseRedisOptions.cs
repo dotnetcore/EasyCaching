@@ -54,5 +54,12 @@
         /// </summary>
         /// <value><c>true</c> if allow admin; otherwise, <c>false</c>.</value>
         public bool AllowAdmin { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the string configuration.
+        /// </summary>
+        /// <value>The configuration.</value>
+        public string Configuration { get; set; } = "";
+
     }
 }
