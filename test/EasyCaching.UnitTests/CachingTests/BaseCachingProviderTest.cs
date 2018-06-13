@@ -265,9 +265,6 @@
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }
-
-
-
         #endregion
 
         #region Set/SetAsync
@@ -337,7 +334,7 @@
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue, val.Value);
         }
-
+         
         [Fact]
         protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed()
         {
