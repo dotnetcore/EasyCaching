@@ -600,6 +600,47 @@
 
             Assert.Equal("NewValue", act.Value);
         }
+
+        [Fact]
+        public void Refresh_Value_Type_Object_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = _provider.Get<int>(cacheKey);
+            Assert.Equal(cacheValue, tmp.Value);
+
+            var newValue = 999;
+
+            _provider.Refresh(cacheKey, newValue, _defaultTs);
+
+            var act = _provider.Get<int>(cacheKey);
+
+            Assert.Equal(newValue, act.Value);
+        }
+
+        [Fact]
+        public async Task Refresh_Value_Type_Object_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = await _provider.GetAsync<int>(cacheKey);
+            Assert.Equal(cacheValue, tmp.Value);
+
+            var newValue = 999;
+
+            await _provider.RefreshAsync(cacheKey, newValue, _defaultTs);
+
+            var act = await _provider.GetAsync<int>(cacheKey);
+
+            Assert.Equal(newValue, act.Value);
+        }
+
         #endregion
 
         #region Remove/RemoveAsync

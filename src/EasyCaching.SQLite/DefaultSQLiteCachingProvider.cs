@@ -368,7 +368,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        public void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)// where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -386,7 +386,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class
+        public async Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)// where T : class
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -430,7 +430,7 @@
         /// <param name="values">Values.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration)// where T : class
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
@@ -457,7 +457,7 @@
         /// <param name="values">Values.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration) where T : class
+        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)// where T : class
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));

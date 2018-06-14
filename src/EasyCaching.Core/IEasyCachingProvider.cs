@@ -105,7 +105,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Refresh the cached value by specified cacheKey, cacheValue and expiration async.
@@ -114,7 +114,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Removes cached item by cachekey's prefix.
@@ -134,7 +134,7 @@
         /// <param name="value">Value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class;
+        void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Sets all async.
@@ -143,7 +143,7 @@
         /// <param name="value">Value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class;
+        Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Gets all.
