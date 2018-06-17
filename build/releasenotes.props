@@ -1,34 +1,23 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-        1. Logging.
-        2. Stats.
-        3. Configuration.
+        1. Support Value Type.        
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Logging.
-        2. Stats.
-        3. Configuration.
+        1. Support Value Type.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-        1. Logging.
-        2. Stats.
-        3. Configuration.
+        1. Support Value Type.
+        2. Support Connection strings.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Logging.
-        2. Stats.
-        3. Configuration.
+        1. Support Value Type.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Logging.
-        2. Stats.
-        3. Configuration.
+        1. Support Value Type.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Logging.
-        2. Stats.
-        3. Configuration.
+        1. Support Value Type.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         Add some extension methods.
