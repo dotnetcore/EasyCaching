@@ -56,7 +56,8 @@
         ///                     "Port": 6739
         ///                 }
         ///             ],
-        ///             "Database": 0
+        ///             "Database": 0,
+        ///             "Configuration":"localhost:6379,allowAdmin=false"
         ///         }
         ///     }
         /// }      

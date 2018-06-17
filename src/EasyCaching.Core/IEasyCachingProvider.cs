@@ -17,7 +17,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Sets the specified cacheKey, cacheValue and expiration async.
@@ -27,7 +27,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Get the specified cacheKey, dataRetriever and expiration.
@@ -55,7 +55,7 @@
         /// <returns>The get.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        CacheValue<T> Get<T>(string cacheKey) where T : class;
+        CacheValue<T> Get<T>(string cacheKey);// where T : class;
 
         /// <summary>
         /// Gets the specified cacheKey async.
@@ -63,7 +63,7 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<CacheValue<T>> GetAsync<T>(string cacheKey) where T : class;
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey);// where T : class;
 
         /// <summary>
         /// Remove the specified cacheKey.
@@ -105,7 +105,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Refresh the cached value by specified cacheKey, cacheValue and expiration async.
@@ -114,7 +114,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration) where T : class;
+        Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Removes cached item by cachekey's prefix.
@@ -134,7 +134,7 @@
         /// <param name="value">Value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class;
+        void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Sets all async.
@@ -143,7 +143,7 @@
         /// <param name="value">Value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration) where T : class;
+        Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration);// where T : class;
 
         /// <summary>
         /// Gets all.
@@ -151,7 +151,7 @@
         /// <returns>The all.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys) where T : class;
+        IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys);// where T : class;
 
         /// <summary>
         /// Gets all async.
@@ -159,7 +159,7 @@
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys) where T : class;
+        Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys);// where T : class;
 
         /// <summary>
         /// Gets the by prefix.
@@ -167,7 +167,7 @@
         /// <returns>The by prefix.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix) where T : class;
+        IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix);// where T : class;
 
         /// <summary>
         /// Gets the by prefix async.
@@ -175,7 +175,7 @@
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix) where T : class;
+        Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix);// where T : class;
 
         /// <summary>
         /// Removes all.

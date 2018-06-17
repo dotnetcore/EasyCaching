@@ -265,9 +265,6 @@
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }
-
-
-
         #endregion
 
         #region Set/SetAsync
@@ -325,6 +322,31 @@
             Assert.Equal(cacheValue.Name, val.Value.Name);
         }
 
+        [Fact]
+        protected virtual void Set_And_Get_Value_Type_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _provider.Get<int>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue, val.Value);
+        }
+         
+        [Fact]
+        protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            await  _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var val = await _provider.GetAsync<int>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue, val.Value);
+        }
         #endregion
 
         #region Get/GetAsync
@@ -578,6 +600,47 @@
 
             Assert.Equal("NewValue", act.Value);
         }
+
+        [Fact]
+        public void Refresh_Value_Type_Object_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = _provider.Get<int>(cacheKey);
+            Assert.Equal(cacheValue, tmp.Value);
+
+            var newValue = 999;
+
+            _provider.Refresh(cacheKey, newValue, _defaultTs);
+
+            var act = _provider.Get<int>(cacheKey);
+
+            Assert.Equal(newValue, act.Value);
+        }
+
+        [Fact]
+        public async Task Refresh_Value_Type_Object_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = 100;
+
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var tmp = await _provider.GetAsync<int>(cacheKey);
+            Assert.Equal(cacheValue, tmp.Value);
+
+            var newValue = 999;
+
+            await _provider.RefreshAsync(cacheKey, newValue, _defaultTs);
+
+            var act = await _provider.GetAsync<int>(cacheKey);
+
+            Assert.Equal(newValue, act.Value);
+        }
+
         #endregion
 
         #region Remove/RemoveAsync
@@ -773,6 +836,42 @@
             Assert.True(res.Select(x => x.Key).Contains("getallasync:key:2"));
             Assert.Equal(res.Where(x => x.Key == "getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
             Assert.Equal(res.Where(x => x.Key == "getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+        }
+
+        [Fact]
+        protected virtual void GetAll_With_Value_Type_Should_Succeed()
+        {
+            _provider.RemoveAll(new List<string> { "getall:valuetype:key:1", "getall:valuetype:key:2" });
+            var dict = new Dictionary<string, int> {{"getall:valuetype:key:1",10},{"getall:valuetype:key:2",100} };
+
+            _provider.SetAll(dict, _defaultTs);
+
+            var res = _provider.GetAll<int>(new List<string> { "getall:valuetype:key:1", "getall:valuetype:key:2" });
+
+            Assert.Equal(2, res.Count);
+
+            Assert.True(res.Select(x => x.Key).Contains("getall:valuetype:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getall:valuetype:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getall:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value, 10);
+            Assert.Equal(res.Where(x => x.Key == "getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value, 100);
+        }
+
+        [Fact]
+        protected virtual async Task GetAll_Async_With_Value_Type_Should_Succeed()
+        {
+            _provider.RemoveAll(new List<string> { "getallasync:valuetype:key:1", "getallasync:valuetype:key:2" });
+            var dict = new Dictionary<string, int> { { "getallasync:valuetype:key:1", 10 }, { "getallasync:valuetype:key:2", 100 } };
+
+            _provider.SetAll(dict, _defaultTs);
+
+            var res = await _provider.GetAllAsync<int>(new List<string> { "getallasync:valuetype:key:1", "getallasync:valuetype:key:2" });
+
+            Assert.Equal(2, res.Count);
+
+            Assert.True(res.Select(x => x.Key).Contains("getallasync:valuetype:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getallasync:valuetype:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getallasync:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value, 10);
+            Assert.Equal(res.Where(x => x.Key == "getallasync:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value, 100);
         }
         #endregion
 
