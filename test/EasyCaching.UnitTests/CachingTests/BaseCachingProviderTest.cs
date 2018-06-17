@@ -837,6 +837,42 @@
             Assert.Equal(res.Where(x => x.Key == "getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
             Assert.Equal(res.Where(x => x.Key == "getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
         }
+
+        [Fact]
+        protected virtual void GetAll_With_Value_Type_Should_Succeed()
+        {
+            _provider.RemoveAll(new List<string> { "getall:valuetype:key:1", "getall:valuetype:key:2" });
+            var dict = new Dictionary<string, int> {{"getall:valuetype:key:1",10},{"getall:valuetype:key:2",100} };
+
+            _provider.SetAll(dict, _defaultTs);
+
+            var res = _provider.GetAll<int>(new List<string> { "getall:valuetype:key:1", "getall:valuetype:key:2" });
+
+            Assert.Equal(2, res.Count);
+
+            Assert.True(res.Select(x => x.Key).Contains("getall:valuetype:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getall:valuetype:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getall:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value, 10);
+            Assert.Equal(res.Where(x => x.Key == "getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value, 100);
+        }
+
+        [Fact]
+        protected virtual async Task GetAll_Async_With_Value_Type_Should_Succeed()
+        {
+            _provider.RemoveAll(new List<string> { "getallasync:valuetype:key:1", "getallasync:valuetype:key:2" });
+            var dict = new Dictionary<string, int> { { "getallasync:valuetype:key:1", 10 }, { "getallasync:valuetype:key:2", 100 } };
+
+            _provider.SetAll(dict, _defaultTs);
+
+            var res = await _provider.GetAllAsync<int>(new List<string> { "getallasync:valuetype:key:1", "getallasync:valuetype:key:2" });
+
+            Assert.Equal(2, res.Count);
+
+            Assert.True(res.Select(x => x.Key).Contains("getallasync:valuetype:key:1"));
+            Assert.True(res.Select(x => x.Key).Contains("getallasync:valuetype:key:2"));
+            Assert.Equal(res.Where(x => x.Key == "getallasync:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value, 10);
+            Assert.Equal(res.Where(x => x.Key == "getallasync:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value, 100);
+        }
         #endregion
 
         #region GetByPrefix/GetByPrefixAsync
