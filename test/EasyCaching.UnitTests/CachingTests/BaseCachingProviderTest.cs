@@ -382,7 +382,7 @@
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
 
-            Assert.Equal(res.Value, default(string));
+            Assert.Equal(default(string),res.Value);
         }
 
         [Fact]
@@ -393,7 +393,7 @@
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
 
-            Assert.Equal(res.Value, default(string));
+            Assert.Equal(default(string), res.Value);
         }
 
         [Fact]
