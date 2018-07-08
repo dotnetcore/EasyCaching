@@ -18,6 +18,8 @@ skip_commits:
     - .gitignore
 
 install:
+- ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+- ps: .\dotnet-install.ps1 --Version 2.1.301
 - cmd: >-
     cd C:\projects\easycaching\tools\RedisConfigs\3.0.503
 
