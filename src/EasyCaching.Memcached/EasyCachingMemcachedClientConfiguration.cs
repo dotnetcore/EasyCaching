@@ -35,18 +35,10 @@
             _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
 
             var options = optionsAccessor.CurrentValue.DBConfig;
-            Servers = new List<EndPoint>();
+            Servers = new List<DnsEndPoint>();
             foreach (var server in options.Servers)
             {
-                IPAddress address;
-                if (IPAddress.TryParse(server.Address, out address))
-                {
-                    Servers.Add(new IPEndPoint(address, server.Port));
-                }
-                else
-                {
-                    Servers.Add(new DnsEndPoint(server.Address, server.Port));
-                }
+                Servers.Add(new DnsEndPoint(server.Address, server.Port));
             }
 
             SocketPool = new SocketPoolConfiguration();
@@ -143,13 +135,13 @@
         /// <param name="port">Port.</param>
         public void AddServer(string host, int port)
         {
-            this.Servers.Add(ConfigurationHelper.ResolveToEndPoint(host, port));
+            this.Servers.Add(new DnsEndPoint(host, port));
         }
 
         /// <summary>
         /// Gets a list of <see cref="T:IPEndPoint"/> each representing a Memcached server in the pool.
         /// </summary>
-        public IList<EndPoint> Servers { get; private set; }
+        public IList<DnsEndPoint> Servers { get; private set; }
 
         /// <summary>
         /// Gets the configuration of the socket pool.
@@ -206,7 +198,7 @@
 
         #region [ interface                     ]
 
-        IList<System.Net.EndPoint> IMemcachedClientConfiguration.Servers
+        IList<System.Net.DnsEndPoint> IMemcachedClientConfiguration.Servers
         {
             get { return this.Servers; }
         }

@@ -142,8 +142,6 @@ namespace EasyCaching.UnitTests
 
             var key = _keyGenerator.GetCacheKey(method, new object[] { 1, "123" }, "CastleExample");
 
-            System.Console.WriteLine($"test:{key}");
-
             var value = _cachingProvider.Get<Task<string>>(key);
 
             Assert.True(value.HasValue);

@@ -24,6 +24,6 @@
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EnyimMemcachedCore" Version="2.1.0.7" />
+    <PackageReference Include="EnyimMemcachedCore" Version="2.1.8" />
   </ItemGroup>
 </Project>
