@@ -814,10 +814,10 @@
 
             Assert.Equal(2, res.Count);
 
-            Assert.True(res.Select(x => x.Key).Contains("getall:key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("getall:key:2"));
-            Assert.Equal(res.Where(x => x.Key == "getall:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "getall:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.Contains("getall:key:1",res.Select(x => x.Key));
+            Assert.Contains("getall:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1", res.Where(x => x.Key == "getall:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2", res.Where(x => x.Key == "getall:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -832,10 +832,10 @@
 
             Assert.Equal(2, res.Count);
 
-            Assert.True(res.Select(x => x.Key).Contains("getallasync:key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("getallasync:key:2"));
-            Assert.Equal(res.Where(x => x.Key == "getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.Contains("getallasync:key:1", res.Select(x => x.Key));
+            Assert.Contains("getallasync:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1",res.Where(x => x.Key == "getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value) ;
+            Assert.Equal("value2",res.Where(x => x.Key == "getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -850,10 +850,10 @@
 
             Assert.Equal(2, res.Count);
 
-            Assert.True(res.Select(x => x.Key).Contains("getall:valuetype:key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("getall:valuetype:key:2"));
-            Assert.Equal(res.Where(x => x.Key == "getall:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value, 10);
-            Assert.Equal(res.Where(x => x.Key == "getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value, 100);
+            Assert.Contains("getall:valuetype:key:1", res.Select(x => x.Key));
+            Assert.Contains("getall:valuetype:key:2", res.Select(x => x.Key));
+            Assert.Equal(10, res.Where(x => x.Key == "getall:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal(100,res.Where(x => x.Key == "getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -868,10 +868,10 @@
 
             Assert.Equal(2, res.Count);
 
-            Assert.True(res.Select(x => x.Key).Contains("getallasync:valuetype:key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("getallasync:valuetype:key:2"));
-            Assert.Equal(res.Where(x => x.Key == "getallasync:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value, 10);
-            Assert.Equal(res.Where(x => x.Key == "getallasync:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value, 100);
+            Assert.Contains("getallasync:valuetype:key:1", res.Select(x => x.Key));
+            Assert.Contains("getallasync:valuetype:key:2", res.Select(x => x.Key));
+            Assert.Equal(10, res.Where(x => x.Key == "getallasync:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal(100, res.Where(x => x.Key == "getallasync:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
         #endregion
 
@@ -889,10 +889,10 @@
             var res = _provider.GetByPrefix<string>(prefix);
 
             Assert.Equal(2, res.Count);
-            Assert.True(res.Select(x => x.Key).Contains("getbyprefix:key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("getbyprefix:key:2"));
-            Assert.Equal(res.Where(x => x.Key == "getbyprefix:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "getbyprefix:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.Contains("getbyprefix:key:1", res.Select(x => x.Key));
+            Assert.Contains("getbyprefix:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1",res.Where(x => x.Key == "getbyprefix:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2",res.Where(x => x.Key == "getbyprefix:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -908,10 +908,10 @@
             var res = await _provider.GetByPrefixAsync<string>(prefix);
 
             Assert.Equal(2, res.Count);
-            Assert.True(res.Select(x => x.Key).Contains("getbyprefixasync:key:1"));
-            Assert.True(res.Select(x => x.Key).Contains("getbyprefixasync:key:2"));
-            Assert.Equal(res.Where(x => x.Key == "getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value, "value1");
-            Assert.Equal(res.Where(x => x.Key == "getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value, "value2");
+            Assert.Contains("getbyprefixasync:key:1", res.Select(x => x.Key));
+            Assert.Contains("getbyprefixasync:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1",res.Where(x => x.Key == "getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2",res.Where(x => x.Key == "getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
