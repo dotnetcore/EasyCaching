@@ -1,5 +1,5 @@
 version: 1.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2017 Preview
 configuration: Release
 clone_folder: C:\projects\easycaching\
 
@@ -18,9 +18,9 @@ skip_commits:
     - .gitignore
 
 install:
-- ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-- ps: .\dotnet-install.ps1 --Version 2.1.301
-- ps: dotnet --info
+#- ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+#- ps: .\dotnet-install.ps1 --Version 2.1.301
+#- ps: dotnet --info
 - cmd: >-
     cd C:\projects\easycaching\tools\RedisConfigs\3.0.503
 
