@@ -10,7 +10,7 @@
         private readonly IAspectCoreService _aService;
         private readonly ICastleService _cService;
 
-        public ValuesController(IAspectCoreService aService, ICastleService cService)
+        public ValuesController(IAspectCoreService aService = null, ICastleService cService = null)
         {
             this._aService = aService;
             this._cService = cService;

@@ -1,5 +1,5 @@
 ﻿namespace EasyCaching.Bus.Redis
-{    
+{
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using StackExchange.Redis;
@@ -53,7 +53,7 @@
         /// <param name="channel">Channel.</param>
         public void Subscribe(string channel)
         {
-            _subscriber.Subscribe(channel,SubscribeHandle);
+            _subscriber.Subscribe(channel, SubscribeHandle);
         }
 
         /// <summary>
@@ -65,9 +65,9 @@
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(value);
 
-            switch(message.NotifyType)
+            switch (message.NotifyType)
             {
-                case NotifyType.Add:                    
+                case NotifyType.Add:
                     _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
                     break;
                 case NotifyType.Update:
@@ -86,7 +86,7 @@
         /// <param name="channel">Channel.</param>
         public async Task SubscribeAsync(string channel)
         {
-            await _subscriber.SubscribeAsync(channel, SubscribeHandle);           
+            await _subscriber.SubscribeAsync(channel, SubscribeHandle);
         }
 
         /// <summary>

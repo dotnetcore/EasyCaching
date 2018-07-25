@@ -1,5 +1,5 @@
 version: 1.0.{build}
-image: Visual Studio 2017
+image: Visual Studio 2017 Preview
 configuration: Release
 clone_folder: C:\projects\easycaching\
 
@@ -18,8 +18,9 @@ skip_commits:
     - .gitignore
 
 install:
-- ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-- ps: .\dotnet-install.ps1 --Version 2.1.301
+#- ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+#- ps: .\dotnet-install.ps1 --Version 2.1.301
+#- ps: dotnet --info
 - cmd: >-
     cd C:\projects\easycaching\tools\RedisConfigs\3.0.503
 
@@ -41,25 +42,25 @@ build:
   parallel: true
   verbosity: minimal
   
-#test_script:
-#- cmd: >-
-#    dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
-before_test:
-- ps: >-
-    nuget install coveralls.net -Version 0.7.0 -OutputDirectory tools
-    
-    nuget install OpenCover -Version 4.6.519 -OutputDirectory tools
-
 test_script:
-- ps: tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]*" -oldstyle -returntargetcode -output:coverage.xml
+- cmd: >-
+    dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
+#before_test:
+#- ps: >-
+#    nuget install coveralls.net -Version 0.7.0 -OutputDirectory tools
     
-after_test:
-- ps: >-
-    if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-    {       
-      tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths
-    }
-    else 
-    {
-      echo "not master branch...."
-    }
+#    nuget install OpenCover -Version 4.6.519 -OutputDirectory tools
+
+#test_script:
+#- ps: tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]*" -oldstyle -returntargetcode -output:coverage.xml
+    
+#after_test:
+#- ps: >-
+#    if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+#    {       
+#      tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths
+#    }
+#    else 
+#    {
+#      echo "not master branch...."
+#    }
