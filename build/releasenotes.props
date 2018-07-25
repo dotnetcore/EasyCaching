@@ -1,41 +1,40 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-        1. Support Value Type.        
+        1. Support .NET Core 2.1        
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Support Value Type.
+        1. Support .NET Core 2.1
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-        1. Support Value Type.
-        2. Support Connection strings.
+        1. Support .NET Core 2.1
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Support Value Type.
+        1. Support .NET Core 2.1
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Support Value Type.
+        1. Support .NET Core 2.1
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Support Value Type.
+        1. Support .NET Core 2.1
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        Add some extension methods.
+        1. Support .NET Core 2.1
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        Add some extension methods. 
+        1. Support .NET Core 2.1
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        Use pattern matching to simplify something.
+        1. Support .NET Core 2.1
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        Init.
+        1. Support .NET Core 2.1
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        Fix bug of AddDefaultMessagePackSerializer.
+        1. Support .NET Core 2.1
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        Init.
+        1. Support .NET Core 2.1
         </EasyCachingProtobufPackageNotes>
 	</PropertyGroup>
 </Project>
