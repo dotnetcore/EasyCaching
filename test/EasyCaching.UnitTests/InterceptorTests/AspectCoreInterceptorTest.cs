@@ -20,7 +20,7 @@ namespace EasyCaching.UnitTests
 
         protected IEasyCachingKeyGenerator _keyGenerator;
 
-        [Fact]
+        [Fact(Skip="some reason")]        
         protected virtual void Interceptor_Attribute_Method_Should_Handle_Caching()
         {
             var tick1 = _service.GetCurrentUTC();
