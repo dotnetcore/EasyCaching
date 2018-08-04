@@ -29,7 +29,7 @@
         }
 
         [Fact]
-        public void Options_Test_Should_Succeed()
+        public void ReferenceLoopHandling_Test_Should_Succeed()
         {
             var options = A.Fake<IOptions<EasyCachingJsonSerializerOptions>>();
 
@@ -50,13 +50,33 @@
 
 
             Assert.Equal(joe.Name, joe_obj.Name);
-
+            Assert.Equal(joe.Manager, mike);
         }
 
         public class Employee
         {
             public string Name { get; set; }
             public Employee Manager { get; set; }
+        }
+
+        [Fact]
+        public void NullValueHandling_Test_Should_Succeed()
+        {
+            var options = A.Fake<IOptions<EasyCachingJsonSerializerOptions>>();
+
+            A.CallTo(() => options.Value).Returns(new EasyCachingJsonSerializerOptions()
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
+            var  serializer = new DefaultJsonSerializer(options);
+
+            Employee joe = new Employee { Name = "Joe User" };           
+
+            var joe_byte = serializer.Serialize(joe);
+            var joe_obj = serializer.Deserialize<Employee>(joe_byte);
+
+            Assert.Null(joe.Manager);
         }
     }
 }
