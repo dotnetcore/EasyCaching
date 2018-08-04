@@ -28,7 +28,7 @@
         1. Support .NET Core 2.1
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Support .NET Core 2.1
+        1. Configurable JSON serializer
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
         1. Support .NET Core 2.1

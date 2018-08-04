@@ -9,7 +9,7 @@
 		<EasyCachingAspectCorePackageVersion>0.3.0</EasyCachingAspectCorePackageVersion>
 		<EasyCachingCastlePackageVersion>0.3.0</EasyCachingCastlePackageVersion>
 		<EasyCachingResponseCachingPackageVersion>0.3.0</EasyCachingResponseCachingPackageVersion>
-		<EasyCachingJsonPackageVersion>0.3.0</EasyCachingJsonPackageVersion>
+		<EasyCachingJsonPackageVersion>0.3.1</EasyCachingJsonPackageVersion>
 		<EasyCachingMessagePackPackageVersion>0.3.0</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>0.3.0</EasyCachingProtobufPackageVersion>
 	</PropertyGroup>
