@@ -73,7 +73,19 @@
                     await next(context);
 
                     if (!string.IsNullOrWhiteSpace(cacheKey) && context.ReturnValue != null)
-                        await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    {
+                        Type type = context.ReturnValue?.GetType();
+                        if (type != null && typeof(Task).IsAssignableFrom(type))
+                        {
+                            var resultProperty = type.GetProperty("Result");
+                            var val = resultProperty.GetValue(context.ReturnValue);
+                            await CacheProvider.SetAsync(cacheKey, val, TimeSpan.FromSeconds(attribute.Expiration));
+                        }
+                        else
+                        {
+                            await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                        }
+                    }                        
                 }
             }
             else
