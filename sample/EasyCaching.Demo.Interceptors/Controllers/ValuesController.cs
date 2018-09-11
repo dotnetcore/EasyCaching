@@ -47,9 +47,14 @@
             {
                 return await _aService.GetUtcTimeAsync();
             }
+            else if (type == 2)
+            {
+                var res = await _aService.GetDemo(999);
+                return $"{res.Id}-{res.Name}-{res.CreateTime}";
+            }
             else
             {
-                return await Task.FromResult<string>("wait");
+                return await Task.FromResult("wait");
             }
         }
 

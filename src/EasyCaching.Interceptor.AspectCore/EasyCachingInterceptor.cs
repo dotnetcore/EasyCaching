@@ -3,9 +3,11 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using global::AspectCore.DynamicProxy;
+    using global::AspectCore.Extensions.Reflection;
     using global::AspectCore.Injector;
     using System;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -65,27 +67,32 @@
 
                 if (cacheValue.HasValue)
                 {
-                    context.ReturnValue = cacheValue.Value;
+                    if(context.IsAsync())
+                    {           
+                        // TODO : Task<object>
+                        context.ReturnValue =  cacheValue.Value;
+                    }
+                    else
+                    {
+                        context.ReturnValue = cacheValue.Value;
+                    }
                 }
                 else
                 {
                     // Invoke the method if we don't have a cache hit
                     await next(context);
 
-                    if (!string.IsNullOrWhiteSpace(cacheKey) && context.ReturnValue != null)
+                    if (context.IsAsync())
                     {
-                        Type type = context.ReturnValue?.GetType();
-                        if (type != null && typeof(Task).IsAssignableFrom(type))
-                        {
-                            var resultProperty = type.GetProperty("Result");
-                            var val = resultProperty.GetValue(context.ReturnValue);
-                            await CacheProvider.SetAsync(cacheKey, val, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-                        else
-                        {
-                            await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-                    }                        
+                        //get the result
+                        var returnValue = await context.UnwrapAsyncReturnValue();
+
+                        await CacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));                                           
+                    }
+                    else
+                    {
+                        await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));                                           
+                    }
                 }
             }
             else

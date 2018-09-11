@@ -4,6 +4,8 @@
     using EasyCaching.Interceptor.AspectCore;
     using EasyCaching.Interceptor.Castle;
     using EasyCaching.InMemory;
+    using EasyCaching.Redis;
+    using EasyCaching.Serialization.MessagePack;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
@@ -25,7 +27,13 @@
         {
             services.AddScoped<IAspectCoreService, AspectCoreService>();
 
-            services.AddDefaultInMemoryCache();
+            //services.AddDefaultInMemoryCache();
+            services.AddDefaultRedisCache(options => 
+            {
+                options.DBConfig = new RedisDBOptions { Configuration = "localhost" };
+            });
+
+            services.AddDefaultMessagePackSerializer();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

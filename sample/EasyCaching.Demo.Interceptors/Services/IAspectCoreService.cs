@@ -16,6 +16,9 @@
 
         [EasyCachingAble(Expiration = 10)]
         Task<string> GetUtcTimeAsync();
+
+        [EasyCachingAble(Expiration = 10)]
+        Task<Demo> GetDemo(int id);
     }
 
     public class AspectCoreService : IAspectCoreService
@@ -30,6 +33,11 @@
             return System.DateTimeOffset.UtcNow.ToString();
         }
 
+        public Task<Demo> GetDemo(int id)
+        {
+            return Task.FromResult(new Demo{ Id = id, CreateTime = System.DateTime.Now, Name = "catcher"});
+        }
+
         public async Task<string> GetUtcTimeAsync()
         {
             return await Task.FromResult<string>(System.DateTimeOffset.UtcNow.ToString());
@@ -39,5 +47,14 @@
         {
             return str;
         }
+
+    }
+
+    [System.Serializable]
+    public class Demo
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public System.DateTime CreateTime { get; set; }
     }
 }
