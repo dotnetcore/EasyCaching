@@ -33,8 +33,6 @@
                 options.DBConfig = new RedisDBOptions { Configuration = "localhost" };
             });
 
-            services.AddDefaultMessagePackSerializer();
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //1.1. all default

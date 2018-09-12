@@ -33,6 +33,11 @@
             {
                 return _aService.PutSomething("123");
             }
+            else if (type == 4)
+            {
+                var res = _aService.GetDemo(111);
+                return $"{res.Id}-{res.Name}-{res.CreateTime}";
+            }
             else
             {
                 return "wait";
@@ -49,7 +54,7 @@
             }
             else if (type == 2)
             {
-                var res = await _aService.GetDemo(999);
+                var res = await _aService.GetDemoAsync(999);
                 return $"{res.Id}-{res.Name}-{res.CreateTime}";
             }
             else
