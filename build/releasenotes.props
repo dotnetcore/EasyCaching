@@ -19,7 +19,7 @@
         1. Support .NET Core 2.1
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Support .NET Core 2.1
+        1. Fixed bug of intercepting Task methods. 
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
         1. Support .NET Core 2.1

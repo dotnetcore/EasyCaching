@@ -139,10 +139,10 @@ namespace EasyCaching.UnitTests
 
             var key = _keyGenerator.GetCacheKey(method, new object[] { 1, "123" }, "AspectCoreExample");
 
-            var value = _cachingProvider.Get<Task<string>>(key);
+            var value = _cachingProvider.Get<string>(key);
 
             Assert.True(value.HasValue);
-            Assert.Equal(str, value.Value.Result);
+            Assert.Equal(str, value.Value);
         }
 
         [Fact]
