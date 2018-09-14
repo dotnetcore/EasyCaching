@@ -12,6 +12,10 @@
         void DeleteSomething(int id);
 
         Task<string> GetUtcTimeAsync();
+
+        Task<Demo> GetDemoAsync(int id);
+
+        Demo GetDemo(int id);
     }
 
     public class CastleService : ICastleService, IEasyCaching
@@ -26,6 +30,18 @@
         public string GetCurrentUtcTime()
         {
             return System.DateTime.UtcNow.ToString();
+        }
+
+        [EasyCachingAble(Expiration = 10)]
+        public Demo GetDemo(int id)
+        {
+            return new Demo { Id = id, CreateTime = System.DateTime.Now, Name = "catcher" };
+        }
+
+        [EasyCachingAble(Expiration = 10)]
+        public Task<Demo> GetDemoAsync(int id)
+        {
+            return Task.FromResult(new Demo { Id = id, CreateTime = System.DateTime.Now, Name = "catcher" });
         }
 
         [EasyCachingAble(Expiration = 10)]

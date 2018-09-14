@@ -80,6 +80,11 @@
             {
                 return _cService.PutSomething("123");
             }
+            else if (type == 4)
+            {
+                var res = _cService.GetDemo(111);
+                return $"{res.Id}-{res.Name}-{res.CreateTime}";
+            }
             else
             {
                 return "wait";
@@ -93,6 +98,11 @@
             if (type == 1)
             {
                 return await _cService.GetUtcTimeAsync();
+            }
+            else if (type == 2)
+            {
+                var res = await _cService.GetDemoAsync(999);
+                return $"{res.Id}-{res.Name}-{res.CreateTime}";
             }
             else
             {
