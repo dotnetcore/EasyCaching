@@ -28,7 +28,7 @@
             services.Configure(providerAction);
 
             services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
 
             return services;
         } 
@@ -62,7 +62,7 @@
             services.Configure<SQLiteOptions>(dbConfig);
 
             services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
 
             return services;
         }

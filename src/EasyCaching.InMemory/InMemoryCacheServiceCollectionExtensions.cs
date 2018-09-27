@@ -46,7 +46,7 @@
             services.Configure(providerAction);
                        
             services.AddMemoryCache();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
 
             return services;
         }
@@ -76,7 +76,7 @@
             services.Configure<InMemoryOptions>(dbConfig);
 
             services.AddMemoryCache();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
 
             return services;
         }

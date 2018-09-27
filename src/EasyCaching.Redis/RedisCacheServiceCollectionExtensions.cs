@@ -29,7 +29,7 @@
 
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
 
             return services;
         } 
@@ -78,7 +78,7 @@
 
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
 
             return services;
         }

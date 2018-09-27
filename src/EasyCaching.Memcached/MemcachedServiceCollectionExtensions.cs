@@ -39,7 +39,7 @@
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
 
-            services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
 
             return services;
         }
