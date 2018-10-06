@@ -3,10 +3,10 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using EasyCaching.InMemory;
-    using EasyCaching.HybridCache;
-    using EasyCaching.Memcached;
-    using EasyCaching.Redis;
-    using EasyCaching.SQLite;
+    //using EasyCaching.HybridCache;
+    //using EasyCaching.Memcached;
+    //using EasyCaching.Redis;
+    //using EasyCaching.SQLite;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
@@ -29,7 +29,10 @@
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //1. Important step for using InMemory Cache
-            services.AddDefaultInMemoryCache(x => { x.EnableLogging = true; });
+            //services.AddDefaultInMemoryCache();
+
+            services.AddDefaultInMemoryCacheWithFactory();
+            services.AddDefaultInMemoryCacheWithFactory("cus");
 
             //services.AddDefaultInMemoryCache(Configuration);
 

@@ -28,6 +28,8 @@
         /// <summary>
         /// The in-memory section.
         /// </summary>
-        public const string InMemorySection = "easycaching:inmemory";         
+        public const string InMemorySection = "easycaching:inmemory";
+
+        public const string DefaultName = "Default";
     }
 }
