@@ -83,7 +83,7 @@
         /// <param name="dbProvider">DB Provider.</param>
         /// <param name="serializer">Serializer.</param>
         public DefaultRedisCachingProvider(
-            string name,
+            //string name,
             IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer,
             IOptionsMonitor<RedisOptions> options,
@@ -99,7 +99,7 @@
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
-            this._name = name;
+            //this._name = name;
         }
 
         public DefaultRedisCachingProvider(
