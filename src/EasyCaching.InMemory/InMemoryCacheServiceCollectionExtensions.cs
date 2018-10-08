@@ -103,7 +103,7 @@
         /// </summary>
         /// <returns>The default in-memory cache.</returns>
         /// <param name="services">Services.</param>
-        public static IServiceCollection AddDefaultInMemoryCacheWithFactory(this IServiceCollection services,string providerName = EasyCachingConstValue.DefaultName)
+        public static IServiceCollection AddDefaultInMemoryCacheWithFactory(this IServiceCollection services,string providerName = EasyCachingConstValue.DefaultInMemoryName)
         {
             var option = new InMemoryOptions();
 
@@ -139,9 +139,10 @@
             services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>(x=>
             {
                 var mCache = x.GetRequiredService<Microsoft.Extensions.Caching.Memory.IMemoryCache>();
-                var mOptions = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
-                var mLog = x.GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>();
-                return new DefaultInMemoryCachingProvider(providerName, mCache, mOptions,mLog);                           
+                var options = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
+                //ILoggerFactory can be null
+                var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
+                return new DefaultInMemoryCachingProvider(providerName, mCache, options,factory);                           
             });
 
             return services;

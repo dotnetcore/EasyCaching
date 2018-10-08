@@ -41,9 +41,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.HybridCache", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.ResponseCaching", "sample\EasyCaching.Demo.ResponseCaching\EasyCaching.Demo.ResponseCaching.csproj", "{76A5C2E3-6525-45A0-9CE7-649F3235A443}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "EasyCaching.UnitTests", "test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj", "{2A8D7103-DF64-47B6-A406-8F8559AF7E7F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.UnitTests", "test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj", "{2A8D7103-DF64-47B6-A406-8F8559AF7E7F}"
 EndProject
-Project("{9344BDBB-3E7F-41FC-A0DD-8665D75EE146}") = "EasyCaching.PerformanceTests", "test\EasyCaching.PerformanceTests\EasyCaching.PerformanceTests.csproj", "{6EBE36A2-F128-4C63-B90A-B700D8C2F2E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.PerformanceTests", "test\EasyCaching.PerformanceTests\EasyCaching.PerformanceTests.csproj", "{6EBE36A2-F128-4C63-B90A-B700D8C2F2E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

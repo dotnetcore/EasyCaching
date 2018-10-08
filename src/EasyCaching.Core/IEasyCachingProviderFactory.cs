@@ -23,6 +23,8 @@
 
             var provider = _cachingProviders.FirstOrDefault(x => x.Name.Equals(name));
 
+            if (provider == null) throw new System.ArgumentException("can not find a match caching provider!");
+
             return provider;
         }
     }

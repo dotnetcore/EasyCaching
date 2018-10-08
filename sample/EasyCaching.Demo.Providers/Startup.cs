@@ -3,10 +3,10 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using EasyCaching.InMemory;
-    //using EasyCaching.HybridCache;
-    //using EasyCaching.Memcached;
-    //using EasyCaching.Redis;
-    //using EasyCaching.SQLite;
+    using EasyCaching.HybridCache;
+    using EasyCaching.Memcached;
+    using EasyCaching.Redis;
+    using EasyCaching.SQLite;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
@@ -31,7 +31,7 @@
             //1. Important step for using InMemory Cache
             //services.AddDefaultInMemoryCache();
 
-            services.AddDefaultInMemoryCacheWithFactory();
+            //services.AddDefaultInMemoryCacheWithFactory();
             services.AddDefaultInMemoryCacheWithFactory("cus");
 
             //services.AddDefaultInMemoryCache(Configuration);
@@ -50,6 +50,18 @@
             //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             //    option.DBConfig.Password = "";
             //});
+
+            services.AddDefaultRedisCacheWithFactory("redis1",option =>
+            {
+                option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                option.DBConfig.Password = "";
+            });
+
+            services.AddDefaultRedisCacheWithFactory("redis2", option =>
+            {
+                option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                option.DBConfig.Password = "";
+            });
 
             //services.AddDefaultRedisCache(Configuration);
 

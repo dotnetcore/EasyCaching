@@ -73,12 +73,17 @@
 
         public CacheStats CacheStats => _cacheStats;
 
+        private readonly string _name;
+
+        public string Name => this._name;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
         /// <param name="dbProvider">DB Provider.</param>
         /// <param name="serializer">Serializer.</param>
         public DefaultRedisCachingProvider(
+            string name,
             IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer,
             IOptionsMonitor<RedisOptions> options,
@@ -94,6 +99,27 @@
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
+            this._name = name;
+        }
+
+        public DefaultRedisCachingProvider(
+            string name,
+            IEnumerable<IRedisDatabaseProvider> dbProviders,
+            IEasyCachingSerializer serializer,
+            IOptionsMonitor<RedisOptions> options,
+            ILoggerFactory loggerFactory = null)
+        {
+            ArgumentCheck.NotNullAndCountGTZero(dbProviders, nameof(dbProviders));
+            ArgumentCheck.NotNull(serializer, nameof(serializer));
+
+            this._dbProvider = dbProviders.FirstOrDefault(x=>x.DBProviderName.Equals(name));
+            this._serializer = serializer;
+            this._options = options.CurrentValue;
+            this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
+            this._cache = _dbProvider.GetDatabase();
+            this._servers = _dbProvider.GetServerList();
+            this._cacheStats = new CacheStats();
+            this._name = name;
         }
 
         /// <summary>

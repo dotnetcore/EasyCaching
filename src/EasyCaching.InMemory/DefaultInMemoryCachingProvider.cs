@@ -392,7 +392,8 @@
             {
                 foreach (var item in keys)
                 {
-                    this.Remove(item);
+                    _cache.Remove(item);
+                    _cacheKeys.TryRemove(item);
                 }
             }
         }
@@ -417,7 +418,14 @@
             {
                 var tasks = new List<Task>();
                 foreach (var item in keys)
-                    tasks.Add(RemoveAsync(item));
+                {
+                    tasks.Add(Task.Run(() =>
+                    {
+                        _cache.Remove(item);
+                        _cacheKeys.TryRemove(item);
+                    }));
+                }
+                //tasks.Add(RemoveAsync(item));
 
                 await Task.WhenAll(tasks);
             }
@@ -525,7 +533,7 @@
             {
                 foreach (var item in keys)
                 {
-                    map[item] = this.Get<T>(item);
+                    map[item] = this.Get<T>(item.Substring(Name.Length + 1, item.Length - Name.Length - 1));
                 }
             }
             return map;
@@ -553,7 +561,7 @@
             if (keys.Any())
             {
                 foreach (string key in keys)
-                    map[key] = GetAsync<T>(key);
+                    map[key] = GetAsync<T>(key.Substring(Name.Length + 1, key.Length - Name.Length - 1));
             }
 
             return Task.WhenAll(map.Values)
@@ -597,7 +605,7 @@
             var tasks = new List<Task>();
             foreach (var item in cacheKeys.Distinct())
             {
-                tasks.Add(RemoveAsync(item));
+                tasks.Add(RemoveAsync(item.Substring(Name.Length + 1, item.Length - Name.Length - 1  )));
             }
 
             await Task.WhenAll(tasks);

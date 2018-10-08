@@ -60,6 +60,8 @@
 
         public CacheStats CacheStats => _cacheStats;
 
+        public string Name => throw new NotImplementedException();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>

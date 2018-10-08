@@ -80,6 +80,8 @@
 
         public CacheStats CacheStats => _cacheStats;
 
+        public string Name => throw new NotImplementedException();
+
         /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>
