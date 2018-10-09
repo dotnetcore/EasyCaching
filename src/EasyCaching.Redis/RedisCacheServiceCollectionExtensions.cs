@@ -119,7 +119,7 @@
                 var dbProviders = x.GetServices<IRedisDatabaseProvider>();
                 var serializer = x.GetRequiredService<IEasyCachingSerializer>();
                 var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
-                var factory = x.GetRequiredService<ILoggerFactory>();
+                var factory = x.GetService<ILoggerFactory>();
                 return new DefaultRedisCachingProvider(name, dbProviders, serializer, options, factory);
             });
 
