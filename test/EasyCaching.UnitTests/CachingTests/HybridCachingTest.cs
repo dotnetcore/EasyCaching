@@ -19,6 +19,7 @@
             RedisOptions options = new RedisOptions();
             options.DBConfig.AllowAdmin = true;
             options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            options.DBConfig.Database = 6;
 
             var fakeOption = A.Fake<IOptionsMonitor<RedisOptions>>();
 
@@ -30,7 +31,7 @@
 
             var providers = new List<IEasyCachingProvider>
             {
-                new DefaultInMemoryCachingProvider("de",new MemoryCache(new MemoryCacheOptions()), new TestOptionMonitorWrapper<InMemoryOptions>(new InMemoryOptions())),
+                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new TestOptionMonitorWrapper<InMemoryOptions>(new InMemoryOptions())),
                 new DefaultRedisCachingProvider(fakeDbProvider, serializer, new TestOptionMonitorWrapper<RedisOptions>(new RedisOptions()))
             };
 

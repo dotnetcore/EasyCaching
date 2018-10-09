@@ -69,14 +69,36 @@
         public string Name => _name;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Memory.MemoryCachingProvider"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.DefaultInMemoryCachingProvider"/> class.
         /// </summary>
-        /// <param name="cache">Microsoft MemoryCache.</param>
+        /// <param name="cache">Cache.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
         public DefaultInMemoryCachingProvider(
-            string name,
             IMemoryCache cache,
             IOptionsMonitor<InMemoryOptions> options,
             ILoggerFactory loggerFactory = null)
+        {
+            this._cache = cache;
+            this._options = options.CurrentValue;
+            this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
+            this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
+
+            this._cacheStats = new CacheStats();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.DefaultInMemoryCachingProvider"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="cache">Cache.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        public DefaultInMemoryCachingProvider(
+           string name,
+           IMemoryCache cache,
+           IOptionsMonitor<InMemoryOptions> options,
+           ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
             this._options = options.CurrentValue;

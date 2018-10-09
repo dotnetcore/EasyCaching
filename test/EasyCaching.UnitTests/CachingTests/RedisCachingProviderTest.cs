@@ -19,6 +19,7 @@ namespace EasyCaching.UnitTests
                     AllowAdmin = true
                 };
                 options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                options.DBConfig.Database = 5;
             });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
@@ -82,5 +83,66 @@ namespace EasyCaching.UnitTests
             Assert.Equal(8, dbProvider.GetDatabase().Database);
         }
 
+    }
+
+
+    public class RedisCachingProviderWithFactoryTest : BaseCachingProviderTest
+    {
+        private readonly IEasyCachingProvider _secondProvider;
+
+        private const string SECOND_PROVIDER_NAME = "second";
+
+        public RedisCachingProviderWithFactoryTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddDefaultRedisCacheWithFactory(EasyCachingConstValue.DefaultRedisName,options =>
+            {
+                options.DBConfig = new RedisDBOptions
+                {
+                    AllowAdmin = true
+                };
+                options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                options.DBConfig.Database = 3;
+            });
+            services.AddDefaultRedisCacheWithFactory(SECOND_PROVIDER_NAME, options =>
+            {
+                options.DBConfig = new RedisDBOptions
+                {
+                    AllowAdmin = true
+                };
+                options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                options.DBConfig.Database = 4;
+            });
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _provider = factory.GetCachingProvider(EasyCachingConstValue.DefaultRedisName);
+            _secondProvider = factory.GetCachingProvider(SECOND_PROVIDER_NAME);
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        [Fact]
+        public void Multi_Instance_Set_And_Get_Should_Succeed()
+        {
+            var cacheKey1 = "named-provider-1";
+            var cacheKey2 = "named-provider-2";
+
+            var value1 = Guid.NewGuid().ToString();
+            var value2 = Guid.NewGuid().ToString("N");
+
+            _provider.Set(cacheKey1, value1, _defaultTs);
+            _secondProvider.Set(cacheKey2, value2, _defaultTs);
+
+            var p1 = _provider.Get<string>(cacheKey1);
+            var p2 = _provider.Get<string>(cacheKey2);
+
+            var s1 = _secondProvider.Get<string>(cacheKey1);
+            var s2 = _secondProvider.Get<string>(cacheKey2);
+
+            Assert.Equal(value1, p1.Value);
+            Assert.False(p2.HasValue);
+
+            Assert.False(s1.HasValue);
+            Assert.Equal(value2, s2.Value);
+        }
     }
 }
