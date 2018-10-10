@@ -145,7 +145,7 @@
                 return new CacheValue<T>(result, true);
             }
             else
-            {                
+            {
                 return CacheValue<T>.NoValue;
             }
         }
@@ -186,7 +186,7 @@
                 return new CacheValue<T>(result, true);
             }
             else
-            {                
+            {
                 return CacheValue<T>.NoValue;
             }
         }
@@ -553,9 +553,10 @@
 
             if (keys.Any())
             {
-                foreach (var item in keys)
+                foreach (var key in keys)
                 {
-                    map[item] = this.Get<T>(item.Substring(Name.Length + 1, item.Length - Name.Length - 1));
+                    var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
+                    map[key] = this.Get<T>(cacheKey);
                 }
             }
             return map;
@@ -583,7 +584,10 @@
             if (keys.Any())
             {
                 foreach (string key in keys)
-                    map[key] = GetAsync<T>(key.Substring(Name.Length + 1, key.Length - Name.Length - 1));
+                {
+                    var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
+                    map[key] = GetAsync<T>(cacheKey);
+                }
             }
 
             return Task.WhenAll(map.Values)
@@ -599,14 +603,15 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            cacheKeys = cacheKeys.Select(x => BuildCacheKey(Name, x));
+            cacheKeys = cacheKeys.Select(x => BuildCacheKey(this._name, x));
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            foreach (var item in cacheKeys.Distinct())
+            foreach (var key in cacheKeys.Distinct())
             {
-                _cache.Remove(item);
+                var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
+                Remove(cacheKey);
             }
         }
 
@@ -625,9 +630,10 @@
                 _logger?.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
 
             var tasks = new List<Task>();
-            foreach (var item in cacheKeys.Distinct())
+            foreach (var key in cacheKeys.Distinct())
             {
-                tasks.Add(RemoveAsync(item.Substring(Name.Length + 1, item.Length - Name.Length - 1  )));
+                var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
+                tasks.Add(RemoveAsync(cacheKey));
             }
 
             await Task.WhenAll(tasks);
@@ -653,7 +659,9 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            var cacheKeys = _cacheKeys.Where(x => x.StartsWith(Name, StringComparison.OrdinalIgnoreCase));
+            var cacheKeys = string.IsNullOrWhiteSpace(_name)
+                                  ? _cacheKeys
+                                  : _cacheKeys.Where(x => x.StartsWith(_name, StringComparison.OrdinalIgnoreCase));
 
             foreach (var item in cacheKeys)
             {
@@ -683,7 +691,9 @@
         /// <param name="cacheKey">Cache key.</param>
         private string BuildCacheKey(string prividerName, string cacheKey)
         {
-            return $"{prividerName}-{cacheKey}";
+            return string.IsNullOrWhiteSpace(prividerName)
+                         ? cacheKey
+                         : $"{prividerName}-{cacheKey}";
         }
     }
 }
