@@ -9,13 +9,15 @@
         /// The setsql.
         /// </summary>
         public const string SETSQL = @"
-                DELETE FROM [easycaching] WHERE [cachekey] = @cachekey;
+                DELETE FROM [easycaching] WHERE [cachekey] = @cachekey AND [name]=@name;
                 INSERT INTO [easycaching]
-                    ([cachekey]
+                    ([name]
+                    ,[cachekey]
                     ,[cachevalue]
                     ,[expiration])
                 VALUES
-                    (@cachekey
+                    (@name
+                    ,@cachekey
                     ,@cachevalue
                     ,(select strftime('%s','now')) + @expiration);";
 
@@ -24,63 +26,64 @@
         /// </summary>
         public const string GETSQL = @"SELECT [cachevalue]
                     FROM [easycaching]
-                    WHERE [cachekey] = @cachekey AND [expiration] > strftime('%s','now')";
+                    WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > strftime('%s','now')";
 
         /// <summary>
         /// The getallsql.
         /// </summary>
         public const string GETALLSQL = @"SELECT [cachekey],[cachevalue]
                     FROM [easycaching]
-                    WHERE [cachekey] IN @cachekey AND [expiration] > strftime('%s','now')";
+                    WHERE [cachekey] IN @cachekey AND [name]=@name AND [expiration] > strftime('%s','now')";
         
         /// <summary>
         /// The getbyprefixsql.
         /// </summary>
         public const string GETBYPREFIXSQL = @"SELECT [cachekey],[cachevalue]
                     FROM [easycaching]
-                    WHERE [cachekey] LIKE @cachekey AND [expiration] > strftime('%s','now')";
+                    WHERE [cachekey] LIKE @cachekey AND [name]=@name AND [expiration] > strftime('%s','now')";
 
         /// <summary>
         /// The removesql.
         /// </summary>
-        public const string REMOVESQL = @"DELETE FROM [easycaching] WHERE [cachekey] = @cachekey ";
+        public const string REMOVESQL = @"DELETE FROM [easycaching] WHERE [cachekey] = @cachekey AND [name] = @name ";
 
         /// <summary>
         /// The removebyprefixsql.
         /// </summary>
-        public const string REMOVEBYPREFIXSQL = @"DELETE FROM [easycaching] WHERE [cachekey] like @cachekey ";
+        public const string REMOVEBYPREFIXSQL = @"DELETE FROM [easycaching] WHERE [cachekey] like @cachekey  AND [name]=@name";
 
         /// <summary>
         /// The existssql.
         /// </summary>
         public const string EXISTSSQL = @"SELECT COUNT(1)
                     FROM [easycaching]
-                    WHERE [cachekey] = @cachekey AND [expiration] > strftime('%s','now')";
+                    WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > strftime('%s','now')";
 
         /// <summary>
         /// The countallsql.
         /// </summary>
         public const string COUNTALLSQL = @"SELECT COUNT(1)
             FROM [easycaching]
-            WHERE [expiration] > strftime('%s','now')";
+            WHERE [expiration] > strftime('%s','now') AND [name]=@name";
 
         /// <summary>
         /// The countprefixsql.
         /// </summary>
         public const string COUNTPREFIXSQL = @"SELECT COUNT(1)
             FROM [easycaching]
-            WHERE [cachekey] like @cachekey AND [expiration] > strftime('%s','now')";
+            WHERE [cachekey] like @cachekey AND [name]=@name AND [expiration] > strftime('%s','now')";
 
         /// <summary>
         /// The flushsql.
         /// </summary>
-        public const string FLUSHSQL = @"DELETE FROM [easycaching]";
+        public const string FLUSHSQL = @"DELETE FROM [easycaching] WHERE [name]=@name";
 
         /// <summary>
         /// The createsql.
         /// </summary>
         public const string CREATESQL = @"CREATE TABLE IF NOT EXISTS [easycaching] (
                     [ID] INTEGER PRIMARY KEY
+                    , [name] TEXT
                     , [cachekey] TEXT
                     , [cachevalue] TEXT
                     , [expiration] INTEGER)";

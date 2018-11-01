@@ -36,6 +36,8 @@
         /// </summary>
         private readonly SqliteConnection _cache;
 
+        private readonly string _name= EasyCachingConstValue.DefaultSQLiteName;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
         /// </summary>
@@ -50,6 +52,20 @@
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
+        }
+
+        public DefaultSQLiteCachingProvider(
+            string name,
+            IEnumerable< ISQLiteDatabaseProvider> dbProviders,
+           IOptionsMonitor<SQLiteOptions> options,
+           ILoggerFactory loggerFactory = null)
+        {
+            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
+            this._options = options.CurrentValue;
+            this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
+            this._cache = _dbProvider.GetConnection();
+            this._cacheStats = new CacheStats();
+            this._name = name;
         }
 
         /// <summary>
@@ -80,7 +96,7 @@
 
         public CacheStats CacheStats => _cacheStats;
 
-        public string Name => throw new NotImplementedException();
+        public string Name => this._name;
 
         /// <summary>
         /// Exists the specified cacheKey.
@@ -93,7 +109,7 @@
 
             var dbResult = _cache.ExecuteScalar<int>(ConstSQL.EXISTSSQL, new
             {
-                cachekey = cacheKey
+                cachekey = cacheKey, name = _name
             });
 
             return dbResult == 1;
@@ -110,7 +126,8 @@
 
             var dbResult = await _cache.ExecuteScalarAsync<int>(ConstSQL.EXISTSSQL, new
             {
-                cachekey = cacheKey
+                cachekey = cacheKey,
+                name = _name
             });
 
             return dbResult == 1;
@@ -131,7 +148,8 @@
 
             var dbResult = _cache.Query<string>(ConstSQL.GETSQL, new
             {
-                cachekey = cacheKey
+                cachekey = cacheKey,
+                name = _name
             }).FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dbResult))
@@ -177,7 +195,8 @@
 
             var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
             {
-                cachekey = cacheKey
+                cachekey = cacheKey,
+                name = _name
             });
 
             var dbResult = list.FirstOrDefault();
@@ -222,7 +241,8 @@
 
             var dbResult = _cache.Query<string>(ConstSQL.GETSQL, new
             {
-                cachekey = cacheKey
+                cachekey = cacheKey,
+                name = _name
             }).FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dbResult))
@@ -257,7 +277,8 @@
 
             var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
             {
-                cachekey = cacheKey
+                cachekey = cacheKey,
+                name = _name
             });
 
             var dbResult = list.FirstOrDefault();
@@ -291,7 +312,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = cacheKey });
+            _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name });
         }
 
         /// <summary>
@@ -303,7 +324,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = cacheKey });
+            await _cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name });
         }
 
         /// <summary>
@@ -329,6 +350,7 @@
             _cache.Execute(ConstSQL.SETSQL, new
             {
                 cachekey = cacheKey,
+                name = _name,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
                 expiration = expiration.Ticks / 10000000
             });
@@ -358,6 +380,7 @@
             await _cache.ExecuteAsync(ConstSQL.SETSQL, new
             {
                 cachekey = cacheKey,
+                name = _name,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
                 expiration = expiration.Ticks / 10000000
             });
@@ -409,7 +432,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
-            _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
+            _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }
 
         /// <summary>
@@ -423,7 +446,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
-            await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
+            await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }
 
         /// <summary>
@@ -444,6 +467,7 @@
                 _cache.Execute(ConstSQL.SETSQL, new
                 {
                     cachekey = item.Key,
+                    name = _name,
                     cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(item.Value),
                     expiration = expiration.Ticks / 10000000
                 }, tran);
@@ -472,6 +496,7 @@
                 tasks.Add(_cache.ExecuteAsync(ConstSQL.SETSQL, new
                 {
                     cachekey = item.Key,
+                    name = _name,
                     cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(item.Value),
                     expiration = expiration.Ticks / 10000000
                 }, tran));
@@ -493,7 +518,8 @@
 
             var list = _cache.Query(ConstSQL.GETALLSQL, new
             {
-                cachekey = cacheKeys.ToArray()
+                cachekey = cacheKeys.ToArray(),
+                name = _name
             }).ToList();
 
             return GetDict<T>(list);
@@ -511,7 +537,8 @@
 
             var list = (await _cache.QueryAsync(ConstSQL.GETALLSQL, new
             {
-                cachekey = cacheKeys.ToArray()
+                cachekey = cacheKeys.ToArray(),
+                name = _name
             })).ToList();
 
             return GetDict<T>(list);
@@ -548,7 +575,8 @@
 
             var list = _cache.Query(ConstSQL.GETBYPREFIXSQL, new
             {
-                cachekey = string.Concat(prefix, "%")
+                cachekey = string.Concat(prefix, "%"),
+                name = _name
             }).ToList();
 
             return GetDict<T>(list);
@@ -566,7 +594,8 @@
 
             var list = (await _cache.QueryAsync(ConstSQL.GETBYPREFIXSQL, new
             {
-                cachekey = string.Concat(prefix, "%")
+                cachekey = string.Concat(prefix, "%"),
+                name = _name
             })).ToList();
 
             return GetDict<T>(list);
@@ -583,7 +612,7 @@
             var tran = _cache.BeginTransaction();
 
             foreach (var item in cacheKeys)
-                _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = item }, tran);
+                _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = item, name = _name }, tran);
 
             tran.Commit();
         }
@@ -601,7 +630,7 @@
             var tasks = new List<Task<int>>();
 
             foreach (var item in cacheKeys)
-                tasks.Add(_cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = item }, tran));
+                tasks.Add(_cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = item, name = _name }, tran));
 
             await Task.WhenAll(tasks);
             tran.Commit();
@@ -616,23 +645,23 @@
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                return _cache.ExecuteScalar<int>(ConstSQL.COUNTALLSQL);
+                return _cache.ExecuteScalar<int>(ConstSQL.COUNTALLSQL,new{ name = _name });
             }
             else
             {
-                return _cache.ExecuteScalar<int>(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%") });
+                return _cache.ExecuteScalar<int>(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
             }
         }
 
         /// <summary>
         /// Flush All Cached Item.
         /// </summary>
-        public void Flush() => _cache.Execute(ConstSQL.FLUSHSQL);
+        public void Flush() => _cache.Execute(ConstSQL.FLUSHSQL,new{ name = _name });
 
         /// <summary>
         /// Flush All Cached Item async.
         /// </summary>
         /// <returns>The async.</returns>
-        public async Task FlushAsync() => await _cache.ExecuteAsync(ConstSQL.FLUSHSQL);
+        public async Task FlushAsync() => await _cache.ExecuteAsync(ConstSQL.FLUSHSQL,new { name = _name });
     }
 }
