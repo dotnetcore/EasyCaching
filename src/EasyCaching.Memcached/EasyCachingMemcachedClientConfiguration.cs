@@ -123,7 +123,7 @@
         public EasyCachingMemcachedClientConfiguration(
             string name,
             ILoggerFactory loggerFactory,
-            IOptionsMonitor<MemcachedOptions> optionsAccessor,
+            MemcachedOptions optionsAccessor,
             ITranscoder transcoder = null,
             IMemcachedKeyTransformer keyTransformer = null)
         {
@@ -135,7 +135,7 @@
 
             _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
 
-            var options = optionsAccessor.CurrentValue.DBConfig;
+            var options = optionsAccessor.DBConfig;
             Servers = new List<DnsEndPoint>();
             foreach (var server in options.Servers)
             {

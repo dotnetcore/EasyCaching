@@ -2,7 +2,6 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
-    using Enyim.Caching;
     using Enyim.Caching.Configuration;
     using Enyim.Caching.Memcached;
     using Microsoft.Extensions.Configuration;
@@ -11,6 +10,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using System;
+    using System.Linq;
 
     /// <summary>
     /// Memcached service collection extensions.
@@ -52,9 +52,6 @@
                 var config = x.GetRequiredService<IMemcachedClientConfiguration>();
                 return new EasyCachingMemcachedClient(EasyCachingConstValue.DefaultMemcachedName, loggerFactory, config);
             });
-
-            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<EasyCachingMemcachedClient>());
-
 
             services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
 
@@ -124,13 +121,95 @@
                 return new EasyCachingMemcachedClient(EasyCachingConstValue.DefaultMemcachedName, loggerFactory, config);
             });
 
-            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<EasyCachingMemcachedClient>());
-
-
             services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
+            return services;
+        }
 
+        /// <summary>
+        /// Adds the default memcached.
+        /// </summary>
+        /// <returns>The default memcached.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="name">Name.</param>
+        /// <param name="providerAction">Provider action.</param>
+        public static IServiceCollection AddDefaultMemcached(
+           this IServiceCollection services,
+           string name,
+           Action<MemcachedOptions> providerAction)
+        {
+            ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
+            ArgumentCheck.NotNull(providerAction, nameof(providerAction));
+
+            services.AddOptions();
+            services.Configure(name, providerAction);
+
+            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
+            services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.AddSingleton<EasyCachingMemcachedClientConfiguration>(x =>
+            {
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                var options = optionsMon.Get(name);
+                var loggerFactory = x.GetRequiredService<ILoggerFactory>();
+                var transcoder = x.GetRequiredService<ITranscoder>();
+                var transformer = x.GetRequiredService<IMemcachedKeyTransformer>();
+                return new EasyCachingMemcachedClientConfiguration(name, loggerFactory, options, transcoder, transformer);
+            });
+
+            services.TryAddSingleton<EasyCachingMemcachedClient>(x =>
+            {
+                var loggerFactory = x.GetRequiredService<ILoggerFactory>();
+                var configs = x.GetServices<EasyCachingMemcachedClientConfiguration>();
+                var config = configs.FirstOrDefault(y => y.Name.Equals(name));
+                return new EasyCachingMemcachedClient(name, loggerFactory, config);
+            });
+
+            services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
 
             return services;
-        } 
+        }
+
+        /// <summary>
+        /// Adds the default memcached.
+        /// </summary>
+        /// <returns>The default memcached.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="name">Name.</param>
+        /// <param name="configuration">Configuration.</param>
+        public static IServiceCollection AddDefaultMemcached(
+          this IServiceCollection services,
+           string name,
+           IConfiguration configuration)
+        {
+            var cacheConfig = configuration.GetSection(EasyCachingConstValue.MemcachedSection);
+            services.Configure<MemcachedOptions>(name,cacheConfig);
+
+            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
+            services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.AddSingleton<EasyCachingMemcachedClientConfiguration>(x =>
+            {
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                var options = optionsMon.Get(name);
+                var loggerFactory = x.GetRequiredService<ILoggerFactory>();
+                var transcoder = x.GetRequiredService<ITranscoder>();
+                var transformer = x.GetRequiredService<IMemcachedKeyTransformer>();
+                return new EasyCachingMemcachedClientConfiguration(name, loggerFactory, options, transcoder, transformer);
+            });
+
+            services.TryAddSingleton<EasyCachingMemcachedClient>(x =>
+            {
+                var loggerFactory = x.GetRequiredService<ILoggerFactory>();
+                var configs = x.GetServices<EasyCachingMemcachedClientConfiguration>();
+                var config = configs.FirstOrDefault(y => y.Name.Equals(name));
+                return new EasyCachingMemcachedClient(name, loggerFactory, config);
+            });
+
+            services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
+            return services;
+        }
     }
 }
