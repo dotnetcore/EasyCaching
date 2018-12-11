@@ -36,7 +36,7 @@
         /// </summary>
         private readonly SqliteConnection _cache;
 
-        private readonly string _name= EasyCachingConstValue.DefaultSQLiteName;
+        private readonly string _name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
@@ -52,6 +52,7 @@
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
+            this._name = EasyCachingConstValue.DefaultRedisName;
         }
 
         public DefaultSQLiteCachingProvider(

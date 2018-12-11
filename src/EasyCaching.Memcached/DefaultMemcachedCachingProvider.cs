@@ -60,18 +60,44 @@
 
         public CacheStats CacheStats => _cacheStats;
 
-        public string Name => throw new NotImplementedException();
+        private readonly string _name;
+
+        public string Name => this._name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
-        /// <param name="memcachedClient">Memcached client.</param>
+        /// <param name="memcachedClients">Memcached client.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
         public DefaultMemcachedCachingProvider(
-            IMemcachedClient memcachedClient,
+            IEnumerable<EasyCachingMemcachedClient> memcachedClients,
             IOptionsMonitor<MemcachedOptions> options,
             ILoggerFactory loggerFactory = null)
         {
-            this._memcachedClient = memcachedClient;
+            this._name = EasyCachingConstValue.DefaultMemcachedName;
+            this._memcachedClient = memcachedClients.FirstOrDefault(x=>x.Name.Equals(this._name));
+            this._options = options.CurrentValue;
+            this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
+
+            this._cacheStats = new CacheStats();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="memcachedClients">Memcached client.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        public DefaultMemcachedCachingProvider(
+            string name,
+            IEnumerable<EasyCachingMemcachedClient> memcachedClients,
+            IOptionsMonitor<MemcachedOptions> options,
+            ILoggerFactory loggerFactory = null)
+        {
+            this._name = name;
+            this._memcachedClient = memcachedClients.FirstOrDefault(x => x.Name.Equals(this._name));
             this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
 

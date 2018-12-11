@@ -17,6 +17,7 @@
         private ITranscoder _transcoder;
         private IMemcachedKeyTransformer _keyTransformer;
         private ILogger<EasyCachingMemcachedClientConfiguration> _logger;
+        private string _name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:MemcachedClientConfiguration"/> class.
@@ -27,6 +28,106 @@
             ITranscoder transcoder = null,
             IMemcachedKeyTransformer keyTransformer = null)
         {
+            if (optionsAccessor == null)
+            {
+                throw new ArgumentNullException(nameof(optionsAccessor));
+            }
+
+            _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
+
+            var options = optionsAccessor.CurrentValue.DBConfig;
+            Servers = new List<DnsEndPoint>();
+            foreach (var server in options.Servers)
+            {
+                Servers.Add(new DnsEndPoint(server.Address, server.Port));
+            }
+
+            SocketPool = new SocketPoolConfiguration();
+            if (options.SocketPool != null)
+            {
+                options.SocketPool.CheckPoolSize();
+                options.SocketPool.CheckTimeout();
+
+                SocketPool.MinPoolSize = options.SocketPool.MinPoolSize;
+                _logger.LogInformation($"{nameof(SocketPool.MinPoolSize)}: {SocketPool.MinPoolSize}");
+
+                SocketPool.MaxPoolSize = options.SocketPool.MaxPoolSize;
+                _logger.LogInformation($"{nameof(SocketPool.MaxPoolSize)}: {SocketPool.MaxPoolSize}");
+
+                SocketPool.ConnectionTimeout = options.SocketPool.ConnectionTimeout;
+                _logger.LogInformation($"{nameof(SocketPool.ConnectionTimeout)}: {SocketPool.ConnectionTimeout}");
+
+                SocketPool.ReceiveTimeout = options.SocketPool.ReceiveTimeout;
+                _logger.LogInformation($"{nameof(SocketPool.ReceiveTimeout)}: {SocketPool.ReceiveTimeout}");
+
+                SocketPool.DeadTimeout = options.SocketPool.DeadTimeout;
+                _logger.LogInformation($"{nameof(SocketPool.DeadTimeout)}: {SocketPool.DeadTimeout}");
+
+                SocketPool.QueueTimeout = options.SocketPool.QueueTimeout;
+                _logger.LogInformation($"{nameof(SocketPool.QueueTimeout)}: {SocketPool.QueueTimeout}");
+            }
+
+            Protocol = options.Protocol;
+
+            if (options.Authentication != null && !string.IsNullOrEmpty(options.Authentication.Type))
+            {
+                try
+                {
+                    var authenticationType = Type.GetType(options.Authentication.Type);
+                    if (authenticationType != null)
+                    {
+                        _logger.LogDebug($"Authentication type is {authenticationType}.");
+
+                        Authentication = new AuthenticationConfiguration();
+                        Authentication.Type = authenticationType;
+                        foreach (var parameter in options.Authentication.Parameters)
+                        {
+                            Authentication.Parameters[parameter.Key] = parameter.Value;
+                            _logger.LogDebug($"Authentication {parameter.Key} is '{parameter.Value}'.");
+                        }
+                    }
+                    else
+                    {
+                        _logger.LogError($"Unable to load authentication type {options.Authentication.Type}.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(new EventId(), ex, $"Unable to load authentication type {options.Authentication.Type}.");
+                }
+            }
+
+            if (keyTransformer != null)
+            {
+                this.KeyTransformer = keyTransformer;
+                _logger.LogDebug($"Use KeyTransformer Type : '{keyTransformer.ToString()}'");
+            }
+
+            if (NodeLocator == null)
+            {
+                NodeLocator = options.Servers.Count > 1 ? typeof(DefaultNodeLocator) : typeof(SingleNodeLocator);
+            }
+
+            if (transcoder != null)
+            {
+                this._transcoder = transcoder;
+                _logger.LogDebug($"Use Transcoder Type : '{transcoder.ToString()}'");
+            }
+
+            if (options.NodeLocatorFactory != null)
+            {
+                NodeLocatorFactory = options.NodeLocatorFactory;
+            }
+        }
+
+        public EasyCachingMemcachedClientConfiguration(
+            string name,
+            ILoggerFactory loggerFactory,
+            IOptionsMonitor<MemcachedOptions> optionsAccessor,
+            ITranscoder transcoder = null,
+            IMemcachedKeyTransformer keyTransformer = null)
+        {
+            this._name = name;
             if (optionsAccessor == null)
             {
                 throw new ArgumentNullException(nameof(optionsAccessor));
@@ -137,6 +238,12 @@
         {
             this.Servers.Add(new DnsEndPoint(host, port));
         }
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name => this._name;
 
         /// <summary>
         /// Gets a list of <see cref="T:IPEndPoint"/> each representing a Memcached server in the pool.

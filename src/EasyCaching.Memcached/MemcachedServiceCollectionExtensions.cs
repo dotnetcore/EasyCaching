@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Options;
     using System;
 
     /// <summary>
@@ -31,13 +32,13 @@
             services.AddOptions();
             services.Configure(providerAction);
 
-            services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
-            services.TryAddSingleton<MemcachedClient, MemcachedClient>();
-            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
-
             services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.TryAddSingleton<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
+
+            services.TryAddSingleton<EasyCachingMemcachedClient>();
+            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<EasyCachingMemcachedClient>());
 
             services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
 
@@ -88,8 +89,8 @@
             //services.Configure<EasyCachingMemcachedClientOptions>(memcachedConfig);
 
             services.TryAddTransient<IMemcachedClientConfiguration, EasyCachingMemcachedClientConfiguration>();
-            services.TryAddSingleton<MemcachedClient, MemcachedClient>();
-            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<MemcachedClient>());
+            services.TryAddSingleton<EasyCachingMemcachedClient>();
+            services.TryAddSingleton<IMemcachedClient>(factory => factory.GetService<EasyCachingMemcachedClient>());
 
             services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();

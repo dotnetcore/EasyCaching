@@ -85,6 +85,7 @@
             this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
 
             this._cacheStats = new CacheStats();
+            this._name = EasyCachingConstValue.DefaultInMemoryName;
         }
 
         /// <summary>

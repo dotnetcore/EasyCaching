@@ -100,6 +100,7 @@
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
+            this._name = EasyCachingConstValue.DefaultRedisName;
         }
 
         /// <summary>
