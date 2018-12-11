@@ -33,7 +33,6 @@
             services.AddOptions();
             services.Configure(providerAction);
 
-            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
@@ -101,7 +100,6 @@
             //var memcachedConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);
             //services.Configure<EasyCachingMemcachedClientOptions>(memcachedConfig);
 
-            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();

@@ -172,7 +172,9 @@
             });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _provider = serviceProvider.GetService<IEasyCachingProvider>();
+
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _provider = factory.GetCachingProvider("MyTest");
             _defaultTs = TimeSpan.FromSeconds(50);
         }
 
