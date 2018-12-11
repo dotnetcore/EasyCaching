@@ -164,7 +164,13 @@
                 return new EasyCachingMemcachedClient(name, loggerFactory, config);
             });
 
-            services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>(x =>
+            {
+                var clients = x.GetServices<EasyCachingMemcachedClient>();
+                var options = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                var factory = x.GetService<ILoggerFactory>();
+                return new DefaultMemcachedCachingProvider(name, clients, options, factory);
+            });
 
             return services;
         }
@@ -206,7 +212,14 @@
                 return new EasyCachingMemcachedClient(name, loggerFactory, config);
             });
 
-            services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>(x =>
+            {
+                var clients = x.GetServices<EasyCachingMemcachedClient>();
+                var options = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                var factory = x.GetService<ILoggerFactory>();
+                return new DefaultMemcachedCachingProvider(name, clients, options, factory);
+            });
+
             return services;
         }
     }
