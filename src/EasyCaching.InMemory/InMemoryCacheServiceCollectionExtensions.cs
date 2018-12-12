@@ -85,7 +85,9 @@
         /// </summary>
         /// <returns>The default in-memory cache.</returns>
         /// <param name="services">Services.</param>
-        public static IServiceCollection AddDefaultInMemoryCacheWithFactory(this IServiceCollection services,string providerName = EasyCachingConstValue.DefaultInMemoryName)
+        public static IServiceCollection AddDefaultInMemoryCacheWithFactory(
+            this IServiceCollection services,
+            string providerName = EasyCachingConstValue.DefaultInMemoryName)
         {
             ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
 

@@ -129,16 +129,19 @@
         /// <returns>The default redis cache with factory.</returns>
         /// <param name="services">Services.</param>
         /// <param name="providerName">Provider name.</param>
+        /// <param name="sectionName">Section name.</param>
         /// <param name="configuration">Configuration.</param>
         public static IServiceCollection AddDefaultRedisCacheWithFactory(
            this IServiceCollection services,
             string providerName,
+            string sectionName,
             IConfiguration configuration)
         {
             ArgumentCheck.NotNull(services, nameof(services));
             ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
+            ArgumentCheck.NotNullOrWhiteSpace(sectionName, nameof(sectionName));
 
-            var cacheConfig = configuration.GetSection(EasyCachingConstValue.RedisSection);
+            var cacheConfig = configuration.GetSection(sectionName);
             services.Configure<RedisOptions>(providerName,cacheConfig);
 
             services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
