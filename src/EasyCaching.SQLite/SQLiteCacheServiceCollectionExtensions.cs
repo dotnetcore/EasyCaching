@@ -35,7 +35,6 @@
             return services;
         } 
 
-
         /// <summary>
         /// Adds the SQLite cache.
         /// </summary>
@@ -68,23 +67,30 @@
 
             return services;
         }
-
            
+        /// <summary>
+        /// Adds the SQL ite cache with factory.
+        /// </summary>
+        /// <returns>The SQL ite cache with factory.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="providerName">Provider name.</param>
+        /// <param name="providerAction">Provider action.</param>
         public static IServiceCollection AddSQLiteCacheWithFactory(
             this IServiceCollection services,
-            string name,
+            string providerName,
             Action<SQLiteOptions> providerAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
 
             services.AddOptions();
-            services.Configure(providerAction);
+            services.Configure(providerName, providerAction);
             services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.AddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
-                var options = optionsMon.Get(name);
-                return new SQLiteDatabaseProvider(name, options);
+                var options = optionsMon.Get(providerName);
+                return new SQLiteDatabaseProvider(providerName, options);
             });
 
             services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>(x =>
@@ -92,60 +98,35 @@
                 var dbProviders = x.GetServices<ISQLiteDatabaseProvider>();
                 var options = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
                 var factory = x.GetService<ILoggerFactory>();
-                return new DefaultSQLiteCachingProvider(name, dbProviders, options, factory);
+                return new DefaultSQLiteCachingProvider(providerName, dbProviders, options, factory);
             });
 
             return services;
         }
 
         /// <summary>
-        /// Adds the default redis cache.
+        /// Adds the SQL ite cache with factory.
         /// </summary>
-        /// <example>
-        /// <![CDATA[
-        /// "easycaching": {
-        ///     "redis":{
-        ///         "CachingProviderType": 2,
-        ///         "MaxRdSecond": 120,
-        ///         "Order": 2,
-        ///         "dbconfig": {            
-        ///             "Password": null,
-        ///             "IsSsl": false,
-        ///             "SslHost": null,
-        ///             "ConnectionTimeout": 5000,
-        ///             "AllowAdmin": true,
-        ///             "Endpoints": [
-        ///                 {
-        ///                     "Host": "localhost",
-        ///                     "Port": 6739
-        ///                 }
-        ///             ],
-        ///             "Database": 0,
-        ///             "Configuration":"localhost:6379,allowAdmin=false"
-        ///         }
-        ///     }
-        /// }      
-        /// ]]>
-        /// </example>
-        /// <returns>The default redis cache.</returns>
+        /// <returns>The SQL ite cache with factory.</returns>
         /// <param name="services">Services.</param>
+        /// <param name="providerName">Provider name.</param>
         /// <param name="configuration">Configuration.</param>
         public static IServiceCollection AddSQLiteCacheWithFactory(
            this IServiceCollection services,
-            string name,
+            string providerName,
             IConfiguration configuration)
         {
-            var cacheConfig = configuration.GetSection(EasyCachingConstValue.SQLiteSection);
-            services.Configure<SQLiteOptions>(name, cacheConfig);
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
 
-            //var redisConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);
-            //services.Configure<RedisDBOptions>(redisConfig);
+            var cacheConfig = configuration.GetSection(EasyCachingConstValue.SQLiteSection);
+            services.Configure<SQLiteOptions>(providerName, cacheConfig);
+
             services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.AddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
-                var options = optionsMon.Get(name);
-                return new SQLiteDatabaseProvider(name, options);
+                var options = optionsMon.Get(providerName);
+                return new SQLiteDatabaseProvider(providerName, options);
             });
 
             services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>(x =>
@@ -153,7 +134,7 @@
                 var dbProviders = x.GetServices<ISQLiteDatabaseProvider>();
                 var options = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
                 var factory = x.GetService<ILoggerFactory>();
-                return new DefaultSQLiteCachingProvider(name, dbProviders, options, factory);
+                return new DefaultSQLiteCachingProvider(providerName, dbProviders, options, factory);
             });
 
             return services;

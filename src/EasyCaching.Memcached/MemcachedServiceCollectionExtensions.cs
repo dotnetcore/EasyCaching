@@ -45,7 +45,7 @@
                 return new EasyCachingMemcachedClientConfiguration(loggerFactory, options, transcoder, transformer);
             });
 
-            services.TryAddSingleton<EasyCachingMemcachedClient>(x=> 
+            services.AddSingleton<EasyCachingMemcachedClient>(x=> 
             {
                 var loggerFactory = x.GetRequiredService<ILoggerFactory>();
                 var config = x.GetRequiredService<IMemcachedClientConfiguration>();
@@ -94,11 +94,10 @@
            this IServiceCollection services,
             IConfiguration configuration)
         {
+            ArgumentCheck.NotNull(services, nameof(services));
+
             var cacheConfig = configuration.GetSection(EasyCachingConstValue.MemcachedSection);
             services.Configure<MemcachedOptions>(cacheConfig);
-
-            //var memcachedConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);
-            //services.Configure<EasyCachingMemcachedClientOptions>(memcachedConfig);
 
             services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
@@ -112,35 +111,35 @@
                 return new EasyCachingMemcachedClientConfiguration(loggerFactory, options, transcoder, transformer);
             });
 
-            services.TryAddSingleton<EasyCachingMemcachedClient>(x =>
+            services.AddSingleton<EasyCachingMemcachedClient>(x =>
             {
                 var loggerFactory = x.GetRequiredService<ILoggerFactory>();
                 var config = x.GetRequiredService<IMemcachedClientConfiguration>();
                 return new EasyCachingMemcachedClient(EasyCachingConstValue.DefaultMemcachedName, loggerFactory, config);
             });
 
-            services.TryAddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>();
             return services;
         }
 
         /// <summary>
-        /// Adds the default memcached.
+        /// Adds the default memcached with factory.
         /// </summary>
-        /// <returns>The default memcached.</returns>
+        /// <returns>The default memcached with factory.</returns>
         /// <param name="services">Services.</param>
-        /// <param name="name">Name.</param>
+        /// <param name="providerName">Provider name.</param>
         /// <param name="providerAction">Provider action.</param>
-        public static IServiceCollection AddDefaultMemcached(
+        public static IServiceCollection AddDefaultMemcachedWithFactory(
            this IServiceCollection services,
-           string name,
+           string providerName,
            Action<MemcachedOptions> providerAction)
         {
             ArgumentCheck.NotNull(services, nameof(services));
-            ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
             ArgumentCheck.NotNull(providerAction, nameof(providerAction));
 
             services.AddOptions();
-            services.Configure(name, providerAction);
+            services.Configure(providerName, providerAction);
 
             services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
@@ -149,19 +148,19 @@
             services.AddSingleton<EasyCachingMemcachedClientConfiguration>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
-                var options = optionsMon.Get(name);
+                var options = optionsMon.Get(providerName);
                 var loggerFactory = x.GetRequiredService<ILoggerFactory>();
                 var transcoder = x.GetRequiredService<ITranscoder>();
                 var transformer = x.GetRequiredService<IMemcachedKeyTransformer>();
-                return new EasyCachingMemcachedClientConfiguration(name, loggerFactory, options, transcoder, transformer);
+                return new EasyCachingMemcachedClientConfiguration(providerName, loggerFactory, options, transcoder, transformer);
             });
 
-            services.TryAddSingleton<EasyCachingMemcachedClient>(x =>
+            services.AddSingleton<EasyCachingMemcachedClient>(x =>
             {
                 var loggerFactory = x.GetRequiredService<ILoggerFactory>();
                 var configs = x.GetServices<EasyCachingMemcachedClientConfiguration>();
-                var config = configs.FirstOrDefault(y => y.Name.Equals(name));
-                return new EasyCachingMemcachedClient(name, loggerFactory, config);
+                var config = configs.FirstOrDefault(y => y.Name.Equals(providerName));
+                return new EasyCachingMemcachedClient(providerName, loggerFactory, config);
             });
 
             services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>(x =>
@@ -169,26 +168,29 @@
                 var clients = x.GetServices<EasyCachingMemcachedClient>();
                 var options = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
                 var factory = x.GetService<ILoggerFactory>();
-                return new DefaultMemcachedCachingProvider(name, clients, options, factory);
+                return new DefaultMemcachedCachingProvider(providerName, clients, options, factory);
             });
 
             return services;
         }
 
         /// <summary>
-        /// Adds the default memcached.
+        /// Adds the default memcached with factory.
         /// </summary>
-        /// <returns>The default memcached.</returns>
+        /// <returns>The default memcached with factory.</returns>
         /// <param name="services">Services.</param>
-        /// <param name="name">Name.</param>
+        /// <param name="providerName">Provider name.</param>
         /// <param name="configuration">Configuration.</param>
-        public static IServiceCollection AddDefaultMemcached(
+        public static IServiceCollection AddDefaultMemcachedWithFactory(
           this IServiceCollection services,
-           string name,
+           string providerName,
            IConfiguration configuration)
         {
+            ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
+
             var cacheConfig = configuration.GetSection(EasyCachingConstValue.MemcachedSection);
-            services.Configure<MemcachedOptions>(name,cacheConfig);
+            services.Configure<MemcachedOptions>(providerName,cacheConfig);
 
             services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
@@ -197,19 +199,19 @@
             services.AddSingleton<EasyCachingMemcachedClientConfiguration>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
-                var options = optionsMon.Get(name);
+                var options = optionsMon.Get(providerName);
                 var loggerFactory = x.GetRequiredService<ILoggerFactory>();
                 var transcoder = x.GetRequiredService<ITranscoder>();
                 var transformer = x.GetRequiredService<IMemcachedKeyTransformer>();
-                return new EasyCachingMemcachedClientConfiguration(name, loggerFactory, options, transcoder, transformer);
+                return new EasyCachingMemcachedClientConfiguration(providerName, loggerFactory, options, transcoder, transformer);
             });
 
-            services.TryAddSingleton<EasyCachingMemcachedClient>(x =>
+            services.AddSingleton<EasyCachingMemcachedClient>(x =>
             {
                 var loggerFactory = x.GetRequiredService<ILoggerFactory>();
                 var configs = x.GetServices<EasyCachingMemcachedClientConfiguration>();
-                var config = configs.FirstOrDefault(y => y.Name.Equals(name));
-                return new EasyCachingMemcachedClient(name, loggerFactory, config);
+                var config = configs.FirstOrDefault(y => y.Name.Equals(providerName));
+                return new EasyCachingMemcachedClient(providerName, loggerFactory, config);
             });
 
             services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>(x =>
@@ -217,7 +219,7 @@
                 var clients = x.GetServices<EasyCachingMemcachedClient>();
                 var options = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
                 var factory = x.GetService<ILoggerFactory>();
-                return new DefaultMemcachedCachingProvider(name, clients, options, factory);
+                return new DefaultMemcachedCachingProvider(providerName, clients, options, factory);
             });
 
             return services;
