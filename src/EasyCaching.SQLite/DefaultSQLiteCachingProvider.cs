@@ -36,6 +36,14 @@
         /// </summary>
         private readonly SqliteConnection _cache;
 
+        /// <summary>
+        /// The cache stats.
+        /// </summary>
+        private readonly CacheStats _cacheStats;
+
+        /// <summary>
+        /// The name.
+        /// </summary>
         private readonly string _name;
 
         /// <summary>
@@ -93,10 +101,16 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
-        private readonly CacheStats _cacheStats;
-
+        /// <summary>
+        /// Gets the cache stats.
+        /// </summary>
+        /// <value>The cache stats.</value>
         public CacheStats CacheStats => _cacheStats;
 
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
         public string Name => this._name;
 
         /// <summary>

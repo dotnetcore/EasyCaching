@@ -2,7 +2,6 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
-    using Enyim.Caching;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -20,7 +19,7 @@
         /// <summary>
         /// The memcached client.
         /// </summary>
-        private readonly IMemcachedClient _memcachedClient;
+        private readonly EasyCachingMemcachedClient _memcachedClient;
 
         /// <summary>
         /// The options.
@@ -31,6 +30,16 @@
         /// The logger.
         /// </summary>
         private readonly ILogger _logger;
+
+        /// <summary>
+        /// The cache stats.
+        /// </summary>
+        private readonly CacheStats _cacheStats;
+
+        /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
 
         /// <summary>
         /// <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/>
@@ -56,12 +65,16 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
-        private readonly CacheStats _cacheStats;
-
+        /// <summary>
+        /// Gets the cache stats.
+        /// </summary>
+        /// <value>The cache stats.</value>
         public CacheStats CacheStats => _cacheStats;
 
-        private readonly string _name;
-
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
         public string Name => this._name;
 
         /// <summary>
