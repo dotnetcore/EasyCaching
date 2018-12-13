@@ -27,16 +27,15 @@ for:
   clone_folder: C:\projects\easycaching\
 
   install:
-  - cmd: >-
-        cd C:\projects\easycaching\tools\RedisConfigs\3.0.503
-        redis-server.exe --service-install --service-name "redis-6379" "..\Basic\master-6379.conf"
-        net start redis-6379
-        sc create memcached1 binpath= "c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11211" start= auto displayname= "memcached1"
-        sc create memcached2 binpath= "c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11212" start= auto displayname= "memcached2"
-        net start memcached1
-        net start memcached2
-        cd C:\projects\easycaching
-    
+  - ps: cd c:\projects\easycaching\tools\RedisConfigs\3.0.503\
+  - ps: .\redis-server.exe --service-install --service-name "redis-6379" "..\Basic\master-6379.conf"
+  - ps: net start redis-6379
+  - ps: new-service –Name memcached1 –DisplayName memcached1 –BinaryPathName “c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11211” –StartupType Automatic
+  - ps: new-service –Name memcached2 –DisplayName memcached2 –BinaryPathName “c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11212” –StartupType Automatic  
+  - ps: net start memcached1
+  - ps: net start memcached2
+  - ps: cd c:\projects\easycaching
+                
   before_build:
   - ps: dotnet restore
 
@@ -57,15 +56,11 @@ for:
   - redis
 
   install:
-  - sh: >-
-    sudo apt-get install libevent libevent-deve
-
-    sudo apt-get install memcached
-
-    sudo memcached -p 11211 -u root -m 64m -d
-
-    sudo memcached -p 11212 -u root -m 64m -d
-
+  #- sh: sudo apt-get install libevent libevent-deve
+  - sh: sudo apt-get install memcached
+  - sh: sudo memcached -p 11211 -u root -m 64m -d
+  - sh: sudo memcached -p 11212 -u root -m 64m -d
+    
   before_build:
   - sh: dotnet restore
   
@@ -74,3 +69,5 @@ for:
   
   test_script:
    - sh: dotnet test -c Release --no-build ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
+  
+   
