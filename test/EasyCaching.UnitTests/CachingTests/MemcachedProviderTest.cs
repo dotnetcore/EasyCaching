@@ -168,7 +168,7 @@
             IServiceCollection services = new ServiceCollection();
             services.AddDefaultMemcachedWithFactory("MyTest",options =>
             {
-                options.DBConfig.AddServer("127.0.0.1", 11211);
+                options.DBConfig.AddServer("127.0.0.1", 11212);
             });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
