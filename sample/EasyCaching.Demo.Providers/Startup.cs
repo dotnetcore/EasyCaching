@@ -29,7 +29,10 @@
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             //1. Important step for using InMemory Cache
-            services.AddDefaultInMemoryCache(x => { x.EnableLogging = true; });
+            //services.AddDefaultInMemoryCache();
+
+            //services.AddDefaultInMemoryCacheWithFactory();
+            services.AddDefaultInMemoryCacheWithFactory("cus");
 
             //services.AddDefaultInMemoryCache(Configuration);
 
@@ -47,6 +50,18 @@
             //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             //    option.DBConfig.Password = "";
             //});
+
+            services.AddDefaultRedisCacheWithFactory("redis1",option =>
+            {
+                option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                option.DBConfig.Password = "";
+            });
+
+            services.AddDefaultRedisCacheWithFactory("redis2", option =>
+            {
+                option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                option.DBConfig.Password = "";
+            });
 
             //services.AddDefaultRedisCache(Configuration);
 

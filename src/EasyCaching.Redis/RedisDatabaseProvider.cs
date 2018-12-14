@@ -32,6 +32,17 @@
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
         }
 
+        public RedisDatabaseProvider(string name,RedisOptions options)
+        {
+            _options = options.DBConfig;
+            _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
+            _name = name;
+        }
+
+        private readonly string _name;
+
+        public string DBProviderName => this._name;
+
         /// <summary>
         /// Gets the database connection.
         /// </summary>

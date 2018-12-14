@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.SQLite
 {
+    using EasyCaching.Core;
     using Microsoft.Data.Sqlite;
     using Microsoft.Extensions.Options;
 
@@ -22,10 +23,20 @@
             this._options = optionAction.CurrentValue.DBConfig;
         }
 
+
+        public SQLiteDatabaseProvider(string name , SQLiteOptions options)
+        {
+            this._name = name;
+            this._options = options.DBConfig;
+        }
+
         /// <summary>
         /// The conn.
         /// </summary>
         private static SqliteConnection _conn;
+
+        private readonly string _name = EasyCachingConstValue.DefaultSQLiteName;
+        public string DBProviderName => _name;
 
         /// <summary>
         /// Gets the connection.

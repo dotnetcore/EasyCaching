@@ -28,6 +28,14 @@
         /// <summary>
         /// The in-memory section.
         /// </summary>
-        public const string InMemorySection = "easycaching:inmemory";         
+        public const string InMemorySection = "easycaching:inmemory";
+
+        public const string DefaultInMemoryName = "DefaultInMemory";
+
+        public const string DefaultRedisName = "DefaultRedis";
+
+        public const string DefaultMemcachedName = "DefaultMemcached";
+
+        public const string DefaultSQLiteName = "DefaultSQLite";
     }
 }

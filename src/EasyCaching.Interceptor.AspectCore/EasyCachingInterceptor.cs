@@ -58,10 +58,8 @@
         /// <param name="next">Next.</param>
         private async Task ProceedAbleAsync(AspectContext context, AspectDelegate next)
         {
-            var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) as EasyCachingAbleAttribute;
-
-            if (attribute != null)
-            {                
+            if (context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
+            {
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
                 var cacheValue = await CacheProvider.GetAsync<object>(cacheKey);
 
@@ -114,9 +112,7 @@
         /// <param name="context">Context.</param>
         private async Task ProcessPutAsync(AspectContext context)
         {
-            var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) as EasyCachingPutAttribute;
-
-            if (attribute != null && context.ReturnValue != null)
+            if (context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && context.ReturnValue != null)
             {
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
@@ -142,9 +138,7 @@
         /// <param name="isBefore">If set to <c>true</c> is before.</param>
         private async Task ProcessEvictAsync(AspectContext context, bool isBefore)
         {
-            var attribute = context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) as EasyCachingEvictAttribute;
-
-            if (attribute != null && attribute.IsBefore == isBefore)
+            if (context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {
                 if (attribute.IsAll)
                 {
@@ -161,19 +155,6 @@
                     await CacheProvider.RemoveAsync(cacheKey);
                 }
             }
-        }
-
-        private static async Task InterceptAsync(Task task)
-        {
-            await task.ConfigureAwait(false);
-            // do the continuation work for Task...
-        }
-
-        private static async Task<T> InterceptAsync<T>(Task<T> task)
-        {
-            T result = await task.ConfigureAwait(false);
-            // do the continuation work for Task<T>...
-            return result;
         }
     }
 }

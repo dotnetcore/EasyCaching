@@ -9,6 +9,8 @@
     /// </summary>
     public interface IEasyCachingProvider
     {
+        string Name { get; }
+
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>

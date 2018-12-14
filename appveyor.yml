@@ -1,7 +1,9 @@
 version: 1.0.{build}
-image: Visual Studio 2017 Preview
+image:
+- Ubuntu1804
+- Visual Studio 2017
 configuration: Release
-clone_folder: C:\projects\easycaching\
+clone_depth: 50
 
 pull_requests:
   do_not_increment_build_number: true
@@ -17,50 +19,55 @@ skip_commits:
     - .travis.yml
     - .gitignore
 
-install:
-#- ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-#- ps: .\dotnet-install.ps1 --Version 2.1.301
-#- ps: dotnet --info
-- cmd: >-
-    cd C:\projects\easycaching\tools\RedisConfigs\3.0.503
+for:
+-
+  matrix:
+    only:
+      - image: Visual Studio 2017
+  clone_folder: C:\projects\easycaching\
 
-    redis-server.exe --service-install --service-name "redis-6379" "..\Basic\master-6379.conf"
+  install:
+  - ps: cd c:\projects\easycaching\tools\RedisConfigs\3.0.503\
+  - ps: .\redis-server.exe --service-install --service-name "redis-6379" "..\Basic\master-6379.conf"
+  - ps: net start redis-6379
+  - ps: new-service –Name memcached1 –DisplayName memcached1 –BinaryPathName “c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11211” –StartupType Automatic
+  - ps: new-service –Name memcached2 –DisplayName memcached2 –BinaryPathName “c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11212” –StartupType Automatic  
+  - ps: net start memcached1
+  - ps: net start memcached2
+  - ps: cd c:\projects\easycaching
+                
+  before_build:
+  - ps: dotnet restore
 
-    net start redis-6379
+  build_script:
+  - ps: dotnet build -c Release
 
-    c:\projects\easycaching\tools\memcached\memcached.exe -d install
+  test_script:
+  - ps: dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
 
-    net start memcached
+-
+  matrix:
+    only:
+      - image: Ubuntu1804
 
-    cd C:\projects\easycaching
+  clone_folder: /home/appveyor/projects/easycaching
+
+  services:
+  - redis
+
+  install:
+  #- sh: sudo apt-get install libevent libevent-deve
+  - sh: sudo apt-get install memcached
+  - sh: sudo memcached -p 11211 -u root -m 64m -d
+  - sh: sudo memcached -p 11212 -u root -m 64m -d
     
-before_build:
-- cmd: dotnet restore
-
-build:
-  project: EasyCaching.sln
-  parallel: true
-  verbosity: minimal
+  before_build:
+  - sh: dotnet restore
   
-test_script:
-- cmd: >-
-    dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
-#before_test:
-#- ps: >-
-#    nuget install coveralls.net -Version 0.7.0 -OutputDirectory tools
-    
-#    nuget install OpenCover -Version 4.6.519 -OutputDirectory tools
-
-#test_script:
-#- ps: tools\OpenCover.4.6.519\tools\OpenCover.Console.exe -target:"dotnet.exe" -targetargs:" test  test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj -c Debug /p:DebugType=full" -register:user -filter:"+[EasyCaching*]* -[EasyCaching*Tests]*" -oldstyle -returntargetcode -output:coverage.xml
-    
-#after_test:
-#- ps: >-
-#    if ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-#    {       
-#      tools\coveralls.net.0.7.0\tools\csmacnz.Coveralls.exe --opencover -i coverage.xml --serviceName appveyor --useRelativePaths
-#    }
-#    else 
-#    {
-#      echo "not master branch...."
-#    }
+  build_script:
+  - sh: dotnet build -c Release
+  
+  test_script:
+   - sh: dotnet test -c Release --no-build ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
+  
+   

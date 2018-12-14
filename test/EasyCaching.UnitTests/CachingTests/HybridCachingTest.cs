@@ -19,6 +19,7 @@
             RedisOptions options = new RedisOptions();
             options.DBConfig.AllowAdmin = true;
             options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            options.DBConfig.Database = 6;
 
             var fakeOption = A.Fake<IOptionsMonitor<RedisOptions>>();
 

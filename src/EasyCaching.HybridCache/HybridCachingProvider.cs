@@ -44,6 +44,8 @@
 
         public CacheStats CacheStats => throw new NotImplementedException();
 
+        public string Name => throw new NotImplementedException();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
         /// </summary>

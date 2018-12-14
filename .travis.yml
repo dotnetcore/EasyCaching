@@ -27,4 +27,4 @@ script:
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
   - dotnet build -c Release
-  - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj; fi
+  #- if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj; fi

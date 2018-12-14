@@ -19,5 +19,7 @@
         /// </summary>
         /// <returns>The server list.</returns>
         IEnumerable<IServer> GetServerList();
+
+        string DBProviderName { get; }
     }
 }

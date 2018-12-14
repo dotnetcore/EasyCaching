@@ -46,6 +46,16 @@
         private readonly RedisOptions _options;
 
         /// <summary>
+        /// The cache stats.
+        /// </summary>
+        private readonly CacheStats _cacheStats;
+
+        /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
+
+        /// <summary>
         /// <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> 
         /// is distributed cache.
         /// </summary>
@@ -69,15 +79,25 @@
         /// <value>The type of the caching provider.</value>
         public CachingProviderType CachingProviderType => _options.CachingProviderType;
 
-        private readonly CacheStats _cacheStats;
-
+        /// <summary>
+        /// Gets the cache stats.
+        /// </summary>
+        /// <value>The cache stats.</value>
         public CacheStats CacheStats => _cacheStats;
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name => this._name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
-        /// <param name="dbProvider">DB Provider.</param>
+        /// <param name="dbProvider">Db provider.</param>
         /// <param name="serializer">Serializer.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
         public DefaultRedisCachingProvider(
             IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer,
@@ -94,6 +114,35 @@
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
+            this._name = EasyCachingConstValue.DefaultRedisName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="dbProviders">Db providers.</param>
+        /// <param name="serializer">Serializer.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        public DefaultRedisCachingProvider(
+            string name,
+            IEnumerable<IRedisDatabaseProvider> dbProviders,
+            IEasyCachingSerializer serializer,
+            IOptionsMonitor<RedisOptions> options,
+            ILoggerFactory loggerFactory = null)
+        {
+            ArgumentCheck.NotNullAndCountGTZero(dbProviders, nameof(dbProviders));
+            ArgumentCheck.NotNull(serializer, nameof(serializer));
+
+            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
+            this._serializer = serializer;
+            this._options = options.CurrentValue;
+            this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
+            this._cache = _dbProvider.GetDatabase();
+            this._servers = _dbProvider.GetServerList();
+            this._cacheStats = new CacheStats();
+            this._name = name;
         }
 
         /// <summary>
@@ -133,7 +182,7 @@
                 return new CacheValue<T>(item, true);
             }
             else
-            {                
+            {
                 return CacheValue<T>.NoValue;
             }
         }
@@ -431,7 +480,7 @@
             var keys = new List<RedisKey>();
 
             foreach (var server in _servers)
-                keys.AddRange(server.Keys(pattern: pattern));
+                keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database));
 
             return keys.Distinct().ToArray();
 
@@ -485,7 +534,7 @@
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
-            
+
             var batch = _cache.CreateBatch();
 
             foreach (var item in values)
@@ -505,7 +554,7 @@
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
-            
+
             var tasks = new List<Task>();
 
             foreach (var item in values)
@@ -658,7 +707,7 @@
         /// <param name="prefix">Prefix.</param>
         public int GetCount(string prefix = "")
         {
-            if(string.IsNullOrWhiteSpace(prefix))
+            if (string.IsNullOrWhiteSpace(prefix))
             {
                 var allCount = 0;
 
@@ -666,9 +715,9 @@
                     allCount += (int)server.DatabaseSize(_cache.Database);
 
                 return allCount;
-            }            
+            }
 
-            return this.SearchRedisKeys(this.HandlePrefix(prefix)).Length;  
+            return this.SearchRedisKeys(this.HandlePrefix(prefix)).Length;
         }
 
         /// <summary>

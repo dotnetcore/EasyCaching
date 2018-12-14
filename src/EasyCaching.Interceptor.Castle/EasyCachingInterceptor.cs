@@ -60,9 +60,7 @@
         {
             var serviceMethod = invocation.MethodInvocationTarget ?? invocation.Method;
 
-            var attribute = serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) as EasyCachingAbleAttribute;
-
-            if (attribute != null)
+            if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
             {
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
@@ -96,9 +94,7 @@
         {
             var serviceMethod = invocation.MethodInvocationTarget ?? invocation.Method;
 
-            var attribute = serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) as EasyCachingPutAttribute;
-
-            if (attribute != null && invocation.ReturnValue != null)
+            if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && invocation.ReturnValue != null)
             {
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
@@ -115,11 +111,9 @@
         {
             var serviceMethod = invocation.MethodInvocationTarget ?? invocation.Method;
 
-            var attribute = serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) as EasyCachingEvictAttribute;
-
-            if (attribute != null && attribute.IsBefore == isBefore)
-            {                
-                if(attribute.IsAll)
+            if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
+            {
+                if (attribute.IsAll)
                 {
                     //If is all , clear all cached items which cachekey start with the prefix.
                     var cacheKeyPrefix = _keyGenerator.GetCacheKeyPrefix(serviceMethod, attribute.CacheKeyPrefix);
@@ -131,7 +125,7 @@
                     //If not all , just remove the cached item by its cachekey.
                     var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
-                    _cacheProvider.Remove(cacheKey);    
+                    _cacheProvider.Remove(cacheKey);
                 }
             }
         }

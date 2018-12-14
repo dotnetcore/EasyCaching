@@ -5,6 +5,8 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using System;
 
     /// <summary>
@@ -29,10 +31,10 @@
 
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
 
             return services;
-        } 
+        }
 
         /// <summary>
         /// Adds the default redis cache.
@@ -70,15 +72,95 @@
            this IServiceCollection services,
             IConfiguration configuration)
         {
+            ArgumentCheck.NotNull(services, nameof(services));
+
             var cacheConfig = configuration.GetSection(EasyCachingConstValue.RedisSection);
             services.Configure<RedisOptions>(cacheConfig);
 
-            //var redisConfig = configuration.GetSection(EasyCachingConstValue.ConfigChildSection);
-            //services.Configure<RedisDBOptions>(redisConfig);
-
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the default redis cache with factory.
+        /// </summary>
+        /// <returns>The default redis cache with factory.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="providerName">Provider name.</param>
+        /// <param name="providerAction">Provider action.</param>
+        public static IServiceCollection AddDefaultRedisCacheWithFactory(
+            this IServiceCollection services,
+            string providerName,
+            Action<RedisOptions> providerAction)
+        {
+            ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
+
+            services.AddOptions();
+            services.Configure(providerName, providerAction);
+
+            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(x =>
+            {
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var options = optionsMon.Get(providerName);
+                return new RedisDatabaseProvider(providerName, options);
+            });
+
+            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(x =>
+            {
+                var dbProviders = x.GetServices<IRedisDatabaseProvider>();
+                var serializer = x.GetRequiredService<IEasyCachingSerializer>();
+                var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var factory = x.GetService<ILoggerFactory>();
+                return new DefaultRedisCachingProvider(providerName, dbProviders, serializer, options, factory);
+            });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the default redis cache with factory.
+        /// </summary>
+        /// <returns>The default redis cache with factory.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="providerName">Provider name.</param>
+        /// <param name="sectionName">Section name.</param>
+        /// <param name="configuration">Configuration.</param>
+        public static IServiceCollection AddDefaultRedisCacheWithFactory(
+           this IServiceCollection services,
+            string providerName,
+            string sectionName,
+            IConfiguration configuration)
+        {
+            ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
+            ArgumentCheck.NotNullOrWhiteSpace(sectionName, nameof(sectionName));
+
+            var cacheConfig = configuration.GetSection(sectionName);
+            services.Configure<RedisOptions>(providerName,cacheConfig);
+
+            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(x =>
+            {
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var options = optionsMon.Get(providerName);
+                return new RedisDatabaseProvider(providerName, options);
+            });
+
+            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(x =>
+            {
+                var dbProviders = x.GetServices<IRedisDatabaseProvider>();
+                var serializer = x.GetRequiredService<IEasyCachingSerializer>();
+                var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var factory = x.GetService<ILoggerFactory>();
+                return new DefaultRedisCachingProvider(providerName, dbProviders, serializer, options, factory);
+            });
 
             return services;
         }

@@ -4,7 +4,6 @@
     using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
     /// <summary>
@@ -46,7 +45,7 @@
             services.Configure(providerAction);
                        
             services.AddMemoryCache();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
 
             return services;
         }
@@ -76,7 +75,61 @@
             services.Configure<InMemoryOptions>(dbConfig);
 
             services.AddMemoryCache();
-            services.TryAddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
+            services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>();
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the default in-memory cache.
+        /// </summary>
+        /// <returns>The default in-memory cache.</returns>
+        /// <param name="services">Services.</param>
+        public static IServiceCollection AddDefaultInMemoryCacheWithFactory(
+            this IServiceCollection services,
+            string providerName = EasyCachingConstValue.DefaultInMemoryName)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
+
+            var option = new InMemoryOptions();
+
+            return services.AddDefaultInMemoryCacheWithFactory(providerName, x =>
+            {
+                x.CachingProviderType = option.CachingProviderType;
+                x.MaxRdSecond = option.MaxRdSecond;
+                x.Order = option.Order;
+            });
+        }
+
+        /// <summary>
+        /// Adds the default in-memory cache.
+        /// </summary>
+        /// <returns>The default in-memory cache.</returns>
+        /// <param name="services">Services.</param>
+        /// <param name="providerAction">Option.</param>
+        public static IServiceCollection AddDefaultInMemoryCacheWithFactory(
+            this IServiceCollection services,
+            string providerName,
+            Action<InMemoryOptions> providerAction)
+        {
+            ArgumentCheck.NotNull(services, nameof(services));
+            ArgumentCheck.NotNullOrWhiteSpace(providerName, nameof(providerName));
+            ArgumentCheck.NotNull(providerAction, nameof(providerAction));
+
+            services.AddOptions();
+            services.Configure(providerAction);
+
+            services.AddMemoryCache();
+
+            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>(x=>
+            {
+                var mCache = x.GetRequiredService<Microsoft.Extensions.Caching.Memory.IMemoryCache>();
+                var options = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
+                //ILoggerFactory can be null
+                var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
+                return new DefaultInMemoryCachingProvider(providerName, mCache, options,factory);                           
+            });
 
             return services;
         }
