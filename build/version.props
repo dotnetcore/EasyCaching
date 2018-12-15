@@ -1,10 +1,10 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageVersion>0.3.0</EasyCachingCorePackageVersion>
-		<EasyCachingMemcachedPackageVersion>0.3.0</EasyCachingMemcachedPackageVersion>
-		<EasyCachingRedisPackageVersion>0.3.0</EasyCachingRedisPackageVersion>
-		<EasyCachingSQLitePackageVersion>0.3.0</EasyCachingSQLitePackageVersion>
-		<EasyCachingInMemoryPackageVersion>0.3.0</EasyCachingInMemoryPackageVersion>
+		<EasyCachingCorePackageVersion>0.4.0</EasyCachingCorePackageVersion>
+		<EasyCachingMemcachedPackageVersion>0.4.0</EasyCachingMemcachedPackageVersion>
+		<EasyCachingRedisPackageVersion>0.4.0</EasyCachingRedisPackageVersion>
+		<EasyCachingSQLitePackageVersion>0.4.0</EasyCachingSQLitePackageVersion>
+		<EasyCachingInMemoryPackageVersion>0.4.0</EasyCachingInMemoryPackageVersion>
 		<EasyCachingHybridPackageVersion>0.3.0</EasyCachingHybridPackageVersion>
 		<EasyCachingAspectCorePackageVersion>0.3.1</EasyCachingAspectCorePackageVersion>
 		<EasyCachingCastlePackageVersion>0.3.0</EasyCachingCastlePackageVersion>
