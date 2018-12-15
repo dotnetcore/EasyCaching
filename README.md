@@ -9,10 +9,10 @@ EasyCaching is an open source caching library that contains basic usages and som
 
 ## CI Build Status
 
-| Platform | Build Server | Status  |
-|--------- |------------- |---------|
-| AppVeyor |  Windows |[![Build status](https://ci.appveyor.com/api/projects/status/4x6qal9c1r10wn6x?svg=true)](https://ci.appveyor.com/project/catcherwong/easycaching-48okb) |
-| Travis   | Linux/OSX | [![Build Status](https://travis-ci.org/dotnetcore/EasyCaching.svg?branch=master)](https://travis-ci.org/dotnetcore/EasyCaching) |    
+| Platform | Build Server | Master Status  | Dev Status  |
+|--------- |------------- |---------|---------|
+| AppVeyor |  Windows/Linux |[![Build status](https://ci.appveyor.com/api/projects/status/4x6qal9c1r10wn6x/branch/master?svg=true)](https://ci.appveyor.com/project/catcherwong/easycaching-48okb/branch/master) |[![Build status](https://ci.appveyor.com/api/projects/status/4x6qal9c1r10wn6x/branch/dev?svg=true)](https://ci.appveyor.com/project/catcherwong/easycaching-48okb/branch/dev)|
+| Travis   | Linux/OSX | [![Build Status](https://travis-ci.org/dotnetcore/EasyCaching.svg?branch=master)](https://travis-ci.org/dotnetcore/EasyCaching) |    [![Build Status](https://travis-ci.org/dotnetcore/EasyCaching.svg?branch=dev)](https://travis-ci.org/dotnetcore/EasyCaching) |
 
 ## Nuget Packages
 
@@ -53,7 +53,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 |--------------|  ------- | ----
 | EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)
 
-## Basci Usages 
+## Basic Usages 
 
 ### Step 1 : Install the package
 
@@ -70,7 +70,7 @@ Install-Package EasyCaching.Memcached
 
 Different types of caching hvae their own way to config.
 
-Here are samples show you how to config.
+Here is a sample show you how to config.
 
 ```csharp
 public class Startup
@@ -81,62 +81,12 @@ public class Startup
     {
         services.AddMvc();
 
-        //1. In-Memory Cache
+        //In-Memory Cache
         services.AddDefaultInMemoryCache();
         
         //Read from appsetting.json
-        //services.AddDefaultInMemoryCache(Configuration);
-        
-        ////2. Important step for using Memcached Cache
-        //services.AddDefaultMemcached(op =>
-        //{
-        //    op.DBConfig.AddServer("127.0.0.1", 11211);
-        //});
-
-        //services.AddDefaultMemcached(Configuration);
-
-        //3. Important step for using Redis Cache
-        //services.AddDefaultRedisCache(option =>
-        //{
-        //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-        //    option.DBConfig.Password = "";
-        //});
-
-        //services.AddDefaultRedisCache(Configuration);
-
-        ////4. Important step for using SQLite Cache
-        //services.AddSQLiteCache(option => 
-        //{
-        //    option.DBConfig = new SQLiteDBOptions { FileName="my.db" };
-        //});
-
-        //services.AddSQLiteCache(Configuration);
-
-        ////5. Important step for using Hybrid Cache
-        ////5.1. Local Cache
-        //services.AddDefaultInMemoryCache(x=>
-        //{
-        //    x.Order = 1;
-        //});
-        ////5.2 Distributed Cache
-        //services.AddDefaultRedisCache(option =>
-        //{
-        //    option.Order = 2;
-        //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-        //    option.DBConfig.Password = "";
-        //});
-        ////5.3 Hybrid
-        //services.AddDefaultHybridCache();
-    }
-    
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-    {
-        //2. Memcache Cache
-        //app.UseDefaultMemcached();
-    
-        //4. SQLite Cache
-        //app.UseSQLiteCache();
-    }
+        //services.AddDefaultInMemoryCache(Configuration);               
+    }    
 }
 ```
 
@@ -176,6 +126,54 @@ public class ValuesController : Controller
                 
         //others ....
     }
+}
+```
+
+## Advanced Usages
+
+### Multiple instances for single provider
+
+After v0.4.0, EasyCaching import `IEasyCachingProviderFactory` to create providers by users.
+
+Configure in `Startup.cs` at first.
+
+```cs
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddDefaultRedisCacheWithFactory("redis1",option =>
+    {
+        option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+    });
+
+    services.AddDefaultRedisCacheWithFactory("redis2", option =>
+    {
+        option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+    });
+}
+```
+Use `IEasyCachingProviderFactory` to create the provider.
+
+```cs
+private readonly IEasyCachingProviderFactory _factory;
+
+public CusController(IEasyCachingProviderFactory factory)
+{
+    this._factory = factory;
+}
+
+[HttpGet]
+[Route("")]
+public string GetRedis()
+{
+    //use 6379
+    var provider1 = _factory.GetCachingProvider("redis1");    
+    var val1 = provider1.Get("named-provider-1", () => "redis1", TimeSpan.FromMinutes(1));
+    
+    //use 6380
+    var provider2 = _factory.GetCachingProvider("redis2");    
+    var val2 = provider2.Get("named-provider-2", () => "redis2", TimeSpan.FromMinutes(1));
+    
+    return $"OK";
 }
 ```
 
