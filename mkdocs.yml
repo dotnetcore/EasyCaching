@@ -1,6 +1,6 @@
 site_name: EasyCaching
 theme: readthedocs
-repo_url: https://github.com/catcherwong/EasyCaching
+repo_url: https://github.com/dotnetcore/EasyCaching
 
 pages:
 - Introduction: index.md
@@ -11,6 +11,7 @@ pages:
     - Memcached : Memcached.md
     - SQLite : SQLite.md
     - Hybird : Hybrid.md
+    - ProviderFactory : ProviderFactory.md
 - Caching Interceptor:
     - AspectCore : AspectCore.md
     - Castle : Castle.md
@@ -19,3 +20,4 @@ pages:
     - MessagePack : MessagePack.md
     - Json : Json.md
     - Protobuf : ProtoBuf.md
+    
