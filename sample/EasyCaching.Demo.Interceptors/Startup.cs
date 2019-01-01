@@ -27,11 +27,11 @@
         {
             services.AddScoped<IAspectCoreService, AspectCoreService>();
 
-            //services.AddDefaultInMemoryCache();
-            services.AddDefaultRedisCache(options => 
-            {
-                options.DBConfig = new RedisDBOptions { Configuration = "localhost" };
-            });
+            services.AddDefaultInMemoryCache();
+            //services.AddDefaultRedisCache(options => 
+            //{
+            //    options.DBConfig = new RedisDBOptions { Configuration = "localhost" };
+            //});
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
