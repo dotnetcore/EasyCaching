@@ -8,6 +8,8 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Reflection;
 
     /// <summary>
@@ -30,13 +32,41 @@
             var assembly = Assembly.GetCallingAssembly();
             builder.RegisterType<EasyCachingInterceptor>();
 
-            builder.RegisterAssemblyTypes(assembly)
-                         .Where(type => typeof(IEasyCaching).IsAssignableFrom(type) && !type.GetTypeInfo().IsAbstract)
-                         .AsImplementedInterfaces()
-                         .InstancePerLifetimeScope()
-                         .EnableInterfaceInterceptors()
-                         .InterceptedBy(typeof(EasyCachingInterceptor));
-                                          
+            //neet to improve
+            var iTypes = assembly.GetTypes().Where(t=>t.IsInterface && t.GetMethods().Any
+                        (x=> x.CustomAttributes.Any( data =>
+                           typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                         || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                         || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                          ))).ToList();
+
+            var implTypes = new List<Type>();
+            foreach (var item in iTypes)
+            {
+                implTypes.AddRange(assembly.GetTypes().Where(t => item.GetTypeInfo().IsAssignableFrom(t) && t.IsClass));
+            }
+
+            foreach (var item in implTypes)
+            {
+                builder.RegisterType(item)
+                    .As(item.GetInterfaces())                
+                    .InstancePerLifetimeScope()
+                    .EnableInterfaceInterceptors()
+                    .InterceptedBy(typeof(EasyCachingInterceptor));
+            }
+
+            //builder.RegisterAssemblyTypes(assembly)                        
+            //.Where(type => type.GetMethods().Any(x => x.CustomAttributes.Any
+            // (data => 
+            //   typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+            // || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+            // || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+            // )))
+            //.AsImplementedInterfaces()
+            //.InstancePerLifetimeScope()
+            //.EnableInterfaceInterceptors()
+            //.InterceptedBy(typeof(EasyCachingInterceptor));
+
             return new AutofacServiceProvider(builder.Build());
         }            
 
@@ -56,12 +86,40 @@
             var assembly = Assembly.GetCallingAssembly();
             builder.RegisterType<EasyCachingInterceptor>();
 
-            builder.RegisterAssemblyTypes(assembly)
-                         .Where(type => typeof(IEasyCaching).IsAssignableFrom(type) && !type.GetTypeInfo().IsAbstract)
-                         .AsImplementedInterfaces()
-                         .InstancePerLifetimeScope()
-                         .EnableInterfaceInterceptors()
-                         .InterceptedBy(typeof(EasyCachingInterceptor));
+            //neet to improve
+            var iTypes = assembly.GetTypes().Where(t => t.IsInterface && t.GetMethods().Any
+                        (x => x.CustomAttributes.Any(data =>
+                           typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                         || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                         || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                          ))).ToList();
+
+            var implTypes = new List<Type>();
+            foreach (var item in iTypes)
+            {
+                implTypes.AddRange(assembly.GetTypes().Where(t => item.GetTypeInfo().IsAssignableFrom(t) && t.IsClass));
+            }
+
+            foreach (var item in implTypes)
+            {
+                builder.RegisterType(item)
+                    .As(item.GetInterfaces())
+                    .InstancePerLifetimeScope()
+                    .EnableInterfaceInterceptors()
+                    .InterceptedBy(typeof(EasyCachingInterceptor));
+            }
+
+            //builder.RegisterAssemblyTypes(assembly)
+            //.Where(type => type.GetMethods().Any(x => x.CustomAttributes.Any
+            // (data =>
+            //   typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+            // || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+            // || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+            // )))
+            //.AsImplementedInterfaces()
+            //.InstancePerLifetimeScope()
+            //.EnableInterfaceInterceptors()
+            //.InterceptedBy(typeof(EasyCachingInterceptor));
 
             action(builder);
 
