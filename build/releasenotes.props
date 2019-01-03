@@ -1,7 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-        1. Support Named Provider        
+        1. Make IEasyCaching Obsolete.      
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Support Named Provider        
@@ -21,10 +21,10 @@
         1. Support .NET Core 2.1
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Fixed bug of intercepting Task methods. 
+        1. Remove Dependency of IEasyCaching. 
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Support .NET Core 2.1
+        1. Remove Dependency of IEasyCaching.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Support .NET Core 2.1
