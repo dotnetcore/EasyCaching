@@ -34,9 +34,7 @@
             builder.RegisterAssemblyTypes(assembly)                        
                 .Where(t => !t.IsAbstract && t.GetInterfaces().SelectMany(x => x.GetMethods()).Any(
                    y => y.CustomAttributes.Any(data =>
-                                    typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                                  || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                                  || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                                    typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)                                  
                               )))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope()
@@ -65,9 +63,7 @@
             builder.RegisterAssemblyTypes(assembly)
                 .Where(t => !t.IsAbstract && t.GetInterfaces().SelectMany(x => x.GetMethods()).Any(
                    y => y.CustomAttributes.Any(data =>
-                                    typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                                  || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                                  || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                                    typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)                                  
                               )))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope()

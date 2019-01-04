@@ -29,11 +29,9 @@
 
             return container.Configure(config =>
             {
-                bool able(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
-                bool put(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
-                bool evict(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
+                bool all(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));               
 
-                config.Interceptors.AddTyped<EasyCachingInterceptor>(able, put, evict);
+                config.Interceptors.AddTyped<EasyCachingInterceptor>(all);
             }).Build();                        
         }
                
@@ -53,11 +51,9 @@
 
             return container.Configure(config =>
             {
-                bool able(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
-                bool put(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
-                bool evict(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
+                bool all(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
 
-                config.Interceptors.AddTyped<EasyCachingInterceptor>(able, put, evict);
+                config.Interceptors.AddTyped<EasyCachingInterceptor>(all);
             }).Build();
         }
 
