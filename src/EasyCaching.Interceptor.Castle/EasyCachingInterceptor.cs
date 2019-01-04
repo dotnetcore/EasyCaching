@@ -58,7 +58,7 @@
         /// <param name="invocation">Invocation.</param>
         private void ProceedAble(IInvocation invocation)
         {
-            var serviceMethod = invocation.MethodInvocationTarget ?? invocation.Method;
+            var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
             if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
             {
@@ -92,7 +92,7 @@
         /// <param name="invocation">Invocation.</param>
         private void ProcessPut(IInvocation invocation)
         {
-            var serviceMethod = invocation.MethodInvocationTarget ?? invocation.Method;
+            var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
             if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && invocation.ReturnValue != null)
             {
@@ -109,7 +109,7 @@
         /// <param name="isBefore">If set to <c>true</c> is before.</param>
         private void ProcessEvict(IInvocation invocation, bool isBefore)
         {
-            var serviceMethod = invocation.MethodInvocationTarget ?? invocation.Method;
+            var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
             if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {

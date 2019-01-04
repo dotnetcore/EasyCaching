@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
+    using System.Linq;
     using System.Reflection;
 
     /// <summary>
@@ -30,13 +31,16 @@
             var assembly = Assembly.GetCallingAssembly();
             builder.RegisterType<EasyCachingInterceptor>();
 
-            builder.RegisterAssemblyTypes(assembly)
-                         .Where(type => typeof(IEasyCaching).IsAssignableFrom(type) && !type.GetTypeInfo().IsAbstract)
-                         .AsImplementedInterfaces()
-                         .InstancePerLifetimeScope()
-                         .EnableInterfaceInterceptors()
-                         .InterceptedBy(typeof(EasyCachingInterceptor));
-                                          
+            builder.RegisterAssemblyTypes(assembly)                        
+                .Where(t => !t.IsAbstract && t.GetInterfaces().SelectMany(x => x.GetMethods()).Any(
+                   y => y.CustomAttributes.Any(data =>
+                                    typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)                                  
+                              )))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope()
+                .EnableInterfaceInterceptors()
+                .InterceptedBy(typeof(EasyCachingInterceptor));
+
             return new AutofacServiceProvider(builder.Build());
         }            
 
@@ -57,12 +61,15 @@
             builder.RegisterType<EasyCachingInterceptor>();
 
             builder.RegisterAssemblyTypes(assembly)
-                         .Where(type => typeof(IEasyCaching).IsAssignableFrom(type) && !type.GetTypeInfo().IsAbstract)
-                         .AsImplementedInterfaces()
-                         .InstancePerLifetimeScope()
-                         .EnableInterfaceInterceptors()
-                         .InterceptedBy(typeof(EasyCachingInterceptor));
-
+                .Where(t => !t.IsAbstract && t.GetInterfaces().SelectMany(x => x.GetMethods()).Any(
+                   y => y.CustomAttributes.Any(data =>
+                                    typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)                                  
+                              )))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope()
+                .EnableInterfaceInterceptors()
+                .InterceptedBy(typeof(EasyCachingInterceptor));
+                
             action(builder);
 
             return new AutofacServiceProvider(builder.Build());

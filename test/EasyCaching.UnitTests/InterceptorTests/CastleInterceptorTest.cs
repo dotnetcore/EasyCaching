@@ -13,6 +13,8 @@ namespace EasyCaching.UnitTests
     using System.Reflection;
     using Autofac.Extras.DynamicProxy;
     using System.Threading.Tasks;
+    using System.Linq;
+    using System.Collections.Generic;
 
     public abstract class BaseCastleInterceptorTest
     {
@@ -236,12 +238,40 @@ namespace EasyCaching.UnitTests
                 var assembly = Assembly.GetExecutingAssembly();
                 x.RegisterType<EasyCachingInterceptor>();
 
-                x.RegisterAssemblyTypes(assembly)
-                    .Where(type => typeof(IEasyCaching).IsAssignableFrom(type) && !type.GetTypeInfo().IsAbstract)
-                    .AsImplementedInterfaces()
-                    .InstancePerLifetimeScope()
-                    .EnableInterfaceInterceptors()
-                    .InterceptedBy(typeof(EasyCachingInterceptor));
+                //neet to improve
+                var iTypes = assembly.GetTypes().Where(t => t.IsInterface && t.GetMethods().Any
+                            (y => y.CustomAttributes.Any(data =>
+                               typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                             || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                             || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                              ))).ToList();
+
+                var implTypes = new List<Type>();
+                foreach (var item in iTypes)
+                {
+                    implTypes.AddRange(assembly.GetTypes().Where(t => item.GetTypeInfo().IsAssignableFrom(t) && t.IsClass));
+                }
+
+                foreach (var item in implTypes)
+                {
+                    x.RegisterType(item)
+                        .As(item.GetInterfaces())
+                        .InstancePerLifetimeScope()
+                        .EnableInterfaceInterceptors()
+                        .InterceptedBy(typeof(EasyCachingInterceptor));
+                }
+
+                //x.RegisterAssemblyTypes(assembly)
+                //.Where(type => type.GetMethods().Any(y => y.CustomAttributes.Any
+                //      (data =>
+                //        typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                //      || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                //      || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                //      )))
+                //.AsImplementedInterfaces()
+                //.InstancePerLifetimeScope()
+                //.EnableInterfaceInterceptors()
+                //.InterceptedBy(typeof(EasyCachingInterceptor));
             };
 
             IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(action, true);

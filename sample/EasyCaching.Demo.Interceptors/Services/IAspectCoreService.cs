@@ -3,7 +3,7 @@
     using EasyCaching.Core.Internal;
     using System.Threading.Tasks;
     
-    public interface IAspectCoreService : EasyCaching.Core.Internal.IEasyCaching
+    public interface IAspectCoreService //: EasyCaching.Core.Internal.IEasyCaching
     {
         [EasyCachingAble(Expiration = 10)]
         string GetCurrentUtcTime();
