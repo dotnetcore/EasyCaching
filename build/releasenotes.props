@@ -2,23 +2,22 @@
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
         1. Make IEasyCaching Obsolete.      
+        2. Remove the class restrict
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Support Named Provider        
-        2. Upgrade EnyimMemcachedCore to 2.1.10
+        1. Remove the class restrict
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-        1. Support Named Provider        
-        2. Upgrade StackExchange.Redis to 2.0.519
+        1. Remove the class restrict
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Support Named Provider        
+        1. Remove the class restrict     
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Support Named Provider       
+        1. Remove the class restrict    
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Support .NET Core 2.1
+        1. Remove the class restrict
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Remove Dependency of IEasyCaching. 
