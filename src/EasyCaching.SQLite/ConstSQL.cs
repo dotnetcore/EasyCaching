@@ -22,6 +22,20 @@
                     ,(select strftime('%s','now')) + @expiration);";
 
         /// <summary>
+        /// The trysetsql.
+        /// </summary>
+        public const string TRYSETSQL = @"
+                INSERT INTO [easycaching]
+                    ([name]
+                    ,[cachekey]
+                    ,[cachevalue]
+                    ,[expiration])
+                SELECT @name,@cachekey,@cachevalue,(select strftime('%s','now') + @expiration)
+                WHERE NOT EXISTS (SELECT 1 FROM [easycaching] WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > strftime('%s','now'));";
+
+
+
+        /// <summary>
         /// The getsql.
         /// </summary>
         public const string GETSQL = @"SELECT [cachevalue]

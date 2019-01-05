@@ -1036,6 +1036,43 @@
         }
         #endregion
 
+        #region TrySet
+        [Fact]
+        protected virtual void TrySet_Value_And_Get_Cached_Value_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue1 = "value1";
+            var cacheValue2 = "value2";
+
+            var first = _provider.TrySet(cacheKey, cacheValue1, _defaultTs);
+            var second = _provider.TrySet(cacheKey, cacheValue2, _defaultTs);
+
+            Assert.True(first);
+            Assert.False(second);
+
+            var val = _provider.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue1, val.Value);
+        }
+
+        [Fact]
+        protected virtual async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue1 = "value1";
+            var cacheValue2 = "value2";
+
+            var first = await _provider.TrySetAsync(cacheKey, cacheValue1, _defaultTs);
+            var second = await _provider.TrySetAsync(cacheKey, cacheValue2, _defaultTs);
+
+            Assert.True(first);
+            Assert.False(second);
+
+            var val = _provider.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue1, val.Value);
+        }
+        #endregion
 
         #region common method
         protected Dictionary<string, string> GetMultiDict(string prefix = "")
