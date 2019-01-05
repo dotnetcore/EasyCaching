@@ -237,5 +237,25 @@
         /// </summary>
         /// <value>The get stats.</value>
         CacheStats CacheStats { get; }
+
+        /// <summary>
+        /// Tries the set.
+        /// </summary>
+        /// <returns><c>true</c>, if set was tryed, <c>false</c> otherwise.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        bool TrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration);
+
+        /// <summary>
+        /// Tries the set async.
+        /// </summary>
+        /// <returns>The set async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
     }
 }

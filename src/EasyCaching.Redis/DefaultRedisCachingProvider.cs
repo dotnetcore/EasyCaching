@@ -752,5 +752,61 @@
 
             await Task.WhenAll(tasks);
         }
+
+        /// <summary>
+        /// Tries the set.
+        /// </summary>
+        /// <returns><c>true</c>, if set was tryed, <c>false</c> otherwise.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public bool TrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
+            return _cache.StringSet(
+                cacheKey,
+                _serializer.Serialize(cacheValue),
+                expiration,
+                When.NotExists
+                );
+        }
+
+        /// <summary>
+        /// Tries the set async.
+        /// </summary>
+        /// <returns>The set async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cacheValue">Cache value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            if (MaxRdSecond > 0)
+            {
+                var addSec = new Random().Next(1, MaxRdSecond);
+                expiration.Add(new TimeSpan(0, 0, addSec));
+            }
+
+            return _cache.StringSetAsync(
+                cacheKey,
+                _serializer.Serialize(cacheValue),
+                expiration,
+                When.NotExists
+                );
+        }
     }
 }

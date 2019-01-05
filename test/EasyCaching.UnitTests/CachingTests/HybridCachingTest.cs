@@ -10,6 +10,7 @@
     using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class HybridCachingTest : BaseCachingProviderTest
@@ -61,6 +62,18 @@
         protected override void OnHit_Should_Return_Zero_And_OnMiss_Should_Return_One()
         {
 
+        }
+
+        [Fact]
+        protected override void TrySet_Value_And_Get_Cached_Value_Should_Succeed()
+        {
+            
+        }
+
+        [Fact]
+        protected override async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed()
+        {
+            await Task.FromResult(1);
         }
     }
 }

@@ -658,5 +658,15 @@
 
             await Task.WhenAll(tasks);
         }
+
+        public bool TrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
