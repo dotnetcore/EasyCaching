@@ -725,15 +725,9 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cacheKeys.Contains(cacheKey))
+            if (_cacheKeys.Contains(BuildCacheKey(Name, cacheKey)))
             {
                 return false;
-            }
-
-            if (MaxRdSecond > 0)
-            {
-                var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
             Set(cacheKey, cacheValue, expiration);
@@ -754,15 +748,9 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cacheKeys.Contains(cacheKey))
+            if (_cacheKeys.Contains(BuildCacheKey(Name, cacheKey)))
             {
                 return false;
-            }
-
-            if (MaxRdSecond > 0)
-            {
-                var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
             await SetAsync(cacheKey, cacheValue, expiration);
