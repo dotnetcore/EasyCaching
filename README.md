@@ -211,6 +211,7 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 - [x] RemoveAll/RemoveAllAsync
 - [x] GetCount
 - [x] Flush/FlushAsync
+- [x] TrySet/TrySetAsync
 - [ ] Others...
 
 ### Serializer Extensions 
