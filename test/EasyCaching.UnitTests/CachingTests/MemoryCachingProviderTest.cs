@@ -25,6 +25,22 @@ namespace EasyCaching.UnitTests
         {
             Assert.Equal(120, _provider.MaxRdSecond);
         }
+
+        [Fact]
+        public void TrySet_With_Expiration()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue1 = "value1";
+            var cacheValue2 = "value2";
+
+            var first =  _provider.TrySet(cacheKey, cacheValue1, TimeSpan.FromSeconds(1));
+            Assert.True(first);
+
+            System.Threading.Thread.Sleep(1100);
+
+            var second = _provider.TrySet(cacheKey, cacheValue2, _defaultTs);
+            Assert.True(second);
+        }
     }
 
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderTest

@@ -13,7 +13,7 @@
         1. TrySet/TrySetAsync.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. TrySet/TrySetAsync.
+        1. Fix bug of TrySet/TrySetAsync.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. TrySet/TrySetAsync.

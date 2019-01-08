@@ -132,7 +132,7 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration) 
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
@@ -725,13 +725,15 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cacheKeys.Contains(BuildCacheKey(Name, cacheKey)))
+            if (_cache.TryGetValue(BuildCacheKey(Name, cacheKey), out var obj))
             {
                 return false;
             }
-
-            Set(cacheKey, cacheValue, expiration);
-            return true;
+            else
+            {
+                Set(cacheKey, cacheValue, expiration);
+                return true;
+            }
         }
 
         /// <summary>
@@ -748,13 +750,15 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cacheKeys.Contains(BuildCacheKey(Name, cacheKey)))
+            if (_cache.TryGetValue(BuildCacheKey(Name, cacheKey), out var obj))
             {
                 return false;
             }
-
-            await SetAsync(cacheKey, cacheValue, expiration);
-            return true;
+            else
+            {
+                await SetAsync(cacheKey, cacheValue, expiration);
+                return true;
+            }
         }
     }
 }
