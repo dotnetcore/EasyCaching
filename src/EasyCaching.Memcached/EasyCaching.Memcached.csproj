@@ -26,4 +26,7 @@
   <ItemGroup>
     <PackageReference Include="EnyimMemcachedCore" Version="2.1.10" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configurations\" />
+  </ItemGroup>
 </Project>

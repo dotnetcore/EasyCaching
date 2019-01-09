@@ -6,6 +6,8 @@
     using System;
     using System.Threading.Tasks;
     using Xunit;
+    using System.IO;
+    using Microsoft.Extensions.Configuration;
 
     public class MemcachedProviderTest : BaseCachingProviderTest
     {
@@ -161,7 +163,7 @@
     }
 
 
-    public class MemcachedProviderWithFactoryTest : BaseCachingProviderTest
+    public class MemcachedProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {
         public MemcachedProviderWithFactoryTest()
         {
@@ -179,7 +181,7 @@
         }
 
         [Fact]
-        protected override void RemoveByPrefix_Should_Succeed()
+        public void RemoveByPrefix_Should_Succeed()
         {
             string prefixKey = "demowithfactory";
             string prefixValue = "abcwithfactory";
@@ -209,7 +211,7 @@
         }
 
         [Fact]
-        protected override async Task RemoveByPrefixAsync_Should_Succeed()
+        public async Task RemoveByPrefixAsync_Should_Succeed()
         {
             string prefixKey = "demowithfactoryasync";
             string prefixValue = "abcwithfactoryasync";
@@ -255,44 +257,7 @@
             var val = _provider.Get<string>(cacheKey);
             Assert.True(val.HasValue);
         }
-
-        [Fact]
-        protected override void GetByPrefix_Should_Succeed()
-        {
-
-        }
-
-        [Fact]
-        protected override async Task GetByPrefixAsync_Should_Succeed()
-        {
-            await Task.FromResult(1);
-        }
-
-        [Fact]
-        protected override void GetByPrefix_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
-        {
-
-        }
-
-        [Fact]
-        protected override async Task GetByPrefixAsync_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
-        {
-            await Task.FromResult(1);
-        }
-
-
-        [Fact]
-        protected override void Get_Count_Without_Prefix_Should_Succeed()
-        {
-
-        }
-
-        [Fact]
-        protected override void Get_Count_With_Prefix_Should_Succeed()
-        {
-
-        }
-
+               
         private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
         {
             var pre = _provider.Get<string>(prefix);
@@ -316,4 +281,83 @@
         }
     }
 
+
+    public class MemcachedProviderUseEasyCachingTest : BaseUsingEasyCachingTest
+    {
+        public MemcachedProviderUseEasyCachingTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            services.AddEasyCaching(option =>
+            {
+                option.UseMemcached(config =>
+                {
+                    config.DBConfig = new  EasyCachingMemcachedClientOptions
+                    {
+                        Servers = new System.Collections.Generic.List<Enyim.Caching.Configuration.Server> 
+                        {
+                            new Enyim.Caching.Configuration.Server(){ Address="127.0.0.1", Port=11212}
+                        }
+                    };
+                }, EasyCachingConstValue.DefaultMemcachedName);              
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _provider = factory.GetCachingProvider(EasyCachingConstValue.DefaultMemcachedName);
+
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+    }
+
+    public class MemcachedProviderUseEasyCachingWithConfigTest : BaseUsingEasyCachingTest
+    {
+        public MemcachedProviderUseEasyCachingWithConfigTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            var appsettings = @"
+{
+    'easycaching': {
+        'memcached': {
+            'MaxRdSecond': 600,
+            'Order': 99,
+            'dbconfig': {            
+                'Servers': [
+                    {
+                        'Address': '127.0.0.1',
+                        'Port': 11211
+                    }
+                ]
+            } 
+        }
+    }
+}";
+            var path = TestHelpers.CreateTempFile(appsettings);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+            configurationBuilder.AddJsonFile(fileName);
+            var config = configurationBuilder.Build();
+
+            services.AddEasyCaching(option =>
+            {
+                option.UseMemcached(config, "mName");
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            _provider = serviceProvider.GetService<IEasyCachingProvider>();                      
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        [Fact]
+        public void Provider_Information_Should_Be_Correct()
+        {
+            Assert.Equal(600, _provider.MaxRdSecond);
+            Assert.Equal(99, _provider.Order);
+            Assert.Equal("mName", _provider.Name);
+        }
+    }
 }
