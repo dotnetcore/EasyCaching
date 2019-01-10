@@ -35,7 +35,7 @@
         /// <param name="configuration">Configuration.</param>
         /// <param name="name">Name.</param>
         /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions UseMemcached(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.SQLiteSection)
+        public static EasyCachingOptions UseMemcached(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.MemcachedSection)
         {
             var dbConfig = configuration.GetSection(sectionName);
             var mOptions = new MemcachedOptions();

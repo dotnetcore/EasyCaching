@@ -99,7 +99,8 @@
                 services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>(x =>
                 {
                     var clients = x.GetServices<EasyCachingMemcachedClient>();
-                    var options = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                    var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                    var options = optionsMon.Get(_name);
                     var factory = x.GetService<ILoggerFactory>();
                     return new DefaultMemcachedCachingProvider(_name, clients, options, factory);
                 });

@@ -172,11 +172,16 @@
             {
                 options.DBConfig.AddServer("127.0.0.1", 11212);
             });
+            services.AddDefaultMemcachedWithFactory(SECOND_PROVIDER_NAME, options =>
+            {
+                options.DBConfig.AddServer("127.0.0.1", 11211);
+            });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
 
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
             _provider = factory.GetCachingProvider("MyTest");
+            _secondProvider = factory.GetCachingProvider(SECOND_PROVIDER_NAME);
             _defaultTs = TimeSpan.FromSeconds(50);
         }
 
@@ -287,7 +292,7 @@
         public MemcachedProviderUseEasyCachingTest()
         {
             IServiceCollection services = new ServiceCollection();
-
+            services.AddLogging();
             services.AddEasyCaching(option =>
             {
                 option.UseMemcached(config =>
@@ -341,7 +346,7 @@
             configurationBuilder.SetBasePath(directory);
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
-
+            services.AddLogging();
             services.AddEasyCaching(option =>
             {
                 option.UseMemcached(config, "mName");
