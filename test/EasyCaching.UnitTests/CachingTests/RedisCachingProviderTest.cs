@@ -95,7 +95,7 @@ namespace EasyCaching.UnitTests
         public RedisCachingProviderWithFactoryTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultRedisCacheWithFactory(EasyCachingConstValue.DefaultRedisName,options =>
+            services.AddDefaultRedisCacheWithFactory(EasyCachingConstValue.DefaultRedisName, options =>
             {
                 options.DBConfig = new RedisDBOptions
                 {

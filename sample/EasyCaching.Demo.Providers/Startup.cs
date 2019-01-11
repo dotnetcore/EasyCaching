@@ -7,6 +7,7 @@
     using EasyCaching.Memcached;
     using EasyCaching.Redis;
     using EasyCaching.SQLite;
+    using EasyCaching.Serialization.MessagePack;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
@@ -28,11 +29,50 @@
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            //new configuration
+            services.AddEasyCaching(option=> 
+            {
+                //use memory cache
+                option.UseInMemory("default");
+
+                //use memory cache
+                option.UseInMemory("cus");
+
+                //use redis cache
+                option.UseRedis(config => 
+                {
+                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                }, "redis1")
+                .WithMessagePack()//with messagepack serialization
+                ;
+
+                //use redis cache
+                option.UseRedis(config => 
+                {
+                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                }, "redis2");
+
+                ////use sqlite cache
+                //option.UseSQLite(config =>
+                //{
+                //    config.DBConfig = new SQLiteDBOptions { FileName = "my.db" };
+                //});
+
+                ////use memcached cached
+                //option.UseMemcached(config => 
+                //{
+                //    config.DBConfig.AddServer("127.0.0.1", 11211);
+                //});
+
+                //option.UseMemcached(Configuration);
+
+            });
+
             //1. Important step for using InMemory Cache
             //services.AddDefaultInMemoryCache();
 
             //services.AddDefaultInMemoryCacheWithFactory();
-            services.AddDefaultInMemoryCacheWithFactory("cus");
+            //services.AddDefaultInMemoryCacheWithFactory("cus");
 
             //services.AddDefaultInMemoryCache(Configuration);
 
@@ -51,17 +91,17 @@
             //    option.DBConfig.Password = "";
             //});
 
-            services.AddDefaultRedisCacheWithFactory("redis1",option =>
-            {
-                option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-                option.DBConfig.Password = "";
-            });
+            //services.AddDefaultRedisCacheWithFactory("redis1",option =>
+            //{
+            //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            //    option.DBConfig.Password = "";
+            //});
 
-            services.AddDefaultRedisCacheWithFactory("redis2", option =>
-            {
-                option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                option.DBConfig.Password = "";
-            });
+            //services.AddDefaultRedisCacheWithFactory("redis2", option =>
+            //{
+            //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+            //    option.DBConfig.Password = "";
+            //});
 
             //services.AddDefaultRedisCache(Configuration);
 
@@ -104,6 +144,8 @@
 
             ////4. Important step for using SQLite Cache
             //app.UseSQLiteCache();
+
+            //app.UseEasyCaching();
 
             app.UseMvc();
         }

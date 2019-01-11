@@ -96,7 +96,8 @@
             services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>(x =>
             {
                 var dbProviders = x.GetServices<ISQLiteDatabaseProvider>();
-                var options = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
+                var options = optionsMon.Get(providerName);
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultSQLiteCachingProvider(providerName, dbProviders, options, factory);
             });
@@ -135,7 +136,8 @@
             services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>(x =>
             {
                 var dbProviders = x.GetServices<ISQLiteDatabaseProvider>();
-                var options = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
+                var options = optionsMon.Get(providerName);
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultSQLiteCachingProvider(providerName, dbProviders, options, factory);
             });

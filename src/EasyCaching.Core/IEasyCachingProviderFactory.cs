@@ -21,7 +21,7 @@
         {
             Internal.ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
 
-            var provider = _cachingProviders.FirstOrDefault(x => x.Name.Equals(name));
+            var provider = _cachingProviders.FirstOrDefault(x => x.Name.Equals(name, System.StringComparison.OrdinalIgnoreCase));
 
             if (provider == null) throw new System.ArgumentException("can not find a match caching provider!");
 

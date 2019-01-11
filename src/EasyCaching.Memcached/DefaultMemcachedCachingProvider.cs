@@ -106,12 +106,12 @@
         public DefaultMemcachedCachingProvider(
             string name,
             IEnumerable<EasyCachingMemcachedClient> memcachedClients,
-            IOptionsMonitor<MemcachedOptions> options,
+            MemcachedOptions options,
             ILoggerFactory loggerFactory = null)
         {
             this._name = name;
             this._memcachedClient = memcachedClients.FirstOrDefault(x => x.Name.Equals(this._name));
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
 
             this._cacheStats = new CacheStats();

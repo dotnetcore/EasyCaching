@@ -1,22 +1,22 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-        1. TrySet/TrySetAsync.
+        1. Improve Configuration.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. TrySet/TrySetAsync.
+        1. Improve Configuration.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-        1. TrySet/TrySetAsync.
+        1. Improve Configuration.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. TrySet/TrySetAsync.
+        1. Improve Configuration.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Fix bug of TrySet/TrySetAsync.
+        1. Improve Configuration.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. TrySet/TrySetAsync.
+        1. Improve Configuration.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Remove Dependency of IEasyCaching. 
@@ -28,13 +28,13 @@
         1. Support .NET Core 2.1
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Configurable JSON serializer
+        1. Improve Configuration.
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Support .NET Core 2.1
+        1. Improve Configuration.
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Support .NET Core 2.1
+        1. Improve Configuration.
         </EasyCachingProtobufPackageNotes>
 	</PropertyGroup>
 </Project>

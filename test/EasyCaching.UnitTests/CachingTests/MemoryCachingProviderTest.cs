@@ -2,9 +2,11 @@ namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
     using EasyCaching.InMemory;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
@@ -25,30 +27,10 @@ namespace EasyCaching.UnitTests
         {
             Assert.Equal(120, _provider.MaxRdSecond);
         }
-
-        [Fact]
-        public void TrySet_With_Expiration()
-        {
-            var cacheKey = Guid.NewGuid().ToString();
-            var cacheValue1 = "value1";
-            var cacheValue2 = "value2";
-
-            var first =  _provider.TrySet(cacheKey, cacheValue1, TimeSpan.FromSeconds(1));
-            Assert.True(first);
-
-            System.Threading.Thread.Sleep(1100);
-
-            var second = _provider.TrySet(cacheKey, cacheValue2, _defaultTs);
-            Assert.True(second);
-        }
     }
 
-    public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderTest
+    public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {
-        private readonly IEasyCachingProvider _secondProvider;
-
-        private const string SECOND_PROVIDER_NAME = "second";
-
         public MemoryCachingProviderWithFactoryTest()
         {
             IServiceCollection services = new ServiceCollection();
@@ -61,38 +43,11 @@ namespace EasyCaching.UnitTests
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-
         [Fact]
-        public void Multi_Instance_Set_And_Get_Should_Succeed()
-        {
-            var cacheKey1 = "named-provider-1";
-            var cacheKey2 = "named-provider-2";
-
-            var value1 = Guid.NewGuid().ToString();
-            var value2 = Guid.NewGuid().ToString("N");
-
-            _provider.Set(cacheKey1, value1, _defaultTs);
-            _secondProvider.Set(cacheKey2, value2, _defaultTs);
-
-            var p1 = _provider.Get<string>(cacheKey1);
-            var p2 = _provider.Get<string>(cacheKey2);
-
-            var s1 = _secondProvider.Get<string>(cacheKey1);
-            var s2 = _secondProvider.Get<string>(cacheKey2);
-
-            Assert.Equal(value1, p1.Value);
-            Assert.False(p2.HasValue);
-
-            Assert.False(s1.HasValue);
-            Assert.Equal(value2, s2.Value);
-        }
-
-
-        [Fact]
-        protected override void GetByPrefix_Should_Succeed()
+        public void GetByPrefix_Should_Succeed()
         {
             _provider.RemoveAll(new List<string> { "getbyprefix:key:1", "getbyprefix:key:2" });
-            var dict = GetMultiDict("getbyprefix:");
+            var dict = TestHelpers.GetMultiDict("getbyprefix:");
 
             _provider.SetAll(dict, _defaultTs);
 
@@ -108,10 +63,10 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
-        protected override async Task GetByPrefixAsync_Should_Succeed()
+        public async Task GetByPrefixAsync_Should_Succeed()
         {
             _provider.RemoveAll(new List<string> { "getbyprefixasync:key:1", "getbyprefixasync:key:2" });
-            var dict = GetMultiDict("getbyprefixasync:");
+            var dict = TestHelpers.GetMultiDict("getbyprefixasync:");
 
             _provider.SetAll(dict, _defaultTs);
 
@@ -124,6 +79,99 @@ namespace EasyCaching.UnitTests
             Assert.Contains($"{EasyCachingConstValue.DefaultInMemoryName}-getbyprefixasync:key:2", res.Select(x => x.Key));
             Assert.Equal("value1", res.Where(x => x.Key == $"{EasyCachingConstValue.DefaultInMemoryName}-getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value);
             Assert.Equal("value2", res.Where(x => x.Key == $"{EasyCachingConstValue.DefaultInMemoryName}-getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
+        }
+    }
+
+    public class MemoryCachingProviderUseEasyCachingTest : BaseUsingEasyCachingTest
+    {
+        private readonly IEasyCachingProvider _secondProvider;
+        private const string SECOND_PROVIDER_NAME = "second";
+
+        public MemoryCachingProviderUseEasyCachingTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            services.AddEasyCaching(option =>
+            {
+                option.UseInMemory(EasyCachingConstValue.DefaultInMemoryName);
+                option.UseInMemory(SECOND_PROVIDER_NAME);
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _provider = factory.GetCachingProvider(EasyCachingConstValue.DefaultInMemoryName);
+            _secondProvider = factory.GetCachingProvider(SECOND_PROVIDER_NAME);
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        [Fact]
+        public void Sec_Set_Value_And_Get_Cached_Value_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+
+            _secondProvider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _secondProvider.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue, val.Value);
+        }
+
+        [Fact]
+        public async Task Sec_Set_Value_And_Get_Cached_Value_Async_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+
+            await _secondProvider.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var val = await _secondProvider.GetAsync<string>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Equal(cacheValue, val.Value);
+        }
+    }
+
+    public class MemoryCachingProviderUseEasyCachingWithConfigTest : BaseUsingEasyCachingTest
+    {
+        public MemoryCachingProviderUseEasyCachingWithConfigTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            var appsettings = @"
+{
+    'easycaching': {
+        'inmemory': {
+            'CachingProviderType': 1,
+            'MaxRdSecond': 600,
+            'Order': 99,
+        }
+    }
+}";
+            var path = TestHelpers.CreateTempFile(appsettings);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.SetBasePath(directory);
+            configurationBuilder.AddJsonFile(fileName);
+            var config = configurationBuilder.Build();
+
+            services.AddEasyCaching(option =>
+            {
+                option.UseInMemory(config, "mName");
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            _provider = serviceProvider.GetService<IEasyCachingProvider>();
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        [Fact]
+        public void Provider_Information_Should_Be_Correct()
+        {
+            Assert.Equal(600, _provider.MaxRdSecond);
+            Assert.Equal(99, _provider.Order);
+            Assert.Equal("mName", _provider.Name);
         }
     }
 }
