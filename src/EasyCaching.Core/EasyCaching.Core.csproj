@@ -27,12 +27,5 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="BaseEasyCachingProvider.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Configurations\EasyCachingOptions.css" />
-    <None Remove=".DS_Store" />
-  </ItemGroup>
+  </ItemGroup>  
 </Project>

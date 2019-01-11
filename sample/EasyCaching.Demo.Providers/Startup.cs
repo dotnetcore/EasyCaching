@@ -145,6 +145,8 @@
             ////4. Important step for using SQLite Cache
             //app.UseSQLiteCache();
 
+            //app.UseEasyCaching();
+
             app.UseMvc();
         }
     }
