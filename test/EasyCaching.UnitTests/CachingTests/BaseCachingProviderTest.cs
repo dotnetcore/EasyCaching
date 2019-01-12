@@ -718,7 +718,7 @@
             var flag = await _provider.ExistsAsync(cacheKey);
 
             Assert.False(flag);
-        }
+        }              
         #endregion
 
         #region RemoveByPrefix/RemoveByPrefixAsync

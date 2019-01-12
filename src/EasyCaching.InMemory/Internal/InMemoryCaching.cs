@@ -136,7 +136,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(key, nameof(key));
 
-            return _memory.ContainsKey(key);
+            return _memory.TryGetValue(key, out var entry) && entry.ExpiresAt > SystemClock.UtcNow;
         }
 
         public int RemoveAll(IEnumerable<string> keys = null)

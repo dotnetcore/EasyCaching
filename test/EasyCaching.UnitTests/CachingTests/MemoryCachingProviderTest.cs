@@ -42,6 +42,18 @@ namespace EasyCaching.UnitTests
             Assert.Equal(1, list.Count(x => x));
 
         }
+
+        [Fact]
+        public void Exists_After_Expiration_Should_Return_False()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+            _provider.Set(cacheKey, cacheValue, TimeSpan.FromMilliseconds(200));
+            System.Threading.Thread.Sleep(300);
+            var flag = _provider.Exists(cacheKey);
+
+            Assert.False(flag);
+        }
     }
 
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
