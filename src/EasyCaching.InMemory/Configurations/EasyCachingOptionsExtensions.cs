@@ -25,6 +25,7 @@
                 x.EnableLogging = option.EnableLogging;
                 x.MaxRdSecond = option.MaxRdSecond;
                 x.Order = option.Order;
+                x.DBConfig = option.DBConfig;
             }
 
             options.RegisterExtension(new InMemoryOptionsExtension(name, configure));
@@ -70,6 +71,7 @@
                 x.EnableLogging = memoryOptions.EnableLogging;
                 x.MaxRdSecond = memoryOptions.MaxRdSecond;
                 x.Order = memoryOptions.Order;
+                x.DBConfig = memoryOptions.DBConfig;
             }
 
             options.RegisterExtension(new InMemoryOptionsExtension(name, configure));

@@ -2,7 +2,6 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
-    using Microsoft.Extensions.Caching.Memory;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using System;
@@ -18,17 +17,12 @@
         /// <summary>
         /// The MemoryCache.
         /// </summary>
-        private readonly IMemoryCache _cache;
+        private readonly IInMemoryCaching _cache;
 
         /// <summary>
         /// The options.
         /// </summary>
         private readonly InMemoryOptions _options;
-
-        /// <summary>
-        /// The cache keys.
-        /// </summary>
-        private readonly ConcurrentCollections.ConcurrentHashSet<string> _cacheKeys;
 
         /// <summary>
         /// The logger.
@@ -89,14 +83,14 @@
         /// <param name="options">Options.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultInMemoryCachingProvider(
-            IMemoryCache cache,
+            IInMemoryCaching cache,
             IOptionsMonitor<InMemoryOptions> options,
             ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
             this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
-            this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
+            //this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
 
             this._cacheStats = new CacheStats();
             //this._name = EasyCachingConstValue.DefaultInMemoryName;
@@ -111,14 +105,14 @@
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultInMemoryCachingProvider(
            string name,
-           IMemoryCache cache,
+           IInMemoryCaching cache,
            IOptionsMonitor<InMemoryOptions> options,
            ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
             this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
-            this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
+            // this._cacheKeys = new ConcurrentCollections.ConcurrentHashSet<string>();
 
             this._cacheStats = new CacheStats();
             this._name = name;
@@ -137,14 +131,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cache.Get(BuildCacheKey(Name, cacheKey)) is T result)
+            var result = _cache.Get<T>(BuildCacheKey(Name, cacheKey));
+            if (result.HasValue)
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
 
                 CacheStats.OnHit();
 
-                return new CacheValue<T>(result, true);
+                return result;
             }
 
             CacheStats.OnMiss();
@@ -152,12 +147,12 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
 
-            result = dataRetriever();
+            var res = dataRetriever();
 
-            if (result != null)
+            if (res != null)
             {
                 Set(cacheKey, result, expiration);
-                return new CacheValue<T>(result, true);
+                return new CacheValue<T>(res, true);
             }
             else
             {
@@ -178,14 +173,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cache.Get(BuildCacheKey(Name, cacheKey)) is T result)
+            var result = _cache.Get<T>(BuildCacheKey(Name, cacheKey));
+            if (result.HasValue)
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
 
                 CacheStats.OnHit();
 
-                return new CacheValue<T>(result, true);
+                return result;
             }
 
             CacheStats.OnMiss();
@@ -193,12 +189,12 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
 
-            result = await dataRetriever?.Invoke();
+            var res = await dataRetriever?.Invoke();
 
-            if (result != null)
+            if (res != null)
             {
                 Set(cacheKey, result, expiration);
-                return new CacheValue<T>(result, true);
+                return new CacheValue<T>(res, true);
             }
             else
             {
@@ -216,14 +212,15 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            if (_cache.Get(BuildCacheKey(Name, cacheKey)) is T result)
+            var result = _cache.Get<T>(BuildCacheKey(Name, cacheKey));
+            if (result.HasValue)
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
 
                 CacheStats.OnHit();
 
-                return new CacheValue<T>(result, true);
+                return result;
             }
             else
             {
@@ -246,16 +243,16 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await Task.FromResult((T)_cache.Get(BuildCacheKey(Name, cacheKey)));
+            var result = await Task.FromResult(_cache.Get<T>(BuildCacheKey(Name, cacheKey)));
 
-            if (result != null)
+            if (result.HasValue)
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
 
                 CacheStats.OnHit();
 
-                return new CacheValue<T>(result, true);
+                return result;
             }
             else
             {
@@ -279,7 +276,7 @@
 
             _cache.Remove(BuildCacheKey(Name, cacheKey));
 
-            _cacheKeys.TryRemove(BuildCacheKey(Name, cacheKey));
+            //_cacheKeys.TryRemove(BuildCacheKey(Name, cacheKey));
         }
 
         /// <summary>
@@ -294,7 +291,7 @@
             await Task.Run(() =>
             {
                 _cache.Remove(BuildCacheKey(Name, cacheKey));
-                _cacheKeys.TryRemove(BuildCacheKey(Name, cacheKey));
+                //_cacheKeys.TryRemove(BuildCacheKey(Name, cacheKey));
             });
         }
 
@@ -320,7 +317,7 @@
 
             _cache.Set(BuildCacheKey(Name, cacheKey), cacheValue, expiration);
 
-            _cacheKeys.Add(BuildCacheKey(Name, cacheKey));
+            //_cacheKeys.Add(BuildCacheKey(Name, cacheKey));
         }
 
 
@@ -347,7 +344,7 @@
             await Task.Run(() =>
             {
                 _cache.Set(BuildCacheKey(Name, cacheKey), cacheValue, expiration);
-                _cacheKeys.Add(BuildCacheKey(Name, cacheKey));
+                //_cacheKeys.Add(BuildCacheKey(Name, cacheKey));
             });
         }
 
@@ -360,7 +357,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return _cache.TryGetValue(BuildCacheKey(Name, cacheKey), out object value);
+            return _cache.Exists(BuildCacheKey(Name, cacheKey));
         }
 
         /// <summary>
@@ -372,7 +369,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return await Task.FromResult(_cache.TryGetValue(BuildCacheKey(Name, cacheKey), out object value));
+            return await Task.FromResult(_cache.Exists(BuildCacheKey(Name, cacheKey)));
         }
 
         /// <summary>
@@ -420,19 +417,10 @@
 
             prefix = BuildCacheKey(Name, prefix);
 
-            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+            var count = _cache.RemoveByPrefix(prefix);
 
             if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
-
-            if (keys.Any())
-            {
-                foreach (var item in keys)
-                {
-                    _cache.Remove(item);
-                    _cacheKeys.TryRemove(item);
-                }
-            }
+                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix} , count = {count}");
         }
 
         /// <summary>
@@ -446,26 +434,10 @@
 
             prefix = BuildCacheKey(Name, prefix);
 
-            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
+            var count = await Task.Run(() => _cache.RemoveByPrefix(prefix));
 
             if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
-
-            if (keys.Any())
-            {
-                var tasks = new List<Task>();
-                foreach (var item in keys)
-                {
-                    tasks.Add(Task.Run(() =>
-                    {
-                        _cache.Remove(item);
-                        _cacheKeys.TryRemove(item);
-                    }));
-                }
-                //tasks.Add(RemoveAsync(item));
-
-                await Task.WhenAll(tasks);
-            }
+                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix} , count = {count}");
         }
 
         /// <summary>
@@ -479,8 +451,15 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            foreach (var entry in values)
-                this.Set(entry.Key, entry.Value, expiration);
+            var newDict = new Dictionary<string, T>();
+
+            foreach (var item in values)
+            {
+                newDict.Add(BuildCacheKey(this._name, item.Key), item.Value);
+            }
+
+
+            _cache.SetAll(newDict, expiration);
         }
 
         /// <summary>
@@ -495,12 +474,14 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var tasks = new List<Task>();
+            var newDict = new Dictionary<string, T>();
 
-            foreach (var entry in values)
-                tasks.Add(SetAsync(entry.Key, entry.Value, expiration));
+            foreach (var item in values)
+            {
+                newDict.Add(BuildCacheKey(this._name, item.Key), item.Value);
+            }
 
-            await Task.WhenAll(tasks);
+            await Task.Run(() => _cache.SetAll(newDict, expiration));
         }
 
         /// <summary>
@@ -516,12 +497,14 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            var map = new Dictionary<string, CacheValue<T>>();
+            var keys = new List<string>();
 
-            foreach (string key in cacheKeys)
-                map[key] = Get<T>(key);
+            foreach (var item in cacheKeys)
+            {
+                keys.Add(BuildCacheKey(this._name, item));
+            }
 
-            return map;
+            return _cache.GetAll<T>(keys);
         }
 
         /// <summary>
@@ -530,21 +513,21 @@
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            var map = new Dictionary<string, Task<CacheValue<T>>>();
+            var keys = new List<string>();
 
-            foreach (string key in cacheKeys)
-                map[key] = GetAsync<T>(key);
+            foreach (var item in cacheKeys)
+            {
+                keys.Add(BuildCacheKey(this._name, item));
+            }
 
-            return Task.WhenAll(map.Values)
-                .ContinueWith<IDictionary<string, CacheValue<T>>>(t =>
-                    map.ToDictionary(k => k.Key, v => v.Value.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+            return await Task.FromResult(_cache.GetAll<T>(keys));
         }
 
         /// <summary>
@@ -564,17 +547,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
 
-            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
-
-            if (keys.Any())
-            {
-                foreach (var key in keys)
-                {
-                    var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
-                    map[key] = this.Get<T>(cacheKey);
-                }
-            }
-            return map;
+            return _cache.GetByPrefix<T>(prefix);
         }
 
         /// <summary>
@@ -583,31 +556,16 @@
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix)
+        public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-
+            var map = new Dictionary<string, CacheValue<T>>();
             prefix = BuildCacheKey(Name, prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
 
-            var keys = _cacheKeys.Where(x => x.StartsWith(prefix.Trim(), StringComparison.OrdinalIgnoreCase));
-
-            var map = new Dictionary<string, Task<CacheValue<T>>>();
-
-            if (keys.Any())
-            {
-                foreach (string key in keys)
-                {
-                    var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
-                    map[key] = GetAsync<T>(cacheKey);
-                }
-            }
-
-            return Task.WhenAll(map.Values)
-                .ContinueWith<IDictionary<string, CacheValue<T>>>(t =>
-                    map.ToDictionary(k => k.Key, v => v.Value.Result), TaskContinuationOptions.OnlyOnRanToCompletion);
+            return await Task.FromResult(_cache.GetByPrefix<T>(prefix));
         }
 
         /// <summary>
@@ -623,11 +581,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            foreach (var key in cacheKeys.Distinct())
-            {
-                var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
-                Remove(cacheKey);
-            }
+            _cache.RemoveAll(cacheKeys);
         }
 
         /// <summary>
@@ -644,14 +598,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            var tasks = new List<Task>();
-            foreach (var key in cacheKeys.Distinct())
-            {
-                var cacheKey = string.IsNullOrWhiteSpace(_name) ? key : key.Substring(Name.Length + 1, key.Length - Name.Length - 1);
-                tasks.Add(RemoveAsync(cacheKey));
-            }
-
-            await Task.WhenAll(tasks);
+            await Task.Run(() => _cache.RemoveAll(cacheKeys));
         }
 
         /// <summary>
@@ -661,9 +608,7 @@
         /// <param name="prefix">Prefix.</param>
         public int GetCount(string prefix = "")
         {
-            return string.IsNullOrWhiteSpace(prefix)
-                    ? _cacheKeys.Count
-                             : _cacheKeys.Count(x => x.StartsWith(BuildCacheKey(Name, prefix.Trim()), StringComparison.OrdinalIgnoreCase));
+            return _cache.GetCount(prefix);
         }
 
         /// <summary>
@@ -674,15 +619,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            var cacheKeys = string.IsNullOrWhiteSpace(_name)
-                                  ? _cacheKeys
-                                  : _cacheKeys.Where(x => x.StartsWith(_name, StringComparison.OrdinalIgnoreCase));
-
-            foreach (var item in cacheKeys)
-            {
-                _cache.Remove(item);
-                _cacheKeys.TryRemove(item);
-            }
+            _cache.Clear(_name);
         }
 
         /// <summary>
@@ -694,7 +631,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            Flush();
+            _cache.Clear(_name);
             await Task.CompletedTask;
         }
 
@@ -725,15 +662,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cache.TryGetValue(BuildCacheKey(Name, cacheKey), out var obj))
-            {
-                return false;
-            }
-            else
-            {
-                Set(cacheKey, cacheValue, expiration);
-                return true;
-            }
+            return _cache.Add(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -744,21 +673,13 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_cache.TryGetValue(BuildCacheKey(Name, cacheKey), out var obj))
-            {
-                return false;
-            }
-            else
-            {
-                await SetAsync(cacheKey, cacheValue, expiration);
-                return true;
-            }
+            return Task.FromResult(_cache.Add(cacheKey, cacheValue, expiration));
         }
     }
 }

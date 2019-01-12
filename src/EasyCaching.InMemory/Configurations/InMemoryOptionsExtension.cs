@@ -38,7 +38,7 @@
         {
             services.AddOptions();
             services.Configure(configure);
-            services.AddMemoryCache();
+            services.AddSingleton<IInMemoryCaching, InMemoryCaching>();
 
             if (string.IsNullOrWhiteSpace(_name))
             {
@@ -49,7 +49,7 @@
                 services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
                 services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>(x =>
                 {
-                    var mCache = x.GetRequiredService<Microsoft.Extensions.Caching.Memory.IMemoryCache>();
+                    var mCache = x.GetRequiredService<IInMemoryCaching>();
                     var options = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
                     //ILoggerFactory can be null
                     var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();

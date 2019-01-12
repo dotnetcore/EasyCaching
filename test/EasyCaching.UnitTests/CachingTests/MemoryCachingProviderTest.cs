@@ -27,6 +27,21 @@ namespace EasyCaching.UnitTests
         {
             Assert.Equal(120, _provider.MaxRdSecond);
         }
+
+
+        [Fact]
+        public void TrySet_Parallel_Should_Succeed()
+        {
+            var list = new List<bool>();
+
+            Parallel.For(1, 20, x =>
+            {
+                list.Add(_provider.TrySet<int>("Parallel", 1, TimeSpan.FromSeconds(1)));
+            });
+
+            Assert.Equal(1, list.Count(x => x));
+
+        }
     }
 
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
@@ -144,6 +159,9 @@ namespace EasyCaching.UnitTests
             'CachingProviderType': 1,
             'MaxRdSecond': 600,
             'Order': 99,
+            'dbconfig': {      
+                'SizeLimit' :  50
+            }
         }
     }
 }";
