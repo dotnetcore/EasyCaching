@@ -57,42 +57,6 @@ namespace EasyCaching.UnitTests
 
             Assert.False(flag);
         }
-
-
-        [Fact]
-        public void Get_Parallel_Should_Succeed()
-        {
-            int count = 0;
-
-            Parallel.For(0, 20, x =>
-            {
-                _provider.Get<int>("Parallel_GET", ()=> 
-                {
-                    count++;
-                    return 1;
-                }, _defaultTs);
-            });
-
-            Assert.Equal(1, count);
-        }
-
-        [Fact]
-        public void GetAsync_Parallel_Should_Succeed()
-        {
-            int count = 0;
-
-            Parallel.For(0, 20, async x =>
-            {
-                await _provider.GetAsync("Parallel_GET", async () =>
-                {
-                    count++;
-                    return await Task.FromResult(1);
-                }, _defaultTs);
-            });
-
-            Assert.Equal(1, count);
-        }
-
     }
 
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest

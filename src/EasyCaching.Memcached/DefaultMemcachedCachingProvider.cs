@@ -145,6 +145,12 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
+            if (!_memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+            {
+                System.Threading.Thread.Sleep(_options.SleepMs);
+                return Get(cacheKey, dataRetriever, expiration);
+            }
+
             var item = dataRetriever();
             if (item != null)
             {
@@ -186,7 +192,13 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            var item = await dataRetriever?.Invoke();
+            if (!await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+            {
+                await Task.Delay(_options.SleepMs);
+                return await GetAsync(cacheKey, dataRetriever, expiration);
+            }
+
+            var item = await dataRetriever();
             if (item != null)
             {
                 await this.SetAsync(cacheKey, item, expiration);

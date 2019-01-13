@@ -175,6 +175,12 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
+            if (!_cache.StringSet($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs),When.NotExists))
+            {
+                System.Threading.Thread.Sleep(_options.SleepMs);
+                return Get(cacheKey, dataRetriever, expiration);
+            }
+
             var item = dataRetriever();
             if (item != null)
             {
@@ -216,6 +222,12 @@
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+            if (!await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists))
+            {
+                await Task.Delay(_options.SleepMs);
+                return await GetAsync(cacheKey, dataRetriever, expiration);
+            }
 
             var item = await dataRetriever?.Invoke();
             if (item != null)

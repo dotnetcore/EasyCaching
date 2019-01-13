@@ -75,5 +75,17 @@
         {
             await Task.FromResult(1);
         }
+
+        [Fact]
+        protected override void Get_Parallel_Should_Succeed()
+        {
+
+        }
+
+        [Fact]
+        protected override void GetAsync_Parallel_Should_Succeed()
+        {
+
+        }
     }
 }
