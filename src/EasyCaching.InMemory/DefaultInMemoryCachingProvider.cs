@@ -131,6 +131,9 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            ////mutex key
+            //Lock(cacheKey);
+
             var result = _cache.Get<T>(BuildCacheKey(Name, cacheKey));
             if (result.HasValue)
             {
@@ -146,12 +149,21 @@
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                
+            if (! _cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+            {
+                System.Threading.Thread.Sleep(_options.SleepMs);
+                return Get(cacheKey, dataRetriever, expiration);
+            }
 
             var res = dataRetriever();
 
             if (res != null)
             {
-                Set(cacheKey, result, expiration);
+                Set(cacheKey, res, expiration);
+                //remove mutex key
+                _cache.Remove($"{cacheKey}_Lock");
+
                 return new CacheValue<T>(res, true);
             }
             else
@@ -189,11 +201,21 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
 
-            var res = await dataRetriever?.Invoke();
+            if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+            {
+                //wait for some ms
+                await Task.Delay(_options.SleepMs);
+                return await GetAsync(cacheKey, dataRetriever, expiration);
+            }
+
+            var res = await dataRetriever();
 
             if (res != null)
             {
-                Set(cacheKey, result, expiration);
+                await SetAsync(cacheKey, res, expiration);
+                //remove mutex key
+                _cache.Remove($"{cacheKey}_Lock");
+
                 return new CacheValue<T>(res, true);
             }
             else
@@ -275,8 +297,6 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             _cache.Remove(BuildCacheKey(Name, cacheKey));
-
-            //_cacheKeys.TryRemove(BuildCacheKey(Name, cacheKey));
         }
 
         /// <summary>
@@ -291,7 +311,6 @@
             await Task.Run(() =>
             {
                 _cache.Remove(BuildCacheKey(Name, cacheKey));
-                //_cacheKeys.TryRemove(BuildCacheKey(Name, cacheKey));
             });
         }
 
@@ -312,14 +331,13 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
+            //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
+            //var val = new CacheValue<T>(cacheValue, true, valExpiration);
             _cache.Set(BuildCacheKey(Name, cacheKey), cacheValue, expiration);
-
-            //_cacheKeys.Add(BuildCacheKey(Name, cacheKey));
         }
-
 
         /// <summary>
         /// Sets the specified cacheKey, cacheValue and expiration async.
@@ -338,13 +356,14 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             await Task.Run(() =>
             {
+                //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
+                //var val = new CacheValue<T>(cacheValue, true, valExpiration);
                 _cache.Set(BuildCacheKey(Name, cacheKey), cacheValue, expiration);
-                //_cacheKeys.Add(BuildCacheKey(Name, cacheKey));
             });
         }
 
@@ -455,9 +474,10 @@
 
             foreach (var item in values)
             {
+                //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
+                //var val = new CacheValue<T>(item.Value, true, valExpiration);
                 newDict.Add(BuildCacheKey(this._name, item.Key), item.Value);
             }
-
 
             _cache.SetAll(newDict, expiration);
         }
@@ -478,6 +498,8 @@
 
             foreach (var item in values)
             {
+                //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
+                //var val = new CacheValue<T>(item.Value, true, valExpiration);
                 newDict.Add(BuildCacheKey(this._name, item.Key), item.Value);
             }
 
@@ -662,6 +684,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            //var val = new CacheValue<T>(cacheValue, true, expiration);
             return _cache.Add(cacheKey, cacheValue, expiration);
         }
 
@@ -679,6 +702,7 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
+            //var val = new CacheValue<T>(cacheValue, true, expiration);
             return Task.FromResult(_cache.Add(cacheKey, cacheValue, expiration));
         }
     }
