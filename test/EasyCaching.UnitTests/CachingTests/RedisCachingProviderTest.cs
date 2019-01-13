@@ -86,12 +86,8 @@ namespace EasyCaching.UnitTests
     }
 
 
-    public class RedisCachingProviderWithFactoryTest : BaseCachingProviderTest
-    {
-        private readonly IEasyCachingProvider _secondProvider;
-
-        private const string SECOND_PROVIDER_NAME = "second";
-
+    public class RedisCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
+    {       
         public RedisCachingProviderWithFactoryTest()
         {
             IServiceCollection services = new ServiceCollection();
@@ -118,31 +114,6 @@ namespace EasyCaching.UnitTests
             _provider = factory.GetCachingProvider(EasyCachingConstValue.DefaultRedisName);
             _secondProvider = factory.GetCachingProvider(SECOND_PROVIDER_NAME);
             _defaultTs = TimeSpan.FromSeconds(30);
-        }
-
-        [Fact]
-        public void Multi_Instance_Set_And_Get_Should_Succeed()
-        {
-            var cacheKey1 = "named-provider-1";
-            var cacheKey2 = "named-provider-2";
-
-            var value1 = Guid.NewGuid().ToString();
-            var value2 = Guid.NewGuid().ToString("N");
-
-            _provider.Set(cacheKey1, value1, _defaultTs);
-            _secondProvider.Set(cacheKey2, value2, _defaultTs);
-
-            var p1 = _provider.Get<string>(cacheKey1);
-            var p2 = _provider.Get<string>(cacheKey2);
-
-            var s1 = _secondProvider.Get<string>(cacheKey1);
-            var s2 = _secondProvider.Get<string>(cacheKey2);
-
-            Assert.Equal(value1, p1.Value);
-            Assert.False(p2.HasValue);
-
-            Assert.False(s1.HasValue);
-            Assert.Equal(value2, s2.Value);
         }
     }
 }

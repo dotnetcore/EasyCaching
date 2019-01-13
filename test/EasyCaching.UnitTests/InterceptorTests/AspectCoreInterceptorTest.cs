@@ -175,7 +175,10 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-            services.AddDefaultInMemoryCache();
+            services.AddDefaultInMemoryCache(x =>
+            {
+                x.MaxRdSecond = 0;
+            });
             IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor();
 
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();

@@ -187,7 +187,7 @@
 
             var list = new List<bool>();
 
-            foreach (var entry in values) list.Add(Set(entry.Key, entry.Value));
+            foreach (var entry in values) list.Add(Set(entry.Key, entry.Value, expiresIn));
 
             return list.Count(r => r);
         }

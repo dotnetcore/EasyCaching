@@ -83,9 +83,9 @@
         }
 
         [Fact]
-        protected override void GetAsync_Parallel_Should_Succeed()
+        protected override Task GetAsync_Parallel_Should_Succeed()
         {
-
+            return Task.FromResult(1);
         }
     }
 }

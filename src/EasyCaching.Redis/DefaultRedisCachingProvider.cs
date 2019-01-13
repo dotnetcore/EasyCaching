@@ -185,6 +185,8 @@
             if (item != null)
             {
                 Set(cacheKey, item, expiration);
+                //remove mutex key
+                _cache.KeyDelete($"{cacheKey}_Lock");
                 return new CacheValue<T>(item, true);
             }
             else
@@ -223,16 +225,21 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists))
+            var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists);
+
+            if (!flag)
             {
                 await Task.Delay(_options.SleepMs);
                 return await GetAsync(cacheKey, dataRetriever, expiration);
             }
 
-            var item = await dataRetriever?.Invoke();
+            var item = await dataRetriever();
             if (item != null)
             {
                 await SetAsync(cacheKey, item, expiration);
+
+                //remove mutex key
+                await _cache.KeyDeleteAsync($"{cacheKey}_Lock");
                 return new CacheValue<T>(item, true);
             }
             else

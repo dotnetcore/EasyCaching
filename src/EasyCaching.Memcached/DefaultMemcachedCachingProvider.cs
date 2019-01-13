@@ -155,6 +155,7 @@
             if (item != null)
             {
                 this.Set(cacheKey, item, expiration);
+                _memcachedClient.Remove(this.HandleCacheKey($"{cacheKey}_Lock"));
                 return new CacheValue<T>(item, true);
             }
             else
@@ -192,7 +193,9 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+            var flag = await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
+
+            if (!flag)
             {
                 await Task.Delay(_options.SleepMs);
                 return await GetAsync(cacheKey, dataRetriever, expiration);
@@ -202,6 +205,7 @@
             if (item != null)
             {
                 await this.SetAsync(cacheKey, item, expiration);
+                await _memcachedClient.RemoveAsync(this.HandleCacheKey($"{cacheKey}_Lock"));
                 return new CacheValue<T>(item, true);
             }
             else

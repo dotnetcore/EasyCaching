@@ -576,19 +576,19 @@
         }
 
         [Fact]
-        protected virtual void GetAsync_Parallel_Should_Succeed()
+        protected virtual async Task GetAsync_Parallel_Should_Succeed()
         {
             var cacheKey = Guid.NewGuid().ToString();
             int count = 0;
 
-            Parallel.For(0, 20, async x =>
-            {
-                await _provider.GetAsync(cacheKey, async () =>
-                {
-                    count++;
-                    return await Task.FromResult(1);
-                }, _defaultTs);
-            });
+            var tasks = Enumerable.Range(0, 20)
+                        .Select(i => _provider.GetAsync(cacheKey, () =>
+                        {
+                            count++;
+                            return Task.FromResult(1);
+                        }, _defaultTs));
+
+            await Task.WhenAll(tasks);
 
             Assert.Equal(1, count);
         }
