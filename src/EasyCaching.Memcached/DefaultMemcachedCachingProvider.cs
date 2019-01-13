@@ -312,7 +312,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
@@ -335,7 +335,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
@@ -670,7 +670,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             return _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey(cacheKey), cacheValue, expiration);
@@ -693,7 +693,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             return _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey(cacheKey), cacheValue, expiration);

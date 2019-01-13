@@ -346,7 +346,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             _cache.StringSet(
@@ -372,7 +372,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             await _cache.StringSetAsync(
@@ -782,7 +782,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             return _cache.StringSet(
@@ -810,7 +810,7 @@
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
-                expiration.Add(new TimeSpan(0, 0, addSec));
+                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
             return _cache.StringSetAsync(
