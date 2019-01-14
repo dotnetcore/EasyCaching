@@ -89,7 +89,7 @@
             ILoggerFactory loggerFactory = null)
         {
             this._name = EasyCachingConstValue.DefaultMemcachedName;
-            this._memcachedClient = memcachedClients.FirstOrDefault(x=>x.Name.Equals(this._name));
+            this._memcachedClient = memcachedClients.FirstOrDefault(x => x.Name.Equals(this._name));
             this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
 
@@ -145,7 +145,9 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!_memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+            var flag = _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
+
+            if (!flag)
             {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);
@@ -177,22 +179,22 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
-            if (result != null)
+            var result = await _memcachedClient.GetAsync<T>(this.HandleCacheKey(cacheKey));
+            if (result.Success)
             {
                 CacheStats.OnHit();
 
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
-                return new CacheValue<T>(result, true);
+                return new CacheValue<T>(result.Value, true);
             }
 
             CacheStats.OnMiss();
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+                
             var flag = await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
 
             if (!flag)
@@ -209,7 +211,7 @@
                 return new CacheValue<T>(item, true);
             }
             else
-            {              
+            {
                 return CacheValue<T>.NoValue;
             }
         }
@@ -227,7 +229,7 @@
             if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
             {
                 CacheStats.OnHit();
-                
+
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
@@ -254,15 +256,15 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await _memcachedClient.GetValueAsync<T>(this.HandleCacheKey(cacheKey));
-            if (result != null)
+            var result = await _memcachedClient.GetAsync<T>(this.HandleCacheKey(cacheKey));
+            if (result.Success)
             {
                 CacheStats.OnHit();
 
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
-                return new CacheValue<T>(result, true);
+                return new CacheValue<T>(result.Value, true);
             }
             else
             {
@@ -622,7 +624,7 @@
         /// <param name="prefix">Prefix.</param>
         public int GetCount(string prefix = "")
         {
-            if(string.IsNullOrWhiteSpace(prefix))
+            if (string.IsNullOrWhiteSpace(prefix))
             {
                 //Inaccurate, sometimes, memcached just causes items to expire but not free up or flush memory at once.
                 return int.Parse(_memcachedClient.Stats().GetRaw("curr_items").FirstOrDefault().Value);
@@ -630,7 +632,7 @@
             else
             {
                 return 0;
-            }  
+            }
         }
 
         /// <summary>
@@ -650,7 +652,7 @@
         /// </summary>
         /// <returns>The async.</returns>
         public async Task FlushAsync()
-        {   
+        {
             if (_options.EnableLogging)
                 _logger?.LogInformation("Memcached -- FlushAsync");
 
