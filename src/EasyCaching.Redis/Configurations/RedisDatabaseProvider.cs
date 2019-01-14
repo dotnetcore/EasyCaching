@@ -80,7 +80,8 @@
                     Ssl = _options.IsSsl,
                     SslHost = _options.SslHost,
                     AllowAdmin = _options.AllowAdmin,
-                    DefaultDatabase = _options.Database
+                    DefaultDatabase = _options.Database,
+                    AbortOnConnectFail = _options.AbortOnConnectFail,
                 };
 
                 foreach (var endpoint in _options.Endpoints)
