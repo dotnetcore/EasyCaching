@@ -79,13 +79,20 @@ public class Startup
     
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddMvc();
+        //configuration
+        services.AddEasyCaching(option=> 
+        {
+            //use memory cache that named default
+            option.UseInMemory("default");
 
-        //In-Memory Cache
-        services.AddDefaultInMemoryCache();
-        
-        //Read from appsetting.json
-        //services.AddDefaultInMemoryCache(Configuration);               
+            //use redis cache that named redis1
+            option.UseRedis(config => 
+            {
+                config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            }, "redis1")
+            .WithMessagePack()//with messagepack serialization
+            ;            
+        });    
     }    
 }
 ```
@@ -96,84 +103,33 @@ public class Startup
 [Route("api/[controller]")]
 public class ValuesController : Controller
 {
-    private readonly IEasyCachingProvider _provider;
+    // //when using single provider
+    // private readonly IEasyCachingProvider _provider;
+    //when using multiple provider
+    private readonly IEasyCachingProviderFactory _factory;
 
-    public ValuesController(IEasyCachingProvider provider)
+    public ValuesController(
+        //IEasyCachingProvider provider, 
+        IEasyCachingProviderFactory factory
+        )
     {
-        this._provider = provider;
+        //this._provider = provider;
+        this._factory = factory;
     }
 
     [HttpGet]
-    public string Get()
+    public string Handle()
     {
+        //var provider = _provider;
+        //get the provider from factory with its name
+        var provider = _factory.GetCachingProvider("redis1");    
+
         //Set
-        _provider.Set("demo", "123", TimeSpan.FromMinutes(1));
+        provider.Set("demo", "123", TimeSpan.FromMinutes(1));
             
         //Set Async
-        await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));   
-        
-        //Get without data retriever
-        var res = _provider.Get<string>("demo");
-        
-        //Get without data retriever Async
-        var res = await _provider.GetAsync<string>("demo");
-        
-        //Get
-        var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
-        
-        //Get Async    
-        var res = await _provider.GetAsync("demo",async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));   
-                
-        //others ....
+        await provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));                  
     }
-}
-```
-
-## Advanced Usages
-
-### Multiple instances for single provider
-
-After v0.4.0, EasyCaching import `IEasyCachingProviderFactory` to create providers by users.
-
-Configure in `Startup.cs` at first.
-
-```cs
-public void ConfigureServices(IServiceCollection services)
-{
-    services.AddDefaultRedisCacheWithFactory("redis1",option =>
-    {
-        option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-    });
-
-    services.AddDefaultRedisCacheWithFactory("redis2", option =>
-    {
-        option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-    });
-}
-```
-Use `IEasyCachingProviderFactory` to create the provider.
-
-```cs
-private readonly IEasyCachingProviderFactory _factory;
-
-public CusController(IEasyCachingProviderFactory factory)
-{
-    this._factory = factory;
-}
-
-[HttpGet]
-[Route("")]
-public string GetRedis()
-{
-    //use 6379
-    var provider1 = _factory.GetCachingProvider("redis1");    
-    var val1 = provider1.Get("named-provider-1", () => "redis1", TimeSpan.FromMinutes(1));
-    
-    //use 6380
-    var provider2 = _factory.GetCachingProvider("redis2");    
-    var val2 = provider2.Get("named-provider-2", () => "redis2", TimeSpan.FromMinutes(1));
-    
-    return $"OK";
 }
 ```
 
