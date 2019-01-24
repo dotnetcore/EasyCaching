@@ -181,7 +181,10 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<ICastleExampleService, CastleExampleService>();
-            services.AddDefaultInMemoryCache();
+            services.AddDefaultInMemoryCache(x=> 
+            {
+                x.MaxRdSecond = 0;
+            });
             IServiceProvider serviceProvider = services.ConfigureCastleInterceptor();
 
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
@@ -198,7 +201,10 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-            services.AddDefaultInMemoryCache();
+            services.AddDefaultInMemoryCache(x =>
+            {
+                x.MaxRdSecond = 0;
+            });
 
             Action<ContainerBuilder> action = x =>
             {
@@ -229,7 +235,10 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-            services.AddDefaultInMemoryCache();
+            services.AddDefaultInMemoryCache(x =>
+            {
+                x.MaxRdSecond = 0;
+            });
 
             Action<ContainerBuilder> action = x =>
             {

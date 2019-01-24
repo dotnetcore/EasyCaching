@@ -556,6 +556,42 @@
             Assert.Equal(default(string), val.Value);
         }
 
+        [Fact]
+        protected virtual void Get_Parallel_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            int count = 0;
+
+            Parallel.For(0, 20, x =>
+            {
+                _provider.Get<int>(cacheKey, () =>
+                {
+                    count++;
+                    return 1;
+                }, _defaultTs);
+            });
+
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
+        protected virtual async Task GetAsync_Parallel_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            int count = 0;
+
+            var tasks = Enumerable.Range(0, 20)
+                        .Select(i => _provider.GetAsync(cacheKey, () =>
+                        {
+                            count++;
+                            return Task.FromResult(1);
+                        }, _defaultTs));
+
+            await Task.WhenAll(tasks);
+
+            Assert.Equal(1, count);
+        }
         #endregion
 
         #region Refresh/RefreshAsync
@@ -718,7 +754,7 @@
             var flag = await _provider.ExistsAsync(cacheKey);
 
             Assert.False(flag);
-        }
+        }              
         #endregion
 
         #region RemoveByPrefix/RemoveByPrefixAsync

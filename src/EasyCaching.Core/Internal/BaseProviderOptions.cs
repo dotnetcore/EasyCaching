@@ -37,5 +37,17 @@
         /// </summary>
         /// <value><c>true</c> if enable logging; otherwise, <c>false</c>.</value>
         public bool EnableLogging { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sleep ms.
+        /// </summary>
+        /// <value>The sleep ms.</value>
+        public int SleepMs { get; set; } = 300;
+
+        /// <summary>
+        /// Gets or sets the lock ms.
+        /// </summary>
+        /// <value>The lock ms.</value>
+        public int LockMs { get; set; } = 5000;
     }
 }

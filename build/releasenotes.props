@@ -1,19 +1,21 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-        1. Improve Configuration.
+        1. Update BaseRedisOptions.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Improve Configuration.
+        1. Improve Get cached value.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-        1. Improve Configuration.
+        1. Update Options.
+        2. Improve Get cached value.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Improve Configuration.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Improve Configuration.
+        1. Update Options.
+        2. Improve Get cached value.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. Improve Configuration.

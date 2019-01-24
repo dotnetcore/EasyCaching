@@ -25,6 +25,7 @@
                 x.EnableLogging = option.EnableLogging;
                 x.MaxRdSecond = option.MaxRdSecond;
                 x.Order = option.Order;
+                x.DBConfig = option.DBConfig;
             }
 
             options.RegisterExtension(new InMemoryOptionsExtension(name, configure));
@@ -58,9 +59,9 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, IConfiguration configuration, string name = "")
+        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.InMemorySection)
         {
-            var dbConfig = configuration.GetSection(EasyCachingConstValue.InMemorySection);
+            var dbConfig = configuration.GetSection(sectionName);
             var memoryOptions = new InMemoryOptions();
             dbConfig.Bind(memoryOptions);
 
@@ -70,6 +71,7 @@
                 x.EnableLogging = memoryOptions.EnableLogging;
                 x.MaxRdSecond = memoryOptions.MaxRdSecond;
                 x.Order = memoryOptions.Order;
+                x.DBConfig = memoryOptions.DBConfig;
             }
 
             options.RegisterExtension(new InMemoryOptionsExtension(name, configure));

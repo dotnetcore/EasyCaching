@@ -40,6 +40,19 @@
             _provider = new DefaultSQLiteCachingProvider(_dbProvider, new TestOptionMonitorWrapper<SQLiteOptions>(new SQLiteOptions()));
             _defaultTs = TimeSpan.FromSeconds(30);
         }
+
+        [Fact]
+        protected override Task  GetAsync_Parallel_Should_Succeed()
+        {
+            return Task.FromResult(1);
+                
+        }
+
+        [Fact]
+        protected override void Get_Parallel_Should_Succeed()
+        {
+
+        }
     }
 
 

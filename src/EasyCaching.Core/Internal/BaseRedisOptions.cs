@@ -61,5 +61,11 @@
         /// <value>The configuration.</value>
         public string Configuration { get; set; } = "";
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="T:EasyCaching.Core.Internal.BaseRedisOptions"/>
+        /// abort on connect fail.
+        /// </summary>
+        /// <value><c>true</c> if abort on connect fail; otherwise, <c>false</c>.</value>
+        public bool AbortOnConnectFail { get; set; } = false;
     }
 }

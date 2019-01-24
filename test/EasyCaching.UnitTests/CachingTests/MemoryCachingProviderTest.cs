@@ -16,16 +16,46 @@ namespace EasyCaching.UnitTests
         public MemoryCachingProviderTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultInMemoryCache();
+            services.AddDefaultInMemoryCache(x=> 
+            {
+                x.MaxRdSecond = 0;
+            });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
         [Fact]
-        public void Deault_MaxRdSecond_Should_Be_120()
+        public void Deault_MaxRdSecond_Should_Be_0()
         {
-            Assert.Equal(120, _provider.MaxRdSecond);
+            Assert.Equal(0, _provider.MaxRdSecond);
+        }
+
+
+        [Fact]
+        public void TrySet_Parallel_Should_Succeed()
+        {
+            var list = new List<bool>();
+
+            Parallel.For(1, 20, x =>
+            {
+                list.Add(_provider.TrySet<int>("Parallel", 1, TimeSpan.FromSeconds(1)));
+            });
+
+            Assert.Equal(1, list.Count(x => x));
+
+        }
+
+        [Fact]
+        public void Exists_After_Expiration_Should_Return_False()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+            var cacheValue = "value";
+            _provider.Set(cacheKey, cacheValue, TimeSpan.FromMilliseconds(200));
+            System.Threading.Thread.Sleep(300);
+            var flag = _provider.Exists(cacheKey);
+
+            Assert.False(flag);
         }
     }
 
@@ -144,6 +174,9 @@ namespace EasyCaching.UnitTests
             'CachingProviderType': 1,
             'MaxRdSecond': 600,
             'Order': 99,
+            'dbconfig': {      
+                'SizeLimit' :  50
+            }
         }
     }
 }";

@@ -32,7 +32,7 @@
 
             var providers = new List<IEasyCachingProvider>
             {
-                new DefaultInMemoryCachingProvider(new MemoryCache(new MemoryCacheOptions()), new TestOptionMonitorWrapper<InMemoryOptions>(new InMemoryOptions())),
+                new DefaultInMemoryCachingProvider(new InMemory.InMemoryCaching(new InMemoryCachingOptions()), new TestOptionMonitorWrapper<InMemoryOptions>(new InMemoryOptions())),
                 new DefaultRedisCachingProvider(fakeDbProvider, serializer, new TestOptionMonitorWrapper<RedisOptions>(new RedisOptions()))
             };
 
@@ -55,7 +55,7 @@
         [Fact]
         protected override void OnHit_Should_Return_One_And_OnMiss_Should_Return_Zero()
         {
-            
+
         }
 
         [Fact]
@@ -67,13 +67,25 @@
         [Fact]
         protected override void TrySet_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            
+
         }
 
         [Fact]
         protected override async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
             await Task.FromResult(1);
+        }
+
+        [Fact]
+        protected override void Get_Parallel_Should_Succeed()
+        {
+
+        }
+
+        [Fact]
+        protected override Task GetAsync_Parallel_Should_Succeed()
+        {
+            return Task.FromResult(1);
         }
     }
 }

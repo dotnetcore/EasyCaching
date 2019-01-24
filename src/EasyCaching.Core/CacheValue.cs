@@ -1,5 +1,7 @@
 ﻿namespace EasyCaching.Core
 {
+    using System;
+
     /// <summary>
     /// Cache value.
     /// </summary>
@@ -10,10 +12,16 @@
         /// </summary>
         /// <param name="value">Value.</param>
         /// <param name="hasValue">If set to <c>true</c> has value.</param>
-        public CacheValue(T value, bool hasValue)
+        public CacheValue(T value, bool hasValue, TimeSpan? ts = null)
         {
             Value = value;
             HasValue = hasValue;
+
+            if(ts.HasValue)
+            {
+                ExpiresAt = DateTimeOffset.UtcNow.Add(ts.Value);
+            }
+
         }
 
         /// <summary>
@@ -33,6 +41,12 @@
         /// </summary>
         /// <value>The value.</value>
         public T Value { get; }
+
+        /// <summary>
+        /// Gets or sets the expires at.
+        /// </summary>
+        /// <value>The expires at.</value>
+        public DateTimeOffset ExpiresAt { get; set; }
 
         /// <summary>
         /// Gets the null.
