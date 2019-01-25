@@ -785,19 +785,19 @@
         [Fact]
         protected virtual async Task RemoveByPrefixAsync_Should_Succeed()
         {
-            SetCacheItem("demo:1", "1");
-            SetCacheItem("demo:2", "2");
-            SetCacheItem("demo:3", "3");
-            SetCacheItem("demo:4", "4");
-            SetCacheItem("xxx:1", "1");
+            SetCacheItem("demo:1#async", "1");
+            SetCacheItem("demo:2#async", "2");
+            SetCacheItem("demo:3#async", "3");
+            SetCacheItem("demo:4#async", "4");
+            SetCacheItem("xxx:1#async", "1");
 
             await _provider.RemoveByPrefixAsync("demo");
 
-            var demo1 = _provider.Get<string>("demo:1");
-            var demo2 = _provider.Get<string>("demo:2");
-            var demo3 = _provider.Get<string>("demo:3");
-            var demo4 = _provider.Get<string>("demo:4");
-            var xxx1 = _provider.Get<string>("xxx:1");
+            var demo1 = _provider.Get<string>("demo:1#async");
+            var demo2 = _provider.Get<string>("demo:2#async");
+            var demo3 = _provider.Get<string>("demo:3#async");
+            var demo4 = _provider.Get<string>("demo:4#async");
+            var xxx1 = _provider.Get<string>("xxx:1#async");
 
             Assert.False(demo1.HasValue);
             Assert.False(demo2.HasValue);

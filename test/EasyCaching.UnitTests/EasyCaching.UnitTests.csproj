@@ -29,6 +29,7 @@
     <ProjectReference Include="..\..\src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.ResponseCaching\EasyCaching.ResponseCaching.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />
