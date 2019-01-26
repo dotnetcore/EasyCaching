@@ -10,7 +10,7 @@
     using System.Linq;
     using System.Threading.Tasks;
 
-    public class DefaultCSRedisCachingProvider : IEasyCachingProvider
+    public partial class DefaultCSRedisCachingProvider : IRedisCachingProvider //: IEasyCachingProvider
     {
         /// <summary>
         /// The cache.
@@ -46,7 +46,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.CSRedis.DefaultCSRedisCachingProvider"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
-        /// <param name="dbProviders">Db providers.</param>
+        /// <param name="clients">Clients.</param>
         /// <param name="serializer">Serializer.</param>
         /// <param name="options">Options.</param>
         /// <param name="loggerFactory">Logger factory.</param>
