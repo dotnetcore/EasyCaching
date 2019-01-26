@@ -11,6 +11,11 @@
         private readonly CSRedisDBOptions _options;
 
         /// <summary>
+        /// The client.
+        /// </summary>
+        private readonly CSRedisClient _client;
+
+        /// <summary>
         /// The name.
         /// </summary>
         private readonly string _name;
@@ -22,6 +27,7 @@
         public RedisDatabaseProvider(IOptionsMonitor<RedisOptions> options)
         {
             _options = options.CurrentValue.DBConfig;
+            _client = new CSRedisClient(_options.NodeRule, _options.ConnectionStrings.ToArray());
         }
 
         /// <summary>
@@ -33,6 +39,7 @@
         {
             _name = name;
             _options = options.DBConfig;
+            _client = new CSRedisClient(_options.NodeRule, _options.ConnectionStrings.ToArray());
         }
 
         /// <summary>
@@ -47,8 +54,7 @@
         /// <returns>The client.</returns>
         public CSRedisClient GetClient()
         {
-            var client = new CSRedisClient(_options.NodeRule, _options.ConnectionStrings.ToArray());
-            return client;
+            return _client;
         }
     }
 }

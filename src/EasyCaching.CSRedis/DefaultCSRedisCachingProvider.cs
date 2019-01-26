@@ -147,11 +147,11 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public Task<bool> ExistsAsync(string cacheKey)
+        public async Task<bool> ExistsAsync(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return _cache.ExistsAsync(cacheKey);
+            return await _cache.ExistsAsync(cacheKey);
         }
 
         /// <summary>
@@ -708,7 +708,7 @@
         /// <param name="value">Value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration)
+        public async Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration)
         {
             //whether to use pipe based on redis mode 
             var tasks = new List<Task<bool>>();
@@ -724,7 +724,7 @@
                 tasks.Add(_cache.SetAsync(item.Key, _serializer.Serialize(item.Value), expiration.Seconds));
             }
 
-            return Task.WhenAll(tasks);
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -792,7 +792,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public async Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -804,7 +804,7 @@
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            return _cache.SetAsync(
+            return await _cache.SetAsync(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
                 expiration.Seconds,
