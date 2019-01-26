@@ -27,6 +27,7 @@ namespace EasyCaching.UnitTests
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
+            _nameSpace = "CSRedisBase";
         }
     }
 }

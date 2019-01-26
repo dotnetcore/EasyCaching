@@ -24,6 +24,7 @@ namespace EasyCaching.UnitTests
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
+            _nameSpace = "RedisBasic";
         }
 
         [Fact]
@@ -114,6 +115,7 @@ namespace EasyCaching.UnitTests
             _provider = factory.GetCachingProvider(EasyCachingConstValue.DefaultRedisName);
             _secondProvider = factory.GetCachingProvider(SECOND_PROVIDER_NAME);
             _defaultTs = TimeSpan.FromSeconds(30);
+            _nameSpace = "RedisFactory";
         }
     }
 }

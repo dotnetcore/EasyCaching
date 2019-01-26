@@ -319,7 +319,7 @@
 
             if (!flag)
             {
-                System.Threading.Thread.Sleep(_options.SleepMs);
+                await Task.Delay(_options.SleepMs);
                 return await GetAsync(cacheKey, dataRetriever, expiration);
             }
 

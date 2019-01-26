@@ -12,6 +12,7 @@
     {
         protected IEasyCachingProvider _provider;
         protected TimeSpan _defaultTs;
+        protected string _nameSpace = string.Empty;
 
         #region Parameter Check Test
         [Theory]
@@ -181,7 +182,7 @@
         [Fact]
         public void Refresh_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             string cacheVlaue = null;
             Assert.Throws<ArgumentNullException>(() => _provider.Set(cacheKey, cacheVlaue, _defaultTs));
         }
@@ -189,7 +190,7 @@
         [Fact]
         public async Task Refresh_Async_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             string cacheVlaue = null;
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, _defaultTs));
         }
@@ -197,7 +198,7 @@
         [Fact]
         public void Refresh_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             string cacheVlaue = "123";
             var expiration = TimeSpan.Zero;
             Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
@@ -206,7 +207,7 @@
         [Fact]
         public async Task Refresh_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             string cacheVlaue = "123";
             var expiration = TimeSpan.Zero;
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
@@ -215,7 +216,7 @@
         [Fact]
         public void Refresh_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             string cacheVlaue = "123";
             var expiration = new TimeSpan(0, 0, -1);
             Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
@@ -224,7 +225,7 @@
         [Fact]
         public async Task Refresh_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             string cacheVlaue = "123";
             var expiration = new TimeSpan(0, 0, -1);
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
@@ -271,7 +272,7 @@
         [Fact]
         public void Set_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -284,7 +285,7 @@
         [Fact]
         public async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -297,7 +298,7 @@
         [Fact]
         protected virtual void Set_Object_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = new Product { Id = 999, Name = "product999" };
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -311,7 +312,7 @@
         [Fact]
         protected virtual async Task Set_Object_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = new Product { Id = 999, Name = "product999" };
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -325,7 +326,7 @@
         [Fact]
         protected virtual void Set_And_Get_Value_Type_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -338,7 +339,7 @@
         [Fact]
         protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
 
             await  _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -353,7 +354,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var func = Create_Fake_Retriever_Return_String();
 
@@ -365,7 +366,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var func = Create_Fake_Retriever_Return_String_Async();
 
@@ -377,7 +378,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var func = Create_Fake_Retriever_Return_NULL();
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
@@ -388,7 +389,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Null()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var func = Create_Fake_Retriever_Return_NULL_Async();
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
@@ -399,7 +400,7 @@
         [Fact]
         public void Get_Cached_Value_Should_Not_Call_Retriever()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var func = Create_Fake_Retriever_Return_String();
             var cacheVlaue = "Memory";
 
@@ -412,7 +413,7 @@
         [Fact]
         public async Task Get_Cached_Value_Async_Should_Not_Call_Retriever()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var func = Create_Fake_Retriever_Return_String_Async();
             var cacheVlaue = "Memory";
 
@@ -425,7 +426,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Value()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var func = Create_Fake_Retriever_Return_String();
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
@@ -436,7 +437,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Value()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var func = Create_Fake_Retriever_Return_String_Async();
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
@@ -447,7 +448,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Without_Retriever_Should_Return_Default_Value()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var res = _provider.Get<string>(cacheKey);
 
@@ -457,7 +458,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Without_Retriever_Async_Should_Return_Default_Value()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var res = await _provider.GetAsync<string>(cacheKey);
 
@@ -467,7 +468,7 @@
         [Fact]
         public void Get_Cached_Value_Without_Retriever_Should_Return_Default_Value()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             _provider.Set(cacheKey, "123", _defaultTs);
 
@@ -479,7 +480,7 @@
         [Fact]
         public async Task Get_Cached_Value_Without_Retriever_Async_Should_Return_Default_Value()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             await _provider.SetAsync(cacheKey, "123", _defaultTs);
 
@@ -491,7 +492,7 @@
         [Fact]
         public void Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -503,7 +504,7 @@
         [Fact]
         public async Task Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -515,7 +516,7 @@
         [Fact]
         public void Get_Cached_Value_Without_Retriever_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -527,7 +528,7 @@
         [Fact]
         public async Task Get_Cached_Value_Without_Retriever_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -539,7 +540,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Without_Retriever_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var val = _provider.Get<string>(cacheKey);
 
@@ -549,7 +550,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Without_Retriever_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var val = await _provider.GetAsync<string>(cacheKey);
 
@@ -559,7 +560,7 @@
         [Fact]
         protected virtual void Get_Parallel_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}parallel{Guid.NewGuid().ToString()}";
 
             int count = 0;
 
@@ -578,7 +579,7 @@
         [Fact]
         protected virtual async Task GetAsync_Parallel_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}parallelasync{Guid.NewGuid().ToString()}";
             int count = 0;
 
             var tasks = Enumerable.Range(0, 20)
@@ -598,7 +599,7 @@
         [Fact]
         public void Refresh_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -618,7 +619,7 @@
         [Fact]
         public async Task Refresh_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
             var cacheBytes = new byte[] { 0x01 };
 
@@ -640,7 +641,7 @@
         [Fact]
         public void Refresh_Value_Type_Object_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -660,7 +661,7 @@
         [Fact]
         public async Task Refresh_Value_Type_Object_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -683,7 +684,7 @@
         [Fact]
         public void Remove_Cached_Value_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -698,7 +699,7 @@
         [Fact]
         public async Task Remove_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -715,7 +716,7 @@
         [Fact]
         public void Exists_Cached_Value_Should_Return_True()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
             _provider.Set(cacheKey, cacheValue, _defaultTs);
 
@@ -727,7 +728,7 @@
         [Fact]
         public async Task Exists_Cached_Value_Async_Should_Return_True()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
 
@@ -739,7 +740,7 @@
         [Fact]
         public void Exists_Cached_Value_Should_Return_False()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var flag = _provider.Exists(cacheKey);
 
@@ -749,7 +750,7 @@
         [Fact]
         public async Task Exists_Cached_Value_Async_Should_Return_False()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var flag = await _provider.ExistsAsync(cacheKey);
 
@@ -761,19 +762,19 @@
         [Fact]
         protected virtual void RemoveByPrefix_Should_Succeed()
         {
-            SetCacheItem("demo:1", "1");
-            SetCacheItem("demo:2", "2");
-            SetCacheItem("demo:3", "3");
-            SetCacheItem("demo:4", "4");
-            SetCacheItem("xxx:1", "1");
+            SetCacheItem($"{_nameSpace}demo:1", "1");
+            SetCacheItem($"{_nameSpace}demo:2", "2");
+            SetCacheItem($"{_nameSpace}demo:3", "3");
+            SetCacheItem($"{_nameSpace}demo:4", "4");
+            SetCacheItem($"{_nameSpace}xxx:1", "1");
 
-            _provider.RemoveByPrefix("demo");
+            _provider.RemoveByPrefix($"{_nameSpace}demo");
 
-            var demo1 = _provider.Get<string>("demo:1");
-            var demo2 = _provider.Get<string>("demo:2");
-            var demo3 = _provider.Get<string>("demo:3");
-            var demo4 = _provider.Get<string>("demo:4");
-            var xxx1 = _provider.Get<string>("xxx:1");
+            var demo1 = _provider.Get<string>($"{_nameSpace}demo:1");
+            var demo2 = _provider.Get<string>($"{_nameSpace}demo:2");
+            var demo3 = _provider.Get<string>($"{_nameSpace}demo:3");
+            var demo4 = _provider.Get<string>($"{_nameSpace}demo:4");
+            var xxx1 = _provider.Get<string>($"{_nameSpace}xxx:1");
 
             Assert.False(demo1.HasValue);
             Assert.False(demo2.HasValue);
@@ -785,19 +786,19 @@
         [Fact]
         protected virtual async Task RemoveByPrefixAsync_Should_Succeed()
         {
-            SetCacheItem("demo:1#async", "1");
-            SetCacheItem("demo:2#async", "2");
-            SetCacheItem("demo:3#async", "3");
-            SetCacheItem("demo:4#async", "4");
-            SetCacheItem("xxx:1#async", "1");
+            SetCacheItem($"{_nameSpace}demo:1#async", "1");
+            SetCacheItem($"{_nameSpace}demo:2#async", "2");
+            SetCacheItem($"{_nameSpace}demo:3#async", "3");
+            SetCacheItem($"{_nameSpace}demo:4#async", "4");
+            SetCacheItem($"{_nameSpace}xxx:1#async", "1");
 
-            await _provider.RemoveByPrefixAsync("demo");
+            await _provider.RemoveByPrefixAsync($"{_nameSpace}demo");
 
-            var demo1 = _provider.Get<string>("demo:1#async");
-            var demo2 = _provider.Get<string>("demo:2#async");
-            var demo3 = _provider.Get<string>("demo:3#async");
-            var demo4 = _provider.Get<string>("demo:4#async");
-            var xxx1 = _provider.Get<string>("xxx:1#async");
+            var demo1 = _provider.Get<string>($"{_nameSpace}demo:1#async");
+            var demo2 = _provider.Get<string>($"{_nameSpace}demo:2#async");
+            var demo3 = _provider.Get<string>($"{_nameSpace}demo:3#async");
+            var demo4 = _provider.Get<string>($"{_nameSpace}demo:4#async");
+            var xxx1 = _provider.Get<string>($"{_nameSpace}xxx:1#async");
 
             Assert.False(demo1.HasValue);
             Assert.False(demo2.HasValue);
@@ -811,12 +812,12 @@
         [Fact]
         protected virtual void SetAll_Should_Succeed()
         {
-            var dict = GetMultiDict("setall:");
+            var dict = GetMultiDict($"{_nameSpace}setall:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res1 = _provider.Get<string>("setall:key:1");
-            var res2 = _provider.Get<string>("setall:key:2");
+            var res1 = _provider.Get<string>($"{_nameSpace}setall:key:1");
+            var res2 = _provider.Get<string>($"{_nameSpace}setall:key:2");
 
             Assert.Equal("value1", res1.Value);
             Assert.Equal("value2", res2.Value);
@@ -825,12 +826,12 @@
         [Fact]
         protected virtual async Task SetAllAsync_Should_Succeed()
         {
-            var dict = GetMultiDict("setallasync:");
+            var dict = GetMultiDict($"{_nameSpace}setallasync:");
 
             await _provider.SetAllAsync(dict, _defaultTs);
 
-            var res1 = _provider.Get<string>("setallasync:key:1");
-            var res2 = _provider.Get<string>("setallasync:key:2");
+            var res1 = _provider.Get<string>($"{_nameSpace}setallasync:key:1");
+            var res2 = _provider.Get<string>($"{_nameSpace}setallasync:key:2");
 
             Assert.Equal("value1", res1.Value);
             Assert.Equal("value2", res2.Value);
@@ -841,73 +842,73 @@
         [Fact]
         protected virtual void GetAll_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "getall:key:1", "getall:key:2" });
-            var dict = GetMultiDict("getall:");
+            _provider.RemoveAll(new List<string> { $"{_nameSpace}getall:key:1", $"{_nameSpace}getall:key:2" });
+            var dict = GetMultiDict($"{_nameSpace}getall:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res = _provider.GetAll<string>(new List<string> { "getall:key:1", "getall:key:2" });
+            var res = _provider.GetAll<string>(new List<string> { $"{_nameSpace}getall:key:1", $"{_nameSpace}getall:key:2" });
 
             Assert.Equal(2, res.Count);
 
-            Assert.Contains("getall:key:1",res.Select(x => x.Key));
-            Assert.Contains("getall:key:2", res.Select(x => x.Key));
-            Assert.Equal("value1", res.Where(x => x.Key == "getall:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal("value2", res.Where(x => x.Key == "getall:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Contains($"{_nameSpace}getall:key:1",res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getall:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getall:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2", res.Where(x => x.Key == $"{_nameSpace}getall:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
         protected virtual async Task GetAllAsync_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "getallasync:key:1", "getallasync:key:2" });
-            var dict = GetMultiDict("getallasync:");
+            _provider.RemoveAll(new List<string> { $"{_nameSpace}getallasync:key:1", $"{_nameSpace}getallasync:key:2" });
+            var dict = GetMultiDict($"{_nameSpace}getallasync:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res = await _provider.GetAllAsync<string>(new List<string> { "getallasync:key:1", "getallasync:key:2" });
+            var res = await _provider.GetAllAsync<string>(new List<string> { $"{_nameSpace}getallasync:key:1", $"{_nameSpace}getallasync:key:2" });
 
             Assert.Equal(2, res.Count);
 
-            Assert.Contains("getallasync:key:1", res.Select(x => x.Key));
-            Assert.Contains("getallasync:key:2", res.Select(x => x.Key));
-            Assert.Equal("value1",res.Where(x => x.Key == "getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value) ;
-            Assert.Equal("value2",res.Where(x => x.Key == "getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Contains($"{_nameSpace}getallasync:key:1", res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getallasync:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1",res.Where(x => x.Key == $"{_nameSpace}getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value) ;
+            Assert.Equal("value2",res.Where(x => x.Key == $"{_nameSpace}getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
         protected virtual void GetAll_With_Value_Type_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "getall:valuetype:key:1", "getall:valuetype:key:2" });
-            var dict = new Dictionary<string, int> {{"getall:valuetype:key:1",10},{"getall:valuetype:key:2",100} };
+            _provider.RemoveAll(new List<string> { $"{_nameSpace}getall:valuetype:key:1", $"{_nameSpace}getall:valuetype:key:2" });
+            var dict = new Dictionary<string, int> {{ $"{_nameSpace}getall:valuetype:key:1",10},{ $"{_nameSpace}getall:valuetype:key:2",100} };
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res = _provider.GetAll<int>(new List<string> { "getall:valuetype:key:1", "getall:valuetype:key:2" });
+            var res = _provider.GetAll<int>(new List<string> { $"{_nameSpace}getall:valuetype:key:1", $"{_nameSpace}getall:valuetype:key:2" });
 
             Assert.Equal(2, res.Count);
 
-            Assert.Contains("getall:valuetype:key:1", res.Select(x => x.Key));
-            Assert.Contains("getall:valuetype:key:2", res.Select(x => x.Key));
-            Assert.Equal(10, res.Where(x => x.Key == "getall:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal(100,res.Where(x => x.Key == "getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Contains($"{_nameSpace}getall:valuetype:key:1", res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getall:valuetype:key:2", res.Select(x => x.Key));
+            Assert.Equal(10, res.Where(x => x.Key == $"{_nameSpace}getall:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal(100,res.Where(x => x.Key == $"{_nameSpace}getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
         protected virtual async Task GetAll_Async_With_Value_Type_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "getallasync:valuetype:key:1", "getallasync:valuetype:key:2" });
-            var dict = new Dictionary<string, int> { { "getallasync:valuetype:key:1", 10 }, { "getallasync:valuetype:key:2", 100 } };
+            _provider.RemoveAll(new List<string> { $"{_nameSpace}getallasync:valuetype:key:1", $"{_nameSpace}getallasync:valuetype:key:2" });
+            var dict = new Dictionary<string, int> { { $"{_nameSpace}getallasync:valuetype:key:1", 10 }, { $"{_nameSpace}getallasync:valuetype:key:2", 100 } };
 
             _provider.SetAll(dict, _defaultTs);
 
-            var res = await _provider.GetAllAsync<int>(new List<string> { "getallasync:valuetype:key:1", "getallasync:valuetype:key:2" });
+            var res = await _provider.GetAllAsync<int>(new List<string> { $"{_nameSpace}getallasync:valuetype:key:1", $"{_nameSpace}getallasync:valuetype:key:2" });
 
             Assert.Equal(2, res.Count);
 
-            Assert.Contains("getallasync:valuetype:key:1", res.Select(x => x.Key));
-            Assert.Contains("getallasync:valuetype:key:2", res.Select(x => x.Key));
-            Assert.Equal(10, res.Where(x => x.Key == "getallasync:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal(100, res.Where(x => x.Key == "getallasync:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Contains($"{_nameSpace}getallasync:valuetype:key:1", res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getallasync:valuetype:key:2", res.Select(x => x.Key));
+            Assert.Equal(10, res.Where(x => x.Key == $"{_nameSpace}getallasync:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal(100, res.Where(x => x.Key == $"{_nameSpace}getallasync:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
         #endregion
 
@@ -915,45 +916,45 @@
         [Fact]
         protected virtual void GetByPrefix_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "getbyprefix:key:1", "getbyprefix:key:2" });
-            var dict = GetMultiDict("getbyprefix:");
+            _provider.RemoveAll(new List<string> { $"{_nameSpace}getbyprefix:key:1", $"{_nameSpace}getbyprefix:key:2" });
+            var dict = GetMultiDict($"{_nameSpace}getbyprefix:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            string prefix = "getbyprefix:key:";
+            string prefix = $"{_nameSpace}getbyprefix:key:";
 
             var res = _provider.GetByPrefix<string>(prefix);
 
             Assert.Equal(2, res.Count);
-            Assert.Contains("getbyprefix:key:1", res.Select(x => x.Key));
-            Assert.Contains("getbyprefix:key:2", res.Select(x => x.Key));
-            Assert.Equal("value1",res.Where(x => x.Key == "getbyprefix:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal("value2",res.Where(x => x.Key == "getbyprefix:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Contains($"{_nameSpace}getbyprefix:key:1", res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getbyprefix:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1",res.Where(x => x.Key == $"{_nameSpace}getbyprefix:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2",res.Where(x => x.Key == $"{_nameSpace}getbyprefix:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
         protected virtual async Task GetByPrefixAsync_Should_Succeed()
         {
-            _provider.RemoveAll(new List<string> { "getbyprefixasync:key:1", "getbyprefixasync:key:2" });
-            var dict = GetMultiDict("getbyprefixasync:");
+            _provider.RemoveAll(new List<string> { $"{_nameSpace}getbyprefixasync:key:1", $"{_nameSpace}getbyprefixasync:key:2" });
+            var dict = GetMultiDict($"{_nameSpace}getbyprefixasync:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            string prefix = "getbyprefixasync:key:";
+            string prefix = $"{_nameSpace}getbyprefixasync:key:";
 
             var res = await _provider.GetByPrefixAsync<string>(prefix);
 
             Assert.Equal(2, res.Count);
-            Assert.Contains("getbyprefixasync:key:1", res.Select(x => x.Key));
-            Assert.Contains("getbyprefixasync:key:2", res.Select(x => x.Key));
-            Assert.Equal("value1",res.Where(x => x.Key == "getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal("value2",res.Where(x => x.Key == "getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Contains($"{_nameSpace}getbyprefixasync:key:1", res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getbyprefixasync:key:2", res.Select(x => x.Key));
+            Assert.Equal("value1",res.Where(x => x.Key == $"{_nameSpace}getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2",res.Where(x => x.Key == $"{_nameSpace}getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
         protected virtual void GetByPrefix_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
         {
-            string prefix = Guid.NewGuid().ToString();
+            var prefix = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var res = _provider.GetByPrefix<string>(prefix);
 
@@ -963,7 +964,7 @@
         [Fact]
         protected virtual async Task GetByPrefixAsync_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
         {
-            string prefix = Guid.NewGuid().ToString();
+            var prefix = $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
             var res = await _provider.GetByPrefixAsync<string>(prefix);
 
@@ -976,14 +977,14 @@
         [Fact]
         protected virtual void RemoveAll_Should_Succeed()
         {
-            var dict = GetMultiDict("removeall:");
+            var dict = GetMultiDict($"{_nameSpace}removeall:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            _provider.RemoveAll(new List<string> { "removeall:key:1", "removeall:key:2" });
+            _provider.RemoveAll(new List<string> { $"{_nameSpace}removeall:key:1", $"{_nameSpace}removeall:key:2" });
 
-            var res1 = _provider.Get<string>("removeall:key:1");
-            var res2 = _provider.Get<string>("removeall:key:2");
+            var res1 = _provider.Get<string>($"{_nameSpace}removeall:key:1");
+            var res2 = _provider.Get<string>($"{_nameSpace}removeall:key:2");
 
             Assert.False(res1.HasValue);
             Assert.False(res2.HasValue);
@@ -992,14 +993,14 @@
         [Fact]
         protected virtual async Task RemoveAllAsync_Should_Succeed()
         {
-            var dict = GetMultiDict("removeallasync:");
+            var dict = GetMultiDict($"{_nameSpace}removeallasync:");
 
             _provider.SetAll(dict, _defaultTs);
 
-            await _provider.RemoveAllAsync(new List<string> { "removeallasync:key:1", "removeallasync:key:2" });
+            await _provider.RemoveAllAsync(new List<string> { $"{_nameSpace}removeallasync:key:1", $"{_nameSpace}removeallasync:key:2" });
 
-            var res1 = _provider.Get<string>("removeallasync:key:1");
-            var res2 = _provider.Get<string>("removeallasync:key:2");
+            var res1 = _provider.Get<string>($"{_nameSpace}removeallasync:key:1");
+            var res2 = _provider.Get<string>($"{_nameSpace}removeallasync:key:2");
 
             Assert.False(res1.HasValue);
             Assert.False(res2.HasValue);
@@ -1011,30 +1012,30 @@
         protected virtual void Flush_Should_Succeed()
         {
             for (var i = 0; i < 5; i++)
-                _provider.Set($"flush:{i}", $"value{i}", _defaultTs);
+                _provider.Set($"{_nameSpace}flush:{i}", $"value{i}", _defaultTs);
 
             for (var i = 0; i < 5; i++)
-                Assert.Equal($"value{i}", _provider.Get<string>($"flush:{i}").Value);
+                Assert.Equal($"value{i}", _provider.Get<string>($"{_nameSpace}flush:{i}").Value);
 
             _provider.Flush();
 
             for (var i = 0; i < 5; i++)
-                Assert.False(_provider.Get<string>($"flush:{i}").HasValue);
+                Assert.False(_provider.Get<string>($"{_nameSpace}flush:{i}").HasValue);
         }
 
         [Fact]
         protected virtual async Task FlushAsync_Should_Succeed()
         {
             for (var i = 0; i < 5; i++)
-                _provider.Set($"flush:{i}", $"value{i}", _defaultTs);
+                _provider.Set($"{_nameSpace}flushasync:{i}", $"value{i}", _defaultTs);
 
             for (var i = 0; i < 5; i++)
-                Assert.Equal($"value{i}", _provider.Get<string>($"flush:{i}").Value);
+                Assert.Equal($"value{i}", _provider.Get<string>($"{_nameSpace}flushasync:{i}").Value);
 
             await _provider.FlushAsync();
 
             for (var i = 0; i < 5; i++)
-                Assert.False(_provider.Get<string>($"flush:{i}").HasValue);
+                Assert.False(_provider.Get<string>($"{_nameSpace}flushasync:{i}").HasValue);
         }
         #endregion
 
@@ -1076,7 +1077,7 @@
         [Fact]
         protected virtual void TrySet_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue1 = "value1";
             var cacheValue2 = "value2";
 
@@ -1094,7 +1095,7 @@
         [Fact]
         protected virtual async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue1 = "value1";
             var cacheValue2 = "value2";
 
@@ -1167,7 +1168,7 @@
         [Fact]
         protected virtual void OnHit_Should_Return_One_And_OnMiss_Should_Return_Zero()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             _provider.Set(cacheKey, "onhit", _defaultTs);
             _provider.Get<string>(cacheKey);
 
@@ -1181,7 +1182,7 @@
         [Fact]
         protected virtual void OnHit_Should_Return_Zero_And_OnMiss_Should_Return_One()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             _provider.Get<string>(cacheKey);
 
             var hitRes = _provider.CacheStats.GetStatistic(StatsType.Hit);
