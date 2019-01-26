@@ -15,12 +15,7 @@
         /// <summary>
         /// The cache.
         /// </summary>
-        private readonly CSRedisClient _cache;
-
-        /// <summary>
-        /// The db provider.
-        /// </summary>
-        private readonly IRedisDatabaseProvider _dbProvider;
+        private readonly EasyCachingCSRedisClient _cache;
 
         /// <summary>
         /// The serializer.
@@ -50,28 +45,6 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.CSRedis.DefaultCSRedisCachingProvider"/> class.
         /// </summary>
-        /// <param name="dbProvider">Db provider.</param>
-        /// <param name="serializer">Serializer.</param>
-        /// <param name="options">Options.</param>
-        /// <param name="loggerFactory">Logger factory.</param>
-        public DefaultCSRedisCachingProvider(
-            IRedisDatabaseProvider dbProvider,
-            IEasyCachingSerializer serializer,
-            IOptionsMonitor<RedisOptions> options,
-            ILoggerFactory loggerFactory = null)
-        {
-            this._dbProvider = dbProvider;
-            this._serializer = serializer;
-            this._options = options.CurrentValue;
-            this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
-            this._cache = _dbProvider.GetClient();
-            this._cacheStats = new CacheStats();
-            this._name = EasyCachingConstValue.DefaultRedisName;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.CSRedis.DefaultCSRedisCachingProvider"/> class.
-        /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="dbProviders">Db providers.</param>
         /// <param name="serializer">Serializer.</param>
@@ -79,17 +52,16 @@
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultCSRedisCachingProvider(
            string name,
-           IEnumerable<IRedisDatabaseProvider> dbProviders,
+           IEnumerable<EasyCachingCSRedisClient> clients,
            IEasyCachingSerializer serializer,
            IOptionsMonitor<RedisOptions> options,
            ILoggerFactory loggerFactory = null)
         {
             this._name = name;
-            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
             this._serializer = serializer;
             this._options = options.CurrentValue;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
-            this._cache = _dbProvider.GetClient();
+            this._cache = clients.FirstOrDefault(x => x.Name.Equals(_name));
             this._cacheStats = new CacheStats();
         }
 

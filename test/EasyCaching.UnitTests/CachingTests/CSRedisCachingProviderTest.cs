@@ -1,11 +1,9 @@
 namespace EasyCaching.UnitTests
 {
+    using System;
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
     using EasyCaching.CSRedis;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
-    using Xunit;
 
     public class CSRedisCachingProviderTest : BaseCachingProviderTest
     {
@@ -20,10 +18,10 @@ namespace EasyCaching.UnitTests
                     {
                         ConnectionStrings = new System.Collections.Generic.List<string>
                         {
-                            "127.0.0.1:6379,defaultDatabase=13,poolsize=50"
+                            "127.0.0.1:6379,defaultDatabase=13,poolsize=10"
                         }
                     };
-                }, "redis1");
+                });
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();

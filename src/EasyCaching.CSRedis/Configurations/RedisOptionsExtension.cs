@@ -29,6 +29,8 @@
         /// <param name="configure">Configure.</param>
         public RedisOptionsExtension(string name, Action<RedisOptions> configure)
         {
+            Core.Internal.ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
+
             this._name = name;
             this.configure = configure;
         }
@@ -43,35 +45,39 @@
 
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
 
-            if (string.IsNullOrWhiteSpace(_name))
+            services.Configure(_name, configure);
+
+            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+
+            services.AddSingleton<EasyCachingCSRedisClient>(x =>
             {
-                var options = new RedisOptions();
-                configure(options);
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var options = optionsMon.Get(_name);
 
-                services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
-                services.AddSingleton<IEasyCachingProvider, DefaultCSRedisCachingProvider>();
-            }
-            else
+                var conns = options.DBConfig.ConnectionStrings;
+                var rule = options.DBConfig.NodeRule;
+
+                if (conns.Count == 1)
+                {
+                    var redisClient = new EasyCachingCSRedisClient(_name, conns[0]);
+                    return redisClient;
+                }
+                else
+                {
+                    var redisClient = new EasyCachingCSRedisClient(_name, rule, conns.ToArray());
+                    return redisClient;
+                }
+            });
+
+            services.AddSingleton<IEasyCachingProvider, DefaultCSRedisCachingProvider>(x =>
             {
-                services.Configure(_name, configure);
+                var clients = x.GetServices<EasyCachingCSRedisClient>();
+                var serializer = x.GetRequiredService<IEasyCachingSerializer>();
+                var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var factory = x.GetService<ILoggerFactory>();
+                return new DefaultCSRedisCachingProvider(_name, clients, serializer, options, factory);
+            });
 
-                services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-                services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(x =>
-                {
-                    var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
-                    var options = optionsMon.Get(_name);
-                    return new RedisDatabaseProvider(_name, options);
-                });
-
-                services.AddSingleton<IEasyCachingProvider, DefaultCSRedisCachingProvider>(x =>
-                {
-                    var dbProviders = x.GetServices<IRedisDatabaseProvider>();
-                    var serializer = x.GetRequiredService<IEasyCachingSerializer>();
-                    var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
-                    var factory = x.GetService<ILoggerFactory>();
-                    return new DefaultCSRedisCachingProvider(_name, dbProviders, serializer, options, factory);
-                });
-            }
         }
 
         /// <summary>
