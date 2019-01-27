@@ -19,7 +19,7 @@ namespace EasyCaching.UnitTests
                     {
                         ConnectionStrings = new System.Collections.Generic.List<string>
                         {
-                            "127.0.0.1:6379,defaultDatabase=13,poolsize=10"
+                            "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
                         }
                     };
                 });
@@ -48,7 +48,7 @@ namespace EasyCaching.UnitTests
                     {
                         ConnectionStrings = new System.Collections.Generic.List<string>
                         {
-                            "127.0.0.1:6379,defaultDatabase=10,poolsize=10"
+                            "127.0.0.1:6388,defaultDatabase=10,poolsize=10"
                         }
                     };
                 });
