@@ -29,7 +29,9 @@ for:
   install:
   - ps: cd c:\projects\easycaching\tools\RedisConfigs\3.0.503\
   - ps: .\redis-server.exe --service-install --service-name "redis-6379" "..\Basic\master-6379.conf"
+  - ps: .\redis-server.exe --service-install --service-name "redis-6388" "..\Basic\master-6388.conf"
   - ps: net start redis-6379
+  - ps: net start redis-6388
   - ps: new-service –Name memcached1 –DisplayName memcached1 –BinaryPathName “c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11211” –StartupType Automatic
   - ps: new-service –Name memcached2 –DisplayName memcached2 –BinaryPathName “c:\projects\easycaching\tools\memcached\memcached.exe -d runservice -m 64 -c 2048 -p 11212” –StartupType Automatic  
   - ps: net start memcached1
@@ -57,6 +59,7 @@ for:
 
   install:
   #- sh: sudo apt-get install libevent libevent-deve
+  - sh: redis-server -h
   - sh: sudo apt-get install memcached
   - sh: sudo memcached -p 11211 -u root -m 64m -d
   - sh: sudo memcached -p 11212 -u root -m 64m -d

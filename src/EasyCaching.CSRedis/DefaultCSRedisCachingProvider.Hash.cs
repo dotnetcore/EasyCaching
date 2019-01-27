@@ -1,38 +1,285 @@
 ﻿namespace EasyCaching.CSRedis
 {
-    using EasyCaching.Core;
     using EasyCaching.Core.Internal;
-    using global::CSRedis;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
-    public partial class DefaultCSRedisCachingProvider : IRedisCachingProvider 
+    public partial class DefaultCSRedisCachingProvider : IRedisCachingProvider
     {
-        public bool HSet<T>(string cacheKey, string  field, T cacheValue, TimeSpan? expiration = null)
+        public bool HMSet(string cacheKey, Dictionary<string, string> vals, TimeSpan? expiration = null)
         {
-            if(expiration.HasValue)
-            {
-                var script = @"
-            local r = redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            if tonumber(r) == 1 then 
-               redis.call('EXPIRE', KEYS[1], tonumber(ARGV[3])) 
-               return 1
-            else
-               return 0 
-            end
-            ";
-                var res = (int)_cache.Eval(script, cacheKey, field, _serializer.Serialize(cacheValue), expiration.Value.Seconds);
+            if (expiration.HasValue)
+            {
+                var list = new List<object>();
+
+                var script = new System.Text.StringBuilder(1024);
+                script.Append(" local r = redis.call('HSET', KEYS[1], ");
+
+                for (int i = 0; i < vals.Count; i++)
+                {
+                    script.Append(i != vals.Count - 1 ? $"ARGV[{i + 2}]," : $"ARGV[{i + 2}])");
+                }
+
+                script.AppendLine();
+                script.AppendLine("if tonumber(r) == 1 then ");
+                script.AppendLine(" redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1])) ");
+                script.AppendLine("  return 1 ");
+                script.AppendLine("else ");
+                script.AppendLine("  return 0 ");
+                script.AppendLine("end ");
+
+                foreach (var item in vals)
+                {
+                    list.Add(item.Key);
+                    list.Add(item.Value);
+                }
+
+                var res = (int)_cache.Eval(script.ToString(), cacheKey, expiration.Value.Seconds, list.ToArray());
                 return res == 1;
             }
             else
             {
-                return _cache.HSet(cacheKey, field, _serializer.Serialize(cacheValue));
+                var list = new List<object>();
+
+                foreach (var item in vals)
+                {
+                    list.Add(item.Key);
+                    list.Add(item.Value);
+                }
+
+                return _cache.HMSet(cacheKey, list);
             }
-        }              
+        }
+
+        public bool HSet(string cacheKey, string field, string cacheValue)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            return _cache.HSet(cacheKey, field, cacheValue);
+        }
+
+        public bool HExists(string cacheKey, string field)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            return _cache.HExists(cacheKey, field);
+        }
+
+        public long HDel(string cacheKey, IList<string> fields)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullAndCountGTZero(fields, nameof(fields));
+
+            return _cache.HDel(cacheKey, fields.ToArray());
+        }
+
+        public string HGet(string cacheKey, string field)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            var res = _cache.HGet(cacheKey, field);
+            return res;
+        }
+
+        public Dictionary<string, string> HGetAll(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var res = _cache.HGetAll(cacheKey);
+            return res;
+        }
+
+        public long HIncrBy(string cacheKey, string field, long val = 1)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            return _cache.HIncrBy(cacheKey, field, val);
+        }
+
+        public List<string> HKeys(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var keys = _cache.HKeys(cacheKey);
+            return keys.ToList();
+        }
+
+        public long HLen(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return _cache.HLen(cacheKey);
+        }
+
+        public List<string> HVals(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return _cache.HVals(cacheKey).ToList();
+        }
+
+        public Dictionary<string, string> HMGet(string cacheKey, IList<string> fields)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullAndCountGTZero(fields, nameof(fields));
+
+            var dict = new Dictionary<string, string>();
+
+            var res = _cache.HMGet(cacheKey, fields.ToArray());
+
+            for (int i = 0; i < fields.Count(); i++)
+            {
+                if (!dict.ContainsKey(fields[i]))
+                {
+                    dict.Add(fields[i], res[i]);
+                }
+            }
+
+            return dict;
+        }
+
+        public async Task<bool> HMSetAsync(string cacheKey, Dictionary<string, string> vals, TimeSpan? expiration = null)
+        {
+            if (expiration.HasValue)
+            {
+                var list = new List<object>();
+
+                var script = new System.Text.StringBuilder(1024);
+                script.Append(" local r = redis.call('HSET', KEYS[1], ");
+
+                for (int i = 0; i < vals.Count; i++)
+                {
+                    script.Append(i != vals.Count - 1 ? $"ARGV[{i + 2}]," : $"ARGV[{i + 2}])");
+                }
+
+                script.AppendLine();
+                script.AppendLine("if tonumber(r) == 1 then ");
+                script.AppendLine(" redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1])) ");
+                script.AppendLine("  return 1 ");
+                script.AppendLine("else ");
+                script.AppendLine("  return 0 ");
+                script.AppendLine("end ");
+
+                foreach (var item in vals)
+                {
+                    list.Add(item.Key);
+                    list.Add(item.Value);
+                }
+
+                var res = (int)(await _cache.EvalAsync(script.ToString(), cacheKey, expiration.Value.Seconds, list.ToArray()));
+                return res == 1;
+            }
+            else
+            {
+                var list = new List<object>();
+
+                foreach (var item in vals)
+                {
+                    list.Add(item.Key);
+                    list.Add(item.Value);
+                }
+
+                return await _cache.HMSetAsync(cacheKey, list);
+            }
+        }
+
+        public async Task<bool> HSetAsync(string cacheKey, string field, string cacheValue)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            return await _cache.HSetAsync(cacheKey, field, cacheValue);
+        }
+
+        public async Task<bool> HExistsAsync(string cacheKey, string field)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            return await _cache.HExistsAsync(cacheKey, field);
+        }
+
+        public async Task<long> HDelAsync(string cacheKey, IList<string> fields)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullAndCountGTZero(fields, nameof(fields));
+
+            return await _cache.HDelAsync(cacheKey, fields.ToArray());
+        }
+
+        public async Task<string> HGetAsync(string cacheKey, string field)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            var res = await _cache.HGetAsync(cacheKey, field);
+            return res;
+        }
+
+        public async Task<Dictionary<string, string>> HGetAllAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var res = await _cache.HGetAllAsync(cacheKey);
+            return res;
+        }
+
+        public async Task<long> HIncrByAsync(string cacheKey, string field, long val = 1)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            return await _cache.HIncrByAsync(cacheKey, field, val);
+        }
+
+        public async Task<List<string>> HKeysAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var keys = await _cache.HKeysAsync(cacheKey);
+            return keys.ToList();
+        }
+
+        public async Task<long> HLenAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return await _cache.HLenAsync(cacheKey);
+        }
+
+        public async Task<List<string>> HValsAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return (await _cache.HValsAsync(cacheKey)).ToList();
+        }
+
+        public async Task<Dictionary<string, string>> HMGetAsync(string cacheKey, IList<string> fields)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullAndCountGTZero(fields, nameof(fields));
+
+            var dict = new Dictionary<string, string>();
+
+            var res = await _cache.HMGetAsync(cacheKey, fields.ToArray());
+
+            for (int i = 0; i < fields.Count(); i++)
+            {
+                if (!dict.ContainsKey(fields[i]))
+                {
+                    dict.Add(fields[i], res[i]);
+                }
+            }
+
+            return dict;
+        }
     }
 }
