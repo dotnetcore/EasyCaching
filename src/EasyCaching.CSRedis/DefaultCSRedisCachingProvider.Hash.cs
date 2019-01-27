@@ -51,7 +51,7 @@
                     list.Add(item.Value);
                 }
 
-                return _cache.HMSet(cacheKey, list);
+                return _cache.HMSet(cacheKey, list.ToArray());
             }
         }
 
@@ -187,7 +187,7 @@
                     list.Add(item.Value);
                 }
 
-                return await _cache.HMSetAsync(cacheKey, list);
+                return await _cache.HMSetAsync(cacheKey, list.ToArray());
             }
         }
 
