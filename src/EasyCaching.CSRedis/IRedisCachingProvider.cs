@@ -12,7 +12,7 @@ namespace EasyCaching.CSRedis
         bool HMSet(string cacheKey, Dictionary<string, string> vals, TimeSpan? expiration = null);
         bool HSet(string cacheKey, string field, string cacheValue);
         bool HExists(string cacheKey, string field);
-        long HDel(string cacheKey, IList<string> fields);
+        long HDel(string cacheKey, IList<string> fields = null);
         string HGet(string cacheKey, string field);
         Dictionary<string, string> HGetAll(string cacheKey);
         long HIncrBy(string cacheKey, string field, long val = 1);
@@ -23,7 +23,7 @@ namespace EasyCaching.CSRedis
         Task<bool> HMSetAsync(string cacheKey, Dictionary<string, string> vals, TimeSpan? expiration = null);
         Task<bool> HSetAsync(string cacheKey, string field, string cacheValue);
         Task<bool> HExistsAsync(string cacheKey, string field);
-        Task<long> HDelAsync(string cacheKey, IList<string> fields);
+        Task<long> HDelAsync(string cacheKey, IList<string> fields = null);
         Task<string> HGetAsync(string cacheKey, string field);
         Task<Dictionary<string, string>> HGetAllAsync(string cacheKey);
         Task<long> HIncrByAsync(string cacheKey, string field, long val = 1);

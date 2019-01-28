@@ -16,30 +16,17 @@
             {
                 var list = new List<object>();
 
-                var script = new System.Text.StringBuilder(1024);
-                script.Append(" local r = redis.call('HSET', KEYS[1], ");
-
-                for (int i = 0; i < vals.Count; i++)
-                {
-                    script.Append(i != vals.Count - 1 ? $"ARGV[{i + 2}]," : $"ARGV[{i + 2}])");
-                }
-
-                script.AppendLine();
-                script.AppendLine("if tonumber(r) == 1 then ");
-                script.AppendLine(" redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1])) ");
-                script.AppendLine("  return 1 ");
-                script.AppendLine("else ");
-                script.AppendLine("  return 0 ");
-                script.AppendLine("end ");
-
                 foreach (var item in vals)
                 {
                     list.Add(item.Key);
                     list.Add(item.Value);
                 }
 
-                var res = (int)_cache.Eval(script.ToString(), cacheKey, expiration.Value.Seconds, list.ToArray());
-                return res == 1;
+                var flag = _cache.HMSet(cacheKey, list.ToArray());
+
+                if (flag) flag = _cache.Expire(cacheKey, expiration.Value.Seconds);
+
+                return flag;
             }
             else
             {
@@ -71,12 +58,18 @@
             return _cache.HExists(cacheKey, field);
         }
 
-        public long HDel(string cacheKey, IList<string> fields)
+        public long HDel(string cacheKey, IList<string> fields = null)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNullAndCountGTZero(fields, nameof(fields));
 
-            return _cache.HDel(cacheKey, fields.ToArray());
+            if(fields != null  && fields.Any())
+            {
+                return _cache.HDel(cacheKey, fields.ToArray());
+            }
+            else
+            {
+                return _cache.Del(cacheKey);
+            }
         }
 
         public string HGet(string cacheKey, string field)
@@ -152,30 +145,17 @@
             {
                 var list = new List<object>();
 
-                var script = new System.Text.StringBuilder(1024);
-                script.Append(" local r = redis.call('HSET', KEYS[1], ");
-
-                for (int i = 0; i < vals.Count; i++)
-                {
-                    script.Append(i != vals.Count - 1 ? $"ARGV[{i + 2}]," : $"ARGV[{i + 2}])");
-                }
-
-                script.AppendLine();
-                script.AppendLine("if tonumber(r) == 1 then ");
-                script.AppendLine(" redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1])) ");
-                script.AppendLine("  return 1 ");
-                script.AppendLine("else ");
-                script.AppendLine("  return 0 ");
-                script.AppendLine("end ");
-
                 foreach (var item in vals)
                 {
                     list.Add(item.Key);
                     list.Add(item.Value);
                 }
 
-                var res = (int)(await _cache.EvalAsync(script.ToString(), cacheKey, expiration.Value.Seconds, list.ToArray()));
-                return res == 1;
+                var flag = await _cache.HMSetAsync(cacheKey, list.ToArray());
+
+                if (flag) flag = await _cache.ExpireAsync(cacheKey, expiration.Value.Seconds);
+
+                return flag;
             }
             else
             {
@@ -210,9 +190,15 @@
         public async Task<long> HDelAsync(string cacheKey, IList<string> fields)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNullAndCountGTZero(fields, nameof(fields));
 
-            return await _cache.HDelAsync(cacheKey, fields.ToArray());
+            if (fields != null && fields.Any())
+            {
+                return await _cache.HDelAsync(cacheKey, fields.ToArray());
+            }
+            else
+            {
+                return await _cache.DelAsync(cacheKey);
+            }
         }
 
         public async Task<string> HGetAsync(string cacheKey, string field)
