@@ -70,23 +70,17 @@
                 }
             });
 
-            services.AddSingleton<IEasyCachingProvider, DefaultCSRedisCachingProvider>(x =>
+            Func<IServiceProvider, DefaultCSRedisCachingProvider> createFactory = x =>
             {
                 var clients = x.GetServices<EasyCachingCSRedisClient>();
                 var serializer = x.GetRequiredService<IEasyCachingSerializer>();
                 var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultCSRedisCachingProvider(_name, clients, serializer, options, factory);
-            });
+            };
 
-            services.AddSingleton<IRedisCachingProvider, DefaultCSRedisCachingProvider>(x =>
-            {
-                var clients = x.GetServices<EasyCachingCSRedisClient>();
-                var serializer = x.GetRequiredService<IEasyCachingSerializer>();
-                var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
-                var factory = x.GetService<ILoggerFactory>();
-                return new DefaultCSRedisCachingProvider(_name, clients, serializer, options, factory);
-            });
+            services.AddSingleton<IEasyCachingProvider, DefaultCSRedisCachingProvider>(createFactory);
+            services.AddSingleton<IRedisCachingProvider, DefaultCSRedisCachingProvider>(createFactory);
         }
 
         /// <summary>
