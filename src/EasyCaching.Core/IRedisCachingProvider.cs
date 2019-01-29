@@ -1,7 +1,5 @@
-﻿
-namespace EasyCaching.CSRedis
+﻿namespace EasyCaching.Core
 {
-    using EasyCaching.Core;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -34,7 +32,6 @@ namespace EasyCaching.CSRedis
         #endregion
 
         #region List
-
         T LIndex<T>(string cacheKey, long index);
         long LLen(string cacheKey);
         T LPop<T>(string cacheKey);
@@ -46,6 +43,9 @@ namespace EasyCaching.CSRedis
         long LPushX<T>(string cacheKey, T cacheValue);
         long LInsertBefore<T>(string cacheKey, T pivot, T cacheValue);
         long LInsertAfter<T>(string cacheKey, T pivot, T cacheValue);
+        long RPushX<T>(string cacheKey, T cacheValue);
+        long RPush<T>(string cacheKey, IList<T> cacheValues);
+        T RPop<T>(string cacheKey);
         Task<T> LIndexAsync<T>(string cacheKey, long index);
         Task<long> LLenAsync(string cacheKey);
         Task<T> LPopAsync<T>(string cacheKey);
@@ -57,6 +57,43 @@ namespace EasyCaching.CSRedis
         Task<long> LPushXAsync<T>(string cacheKey, T cacheValue);
         Task<long> LInsertBeforeAsync<T>(string cacheKey, T pivot, T cacheValue);
         Task<long> LInsertAfterAsync<T>(string cacheKey, T pivot, T cacheValue);
+        Task<long> RPushXAsync<T>(string cacheKey, T cacheValue);
+        Task<long> RPushAsync<T>(string cacheKey, IList<T> cacheValues);
+        Task<T> RPopAsync<T>(string cacheKey);
+        #endregion
+
+        #region Set
+        long SAdd<T>(string cacheKey, IList<T> cacheValues, TimeSpan? expiration = null);
+        long SCard(string cacheKey);
+        bool SIsMember<T>(string cacheKey, T cacheValue);
+        List<T> SMembers<T>(string cacheKey);
+        T SPop<T>(string cacheKey);
+        List<T> SRandMember<T>(string cacheKey, int count = 1);
+        long SRem<T>(string cacheKey, IList<T> cacheValues = null);
+        Task<long> SAddAsync<T>(string cacheKey, IList<T> cacheValues, TimeSpan? expiration = null);
+        Task<long> SCardAsync(string cacheKey);
+        Task<bool> SIsMemberAsync<T>(string cacheKey, T cacheValue);
+        Task<List<T>> SMembersAsync<T>(string cacheKey);
+        Task<T> SPopAsync<T>(string cacheKey);
+        Task<List<T>> SRandMemberAsync<T>(string cacheKey, int count = 1);
+        Task<long> SRemAsync<T>(string cacheKey, IList<T> cacheValues = null);
+        #endregion
+
+        #region Sorted Set
+        long ZAdd<T>(string cacheKey, Dictionary<T, double> cacheValues);
+        long ZCard(string cacheKey);
+        long ZCount(string cacheKey, double min, double max);
+        long ZLexCount(string cacheKey, string min, string max);
+        List<T> ZRange<T>(string cacheKey, long start, long stop);
+        long? ZRank<T>(string cacheKey, T cacheValue);
+        long ZRem<T>(string cacheKey, IList<T> cacheValues);
+        Task<long> ZAddAsync<T>(string cacheKey, Dictionary<T, double> cacheValues);
+        Task<long> ZCardAsync(string cacheKey);
+        Task<long> ZCountAsync(string cacheKey, double min, double max);
+        Task<long> ZLexCountAsync(string cacheKey, string min, string max);
+        Task<List<T>> ZRangeAsync<T>(string cacheKey, long start, long stop);
+        Task<long?> ZRankAsync<T>(string cacheKey, T cacheValue);
+        Task<long> ZRemAsync<T>(string cacheKey, IList<T> cacheValues);
         #endregion
     }
 }

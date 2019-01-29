@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.CSRedis
 {
+    using EasyCaching.Core;
     using EasyCaching.Core.Internal;
     using System;
     using System.Collections.Generic;
