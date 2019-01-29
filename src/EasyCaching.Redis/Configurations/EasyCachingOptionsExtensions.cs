@@ -16,7 +16,7 @@
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, Action<RedisOptions> configure, string name = "")
+        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, Action<RedisOptions> configure, string name = EasyCachingConstValue.DefaultRedisName)
         {
             if (configure == null)
             {
@@ -34,7 +34,7 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.RedisSection)
+        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, IConfiguration configuration, string name = EasyCachingConstValue.DefaultRedisName, string sectionName = EasyCachingConstValue.RedisSection)
         {
             var dbConfig = configuration.GetSection(sectionName);
             var redisOptions = new RedisOptions();

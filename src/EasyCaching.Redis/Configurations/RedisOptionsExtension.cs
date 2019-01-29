@@ -49,6 +49,7 @@
 
                 services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
                 services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
+                services.AddSingleton<IRedisCachingProvider, DefaultRedisCachingProvider>();
             }
             else
             {
@@ -62,14 +63,17 @@
                     return new RedisDatabaseProvider(_name, options);
                 });
 
-                services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(x =>
+                Func<IServiceProvider, DefaultRedisCachingProvider> createFactory = x =>
                 {
                     var dbProviders = x.GetServices<IRedisDatabaseProvider>();
                     var serializer = x.GetRequiredService<IEasyCachingSerializer>();
                     var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                     var factory = x.GetService<ILoggerFactory>();
                     return new DefaultRedisCachingProvider(_name, dbProviders, serializer, options, factory);
-                });
+                };
+
+                services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(createFactory);             
+                services.AddSingleton<IRedisCachingProvider, DefaultRedisCachingProvider>(createFactory);
             }
         }
 

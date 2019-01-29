@@ -13,7 +13,7 @@
     /// <summary>
     /// Default redis caching provider.
     /// </summary>
-    public class DefaultRedisCachingProvider : IEasyCachingProvider
+    public partial class DefaultRedisCachingProvider : IEasyCachingProvider
     {
         /// <summary>
         /// The cache.
