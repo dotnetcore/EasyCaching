@@ -543,7 +543,7 @@
 
             Assert.True(res);
 
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(1050);
 
             var flag = _provider.Exists(cacheKey);
             Assert.False(flag);
@@ -563,7 +563,7 @@
 
             Assert.True(res);
 
-            await Task.Delay(1000);
+            await Task.Delay(1050);
 
             var flag = await _provider.ExistsAsync(cacheKey);
             Assert.False(flag);
@@ -995,7 +995,7 @@
 
             Assert.Equal(2, res);
 
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(1050);
 
             var flag = _provider.Exists(cacheKey);
 
@@ -1139,7 +1139,7 @@
 
             Assert.Equal(2, res);
 
-            await Task.Delay(1000);
+            await Task.Delay(1050);
 
             var len = await _provider.SCardAsync(cacheKey);
 

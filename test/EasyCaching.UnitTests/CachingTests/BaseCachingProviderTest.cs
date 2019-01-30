@@ -272,7 +272,7 @@
         [Fact]
         public void Set_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -280,12 +280,14 @@
             var val = _provider.Get<string>(cacheKey);
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue, val.Value);
+
+            _provider.Remove(cacheKey);
         }
 
         [Fact]
         public async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = $"{_nameSpace}-sgasync{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -293,12 +295,14 @@
             var val = await _provider.GetAsync<string>(cacheKey);
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue, val.Value);
+
+            await _provider.RemoveAsync(cacheKey);
         }
 
         [Fact]
         protected virtual void Set_Object_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = $"{_nameSpace}-sog-{Guid.NewGuid().ToString()}";
             var cacheValue = new Product { Id = 999, Name = "product999" };
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -307,12 +311,14 @@
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue.Id, val.Value.Id);
             Assert.Equal(cacheValue.Name, val.Value.Name);
+
+            _provider.Remove(cacheKey);
         }
 
         [Fact]
         protected virtual async Task Set_Object_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = $"{_nameSpace}-sogasync-{Guid.NewGuid().ToString()}";
             var cacheValue = new Product { Id = 999, Name = "product999" };
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -321,12 +327,14 @@
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue.Id, val.Value.Id);
             Assert.Equal(cacheValue.Name, val.Value.Name);
+
+            await _provider.RemoveAsync(cacheKey);
         }
 
         [Fact]
         protected virtual void Set_And_Get_Value_Type_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = $"{_nameSpace}-svg-{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -334,12 +342,14 @@
             var val = _provider.Get<int>(cacheKey);
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue, val.Value);
+
+            _provider.Remove(cacheKey);
         }
          
         [Fact]
         protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = $"{_nameSpace}-svgasync-{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
 
             await  _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -347,6 +357,8 @@
             var val = await _provider.GetAsync<int>(cacheKey);
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue, val.Value);
+
+            await _provider.RemoveAsync(cacheKey);
         }
         #endregion
 
@@ -568,7 +580,7 @@
             {
                 _provider.Get<int>(cacheKey, () =>
                 {
-                    count++;
+                    System.Threading.Interlocked.Increment(ref count);
                     return 1;
                 }, _defaultTs);
             });
@@ -585,7 +597,7 @@
             var tasks = Enumerable.Range(0, 20)
                         .Select(i => _provider.GetAsync(cacheKey, () =>
                         {
-                            count++;
+                            System.Threading.Interlocked.Increment(ref count);
                             return Task.FromResult(1);
                         }, _defaultTs));
 
