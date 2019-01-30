@@ -8,6 +8,7 @@ namespace EasyCaching.UnitTests
     using EasyCaching.UnitTests.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using System;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
@@ -166,6 +167,18 @@ namespace EasyCaching.UnitTests
             var after = _cachingProvider.Get<string>(key);
 
             Assert.False(after.HasValue);
+        }
+
+        [Fact]
+        protected virtual async Task Issues74_Interceptor_Able_IEnumerable_Test()
+        {
+            var list1 = await _service.AbleIEnumerableTest();
+
+            Thread.Sleep(1);
+
+            var list2 = await _service.AbleIEnumerableTest();
+
+            Assert.Equal(list1.First().Prop, list2.First().Prop);
         }
     }
 

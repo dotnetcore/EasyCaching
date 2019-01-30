@@ -3,6 +3,7 @@ namespace EasyCaching.UnitTests.Infrastructure
     using EasyCaching.Core.Internal;
     using System;
     using System.Threading.Tasks;
+    using System.Collections.Generic;
 
     public interface ICastleExampleService
     {
@@ -32,7 +33,7 @@ namespace EasyCaching.UnitTests.Infrastructure
     }
 
     public class CastleExampleService : ICastleExampleService//, IEasyCaching
-    {   
+    {
         public string EvictAllTest()
         {
             return "EvictAllTest";
@@ -98,6 +99,15 @@ namespace EasyCaching.UnitTests.Infrastructure
 
         [EasyCachingPut(CacheKeyPrefix = "AspectCoreExample")]
         Task<string> PutTestAsync(int num, string str = "123");
+
+        [EasyCachingAble(Expiration = 1)]
+        Task<IEnumerable<Model>> AbleIEnumerableTest();
+
+        [EasyCachingAble(Expiration = 1)]
+        Task<IList<Model>> AbleIListTest();
+
+        [EasyCachingAble(Expiration = 1)]
+        Task<List<Model>> AbleListTest();
     }
 
     public class AspectCoreExampleService : IAspectCoreExampleService
@@ -140,6 +150,24 @@ namespace EasyCaching.UnitTests.Infrastructure
         public async Task<string> PutTestAsync(int num, string str)
         {
             return await Task.FromResult($"PutTestAsync-{num}");
+        }
+
+        public Task<IEnumerable<Model>> AbleIEnumerableTest()
+        {
+            IEnumerable<Model> list = new List<Model> { new Model { Prop = "prop" } };
+            return Task.FromResult(list);
+        }
+
+        public Task<IList<Model>> AbleIListTest()
+        {
+            IList<Model> list = new List<Model> { new Model { Prop = "prop" } };
+            return Task.FromResult(list);
+        }
+
+        public Task<List<Model>> AbleListTest()
+        {
+            var list = new List<Model> { new Model { Prop = "prop" } };
+            return Task.FromResult(list);
         }
     }
 }
