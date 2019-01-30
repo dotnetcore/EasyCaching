@@ -95,6 +95,17 @@
             return len;
         }
 
+        public double? ZScore<T>(string cacheKey, T cacheValue)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var bytes = _serializer.Serialize(cacheValue);
+
+            var score = _cache.SortedSetScore(cacheKey, bytes);
+
+            return score;
+        }
+
         public async Task<long> ZAddAsync<T>(string cacheKey, Dictionary<T, double> cacheValues)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -177,6 +188,17 @@
             var len = await _cache.SortedSetRemoveAsync(cacheKey, bytes.ToArray());
 
             return len;
+        }
+
+        public async Task<double?> ZScoreAsync<T>(string cacheKey, T cacheValue)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var bytes = _serializer.Serialize(cacheValue);
+
+            var score = await _cache.SortedSetScoreAsync(cacheKey, bytes);
+
+            return score;
         }
     }
 }
