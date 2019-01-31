@@ -38,6 +38,7 @@
 
             _provider = new HybridCachingProvider(providers);
             _defaultTs = TimeSpan.FromSeconds(30);
+            _nameSpace = "HybridBasic";
         }
 
         [Fact]

@@ -9,11 +9,12 @@
     {
         protected IEasyCachingProvider _provider;
         protected TimeSpan _defaultTs;
+        protected string _nameSpace = string.Empty;
 
         [Fact]
         protected virtual void Set_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -26,7 +27,7 @@
         [Fact]
         protected virtual async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);

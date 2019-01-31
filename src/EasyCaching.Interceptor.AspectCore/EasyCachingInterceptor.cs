@@ -1,14 +1,14 @@
 ﻿namespace EasyCaching.Interceptor.AspectCore
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using global::AspectCore.DynamicProxy;
-    using global::AspectCore.Extensions.Reflection;
-    using global::AspectCore.Injector;
-    using System;   
+    using System;
+    using System.Collections.Concurrent;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
+    using global::AspectCore.DynamicProxy;
+    using global::AspectCore.Injector;
 
     /// <summary>
     /// Easy caching interceptor.
@@ -28,6 +28,12 @@
         /// <value>The key generator.</value>
         [FromContainer]
         public IEasyCachingKeyGenerator KeyGenerator { get; set; }
+
+        /// <summary>
+        /// The typeof task result method.
+        /// </summary>
+        private static readonly ConcurrentDictionary<Type, MethodInfo>
+                    TypeofTaskResultMethod = new ConcurrentDictionary<Type, MethodInfo>();
 
         /// <summary>
         /// Invoke the specified context and next.
@@ -63,21 +69,27 @@
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
                 var cacheValue = await CacheProvider.GetAsync<object>(cacheKey);
 
+                var returnType = context.IsAsync()
+                        ? context.ServiceMethod.ReturnType.GetGenericArguments().First()
+                        : context.ServiceMethod.ReturnType;
+
                 if (cacheValue.HasValue)
                 {
                     if (context.IsAsync())
                     {
                         //#1
-                        dynamic member = context.ServiceMethod.ReturnType.GetMember("Result")[0];
-                        dynamic temp = System.Convert.ChangeType(cacheValue.Value, member.PropertyType);
-                        context.ReturnValue = System.Convert.ChangeType(Task.FromResult(temp), context.ServiceMethod.ReturnType);
+                        //dynamic member = context.ServiceMethod.ReturnType.GetMember("Result")[0];
+                        //dynamic temp = System.Convert.ChangeType(cacheValue.Value, member.PropertyType);
+                        //context.ReturnValue = System.Convert.ChangeType(Task.FromResult(temp), context.ServiceMethod.ReturnType);
 
-                        //#2                       
-                        //...
+                        //#2                                               
+                        context.ReturnValue =
+                            TypeofTaskResultMethod.GetOrAdd(returnType, t => typeof(Task).GetMethods().First(p => p.Name == "FromResult" && p.ContainsGenericParameters).MakeGenericMethod(returnType)).Invoke(null, new object[] { cacheValue.Value });
                     }
                     else
                     {
-                        context.ReturnValue = System.Convert.ChangeType(cacheValue.Value, context.ServiceMethod.ReturnType);
+                        //context.ReturnValue = System.Convert.ChangeType(cacheValue.Value, context.ServiceMethod.ReturnType);
+                        context.ReturnValue = cacheValue.Value;
                     }
                 }
                 else

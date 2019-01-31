@@ -66,68 +66,7 @@
 
                 //option.UseMemcached(Configuration);
 
-            });
-
-            //1. Important step for using InMemory Cache
-            //services.AddDefaultInMemoryCache();
-
-            //services.AddDefaultInMemoryCacheWithFactory();
-            //services.AddDefaultInMemoryCacheWithFactory("cus");
-
-            //services.AddDefaultInMemoryCache(Configuration);
-
-            ////2. Important step for using Memcached Cache
-            //services.AddDefaultMemcached(op =>
-            //{
-            //    op.DBConfig.AddServer("127.0.0.1", 11211);
-            //});
-
-            //services.AddDefaultMemcached(Configuration);
-
-            //3. Important step for using Redis Cache
-            //services.AddDefaultRedisCache(option =>
-            //{
-            //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            //    option.DBConfig.Password = "";
-            //});
-
-            //services.AddDefaultRedisCacheWithFactory("redis1",option =>
-            //{
-            //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            //    option.DBConfig.Password = "";
-            //});
-
-            //services.AddDefaultRedisCacheWithFactory("redis2", option =>
-            //{
-            //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-            //    option.DBConfig.Password = "";
-            //});
-
-            //services.AddDefaultRedisCache(Configuration);
-
-            ////4. Important step for using SQLite Cache
-            //services.AddSQLiteCache(option => 
-            //{
-            //    option.DBConfig = new SQLiteDBOptions { FileName="my.db" };
-            //});
-
-            //services.AddSQLiteCache(Configuration);
-
-            ////5. Important step for using Hybrid Cache
-            ////5.1. Local Cache
-            //services.AddDefaultInMemoryCache(x=>
-            //{
-            //    x.Order = 1;
-            //});
-            ////5.2 Distributed Cache
-            //services.AddDefaultRedisCache(option =>
-            //{
-            //    option.Order = 2;
-            //    option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            //    option.DBConfig.Password = "";
-            //});
-            ////5.3 Hybrid
-            //services.AddDefaultHybridCache();
+            });                      
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -139,13 +78,8 @@
 
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
-            ////2. Important step for using Memcached Cache
-            //app.UseDefaultMemcached();
-
-            ////4. Important step for using SQLite Cache
-            //app.UseSQLiteCache();
-
-            //app.UseEasyCaching();
+            // Important step for using Memcached Cache or SQLite Cache
+            app.UseEasyCaching();
 
             app.UseMvc();
         }

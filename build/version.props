@@ -1,16 +1,17 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageVersion>0.4.5.1</EasyCachingCorePackageVersion>
+		<EasyCachingCorePackageVersion>0.4.6</EasyCachingCorePackageVersion>
 		<EasyCachingMemcachedPackageVersion>0.4.5.1</EasyCachingMemcachedPackageVersion>
-		<EasyCachingRedisPackageVersion>0.4.5.1</EasyCachingRedisPackageVersion>
+		<EasyCachingRedisPackageVersion>0.4.6</EasyCachingRedisPackageVersion>
 		<EasyCachingSQLitePackageVersion>0.4.5</EasyCachingSQLitePackageVersion>
-		<EasyCachingInMemoryPackageVersion>0.4.5.3</EasyCachingInMemoryPackageVersion>
+		<EasyCachingInMemoryPackageVersion>0.4.6</EasyCachingInMemoryPackageVersion>
 		<EasyCachingHybridPackageVersion>0.4.5</EasyCachingHybridPackageVersion>
-		<EasyCachingAspectCorePackageVersion>0.3.2</EasyCachingAspectCorePackageVersion>
+		<EasyCachingAspectCorePackageVersion>0.3.3</EasyCachingAspectCorePackageVersion>
 		<EasyCachingCastlePackageVersion>0.3.2</EasyCachingCastlePackageVersion>
 		<EasyCachingResponseCachingPackageVersion>0.3.0</EasyCachingResponseCachingPackageVersion>
 		<EasyCachingJsonPackageVersion>0.3.5</EasyCachingJsonPackageVersion>
 		<EasyCachingMessagePackPackageVersion>0.3.5</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>0.3.5</EasyCachingProtobufPackageVersion>
+		<EasyCachingCSRedisPackageVersion>0.1.0</EasyCachingCSRedisPackageVersion>
 	</PropertyGroup>
 </Project>

@@ -1,6 +1,7 @@
-﻿namespace EasyCaching.Redis
+﻿namespace EasyCaching.CSRedis
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Configuration;
     using System;
 
@@ -10,31 +11,29 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Uses the redis.
+        /// Uses the CSRedis.
         /// </summary>
-        /// <returns>The redis.</returns>
+        /// <returns>The CSR edis.</returns>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, Action<RedisOptions> configure, string name = EasyCachingConstValue.DefaultRedisName)
+        public static EasyCachingOptions UseCSRedis(this EasyCachingOptions options, Action<RedisOptions> configure, string name = EasyCachingConstValue.DefaultCSRedisName)
         {
-            if (configure == null)
-            {
-                throw new ArgumentNullException(nameof(configure));
-            }
+            ArgumentCheck.NotNull(configure, nameof(configure));
 
             options.RegisterExtension(new RedisOptionsExtension(name, configure));
             return options;
         }
 
         /// <summary>
-        /// Uses the redis.
+        /// Uses the CSRedis.
         /// </summary>
-        /// <returns>The redis.</returns>
+        /// <returns>The CSR edis.</returns>
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, IConfiguration configuration, string name = EasyCachingConstValue.DefaultRedisName, string sectionName = EasyCachingConstValue.RedisSection)
+        /// <param name="sectionName">Section name.</param>
+        public static EasyCachingOptions UseCSRedis(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.CSRedisSection)
         {
             var dbConfig = configuration.GetSection(sectionName);
             var redisOptions = new RedisOptions();

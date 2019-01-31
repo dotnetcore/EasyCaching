@@ -1,14 +1,13 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-        1. Update BaseRedisOptions.
+        1. Add IRedisCachingProvider.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Improve Get cached value.
         </EasyCachingMemcachedPackageNotes>
-		<EasyCachingRedisPackageNotes>
-        1. Update Options.
-        2. Improve Get cached value.
+		<EasyCachingRedisPackageNotes>        
+        1. Add Impl of IRedisCachingProvider.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Improve Configuration.
@@ -21,7 +20,7 @@
         1. Improve Configuration.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Remove Dependency of IEasyCaching. 
+        1. Fixed bug of IConvertible. 
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
         1. Remove Dependency of IEasyCaching.
@@ -38,5 +37,8 @@
 		<EasyCachingProtobufPackageNotes>
         1. Improve Configuration.
         </EasyCachingProtobufPackageNotes>
+        <EasyCachingCSRedisPackageNotes>
+        1. Init.
+        </EasyCachingCSRedisPackageNotes>
 	</PropertyGroup>
 </Project>

@@ -11,12 +11,13 @@
         protected TimeSpan _defaultTs;
         protected IEasyCachingProvider _secondProvider;
         public const string SECOND_PROVIDER_NAME = "second";
+        protected string _nameSpace = string.Empty;
 
         [Fact]
         protected virtual void Multi_Instance_Set_And_Get_Should_Succeed()
         {
-            var cacheKey1 = "named-provider-1";
-            var cacheKey2 = "named-provider-2";
+            var cacheKey1 = $"{_nameSpace}named-provider-1";
+            var cacheKey2 = $"{_nameSpace}named-provider-2";
 
             var value1 = Guid.NewGuid().ToString();
             var value2 = Guid.NewGuid().ToString("N");
@@ -40,7 +41,7 @@
         [Fact]
         protected virtual void Set_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -53,7 +54,7 @@
         [Fact]
         protected virtual async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
