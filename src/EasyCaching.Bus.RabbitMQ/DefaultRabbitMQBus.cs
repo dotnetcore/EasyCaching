@@ -7,6 +7,7 @@
     using System.Collections.Generic;
     using global::RabbitMQ.Client.Events;
     using global::RabbitMQ.Client;
+    using System.Threading;
 
     /// <summary>
     /// Default RabbitMQ Bus.
@@ -91,6 +92,11 @@
             throw new NotImplementedException();
         }
 
+        public Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Subscribe the specified channel.
         /// </summary>
@@ -117,6 +123,11 @@
             _subscriberChannel.BasicConsume("easycaching.queue", false, string.Empty, false, false, null, consumer);
         }
 
+        public void Subscribe(string topic, Action<EasyCachingMessage> action)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Subscribes the async.
         /// </summary>
@@ -136,18 +147,6 @@
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(e.Body); 
 
-            switch (message.NotifyType)
-            {
-                case NotifyType.Add:
-                    _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
-                    break;
-                case NotifyType.Update:
-                    _localCachingProvider.Refresh(message.CacheKey, message.CacheValue, message.Expiration);
-                    break;
-                case NotifyType.Delete:
-                    _localCachingProvider.Remove(message.CacheKey);
-                    break;
-            }
         }
     }
 }

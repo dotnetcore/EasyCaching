@@ -42,20 +42,30 @@
         /// <returns>The connection multiplexer.</returns>
         private ConnectionMultiplexer CreateConnectionMultiplexer()
         {
-            var configurationOptions = new ConfigurationOptions
+            if (string.IsNullOrWhiteSpace(_options.Configuration))
             {
-                ConnectTimeout = _options.ConnectionTimeout,
-                Password = _options.Password,
-                Ssl = _options.IsSsl,
-                SslHost = _options.SslHost,
-            };
+                var configurationOptions = new ConfigurationOptions
+                {
+                    ConnectTimeout = _options.ConnectionTimeout,
+                    Password = _options.Password,
+                    Ssl = _options.IsSsl,
+                    SslHost = _options.SslHost,
+                    AllowAdmin = _options.AllowAdmin,
+                    DefaultDatabase = _options.Database,
+                    AbortOnConnectFail = _options.AbortOnConnectFail,
+                };
 
-            foreach (var endpoint in _options.Endpoints)
-            {
-                configurationOptions.EndPoints.Add(endpoint.Host, endpoint.Port);
+                foreach (var endpoint in _options.Endpoints)
+                {
+                    configurationOptions.EndPoints.Add(endpoint.Host, endpoint.Port);
+                }
+
+                return ConnectionMultiplexer.Connect(configurationOptions.ToString());
             }
-
-            return ConnectionMultiplexer.Connect(configurationOptions.ToString());
+            else
+            {
+                return ConnectionMultiplexer.Connect(_options.Configuration);
+            }
         }
     }
 }

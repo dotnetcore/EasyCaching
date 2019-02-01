@@ -4,6 +4,6 @@
     
     public class RedisBusOptions : BaseRedisOptions
     {
-       
+        public int Database { get; set; } = 0;
     }
 }

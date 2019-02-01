@@ -24,4 +24,10 @@
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configurations\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="RedisBusServiceCollectionExtensions.cs" />
+  </ItemGroup>
 </Project>
