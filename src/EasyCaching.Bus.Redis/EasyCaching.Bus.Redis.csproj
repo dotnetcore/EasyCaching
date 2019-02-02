@@ -4,21 +4,23 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.0</Version>
+    <Version>$(EasyCachingRedisBusPackageVersion)</Version>
     <Description>
       EasyCaching is a open source caching library that contains basic opreations of caching.
     </Description>
-    <PackageTags>Caching,Cache,Distributed Cache,Memory Cache,Interceptor,Synchronization</PackageTags>
-    <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
-    <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags>Bus,Hybrid Caching,Redis,Synchronization</PackageTags>
+    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
+    <PackageReleaseNotes>
+      $(EasyCachingRedisBusPackageVersion)
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.519" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
@@ -26,8 +28,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configurations\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="RedisBusServiceCollectionExtensions.cs" />
-  </ItemGroup>
+  </ItemGroup>  
 </Project>

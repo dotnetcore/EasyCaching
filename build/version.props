@@ -13,5 +13,6 @@
 		<EasyCachingMessagePackPackageVersion>0.3.5</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>0.3.5</EasyCachingProtobufPackageVersion>
 		<EasyCachingCSRedisPackageVersion>0.1.0</EasyCachingCSRedisPackageVersion>
+		<EasyCachingRedisBusPackageVersion>0.1.0</EasyCachingRedisBusPackageVersion>
 	</PropertyGroup>
 </Project>

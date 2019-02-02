@@ -59,7 +59,7 @@
         /// <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> 
         /// is distributed cache.
         /// </summary>
-        public bool IsDistributedCache => false;
+        public bool IsDistributedCache => true;
 
         /// <summary>
         /// Gets the order.

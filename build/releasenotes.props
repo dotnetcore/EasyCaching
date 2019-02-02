@@ -40,5 +40,8 @@
         <EasyCachingCSRedisPackageNotes>
         1. Init.
         </EasyCachingCSRedisPackageNotes>
+        <EasyCachingRedisBusPackageNotes>
+        1. Init.
+        </EasyCachingRedisBusPackageNotes>
 	</PropertyGroup>
 </Project>
