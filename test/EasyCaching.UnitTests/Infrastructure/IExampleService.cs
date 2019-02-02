@@ -1,9 +1,9 @@
 namespace EasyCaching.UnitTests.Infrastructure
 {
-    using EasyCaching.Core.Internal;
     using System;
-    using System.Threading.Tasks;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using EasyCaching.Core.Interceptor;
 
     public interface ICastleExampleService
     {

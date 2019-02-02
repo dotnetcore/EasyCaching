@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Serialization.Json
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using System;
 

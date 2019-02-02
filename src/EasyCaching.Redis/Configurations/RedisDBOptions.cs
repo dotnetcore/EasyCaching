@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.Redis
 {
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Configurations;
 
     /// <summary>
     /// Redis cache options.

@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.ResponseCaching
 {
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core;
     using Microsoft.AspNetCore.Builder;
 
     /// <summary>

@@ -1,12 +1,11 @@
 ﻿namespace EasyCaching.Serialization.Protobuf
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using ProtoBuf;
     using System;
-    using System.Collections.Concurrent;
     using System.IO;
     using System.Text;
+    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Serialization;
+    using ProtoBuf;
 
     /// <summary>
     /// Default protobuf serializer.

@@ -1,6 +1,10 @@
 ﻿namespace EasyCaching.Memcached
 {
+    using System;
+    using System.Linq;
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Serialization;
     using Enyim.Caching;
     using Enyim.Caching.Configuration;
     using Enyim.Caching.Memcached;
@@ -9,8 +13,6 @@
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using System;
-    using System.Linq;
 
     /// <summary>
     /// Memcached options extension.

@@ -1,6 +1,7 @@
 namespace EasyCaching.Memcached
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Serialization;
     using Enyim.Caching.Memcached;
     using System;
 

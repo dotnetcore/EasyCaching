@@ -10,6 +10,7 @@
     using System;
     using System.Linq;
     using System.Reflection;
+    using EasyCaching.Core.Interceptor;
 
     /// <summary>
     /// Aspectcore interceptor service collection extensions.

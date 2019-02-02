@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
+    using EasyCaching.Core.Bus;
 
     /// <summary>
     /// Hybrid caching provider.

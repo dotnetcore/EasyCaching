@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core;
     using System;
     using Xunit;
     using System.Collections.Generic;

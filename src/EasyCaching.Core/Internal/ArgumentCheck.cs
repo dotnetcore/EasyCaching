@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Core.Internal
+﻿namespace EasyCaching.Core
 {
     using System;
     using System.Collections;

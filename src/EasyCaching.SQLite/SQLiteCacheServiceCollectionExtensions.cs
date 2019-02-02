@@ -2,7 +2,6 @@
 {
     using System;
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -1,7 +1,7 @@
 ﻿namespace EasyCaching.Core
 {
+    using EasyCaching.Core.Configurations;
     using Microsoft.AspNetCore.Builder;
-    using System;
 
     public static class EasyCachingApplicationBuliderExtensions
     {
@@ -12,10 +12,7 @@
         /// <param name="app">App.</param>
         public static IApplicationBuilder UseEasyCaching(this IApplicationBuilder app)
         {
-            if (app == null)
-            {
-                throw new ArgumentNullException(nameof(app));
-            }
+            ArgumentCheck.NotNull(app, nameof(app));
 
             var options = app.ApplicationServices.GetService(typeof(EasyCachingOptions));
 

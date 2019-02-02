@@ -8,6 +8,8 @@
     using global::RabbitMQ.Client.Events;
     using global::RabbitMQ.Client;
     using System.Threading;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Serialization;
 
     /// <summary>
     /// Default RabbitMQ Bus.

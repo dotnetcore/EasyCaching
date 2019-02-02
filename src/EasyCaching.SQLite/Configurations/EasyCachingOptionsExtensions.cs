@@ -1,8 +1,9 @@
 ﻿namespace EasyCaching.SQLite
 {
-    using EasyCaching.Core;
-    using Microsoft.Extensions.Configuration;
     using System;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// Easy caching options extensions.

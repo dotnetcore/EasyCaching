@@ -1,20 +1,20 @@
 namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Core.Internal;
-    using EasyCaching.UnitTests.Infrastructure;
-    using EasyCaching.Interceptor.Castle;
-    using EasyCaching.InMemory;
     using System;
-    using System.Threading;
-    using Xunit;
-    using Microsoft.Extensions.DependencyInjection;
-    using EasyCaching.Core;
-    using Autofac;
-    using System.Reflection;
-    using Autofac.Extras.DynamicProxy;
-    using System.Threading.Tasks;
-    using System.Linq;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Autofac;
+    using Autofac.Extras.DynamicProxy;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Interceptor;
+    using EasyCaching.InMemory;
+    using EasyCaching.Interceptor.Castle;
+    using EasyCaching.UnitTests.Infrastructure;
+    using Microsoft.Extensions.DependencyInjection;
+    using Xunit;
 
     public abstract class BaseCastleInterceptorTest
     {

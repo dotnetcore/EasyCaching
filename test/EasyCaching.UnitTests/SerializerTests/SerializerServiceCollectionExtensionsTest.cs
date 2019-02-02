@@ -7,6 +7,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using Xunit;
+    using EasyCaching.Core.Serialization;
 
     public class SerializerServiceCollectionExtensionsTest
     {

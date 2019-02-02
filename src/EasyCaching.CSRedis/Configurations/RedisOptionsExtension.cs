@@ -1,6 +1,8 @@
 ﻿namespace EasyCaching.CSRedis
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Serialization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -30,7 +32,7 @@
         /// <param name="configure">Configure.</param>
         public RedisOptionsExtension(string name, Action<RedisOptions> configure)
         {
-            Core.Internal.ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
+            ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
 
             this._name = name;
             this._configure = configure;

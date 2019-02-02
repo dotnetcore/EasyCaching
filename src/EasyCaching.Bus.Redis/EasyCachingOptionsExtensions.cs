@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
     using System;
 

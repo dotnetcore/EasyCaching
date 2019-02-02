@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Serialization;
     using global::CSRedis;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;

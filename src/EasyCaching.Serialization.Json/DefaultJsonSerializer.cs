@@ -1,11 +1,10 @@
 ﻿namespace EasyCaching.Serialization.Json
 {
     using System;
-    using System.Collections.Concurrent;
     using System.IO;
     using System.Text;
-    using EasyCaching.Core;
     using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
 

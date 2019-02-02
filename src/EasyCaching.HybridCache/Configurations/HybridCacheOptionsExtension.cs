@@ -2,6 +2,7 @@
 {
     using System;
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

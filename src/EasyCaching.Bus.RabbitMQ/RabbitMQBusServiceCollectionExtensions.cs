@@ -1,10 +1,11 @@
 ﻿namespace EasyCaching.Bus.RabbitMQ
 {
+    using System;
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using System;
 
     /// <summary>
     /// RabbitMQ Bus service collection extensions.

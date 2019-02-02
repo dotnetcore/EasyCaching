@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.Serialization.Protobuf
 {
-    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
 
     /// <summary>
     /// EasyCaching options extensions.

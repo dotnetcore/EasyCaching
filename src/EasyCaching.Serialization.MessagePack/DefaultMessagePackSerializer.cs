@@ -1,7 +1,7 @@
 ﻿namespace EasyCaching.Serialization.MessagePack
 {
-    using EasyCaching.Core;
     using System;
+    using EasyCaching.Core.Serialization;
     using global::MessagePack;
     using global::MessagePack.Resolvers;
 

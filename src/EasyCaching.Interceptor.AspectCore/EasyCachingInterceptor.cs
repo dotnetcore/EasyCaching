@@ -6,7 +6,7 @@
     using System.Reflection;
     using System.Threading.Tasks;
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Interceptor;
     using global::AspectCore.DynamicProxy;
     using global::AspectCore.Injector;
 

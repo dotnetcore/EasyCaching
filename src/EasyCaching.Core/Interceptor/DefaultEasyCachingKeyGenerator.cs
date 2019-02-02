@@ -1,11 +1,9 @@
-﻿namespace EasyCaching.Core
+﻿namespace EasyCaching.Core.Interceptor
 {
-    using EasyCaching.Core.Internal;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
-    using System.Security.Cryptography;
     using System.Text;
 
     /// <summary>

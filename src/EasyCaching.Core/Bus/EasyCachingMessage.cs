@@ -1,7 +1,10 @@
-﻿namespace EasyCaching.Core
+﻿namespace EasyCaching.Core.Bus
 {
     using System;
 
+    /// <summary>
+    /// EasyCaching message.
+    /// </summary>
     [Serializable]
     public class EasyCachingMessage
     {        

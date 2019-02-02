@@ -1,7 +1,7 @@
 ﻿namespace EasyCaching.HybridCache
 {
     using System;
-    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
 
     /// <summary>
     /// EasyCaching options extensions.

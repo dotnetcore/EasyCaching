@@ -1,7 +1,7 @@
 ﻿namespace EasyCaching.Serialization.Json
 {
-    using EasyCaching.Core;
     using System;
+    using EasyCaching.Core.Configurations;
 
     /// <summary>
     /// EasyCaching options extensions.

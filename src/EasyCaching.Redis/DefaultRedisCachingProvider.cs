@@ -1,14 +1,14 @@
 ﻿namespace EasyCaching.Redis
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using StackExchange.Redis;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Serialization;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using StackExchange.Redis;
 
     /// <summary>
     /// Default redis caching provider.

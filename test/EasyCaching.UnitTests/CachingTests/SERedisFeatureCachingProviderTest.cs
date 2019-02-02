@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Internal;
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;

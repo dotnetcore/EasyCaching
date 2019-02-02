@@ -1,7 +1,8 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Serialization;
     using StackExchange.Redis;
     using System;
     using System.Threading;

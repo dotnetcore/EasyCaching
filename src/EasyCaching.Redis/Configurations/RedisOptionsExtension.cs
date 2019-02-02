@@ -1,6 +1,8 @@
 ﻿namespace EasyCaching.Redis
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Serialization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;

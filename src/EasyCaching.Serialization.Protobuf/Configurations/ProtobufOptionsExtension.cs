@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Serialization.Protobuf
 {
-    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Serialization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 

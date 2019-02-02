@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Core
+﻿namespace EasyCaching.Core.Configurations
 {
     using System.Collections.Generic;
 
@@ -27,7 +27,7 @@
         /// <param name="extension">Extension.</param>
         public void RegisterExtension(IEasyCachingOptionsExtension extension)
         {
-            Internal.ArgumentCheck.NotNull(extension, nameof(extension));
+            ArgumentCheck.NotNull(extension, nameof(extension));
 
             Extensions.Add(extension);
         }

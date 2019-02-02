@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Memcached
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
     using System;
 
