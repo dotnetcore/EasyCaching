@@ -8,10 +8,20 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
+    /// <summary>
+    /// Redis bus options extension.
+    /// </summary>
     internal sealed class RedisBusOptionsExtension : IEasyCachingOptionsExtension
     {
+        /// <summary>
+        /// The configure.
+        /// </summary>
         private readonly Action<RedisBusOptions> configure;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.RedisBusOptionsExtension"/> class.
+        /// </summary>
+        /// <param name="configure">Configure.</param>
         public RedisBusOptionsExtension(Action<RedisBusOptions> configure)
         {         
             this.configure = configure;

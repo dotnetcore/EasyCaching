@@ -20,7 +20,7 @@
         private readonly Lazy<ConnectionMultiplexer> _connectionMultiplexer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisDatabaseProvider"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.RedisSubscriberProvider"/> class.
         /// </summary>
         /// <param name="options">Options.</param>
         public RedisSubscriberProvider(IOptions<RedisBusOptions> options)
