@@ -1,14 +1,13 @@
 ﻿namespace EasyCaching.HybridCache
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Logging;
+    using EasyCaching.Core;
     using EasyCaching.Core.Bus;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Hybrid caching provider.
@@ -35,6 +34,10 @@
         /// The logger.
         /// </summary>
         private readonly ILogger _logger;
+        /// <summary>
+        /// The cache identifier.
+        /// </summary>
+        private readonly string _cacheId = Guid.NewGuid().ToString("N");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
@@ -80,6 +83,10 @@
         /// <param name="message">Message.</param>
         private void OnMessage(EasyCachingMessage message)
         {
+            // each clients will recive the message, current client should ignore.
+            if (string.IsNullOrWhiteSpace(message.Id) && message.Id.Equals(_cacheId, StringComparison.OrdinalIgnoreCase))
+                return;
+
             foreach (var item in message.CacheKeys)
             {
                 _localCache.Remove(item);
@@ -132,7 +139,7 @@
                 return cacheValue;
             }
 
-            if(_options.EnableLogging)
+            if (_options.EnableLogging)
             {
                 _logger.LogTrace($"local cache can not get the value of {cacheKey}");
             }
@@ -205,7 +212,7 @@
             _localCache.Remove(cacheKey);
 
             //send message to bus 
-            _bus.Publish(_options.TopicName, new EasyCachingMessage { CacheKeys = new string[] { cacheKey } });
+            _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
         /// <summary>
@@ -221,7 +228,7 @@
             await _localCache.RemoveAsync(cacheKey);
 
             //send message to bus 
-            await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { CacheKeys = new string[] { cacheKey } });
+            await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
         /// <summary>
@@ -239,7 +246,7 @@
             _distributedCache.Set(cacheKey, cacheValue, expiration);
 
             //send message to bus
-            _bus.Publish(_options.TopicName, new EasyCachingMessage { CacheKeys = new string[] { cacheKey } });
+            _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
         /// <summary>
@@ -258,7 +265,7 @@
             await _distributedCache.SetAsync(cacheKey, cacheValue, expiration);
 
             //send message to bus
-            await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { CacheKeys = new string[] { cacheKey } });
+            await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
         /// <summary>
