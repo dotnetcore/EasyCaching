@@ -31,6 +31,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 | EasyCaching.Memcached | ![](https://img.shields.io/nuget/v/EasyCaching.Memcached.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Memcached.svg)
 | EasyCaching.SQLite | ![](https://img.shields.io/nuget/v/EasyCaching.SQLite.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.SQLite.svg)
 | EasyCaching.HybridCache  | ![](https://img.shields.io/nuget/v/EasyCaching.HybridCache.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.HybridCache.svg)
+| EasyCaching.CSRedis  | ![](https://img.shields.io/nuget/v/EasyCaching.CSRedis.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.CSRedis.svg)
 
 ### Interceptor
 
@@ -146,7 +147,8 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 ### Caching Providers
 
 - [x] Memory
-- [x] Redis
+- [x] Redis(Based on [StackExchange.Redis](https://github.com/StackExchange/StackExchange.Redis))
+- [x] Redis(Based on [csredis](https://github.com/2881099/csredis))
 - [x] SQLite
 - [x] Memcached
 - [x] Hybrid(Combine local caching and distributed caching)
@@ -192,13 +194,13 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 
 ### Caching Bus
 
-- [ ] Redis
-- [ ] RabbitMQ
+- [x] Redis (not release yet)
+- [x] RabbitMQ (not release yet)
 
 ### Others
 
 - [x] Configuration
-- [ ] Caching Region
+- [x] Caching Region (one region with an instance of provider)
 - [x] Caching Statistics
 - [ ] UI Manager
 - [x] Logger
