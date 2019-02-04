@@ -23,5 +23,14 @@
   <ItemGroup>
     <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.1.1" />    
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ConnectionChannelPool.cs" />
+    <Compile Remove="IConnectionChannelPool.cs" />
+    <Compile Remove="RabbitMQBusServiceCollectionExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configurations\" />
   </ItemGroup>
 </Project>
