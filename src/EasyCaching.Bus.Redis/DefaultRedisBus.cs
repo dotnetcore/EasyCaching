@@ -34,9 +34,10 @@
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Sync.Redis.DefaultRedisSubscriber"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.DefaultRedisBus"/> class.
         /// </summary>
         /// <param name="subscriberProvider">Subscriber provider.</param>
+        /// <param name="serializer">Serializer.</param>
         public DefaultRedisBus(
             IRedisSubscriberProvider subscriberProvider,
             IEasyCachingSerializer serializer)
