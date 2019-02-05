@@ -7,7 +7,7 @@
     /// <summary>
     /// Redis database provider.
     /// </summary>
-    public class RedisSubscriberProvider : IRedisSubscriberProvider
+    internal class RedisSubscriberProvider : IRedisSubscriberProvider
     {
         /// <summary>
         /// The options.
