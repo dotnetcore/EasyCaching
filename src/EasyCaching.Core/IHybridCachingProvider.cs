@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Core
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -89,5 +90,56 @@
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
+
+        /// <summary>
+        /// Sets all.
+        /// </summary>
+        /// <param name="value">Value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration);
+
+        /// <summary>
+        /// Sets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="value">Value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration);
+
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="cacheKeys">Cache keys.</param>
+        void RemoveAll(IEnumerable<string> cacheKeys);
+
+        /// <summary>
+        /// Removes all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        Task RemoveAllAsync(IEnumerable<string> cacheKeys);
+
+        /// <summary>
+        /// Get the specified cacheKey, dataRetriever and expiration.
+        /// </summary>
+        /// <returns>The get.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="dataRetriever">Data retriever.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration);
+
+        /// <summary>
+        /// Gets the specified cacheKey, dataRetriever and expiration async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="dataRetriever">Data retriever.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration);
+
     }
 }

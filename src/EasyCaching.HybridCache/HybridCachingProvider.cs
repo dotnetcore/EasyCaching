@@ -37,7 +37,7 @@
         /// <summary>
         /// The cache identifier.
         /// </summary>
-        private readonly string _cacheId = Guid.NewGuid().ToString("N");
+        private readonly string _cacheId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
@@ -75,6 +75,8 @@
 
             this._bus = bus ?? NullEasyCachingBus.Instance;
             this._bus.Subscribe(_options.TopicName, OnMessage);
+
+            this._cacheId = Guid.NewGuid().ToString("N");
         }
 
         /// <summary>
@@ -148,6 +150,7 @@
 
             if (cacheValue.HasValue)
             {
+                //TODO: What about the value of expiration? Form configuration or others?
                 _localCache.Set(cacheKey, cacheValue.Value, TimeSpan.FromSeconds(60));
 
                 return cacheValue;
@@ -187,6 +190,7 @@
 
             if (cacheValue.HasValue)
             {
+                //TODO: What about the value of expiration? Form configuration or others?
                 await _localCache.SetAsync(cacheKey, cacheValue.Value, TimeSpan.FromSeconds(60));
 
                 return cacheValue;
@@ -208,6 +212,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
+            //distributed cache at first
             _distributedCache.Remove(cacheKey);
             _localCache.Remove(cacheKey);
 
@@ -224,6 +229,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
+            //distributed cache at first
             await _distributedCache.RemoveAsync(cacheKey);
             await _localCache.RemoveAsync(cacheKey);
 
@@ -245,7 +251,7 @@
             _localCache.Set(cacheKey, cacheValue, expiration);
             _distributedCache.Set(cacheKey, cacheValue, expiration);
 
-            //send message to bus
+            //When create/update cache, send message to bus so that other clients can remove it.
             _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
@@ -264,7 +270,7 @@
             await _localCache.SetAsync(cacheKey, cacheValue, expiration);
             await _distributedCache.SetAsync(cacheKey, cacheValue, expiration);
 
-            //send message to bus
+            //When create/update cache, send message to bus so that other clients can remove it.
             await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
@@ -284,6 +290,7 @@
 
             if (flag)
             {
+                //When TrySet succeed in distributed cache, Set(not TrySet) this cache to local cache.
                 _localCache.Set(cacheKey, cacheValue, expiration);
             }
 
@@ -306,10 +313,121 @@
 
             if (flag)
             {
+                //When we TrySet succeed in distributed cache, we should Set this cache to local cache.
                 await _localCache.SetAsync(cacheKey, cacheValue, expiration);
             }
 
             return flag;
+        }
+
+        /// <summary>
+        /// Sets all.
+        /// </summary>
+        /// <param name="value">Value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration)
+        {
+            _distributedCache.SetAll(value, expiration);
+        }
+
+        /// <summary>
+        /// Sets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="value">Value.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration)
+        {
+            await _distributedCache.SetAllAsync(value, expiration);
+        }
+
+        /// <summary>
+        /// Removes all.
+        /// </summary>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public void RemoveAll(IEnumerable<string> cacheKeys)
+        {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
+            _localCache.RemoveAll(cacheKeys);
+
+            _distributedCache.RemoveAllAsync(cacheKeys);
+
+            //send message to bus in order to notify other clients.
+            _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() });
+        }
+
+        /// <summary>
+        /// Removes all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        /// <param name="cacheKeys">Cache keys.</param>
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
+            await _localCache.RemoveAllAsync(cacheKeys);
+
+            await _distributedCache.RemoveAllAsync(cacheKeys);
+
+            //send message to bus in order to notify other clients.
+            await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() });
+        }
+
+        /// <summary>
+        /// Get the specified cacheKey, dataRetriever and expiration.
+        /// </summary>
+        /// <returns>The get.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="dataRetriever">Data retriever.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            var result = _localCache.Get<T>(cacheKey);
+
+            if(result.HasValue)
+            {
+                return result;
+            }
+
+            result = _distributedCache.Get<T>(cacheKey, dataRetriever , expiration);
+
+            return result.HasValue
+               ? result
+               : CacheValue<T>.NoValue;
+        }
+
+        /// <summary>
+        /// Gets the specified cacheKey, dataRetriever and expiration async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="dataRetriever">Data retriever.</param>
+        /// <param name="expiration">Expiration.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
+            var result = await _localCache.GetAsync<T>(cacheKey);
+
+            if (result.HasValue)
+            {
+                return result;
+            }
+
+            result = await _distributedCache.GetAsync<T>(cacheKey, dataRetriever , expiration);
+
+            return result.HasValue
+                ? result
+                : CacheValue<T>.NoValue;
         }
     }
 }
