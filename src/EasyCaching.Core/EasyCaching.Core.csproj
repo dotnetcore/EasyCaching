@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Internal\" />
-    <Folder Include="Configurations\" />
     <Folder Include="Bus\" />
     <Folder Include="Serialization\" />
     <Folder Include="Interceptor\" />

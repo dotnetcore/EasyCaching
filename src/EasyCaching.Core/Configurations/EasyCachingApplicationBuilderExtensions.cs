@@ -3,7 +3,7 @@
     using EasyCaching.Core.Configurations;
     using Microsoft.AspNetCore.Builder;
 
-    public static class EasyCachingApplicationBuliderExtensions
+    public static class EasyCachingApplicationBuilderExtensions
     {
         /// <summary>
         /// Uses the easy caching.
@@ -16,9 +16,9 @@
 
             var options = app.ApplicationServices.GetService(typeof(EasyCachingOptions));
 
-            if (options != null && options is EasyCachingOptions)
+            if (options is EasyCachingOptions cachingOptions)
             {
-                foreach (var serviceExtension in ((EasyCachingOptions)options).Extensions)
+                foreach (var serviceExtension in cachingOptions.Extensions)
                 {
                     serviceExtension.WithServices(app);
                 }
