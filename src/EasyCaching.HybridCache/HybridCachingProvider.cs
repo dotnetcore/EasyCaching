@@ -86,7 +86,7 @@
         private void OnMessage(EasyCachingMessage message)
         {
             // each clients will recive the message, current client should ignore.
-            if (string.IsNullOrWhiteSpace(message.Id) && message.Id.Equals(_cacheId, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(message.Id) && message.Id.Equals(_cacheId, StringComparison.OrdinalIgnoreCase))
                 return;
 
             foreach (var item in message.CacheKeys)
