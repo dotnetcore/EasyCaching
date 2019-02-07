@@ -108,7 +108,7 @@
 
             var res = hybridCaching_1.Exists(cacheKey);
 
-            Assert.True(res);
+            Assert.False(res);
         }
 
         [Fact]
@@ -122,7 +122,7 @@
 
             var res = await hybridCaching_1.ExistsAsync(cacheKey);
 
-            Assert.True(res);
+            Assert.False(res);
         }
 
         [Fact(Skip = "Delay")]
