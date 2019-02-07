@@ -1,92 +1,144 @@
-﻿//namespace EasyCaching.UnitTests
-//{
-//    using EasyCaching.Core;
-//    using EasyCaching.Core.Internal;
-//    using EasyCaching.HybridCache;
-//    using EasyCaching.InMemory;
-//    using EasyCaching.Redis;
-//    using FakeItEasy;
-//    using Microsoft.Extensions.Caching.Memory;
-//    using Microsoft.Extensions.Options;
-//    using System;
-//    using System.Collections.Generic;
-//    using System.Threading.Tasks;
-//    using Xunit;
+﻿namespace EasyCaching.UnitTests
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using EasyCaching.Bus.Redis;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.HybridCache;
+    using EasyCaching.InMemory;
+    using EasyCaching.Redis;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
+    using Xunit;
 
-//    public class HybridCachingTest : BaseCachingProviderTest
-//    {
-//        public HybridCachingTest()
-//        {
-//            RedisOptions options = new RedisOptions();
-//            options.DBConfig.AllowAdmin = true;
-//            options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-//            options.DBConfig.Database = 6;
+    public class HybridCachingTest //: BaseCachingProviderTest
+    {
 
-//            var fakeOption = A.Fake<IOptionsMonitor<RedisOptions>>();
+        private HybridCachingProvider hybridCaching_1;
+        private HybridCachingProvider hybridCaching_2;
+        private IEasyCachingProviderFactory factory;
+        private string _namespace;
+        public HybridCachingTest()
+        {
+            _namespace = "hybrid";
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(option =>
+            {
+                option.UseInMemory("m1");
+                option.UseInMemory("m2");
 
-//            A.CallTo(() => fakeOption.CurrentValue).Returns(options);
+                option.UseRedis(config =>
+                {
+                    config.DBConfig.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
+                    config.DBConfig.Database = 5;
+                }, "myredis");
 
-//            var fakeDbProvider = A.Fake<RedisDatabaseProvider>(option => option.WithArgumentsForConstructor(new object[] { fakeOption }));
+                option.WithRedisBus(config =>
+                {
+                    config.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
+                    config.Database = 6;
+                });
+            });
 
-//            var serializer = new DefaultBinaryFormatterSerializer();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
 
-//            var providers = new List<IEasyCachingProvider>
-//            {
-//                new DefaultInMemoryCachingProvider(new InMemory.InMemoryCaching(new InMemoryCachingOptions()), new TestOptionMonitorWrapper<InMemoryOptions>(new InMemoryOptions())),
-//                new DefaultRedisCachingProvider(fakeDbProvider, serializer, new TestOptionMonitorWrapper<RedisOptions>(new RedisOptions()))
-//            };
+            var providers_1 = new List<IEasyCachingProvider>
+            {
+                factory.GetCachingProvider("m1"),
+                factory.GetCachingProvider("myredis")
+            };
 
-//            _provider = new HybridCachingProvider(providers);
-//            _defaultTs = TimeSpan.FromSeconds(30);
-//            _nameSpace = "HybridBasic";
-//        }
+            var providers_2 = new List<IEasyCachingProvider>
+            {
+                factory.GetCachingProvider("m2"),
+                factory.GetCachingProvider("myredis")
+            };
 
-//        [Fact]
-//        protected override void Get_Count_Without_Prefix_Should_Succeed()
-//        {
+            var bus = serviceProvider.GetService<IEasyCachingBus>();
 
-//        }
+            hybridCaching_1 = new HybridCachingProvider(new OptionsWrapper<HybridCachingOptions>(new HybridCachingOptions
+            {
+                EnableLogging = false,
+                TopicName = "test_topic"
+            }), providers_1, bus);
 
-//        [Fact]
-//        protected override void Get_Count_With_Prefix_Should_Succeed()
-//        {
+            hybridCaching_2 = new HybridCachingProvider(new OptionsWrapper<HybridCachingOptions>(new HybridCachingOptions
+            {
+                EnableLogging = false,
+                TopicName = "test_topic"
+            }), providers_2, bus);
+        }
 
-//        }
+        [Fact]
+        public void Set_And_Get_Should_Succeed()
+        {
+            var cacheKey = $"{_namespace}_{Guid.NewGuid().ToString()}";
 
-//        [Fact]
-//        protected override void OnHit_Should_Return_One_And_OnMiss_Should_Return_Zero()
-//        {
+            hybridCaching_1.Set(cacheKey, "val", TimeSpan.FromSeconds(30));
 
-//        }
+            var res = hybridCaching_1.Get<string>(cacheKey);
 
-//        [Fact]
-//        protected override void OnHit_Should_Return_Zero_And_OnMiss_Should_Return_One()
-//        {
+            Assert.Equal("val", res.Value);
+        }
 
-//        }
 
-//        [Fact]
-//        protected override void TrySet_Value_And_Get_Cached_Value_Should_Succeed()
-//        {
+        [Fact]
+        public async Task SetAsync_And_ExistsAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_namespace}_{Guid.NewGuid().ToString()}";
 
-//        }
+            await hybridCaching_1.SetAsync(cacheKey, "val", TimeSpan.FromSeconds(30));
 
-//        [Fact]
-//        protected override async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed()
-//        {
-//            await Task.FromResult(1);
-//        }
+            var res = await hybridCaching_1.ExistsAsync(cacheKey);
 
-//        [Fact]
-//        protected override void Get_Parallel_Should_Succeed()
-//        {
+            Assert.True(res);
+        }
 
-//        }
+        [Fact]
+        public void Set_And_Remove_Should_Succeed()
+        {
+            var cacheKey = $"{_namespace}_{Guid.NewGuid().ToString()}";
 
-//        [Fact]
-//        protected override Task GetAsync_Parallel_Should_Succeed()
-//        {
-//            return Task.FromResult(1);
-//        }
-//    }
-//}
+            hybridCaching_1.Set(cacheKey, "val", TimeSpan.FromSeconds(30));
+
+            hybridCaching_1.Remove(cacheKey);
+
+            var res = hybridCaching_1.Exists(cacheKey);
+
+            Assert.True(res);
+        }
+
+        [Fact]
+        public async Task SetAsync_And_RemoveAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_namespace}_{Guid.NewGuid().ToString()}";
+
+            await hybridCaching_1.SetAsync(cacheKey, "val", TimeSpan.FromSeconds(30));
+
+            await hybridCaching_1.RemoveAsync(cacheKey);
+
+            var res = await hybridCaching_1.ExistsAsync(cacheKey);
+
+            Assert.True(res);
+        }
+
+        [Fact(Skip = "Delay")]
+        public void Second_Client_Set_Same_Key_Should_Get_New_Value()
+        {
+            var cacheKey = $"{_namespace}_{Guid.NewGuid().ToString()}";
+
+            hybridCaching_1.Set(cacheKey, "val", TimeSpan.FromSeconds(30));
+
+            hybridCaching_2.Set(cacheKey, "value", TimeSpan.FromSeconds(30));
+
+            //System.Threading.Thread.Sleep(5000);
+
+            var res = hybridCaching_1.Get<string>(cacheKey);
+
+            Assert.Equal("value", res.Value);
+        }
+    }
+}
