@@ -29,6 +29,10 @@
         /// The SQLite section.
         /// </summary>
         public const string SQLiteSection = "easycaching:sqlite";
+        /// <summary>
+        /// The SQLServer section.
+        /// </summary>
+        public const string SQLServerSection = "easycaching:sqlserver";
 
         /// <summary>
         /// The in-memory section.
@@ -59,5 +63,10 @@
         /// The default name of the SQLite.
         /// </summary>
         public const string DefaultSQLiteName = "DefaultSQLite";
+
+        /// <summary>
+        /// The default name of the SQL Server.
+        /// </summary>
+        public const string DefaultSQLServerName = "DefaultSQLServer";
     }
 }
