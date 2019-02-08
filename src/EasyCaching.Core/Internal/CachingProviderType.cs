@@ -9,7 +9,7 @@
         Memcached,
         Redis,
         SQLite,
-        Ext1,
+        SQLServer,
         Ext2
     }
 }
