@@ -122,7 +122,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.ExecuteScalar<int>(ConstSQL.EXISTSSQL, new
+            var dbResult = _cache.ExecuteScalar<int>(GetSQL(ConstSQL.EXISTSSQL), new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -140,7 +140,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = await _cache.ExecuteScalarAsync<int>(ConstSQL.EXISTSSQL, new
+            var dbResult = await _cache.ExecuteScalarAsync<int>(GetSQL(ConstSQL.EXISTSSQL), new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -162,7 +162,7 @@ namespace EasyCaching.SQLServer
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var dbResult = _cache.Query<string>(ConstSQL.GETSQL, new
+            var dbResult = _cache.Query<string>(GetSQL(ConstSQL.GETSQL), new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -209,7 +209,7 @@ namespace EasyCaching.SQLServer
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            var list = await _cache.QueryAsync<string>(GetSQL(ConstSQL.GETSQL), new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -255,7 +255,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.Query<string>(ConstSQL.GETSQL, new
+            var dbResult = _cache.Query<string>(GetSQL(ConstSQL.GETSQL), new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -291,7 +291,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            var list = await _cache.QueryAsync<string>(GetSQL(ConstSQL.GETSQL), new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -328,7 +328,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name });
+            _cache.Execute(GetSQL(ConstSQL.REMOVESQL), new { cachekey = cacheKey, name = _name });
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name });
+            await _cache.ExecuteAsync(GetSQL(ConstSQL.REMOVESQL), new { cachekey = cacheKey, name = _name });
         }
 
         /// <summary>
@@ -447,7 +447,7 @@ namespace EasyCaching.SQLServer
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
-            _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+            _cache.Execute(GetSQL(ConstSQL.REMOVEBYPREFIXSQL), new { cachekey = string.Concat(prefix, "%"), name = _name });
         }
 
         /// <summary>
@@ -461,7 +461,7 @@ namespace EasyCaching.SQLServer
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
-            await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+            await _cache.ExecuteAsync(GetSQL(ConstSQL.REMOVEBYPREFIXSQL), new { cachekey = string.Concat(prefix, "%"), name = _name });
         }
 
         /// <summary>
@@ -531,7 +531,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var list = _cache.Query(ConstSQL.GETALLSQL, new
+            var list = _cache.Query(GetSQL(ConstSQL.GETALLSQL), new
             {
                 cachekey = cacheKeys.ToArray(),
                 name = _name
@@ -550,7 +550,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var list = (await _cache.QueryAsync(ConstSQL.GETALLSQL, new
+            var list = (await _cache.QueryAsync(GetSQL(ConstSQL.GETALLSQL), new
             {
                 cachekey = cacheKeys.ToArray(),
                 name = _name
@@ -588,7 +588,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var list = _cache.Query(ConstSQL.GETBYPREFIXSQL, new
+            var list = _cache.Query(GetSQL(ConstSQL.GETBYPREFIXSQL), new
             {
                 cachekey = string.Concat(prefix, "%"),
                 name = _name
@@ -607,7 +607,7 @@ namespace EasyCaching.SQLServer
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var list = (await _cache.QueryAsync(ConstSQL.GETBYPREFIXSQL, new
+            var list = (await _cache.QueryAsync(GetSQL(ConstSQL.GETBYPREFIXSQL), new
             {
                 cachekey = string.Concat(prefix, "%"),
                 name = _name
@@ -627,7 +627,7 @@ namespace EasyCaching.SQLServer
             var tran = _cache.BeginTransaction();
 
             foreach (var item in cacheKeys)
-                _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = item, name = _name }, tran);
+                _cache.Execute(GetSQL(ConstSQL.REMOVESQL), new { cachekey = item, name = _name }, tran);
 
             tran.Commit();
         }
@@ -645,7 +645,7 @@ namespace EasyCaching.SQLServer
             var tasks = new List<Task<int>>();
 
             foreach (var item in cacheKeys)
-                tasks.Add(_cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = item, name = _name }, tran));
+                tasks.Add(_cache.ExecuteAsync(GetSQL(ConstSQL.REMOVESQL), new { cachekey = item, name = _name }, tran));
 
             await Task.WhenAll(tasks);
             tran.Commit();
@@ -660,24 +660,24 @@ namespace EasyCaching.SQLServer
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                return _cache.ExecuteScalar<int>(ConstSQL.COUNTALLSQL, new { name = _name });
+                return _cache.ExecuteScalar<int>(GetSQL(ConstSQL.COUNTALLSQL), new { name = _name });
             }
             else
             {
-                return _cache.ExecuteScalar<int>(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+                return _cache.ExecuteScalar<int>(GetSQL(ConstSQL.COUNTPREFIXSQL), new { cachekey = string.Concat(prefix, "%"), name = _name });
             }
         }
 
         /// <summary>
         /// Flush All Cached Item.
         /// </summary>
-        public void Flush() => _cache.Execute(ConstSQL.FLUSHSQL, new { name = _name });
+        public void Flush() => _cache.Execute(GetSQL(ConstSQL.FLUSHSQL), new { name = _name });
 
         /// <summary>
         /// Flush All Cached Item async.
         /// </summary>
         /// <returns>The async.</returns>
-        public async Task FlushAsync() => await _cache.ExecuteAsync(ConstSQL.FLUSHSQL, new { name = _name });
+        public async Task FlushAsync() => await _cache.ExecuteAsync(GetSQL(ConstSQL.FLUSHSQL), new { name = _name });
 
         /// <summary>
         /// Tries the set.
@@ -699,7 +699,7 @@ namespace EasyCaching.SQLServer
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
-            var rows = _cache.Execute(ConstSQL.TRYSETSQL, new
+            var rows = _cache.Execute(GetSQL(ConstSQL.TRYSETSQL), new
             {
                 cachekey = cacheKey,
                 name = _name,
@@ -730,7 +730,7 @@ namespace EasyCaching.SQLServer
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
-            var rows = await _cache.ExecuteAsync(ConstSQL.TRYSETSQL, new
+            var rows = await _cache.ExecuteAsync(GetSQL(ConstSQL.TRYSETSQL), new
             {
                 cachekey = cacheKey,
                 name = _name,
