@@ -32,6 +32,7 @@
     <ProjectReference Include="..\..\src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.SQLServerCache\EasyCaching.SQLServerCache.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\" />
