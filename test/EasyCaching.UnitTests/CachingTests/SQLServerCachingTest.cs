@@ -218,9 +218,9 @@ namespace EasyCaching.UnitTests
             'MaxRdSecond': 600,
             'Order': 99,
             'dbconfig': {            
-                'connectionString':'',
-                'schemaName':'',
-                'tableName':''
+                'connectionString':'Data Source=.\\sqlexpress;Initial Catalog=EasyCacheDB;Integrated Security=True',
+                'schemaName':'Easy',
+                'tableName':'Cache'
             }
         }
     }
@@ -243,6 +243,7 @@ namespace EasyCaching.UnitTests
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
 
             var _dbProviders = serviceProvider.GetServices<ISQLDatabaseProvider>();
+            var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<SQLServerOptions>>();
             foreach (var _dbProvider in _dbProviders)
             {
                 var conn = _dbProvider.GetConnection();
@@ -250,7 +251,10 @@ namespace EasyCaching.UnitTests
                 {
                     conn.Open();
                 }
-                conn.Execute(ConstSQL.CREATESQL);
+                var options = optionsMon.Get(_dbProvider.DBProviderName);
+                var sql = string.Format(ConstSQL.CREATESQL, options.DBConfig.SchemaName,
+                    options.DBConfig.TableName);
+                conn.Execute(sql);
             }
 
             _defaultTs = TimeSpan.FromSeconds(30);
