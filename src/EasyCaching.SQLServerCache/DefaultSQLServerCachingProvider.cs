@@ -60,7 +60,7 @@ namespace EasyCaching.SQLServer
             this._logger = loggerFactory?.CreateLogger<DefaultSQLServerCachingProvider>();
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
-            this._name = EasyCachingConstValue.DefaultSQLiteName;
+            this._name = EasyCachingConstValue.DefaultSQLServerName;
         }
 
         public DefaultSQLServerCachingProvider(
@@ -121,7 +121,7 @@ namespace EasyCaching.SQLServer
         public bool Exists(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
+            
             var dbResult = _cache.ExecuteScalar<int>(GetSQL(ConstSQL.EXISTSSQL), new
             {
                 cachekey = cacheKey,
@@ -508,6 +508,7 @@ namespace EasyCaching.SQLServer
 
             foreach (var item in values)
             {
+
                 tasks.Add(_cache.ExecuteAsync(GetSQL(ConstSQL.SETSQL), new
                 {
                     cachekey = item.Key,

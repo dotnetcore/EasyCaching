@@ -25,13 +25,13 @@
         /// The trysetsql.
         /// </summary>
         public const string TRYSETSQL = @"
-                INSERT INTO [{0}][{1}]
+                INSERT INTO [{0}].[{1}]
                     ([name]
                     ,[cachekey]
                     ,[cachevalue]
                     ,[expiration])
                 SELECT @name,@cachekey,@cachevalue,(select getutcdate() + @expiration)
-                WHERE NOT EXISTS (SELECT 1 FROM [{0}][{1}] WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > getutcdate());";
+                WHERE NOT EXISTS (SELECT 1 FROM [{0}].[{1}] WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > getutcdate());";
 
 
 
@@ -39,58 +39,58 @@
         /// The getsql.
         /// </summary>
         public const string GETSQL = @"SELECT [cachevalue]
-                    FROM [{0}][{1}]
+                    FROM [{0}].[{1}]
                     WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > getutcdate()";
 
         /// <summary>
         /// The getallsql.
         /// </summary>
         public const string GETALLSQL = @"SELECT [cachekey],[cachevalue]
-                    FROM [{0}][{1}]
+                    FROM [{0}].[{1}]
                     WHERE [cachekey] IN @cachekey AND [name]=@name AND [expiration] > getutcdate()";
         
         /// <summary>
         /// The getbyprefixsql.
         /// </summary>
         public const string GETBYPREFIXSQL = @"SELECT [cachekey],[cachevalue]
-                    FROM [{0}][{1}]
+                    FROM [{0}].[{1}]
                     WHERE [cachekey] LIKE @cachekey AND [name]=@name AND [expiration] > getutcdate()";
 
         /// <summary>
         /// The removesql.
         /// </summary>
-        public const string REMOVESQL = @"DELETE FROM [{0}][{1}] WHERE [cachekey] = @cachekey AND [name] = @name ";
+        public const string REMOVESQL = @"DELETE FROM [{0}].[{1}] WHERE [cachekey] = @cachekey AND [name] = @name ";
 
         /// <summary>
         /// The removebyprefixsql.
         /// </summary>
-        public const string REMOVEBYPREFIXSQL = @"DELETE FROM [{0}][{1}] WHERE [cachekey] like @cachekey  AND [name]=@name";
+        public const string REMOVEBYPREFIXSQL = @"DELETE FROM [{0}].[{1}] WHERE [cachekey] like @cachekey  AND [name]=@name";
 
         /// <summary>
         /// The existssql.
         /// </summary>
         public const string EXISTSSQL = @"SELECT COUNT(1)
-                    FROM [{0}][{1}]
+                    FROM [{0}].[{1}]
                     WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > getutcdate()";
 
         /// <summary>
         /// The countallsql.
         /// </summary>
         public const string COUNTALLSQL = @"SELECT COUNT(1)
-            FROM [{0}][{1}]
+            FROM [{0}].[{1}]
             WHERE [expiration] > getutcdate() AND [name]=@name";
 
         /// <summary>
         /// The countprefixsql.
         /// </summary>
         public const string COUNTPREFIXSQL = @"SELECT COUNT(1)
-            FROM [{0}][{1}]
+            FROM [{0}].[{1}]
             WHERE [cachekey] like @cachekey AND [name]=@name AND [expiration] > getutcdate()";
 
         /// <summary>
         /// The flushsql.
         /// </summary>
-        public const string FLUSHSQL = @"DELETE FROM [{0}][{1}] WHERE [name]=@name";
+        public const string FLUSHSQL = @"DELETE FROM [{0}].[{1}] WHERE [name]=@name";
 
         /// <summary>
         /// The createsql.
@@ -108,10 +108,10 @@
                                         WHERE object_id = OBJECT_ID(N'[{0}].[{1}]') AND type in (N'U'))
                                         BEGIN
                                         CREATE TABLE [{0}].[{1}] (
-                                                            [ID] INTEGER PRIMARY KEY
-                                                            , [name] TEXT
-                                                            , [cachekey] TEXT
-                                                            , [cachevalue] TEXT
+                                                            [ID] INT IDENTITY(1,1) PRIMARY KEY
+                                                            , [name] VARCHAR(255)
+                                                            , [cachekey] VARCHAR(255)
+                                                            , [cachevalue] NVARCHAR(MAX)
                                                             , [expiration] DATETIME)
                                         END";
     }
