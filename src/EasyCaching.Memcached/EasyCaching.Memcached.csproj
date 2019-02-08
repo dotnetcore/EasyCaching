@@ -6,10 +6,10 @@
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingMemcachedPackageVersion)</Version>
-    <Description>
-      EasyCaching.Memcached based on EasyCaching.Core and EnyimMemcachedCore
+    <Description>      
+      A simple distributed caching provider based on EnyimMemcachedCore.
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memcached</PackageTags>
+    <PackageTags>Memcached,DistributedCache,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>

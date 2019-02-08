@@ -42,10 +42,9 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.RabbitMQ.DefaultRabbitMQBus"/> class.
         /// </summary>
-        /// <param name="connectionChannelPool">Connection channel pool.</param>
-        /// <param name="rabbitMQOptions">Rabbit MQO ptions.</param>
+        /// <param name="_objectPolicy">Object policy.</param>
+        /// <param name="rabbitMQOptions">RabbitMQ Options.</param>
         /// <param name="serializer">Serializer.</param>
-        /// <param name="localCachingProvider">Local caching provider.</param>
         public DefaultRabbitMQBus(
             IPooledObjectPolicy<IConnection> _objectPolicy
             ,RabbitMQBusOptions rabbitMQOptions

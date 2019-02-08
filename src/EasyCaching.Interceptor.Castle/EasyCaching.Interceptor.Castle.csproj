@@ -7,9 +7,9 @@
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingCastlePackageVersion)</Version>
     <Description>
-      Caching Interceptor based on EasyCaching.Core and Castle
+      A simple caching AOP extension library based on Castle
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization</PackageTags>
+    <PackageTags>Interceptor,Castle,AOP,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
