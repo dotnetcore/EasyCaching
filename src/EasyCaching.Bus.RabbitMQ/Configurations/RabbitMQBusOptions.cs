@@ -12,5 +12,11 @@
         /// </summary>
         /// <value>The route key.</value>
         public string RouteKey { get; set; } = "easycaching.subscriber.*";
+
+        /// <summary>
+        /// Gets or sets the name of the queue.
+        /// </summary>
+        /// <value>The name of the queue.</value>
+        public string QueueName { get; set; } = "";
     }
 }

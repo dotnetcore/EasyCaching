@@ -52,6 +52,7 @@
                 x.TopicExchangeName = busOptions.TopicExchangeName;
                 x.UserName = busOptions.UserName;
                 x.VirtualHost = busOptions.VirtualHost;
+                x.QueueName = busOptions.QueueName;
             }
 
             options.RegisterExtension(new RabbitMQBusOptionsExtension(configure));
