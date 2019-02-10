@@ -1,8 +1,8 @@
 ﻿namespace EasyCaching.Serialization.MessagePack
 {
-    using EasyCaching.Core;
-    using Microsoft.Extensions.DependencyInjection;
     using System;
+    using EasyCaching.Core.Serialization;
+    using Microsoft.Extensions.DependencyInjection;
 
     public static class MessagePackSerializerServiceCollectionExtensions
     {

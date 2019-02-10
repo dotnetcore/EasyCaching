@@ -7,9 +7,9 @@
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingHybridPackageVersion)</Version>
     <Description>    
-      EasyCaching.HybridCache combines local caching and distributed caching.           
+      A simple hybrid caching provider combines local caching and distributed caching.         
     </Description>
-    <PackageTags>Caching,Cache,Synchronization,Hybrid</PackageTags>
+    <PackageTags>Hybrid,Synchronization,LocalCache,DistributedCache,Caching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configurations\" />

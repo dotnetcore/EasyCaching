@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.Serialization.MessagePack
 {
-    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
 
     /// <summary>
     /// Easy caching options extensions.

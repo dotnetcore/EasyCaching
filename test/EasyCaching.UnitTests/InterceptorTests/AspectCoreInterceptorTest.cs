@@ -1,16 +1,15 @@
 namespace EasyCaching.UnitTests
 {
-    using AspectCore.Configuration;
-    using AspectCore.Injector;
-    using EasyCaching.Core;
-    using EasyCaching.InMemory;
-    using EasyCaching.Interceptor.AspectCore;
-    using EasyCaching.UnitTests.Infrastructure;
-    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Interceptor;
+    using EasyCaching.InMemory;
+    using EasyCaching.Interceptor.AspectCore;
+    using EasyCaching.UnitTests.Infrastructure;
+    using Microsoft.Extensions.DependencyInjection;
     using Xunit;
 
     public abstract class BaseAspectCoreInterceptorTest

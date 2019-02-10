@@ -2,6 +2,7 @@
 {
     using BenchmarkDotNet.Attributes;
     using EasyCaching.Core;
+    using EasyCaching.Core.Serialization;
     using EasyCaching.Serialization.Json;
     using EasyCaching.Serialization.MessagePack;
     using EasyCaching.Serialization.Protobuf;

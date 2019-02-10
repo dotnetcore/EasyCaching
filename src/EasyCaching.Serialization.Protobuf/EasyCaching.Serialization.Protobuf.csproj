@@ -6,8 +6,8 @@
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingProtobufPackageVersion)</Version>
-    <Description>
-      EasyCaching.Serialization.Protobuf based on EasyCaching.Core and protobuf-net.
+    <Description>      
+      A serialize library based on protobuf-net
     </Description>
     <PackageTags>Caching,Serialization,Protobuf</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>

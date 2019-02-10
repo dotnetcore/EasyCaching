@@ -4,8 +4,7 @@
     using System.Reflection;
     using System.Security.Cryptography;
     using System.Text;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Interceptor;
     using Xunit;
 
     public class DefaultEasyCachingKeyGeneratorTest

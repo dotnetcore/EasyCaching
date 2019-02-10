@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Core.Internal
+﻿namespace EasyCaching.Core.Configurations
 {    
     /// <summary>
     /// Defines an endpoint.
@@ -6,7 +6,7 @@
     public class ServerEndPoint
     {     
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Internal.ServerEndPoint"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Configurations.ServerEndPoint"/> class.
         /// </summary>
         /// <param name="host">Host.</param>
         /// <param name="port">Port.</param>
@@ -19,7 +19,7 @@
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Internal.ServerEndPoint"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Configurations.ServerEndPoint"/> class.
         /// </summary>
         public ServerEndPoint()
         {

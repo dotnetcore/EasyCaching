@@ -4,6 +4,12 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
+    /// <summary>
+    /// Redis caching provider.
+    /// </summary>
+    /// <remarks>
+    /// Contains some features of redis
+    /// </remarks>
     public interface IRedisCachingProvider : IEasyCachingProvider
     {
         #region Hashes

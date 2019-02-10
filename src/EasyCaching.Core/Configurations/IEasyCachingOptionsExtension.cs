@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Core
+﻿namespace EasyCaching.Core.Configurations
 {
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;

@@ -6,8 +6,8 @@
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingMessagePackPackageVersion)</Version>
-    <Description>
-      EasyCaching.Serialization.MessagePack based on EasyCaching.Core and MessagePack.
+    <Description>      
+      A serialize library based on MessagePack
     </Description>
     <PackageTags>Caching,Serialization,MessagePack</PackageTags>
    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>

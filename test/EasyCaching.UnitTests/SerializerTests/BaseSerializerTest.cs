@@ -1,9 +1,9 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Core;
     using System;
-    using Xunit;
+    using EasyCaching.Core.Serialization;
     using ProtoBuf;
+    using Xunit;
 
     public abstract class BaseSerializerTest
     {

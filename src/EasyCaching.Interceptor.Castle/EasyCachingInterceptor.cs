@@ -1,10 +1,10 @@
 ﻿namespace EasyCaching.Interceptor.Castle
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using global::Castle.DynamicProxy;
     using System;
     using System.Linq;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Interceptor;
+    using global::Castle.DynamicProxy;
 
     /// <summary>
     /// Easycaching interceptor.

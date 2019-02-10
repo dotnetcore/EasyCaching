@@ -6,10 +6,10 @@
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingAspectCorePackageVersion)</Version>
-    <Description>      
-      Caching Interceptor based on EasyCaching.Core and AspectCore
+    <Description>            
+      A simple caching AOP extension library based on AspectCore
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Synchronization</PackageTags>
+    <PackageTags>Interceptor,AspectCore,AOP,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>

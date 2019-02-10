@@ -1,8 +1,8 @@
 ﻿namespace EasyCaching.Serialization.Protobuf
 {
-    using EasyCaching.Core;
-    using Microsoft.Extensions.DependencyInjection;
     using System;
+    using EasyCaching.Core.Serialization;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// Protobuf serializer service collection extensions.

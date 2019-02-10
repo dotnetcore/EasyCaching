@@ -1,8 +1,8 @@
 ﻿namespace EasyCaching.Demo.Interceptors.Services
 {
-    using EasyCaching.Core.Internal;
     using System.Threading.Tasks;
-    
+    using EasyCaching.Core.Interceptor;
+
     public interface IAspectCoreService //: EasyCaching.Core.Internal.IEasyCaching
     {
         [EasyCachingAble(Expiration = 10)]

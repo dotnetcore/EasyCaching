@@ -15,6 +15,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using System;
+    using EasyCaching.Core.Configurations;
 
     public class Startup
     {

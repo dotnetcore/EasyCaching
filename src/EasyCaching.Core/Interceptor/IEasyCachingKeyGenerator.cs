@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Core
+﻿namespace EasyCaching.Core.Interceptor
 {
     using System.Reflection;
 

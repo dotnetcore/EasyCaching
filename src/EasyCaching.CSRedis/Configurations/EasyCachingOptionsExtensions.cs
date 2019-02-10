@@ -1,9 +1,9 @@
 ﻿namespace EasyCaching.CSRedis
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using Microsoft.Extensions.Configuration;
     using System;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// EasyCaching options extensions.

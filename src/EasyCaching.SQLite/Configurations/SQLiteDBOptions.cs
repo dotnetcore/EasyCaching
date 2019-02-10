@@ -1,8 +1,8 @@
 ﻿namespace EasyCaching.SQLite
 {
-    using EasyCaching.Core.Internal;
-    using Microsoft.Data.Sqlite;
     using System.IO;
+    using EasyCaching.Core;
+    using Microsoft.Data.Sqlite;
 
     /// <summary>
     /// SQLite cache option.

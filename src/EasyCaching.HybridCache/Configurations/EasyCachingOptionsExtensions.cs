@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.HybridCache
 {
-    using EasyCaching.Core;
+    using System;
+    using EasyCaching.Core.Configurations;
 
     /// <summary>
     /// EasyCaching options extensions.
@@ -12,9 +13,9 @@
         /// </summary>
         /// <returns>The hybrid.</returns>
         /// <param name="options">Options.</param>
-        public static EasyCachingOptions UseHybrid(this EasyCachingOptions options)
+        public static EasyCachingOptions UseHybrid(this EasyCachingOptions options, Action<HybridCachingOptions> configure)
         {
-            options.RegisterExtension(new HybridCacheOptionsExtension());
+            options.RegisterExtension(new HybridCacheOptionsExtension(configure));
 
             return options;
         }

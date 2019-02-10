@@ -1,8 +1,11 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Serialization;
     using StackExchange.Redis;
+    using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -21,39 +24,27 @@
         private readonly IRedisSubscriberProvider _subscriberProvider;
 
         /// <summary>
+        /// The handler.
+        /// </summary>
+        private Action<EasyCachingMessage> _handler;
+
+        /// <summary>
         /// The serializer.
         /// </summary>
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
-        /// The local caching provider.
-        /// </summary>
-        private readonly IEasyCachingProvider _localCachingProvider;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Sync.Redis.DefaultRedisSubscriber"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.DefaultRedisBus"/> class.
         /// </summary>
         /// <param name="subscriberProvider">Subscriber provider.</param>
+        /// <param name="serializer">Serializer.</param>
         public DefaultRedisBus(
             IRedisSubscriberProvider subscriberProvider,
-            IEasyCachingSerializer serializer,
-            IEasyCachingProvider localCachingProvider)
+            IEasyCachingSerializer serializer)
         {
             this._subscriberProvider = subscriberProvider;
             this._serializer = serializer;
-            this._localCachingProvider = localCachingProvider;
-
             this._subscriber = _subscriberProvider.GetSubscriber();
-        }
-
-        /// <summary>
-        /// Subscribe the specified channel and notifyType.
-        /// </summary>
-        /// <returns>The subscribe.</returns>
-        /// <param name="channel">Channel.</param>
-        public void Subscribe(string channel)
-        {
-            _subscriber.Subscribe(channel, SubscribeHandle);
         }
 
         /// <summary>
@@ -61,58 +52,48 @@
         /// </summary>
         /// <param name="channel">Channel.</param>
         /// <param name="value">Value.</param>
-        private void SubscribeHandle(RedisChannel channel, RedisValue value)
+        private void OnMessage(RedisChannel channel, RedisValue value)
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(value);
 
-            switch (message.NotifyType)
-            {
-                case NotifyType.Add:
-                    _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
-                    break;
-                case NotifyType.Update:
-                    _localCachingProvider.Refresh(message.CacheKey, message.CacheValue, message.Expiration);
-                    break;
-                case NotifyType.Delete:
-                    _localCachingProvider.Remove(message.CacheKey);
-                    break;
-            }
+            _handler?.Invoke(message);
         }
 
         /// <summary>
-        /// Subscribes the async.
+        /// Publish the specified topic and message.
+        /// </summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="message">Message.</param>
+        public void Publish(string topic, EasyCachingMessage message)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(topic, nameof(topic));
+
+            _subscriber.Publish(topic, _serializer.Serialize(message));
+        }
+
+        /// <summary>
+        /// Publishs the specified topic and message async.
         /// </summary>
         /// <returns>The async.</returns>
-        /// <param name="channel">Channel.</param>
-        public async Task SubscribeAsync(string channel)
+        /// <param name="topic">Topic.</param>
+        /// <param name="message">Message.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public async Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            await _subscriber.SubscribeAsync(channel, SubscribeHandle);
+            ArgumentCheck.NotNullOrWhiteSpace(topic, nameof(topic));
+
+            await _subscriber.PublishAsync(topic, _serializer.Serialize(message));
         }
 
         /// <summary>
-        /// Publish the specified channel and message.
+        /// Subscribe the specified topic and action.
         /// </summary>
-        /// <returns>The publish.</returns>
-        /// <param name="channel">Channel.</param>
-        /// <param name="message">Message.</param>
-        public void Publish(string channel, EasyCachingMessage message)
+        /// <param name="topic">Topic.</param>
+        /// <param name="action">Action.</param>
+        public void Subscribe(string topic, Action<EasyCachingMessage> action)
         {
-            ArgumentCheck.NotNullOrWhiteSpace(channel, nameof(channel));
-
-            _subscriber.Publish(channel, _serializer.Serialize(message));
-        }
-
-        /// <summary>
-        /// Publishs the async.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="channel">Channel.</param>
-        /// <param name="message">Message.</param>
-        public async Task PublishAsync(string channel, EasyCachingMessage message)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(channel, nameof(channel));
-
-            await _subscriber.PublishAsync(channel, _serializer.Serialize(message));
+            _handler = action;
+            _subscriber.Subscribe(topic, OnMessage);
         }
     }
 }

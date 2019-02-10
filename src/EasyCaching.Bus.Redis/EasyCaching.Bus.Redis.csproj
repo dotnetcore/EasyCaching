@@ -4,24 +4,29 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
-    <Version>0.1.0</Version>
-    <Description>
-      EasyCaching is a open source caching library that contains basic opreations of caching.
+    <Version>$(EasyCachingRedisBusPackageVersion)</Version>
+    <Description>      
+      A simple caching bus(message bus) based on StackExchange.Redis.
     </Description>
-    <PackageTags>Caching,Cache,Distributed Cache,Memory Cache,Interceptor,Synchronization</PackageTags>
-    <PackageProjectUrl>https://github.com/catcherwong/EasyCaching</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/catcherwong/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/catcherwong/EasyCaching</RepositoryUrl>
-    <ProjectUrl>https://github.com/catcherwong/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/catcherwong/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageTags>Bus,Hybrid,Redis,Caching,Cache</PackageTags>
+    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
+    <PackageReleaseNotes>
+      $(EasyCachingRedisBusPackageNotes)
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="1.2.6" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.519" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configurations\" />
+  </ItemGroup>  
 </Project>

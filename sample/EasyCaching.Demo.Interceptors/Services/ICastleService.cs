@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Demo.Interceptors.Services
 {    
     using System.Threading.Tasks;
+    using EasyCaching.Core.Interceptor;
     using EasyCaching.Core.Internal;
 
     public interface ICastleService

@@ -7,7 +7,7 @@
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingResponseCachingPackageVersion)</Version>
     <Description>      
-      EasyCaching.ResponseCaching based on EasyCaching.Core and Microsoft.AspNetCore.ResponseCaching
+      EasyCaching.ResponseCaching is the extension of ResponseCaching
     </Description>
     <PackageTags>Caching,Cache,ResponseCaching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>

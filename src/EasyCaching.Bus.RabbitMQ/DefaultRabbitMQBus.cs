@@ -1,12 +1,13 @@
 ﻿namespace EasyCaching.Bus.RabbitMQ
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
-    using System.Collections.Generic;
-    using global::RabbitMQ.Client.Events;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Serialization;
     using global::RabbitMQ.Client;
+    using global::RabbitMQ.Client.Events;
+    using Microsoft.Extensions.ObjectPool;
 
     /// <summary>
     /// Default RabbitMQ Bus.
@@ -14,14 +15,24 @@
     public class DefaultRabbitMQBus : IEasyCachingBus
     {
         /// <summary>
-        /// The connection channel pool.
+        /// The subscriber connection.
         /// </summary>
-        private readonly IConnectionChannelPool _connectionChannelPool;
+        private readonly IConnection _subConnection;
+
+        /// <summary>
+        /// The publish connection pool.
+        /// </summary>
+        private readonly ObjectPool<IConnection> _pubConnectionPool;
+
+        /// <summary>
+        /// The handler.
+        /// </summary>
+        private Action<EasyCachingMessage> _handler;
 
         /// <summary>
         /// The rabbitMQ Bus options.
         /// </summary>
-        private readonly RabbitMQBusOptions _rabbitMQBusOptions;
+        private readonly RabbitMQBusOptions _options;
 
         /// <summary>
         /// The serializer.
@@ -29,44 +40,59 @@
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
-        /// The local caching provider.
+        /// The identifier.
         /// </summary>
-        private readonly IEasyCachingProvider _localCachingProvider;
+        private readonly string _busId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.RabbitMQ.DefaultRabbitMQBus"/> class.
         /// </summary>
-        /// <param name="connectionChannelPool">Connection channel pool.</param>
-        /// <param name="rabbitMQOptions">Rabbit MQO ptions.</param>
+        /// <param name="_objectPolicy">Object policy.</param>
+        /// <param name="rabbitMQOptions">RabbitMQ Options.</param>
         /// <param name="serializer">Serializer.</param>
-        /// <param name="localCachingProvider">Local caching provider.</param>
         public DefaultRabbitMQBus(
-            IConnectionChannelPool connectionChannelPool,
-            RabbitMQBusOptions rabbitMQOptions,
-            IEasyCachingSerializer serializer,
-            IEasyCachingProvider localCachingProvider)
+            IPooledObjectPolicy<IConnection> _objectPolicy
+            ,RabbitMQBusOptions rabbitMQOptions
+            ,IEasyCachingSerializer serializer)
         {
-            this._rabbitMQBusOptions = rabbitMQOptions;
-            this._connectionChannelPool = connectionChannelPool;
+            this._options = rabbitMQOptions;
             this._serializer = serializer;
-            this._localCachingProvider = localCachingProvider;
-        }
-             
-        /// <summary>
-        /// Publish the specified channel and message.
-        /// </summary>
-        /// <returns>The publish.</returns>
-        /// <param name="channel">Channel.</param>
-        /// <param name="message">Message.</param>
-        public void Publish(string channel, EasyCachingMessage message)
-        {
-            var _publisherChannel = _connectionChannelPool.Rent();
-            try
-            {                          
-                var body = _serializer.Serialize(message);
 
-                _publisherChannel.ExchangeDeclare(_rabbitMQBusOptions.TopicExchangeName, ExchangeType.Topic, true, false, null);
-                _publisherChannel.BasicPublish(_rabbitMQBusOptions.TopicExchangeName, channel, false, null, body);
+            var factory = new ConnectionFactory
+            {
+                HostName = _options.HostName,
+                UserName = _options.UserName,
+                Port = _options.Port,
+                Password = _options.Password,
+                VirtualHost = _options.VirtualHost,
+                RequestedConnectionTimeout = _options.RequestedConnectionTimeout,
+                SocketReadTimeout = _options.SocketReadTimeout,
+                SocketWriteTimeout = _options.SocketWriteTimeout
+            };
+
+            _subConnection = factory.CreateConnection();
+
+            _pubConnectionPool = new DefaultObjectPool<IConnection>(_objectPolicy);
+
+            _busId = Guid.NewGuid().ToString("N");
+        }
+
+        /// <summary>
+        /// Publish the specified topic and message.
+        /// </summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="message">Message.</param>
+        public void Publish(string topic, EasyCachingMessage message)
+        {
+            var conn = _pubConnectionPool.Get();
+
+            try
+            {
+                var body = _serializer.Serialize(message);
+                var model = conn.CreateModel();
+
+                model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
+                model.BasicPublish(_options.TopicExchangeName, topic, false, null, body);
             }
             catch (Exception ex)
             {
@@ -74,80 +100,93 @@
             }
             finally
             {
-                var returned = _connectionChannelPool.Return(_publisherChannel);
-                if (!returned)
-                    _publisherChannel.Dispose();
+                _pubConnectionPool.Return(conn);
             }
         }
 
         /// <summary>
-        /// Publishs the async.
+        /// Publish the specified topic and message async.
         /// </summary>
         /// <returns>The async.</returns>
-        /// <param name="channel">Channel.</param>
+        /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
-        public Task PublishAsync(string channel, EasyCachingMessage message)
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            throw new NotImplementedException();
-        }
+            var conn = _pubConnectionPool.Get();
+            try
+            {
+                var body = _serializer.Serialize(message);
+                var model = conn.CreateModel();
 
+                model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
+                model.BasicPublish(_options.TopicExchangeName, topic, false, null, body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            finally
+            {
+                _pubConnectionPool.Return(conn);
+            }
+            return Task.CompletedTask;
+        }
+              
         /// <summary>
-        /// Subscribe the specified channel.
+        /// Subscribe the specified topic and action.
         /// </summary>
-        /// <returns>The subscribe.</returns>
-        /// <param name="channel">Channel.</param>
-        public void Subscribe(string channel)
+        /// <param name="topic">Topic.</param>
+        /// <param name="action">Action.</param>
+        public void Subscribe(string topic, Action<EasyCachingMessage> action)
         {
-            var _connection = _connectionChannelPool.GetConnection();
+            _handler = action;
+            var queueName = string.Empty;
+            if(string.IsNullOrWhiteSpace(_options.QueueName))
+            {
+                queueName = $"rmq.queue.undurable.easycaching.subscriber.{_busId}";
+            }
+            else
+            {
+                queueName = _options.QueueName;
+            }
 
-            var _subscriberChannel = _connection.CreateModel();
+            Task.Factory.StartNew(() => 
+            {
+                var model = _subConnection.CreateModel();
+                model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
+                model.QueueDeclare(queueName, false, false, true, null);
+                // bind the queue with the exchange.
+                model.QueueBind(_options.TopicExchangeName, queueName, _options.RouteKey);
+                var consumer = new EventingBasicConsumer(model);
+                consumer.Received += OnMessage;
+                consumer.Shutdown += OnConsumerShutdown;
 
-            _subscriberChannel.ExchangeDeclare(_rabbitMQBusOptions.TopicExchangeName, ExchangeType.Topic, true, true, null);
+                model.BasicConsume(queueName, true, consumer);
 
-            var arguments = new Dictionary<string, object> {
-                { "x-message-ttl", _rabbitMQBusOptions.QueueMessageExpires }
-            };
-
-            _subscriberChannel.QueueDeclare("easycaching.queue", true, false, false, arguments);
-
-            var consumer = new EventingBasicConsumer(_subscriberChannel);
-            consumer.Received += OnConsumerReceived;
-            //consumer.Shutdown += OnConsumerShutdown;
-
-            _subscriberChannel.BasicConsume("easycaching.queue", false, string.Empty, false, false, null, consumer);
+            }, TaskCreationOptions.LongRunning);
         }
 
         /// <summary>
-        /// Subscribes the async.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="channel">Channel.</param>
-        public Task SubscribeAsync(string channel)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Consumers the received.
+        /// Ons the consumer shutdown.
         /// </summary>
         /// <param name="sender">Sender.</param>
         /// <param name="e">E.</param>
-        private void OnConsumerReceived(object sender, BasicDeliverEventArgs e)
+        private void OnConsumerShutdown(object sender, ShutdownEventArgs e)
         {
-            var message = _serializer.Deserialize<EasyCachingMessage>(e.Body); 
+            Console.WriteLine($"{e.ReplyText}");
+        }
 
-            switch (message.NotifyType)
-            {
-                case NotifyType.Add:
-                    _localCachingProvider.Set(message.CacheKey, message.CacheValue, message.Expiration);
-                    break;
-                case NotifyType.Update:
-                    _localCachingProvider.Refresh(message.CacheKey, message.CacheValue, message.Expiration);
-                    break;
-                case NotifyType.Delete:
-                    _localCachingProvider.Remove(message.CacheKey);
-                    break;
-            }
+        /// <summary>
+        /// Ons the message.
+        /// </summary>
+        /// <param name="sender">Sender.</param>
+        /// <param name="e">E.</param>
+        private void OnMessage(object sender, BasicDeliverEventArgs e)
+        {
+            var message = _serializer.Deserialize<EasyCachingMessage>(e.Body);
+
+            _handler?.Invoke(message);
         }
     }
 }

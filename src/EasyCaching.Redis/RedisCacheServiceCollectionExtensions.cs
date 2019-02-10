@@ -1,13 +1,13 @@
 ﻿namespace EasyCaching.Redis
 {
+    using System;
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using System;
 
     /// <summary>
     /// Redis cache service collection extensions.

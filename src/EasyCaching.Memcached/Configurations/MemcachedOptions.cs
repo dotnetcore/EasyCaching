@@ -1,7 +1,7 @@
 ﻿namespace EasyCaching.Memcached
 {
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
+    using EasyCaching.Core.Configurations;
 
     public class MemcachedOptions : BaseProviderOptions
     {

@@ -1,13 +1,14 @@
 ﻿namespace EasyCaching.Core
 {
-    using Microsoft.Extensions.DependencyInjection;
     using System;
+    using EasyCaching.Core.Configurations;
+    using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
     /// EasyCaching service collection extensions.
     /// </summary>
     public static class EasyCachingServiceCollectionExtensions
-    {        
+    {
         /// <summary>
         /// Adds the easycaching.
         /// </summary>
@@ -16,10 +17,7 @@
         /// <param name="setupAction">Setup action.</param>
         public static IServiceCollection AddEasyCaching(this IServiceCollection services, Action<EasyCachingOptions> setupAction)
         {
-            if (setupAction == null)
-            {
-                throw new ArgumentNullException(nameof(setupAction));
-            }
+            ArgumentCheck.NotNull(setupAction, nameof(setupAction));
 
             //Options and extension service
             var options = new EasyCachingOptions();
@@ -29,7 +27,7 @@
                 serviceExtension.AddServices(services);
             }
             services.AddSingleton(options);
-          
+
             return services;
         }
     }

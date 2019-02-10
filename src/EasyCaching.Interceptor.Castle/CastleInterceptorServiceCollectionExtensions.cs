@@ -1,15 +1,14 @@
 ﻿namespace EasyCaching.Interceptor.Castle
 {
-    using Autofac;
-    using Autofac.Extensions.DependencyInjection;
-    using Autofac.Extras.DynamicProxy;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
     using System.Linq;
     using System.Reflection;
+    using Autofac;
+    using Autofac.Extensions.DependencyInjection;
+    using Autofac.Extras.DynamicProxy;
+    using EasyCaching.Core.Interceptor;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
     /// Castle interceptor service collection extensions.

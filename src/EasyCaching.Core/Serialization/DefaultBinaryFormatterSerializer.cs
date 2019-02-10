@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Core
+﻿namespace EasyCaching.Core.Serialization
 {
     using System;
     using System.IO;

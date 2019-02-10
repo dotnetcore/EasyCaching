@@ -6,10 +6,10 @@
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingInMemoryPackageVersion)</Version>
-    <Description>
-      In-memory cache based on EasyCaching.Core and Microsoft.Extensions.Caching.Memory      
+    <Description>      
+      A simple in-memory caching provider.
     </Description>
-    <PackageTags>Caching,Cache,In-Memory</PackageTags>
+    <PackageTags>In-Memory,LocalCache,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>

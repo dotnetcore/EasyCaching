@@ -1,60 +1,60 @@
 ﻿namespace EasyCaching.Core
 {
     using System.Collections.Concurrent;
-    using System.Threading;
 
     /// <summary>
-    /// Cache stats counter.
+    /// Cache stats.
     /// </summary>
-    public class CacheStatsCounter
-    {
-        private long[] _counters = new long[2];
-    
-        public void Increment(StatsType statsType)
-        {
-            Interlocked.Increment(ref _counters[(int)statsType]);
-        }            
-
-        public long Get(StatsType statsType)
-        {
-            return Interlocked.Read(ref _counters[(int)statsType]);
-        }
-    }
-
-    public enum StatsType
-    {
-        Hit = 0,
-
-        Missed = 1,
-    }
-
     public class CacheStats
     {
+        /// <summary>
+        /// The counters.
+        /// </summary>
         private readonly ConcurrentDictionary<string, CacheStatsCounter> _counters;
 
+        /// <summary>
+        /// The default key.
+        /// </summary>
         private const string DEFAULT_KEY = "easycahing_catche_stats";
 
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.CacheStats"/> class.
+        /// </summary>
         public CacheStats()
         {
             _counters = new ConcurrentDictionary<string, CacheStatsCounter>();
         }
 
+        /// <summary>
+        /// Ons the hit.
+        /// </summary>
         public void OnHit()
         {
             GetCounter().Increment(StatsType.Hit);
         }
 
+        /// <summary>
+        /// Ons the miss.
+        /// </summary>
         public void OnMiss()
         {
             GetCounter().Increment(StatsType.Missed);
         }
 
+        /// <summary>
+        /// Gets the statistic.
+        /// </summary>
+        /// <returns>The statistic.</returns>
+        /// <param name="statsType">Stats type.</param>
         public long GetStatistic(StatsType statsType)
         {
             return GetCounter().Get(statsType);
         }
 
+        /// <summary>
+        /// Gets the counter.
+        /// </summary>
+        /// <returns>The counter.</returns>
         private CacheStatsCounter GetCounter()
         {
             if (!_counters.TryGetValue(DEFAULT_KEY, out CacheStatsCounter counter))

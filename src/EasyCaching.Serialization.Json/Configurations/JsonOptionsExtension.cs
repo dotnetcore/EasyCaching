@@ -1,9 +1,10 @@
 ﻿namespace EasyCaching.Serialization.Json
 {
-    using EasyCaching.Core;
+    using System;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Serialization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
 
     /// <summary>
     /// Json options extension.
