@@ -42,7 +42,7 @@
         /// <summary>
         /// The identifier.
         /// </summary>
-        private readonly string _Id;
+        private readonly string _busId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.RabbitMQ.DefaultRabbitMQBus"/> class.
@@ -74,7 +74,7 @@
 
             _pubConnectionPool = new DefaultObjectPool<IConnection>(_objectPolicy);
 
-            _Id = Guid.NewGuid().ToString("N");
+            _busId = Guid.NewGuid().ToString("N");
         }
 
         /// <summary>
@@ -144,7 +144,7 @@
             var queueName = string.Empty;
             if(string.IsNullOrWhiteSpace(_options.QueueName))
             {
-                queueName = $"easycaching.subscriber.{_Id}";
+                queueName = $"rmq.queue.undurable.easycaching.subscriber.{_busId}";
             }
             else
             {
