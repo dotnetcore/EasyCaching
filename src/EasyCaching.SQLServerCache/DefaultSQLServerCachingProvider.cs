@@ -46,6 +46,8 @@ namespace EasyCaching.SQLServer
         /// </summary>
         private readonly string _name;
 
+        private DateTimeOffset _lastScanTime;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
         /// </summary>
@@ -61,6 +63,7 @@ namespace EasyCaching.SQLServer
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
             this._name = EasyCachingConstValue.DefaultSQLServerName;
+            _lastScanTime = SystemClock.UtcNow;
         }
 
         public DefaultSQLServerCachingProvider(
@@ -75,6 +78,7 @@ namespace EasyCaching.SQLServer
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
             this._name = name;
+            _lastScanTime = SystemClock.UtcNow;
         }
 
         /// <summary>
@@ -370,6 +374,7 @@ namespace EasyCaching.SQLServer
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
                 expiration = expiration.Ticks / 10000000
             });
+            CleanExpiredEntries();
         }
 
         /// <summary>
@@ -399,6 +404,7 @@ namespace EasyCaching.SQLServer
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
                 expiration = expiration.Ticks / 10000000
             });
+            CleanExpiredEntries();
         }
 
         /// <summary>
@@ -489,6 +495,7 @@ namespace EasyCaching.SQLServer
             }
 
             tran.Commit();
+            CleanExpiredEntries();
         }
 
         /// <summary>
@@ -520,6 +527,7 @@ namespace EasyCaching.SQLServer
             await Task.WhenAll(tasks);
 
             tran.Commit();
+            CleanExpiredEntries();
         }
 
         /// <summary>
@@ -740,6 +748,16 @@ namespace EasyCaching.SQLServer
             });
 
             return rows > 0;
+        }
+
+
+        private void CleanExpiredEntries()
+        {
+            if (SystemClock.UtcNow > _lastScanTime.Add(_options.DBConfig.ExpirationScanFrequency))
+            {
+                Task.Run(() => { _cache.Execute(GetSQL(ConstSQL.CLEANEXPIREDSQL)); });
+                _lastScanTime = SystemClock.UtcNow;
+            }
         }
 
         private string GetSQL(string sql)

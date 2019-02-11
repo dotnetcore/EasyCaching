@@ -1,13 +1,10 @@
-﻿using EasyCaching.SQLServer;
-using EasyCaching.SQLServer.Configurations;
+﻿using System;
+using EasyCaching.Core;
+using EasyCaching.Core.Configurations;
+using Microsoft.Extensions.Configuration;
 
-namespace EasyCaching.SQLServer
+namespace EasyCaching.SQLServer.Configurations
 {
-    using System;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Configurations;
-    using Microsoft.Extensions.Configuration;
-
     /// <summary>
     /// Easy caching options extensions.
     /// </summary>

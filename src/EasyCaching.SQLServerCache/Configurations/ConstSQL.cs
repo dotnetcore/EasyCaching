@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.SQLServer
+﻿namespace EasyCaching.SQLServer.Configurations
 {
     /// <summary>
     /// Const sql.
@@ -30,7 +30,7 @@
                     ,[cachekey]
                     ,[cachevalue]
                     ,[expiration])
-                SELECT @name,@cachekey,@cachevalue,(select getutcdate() + @expiration)
+                SELECT @name,@cachekey,@cachevalue,DATEADD(second, @expiration, getutcdate())
                 WHERE NOT EXISTS (SELECT 1 FROM [{0}].[{1}] WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > getutcdate());";
 
 
@@ -91,6 +91,11 @@
         /// The flushsql.
         /// </summary>
         public const string FLUSHSQL = @"DELETE FROM [{0}].[{1}] WHERE [name]=@name";
+
+        /// <summary>
+        /// The sql for cleaning up db. Remove all expired entries from the db.
+        /// </summary>
+        public const string CLEANEXPIREDSQL = @"DELETE FROM [{0}].[{1}] WHERE [expiration] < getutcdate()";
 
         /// <summary>
         /// The createsql.

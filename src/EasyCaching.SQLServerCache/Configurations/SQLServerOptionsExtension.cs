@@ -1,17 +1,15 @@
-﻿using EasyCaching.SQLServer.Configurations;
+﻿using System;
+using Dapper;
+using EasyCaching.Core;
+using EasyCaching.Core.Configurations;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
-namespace EasyCaching.SQLServer
+namespace EasyCaching.SQLServer.Configurations
 {
-    using Dapper;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Configurations;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using System;
-
     /// <summary>
     /// SQLite options extension.
     /// </summary>
