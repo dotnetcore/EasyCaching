@@ -1,47 +1,50 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageNotes>
-        1. Add IRedisCachingProvider.
+		<EasyCachingCorePackageNotes>        
+        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync
+        2. Add Bus Section Const value.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Improve Get cached value.
+        1. Adjust reference namespace.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Add Impl of IRedisCachingProvider.
+        1. Adjust reference namespace.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Improve Configuration.
+        1. Adjust reference namespace.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Update Options.
-        2. Improve Get cached value.
+        1. Adjust reference namespace.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Improve Configuration.
+        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Fixed bug of IConvertible. 
+        1. Adjust reference namespace.
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Remove Dependency of IEasyCaching.
+        1. Adjust reference namespace.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Support .NET Core 2.1
+        1. Adjust reference namespace.
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Improve Configuration.
+        1. Adjust reference namespace.
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Improve Configuration.
+        1. Adjust reference namespace.
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Improve Configuration.
+        1. Adjust reference namespace.
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Init.
+        1. Adjust reference namespace.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Init.
+        1. Modify the default section name.
         </EasyCachingRedisBusPackageNotes>
+        <EasyCachingRabbitBusPackageNotes>
+        1. Modify the default section name.
+        </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>

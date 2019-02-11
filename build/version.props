@@ -1,18 +1,19 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageVersion>0.4.6</EasyCachingCorePackageVersion>
-		<EasyCachingMemcachedPackageVersion>0.4.5.1</EasyCachingMemcachedPackageVersion>
-		<EasyCachingRedisPackageVersion>0.4.6</EasyCachingRedisPackageVersion>
-		<EasyCachingSQLitePackageVersion>0.4.5</EasyCachingSQLitePackageVersion>
-		<EasyCachingInMemoryPackageVersion>0.4.6</EasyCachingInMemoryPackageVersion>
-		<EasyCachingHybridPackageVersion>0.4.5</EasyCachingHybridPackageVersion>
-		<EasyCachingAspectCorePackageVersion>0.3.3</EasyCachingAspectCorePackageVersion>
-		<EasyCachingCastlePackageVersion>0.3.2</EasyCachingCastlePackageVersion>
-		<EasyCachingResponseCachingPackageVersion>0.3.0</EasyCachingResponseCachingPackageVersion>
-		<EasyCachingJsonPackageVersion>0.3.5</EasyCachingJsonPackageVersion>
-		<EasyCachingMessagePackPackageVersion>0.3.5</EasyCachingMessagePackPackageVersion>
-		<EasyCachingProtobufPackageVersion>0.3.5</EasyCachingProtobufPackageVersion>
-		<EasyCachingCSRedisPackageVersion>0.1.0</EasyCachingCSRedisPackageVersion>
-		<EasyCachingRedisBusPackageVersion>0.1.0</EasyCachingRedisBusPackageVersion>
+		<EasyCachingCorePackageVersion>0.5.0.1</EasyCachingCorePackageVersion>
+		<EasyCachingMemcachedPackageVersion>0.5.0</EasyCachingMemcachedPackageVersion>
+		<EasyCachingRedisPackageVersion>0.5.0</EasyCachingRedisPackageVersion>
+		<EasyCachingSQLitePackageVersion>0.5.0</EasyCachingSQLitePackageVersion>
+		<EasyCachingInMemoryPackageVersion>0.5.0</EasyCachingInMemoryPackageVersion>
+		<EasyCachingHybridPackageVersion>0.5.0.1</EasyCachingHybridPackageVersion>
+		<EasyCachingAspectCorePackageVersion>0.5.0</EasyCachingAspectCorePackageVersion>
+		<EasyCachingCastlePackageVersion>0.5.0</EasyCachingCastlePackageVersion>
+		<EasyCachingResponseCachingPackageVersion>0.5.0</EasyCachingResponseCachingPackageVersion>
+		<EasyCachingJsonPackageVersion>0.5.0</EasyCachingJsonPackageVersion>
+		<EasyCachingMessagePackPackageVersion>0.5.0</EasyCachingMessagePackPackageVersion>
+		<EasyCachingProtobufPackageVersion>0.5.0</EasyCachingProtobufPackageVersion>
+		<EasyCachingCSRedisPackageVersion>0.5.0</EasyCachingCSRedisPackageVersion>
+		<EasyCachingRedisBusPackageVersion>0.5.0.1</EasyCachingRedisBusPackageVersion>
+		<EasyCachingRabbitBusPackageVersion>0.5.0-beta</EasyCachingRabbitBusPackageVersion>
 	</PropertyGroup>
 </Project>

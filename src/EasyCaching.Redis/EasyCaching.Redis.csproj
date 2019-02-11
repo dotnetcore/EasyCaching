@@ -6,10 +6,10 @@
     <Owners>Catcher Wong</Owners>
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingRedisPackageVersion)</Version>
-    <Description>      
-      EasyCaching.Redis based on EasyCaching.Core and StackExchange.Redis
+    <Description>            
+      A simple distributed caching provider based on StackExchange.Redis.
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Redis</PackageTags>
+    <PackageTags>Redis,DistributedCache,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>

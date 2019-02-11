@@ -7,9 +7,9 @@
     <Authors>Catcher Wong</Authors>
     <Version>$(EasyCachingCSRedisPackageVersion)</Version>
     <Description>
-      EasyCaching.CSRedis based on EasyCaching.Core and CSRedisCore
+      A simple distributed caching provider based on csredis.
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Redis</PackageTags>
+    <PackageTags>Redis,DistributedCache,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>

@@ -40,6 +40,16 @@
         public const string InMemorySection = "easycaching:inmemory";
 
         /// <summary>
+        /// The redis bus section.
+        /// </summary>
+        public const string RedisBusSection = "easycaching:redisbus";
+
+        /// <summary>
+        /// The rabbitMQ Bus section.
+        /// </summary>
+        public const string RabbitMQBusSection = "easycaching:rabbitmqbus";
+
+        /// <summary>
         /// The default name of the in-memory.
         /// </summary>
         public const string DefaultInMemoryName = "DefaultInMemory";
