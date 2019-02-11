@@ -1,4 +1,5 @@
-﻿using EasyCaching.SQLServer;
+﻿using System.Threading;
+using EasyCaching.SQLServer;
 using EasyCaching.SQLServer.Configurations;
 using Microsoft.Extensions.Options;
 
@@ -30,7 +31,8 @@ namespace EasyCaching.UnitTests
                 {
                     ConnectionString = CONNECTION_STRING,
                     SchemaName = SCHEMA_NAME,
-                    TableName = TABLE_NAME
+                    TableName = TABLE_NAME,
+                    ExpirationScanFrequency = TimeSpan.FromSeconds(1)
                 };
             });
 
@@ -63,6 +65,28 @@ namespace EasyCaching.UnitTests
         protected override void Get_Parallel_Should_Succeed()
         {
 
+        }
+
+        [Fact]
+        public async Task Expired_Cache_Should_Be_Removed()
+        {
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey2 = cacheKey + "_2";
+            var cacheValue = "value";
+            
+            _provider.Set(cacheKey, cacheValue, TimeSpan.FromSeconds(1));
+            _provider.Set(cacheKey2, cacheValue, _defaultTs);
+            
+            await Task.Delay(TimeSpan.FromSeconds(2));
+
+            var cache = _provider.Get<string>(cacheKey);
+            Assert.False(cache.HasValue);
+            cache = _provider.Get<string>(cacheKey2);
+            Assert.True(cache.HasValue);
+
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            cache = _provider.Get<string>(cacheKey2);
+            Assert.True(cache.HasValue);
         }
     }
 
