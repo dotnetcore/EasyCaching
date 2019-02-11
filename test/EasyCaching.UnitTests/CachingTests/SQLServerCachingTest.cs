@@ -51,7 +51,7 @@ namespace EasyCaching.UnitTests
             conn.Execute(sql);
 
             _provider = new DefaultSQLServerCachingProvider(_dbProvider, new TestOptionMonitorWrapper<SQLServerOptions>(optionsMon.CurrentValue));
-            _defaultTs = TimeSpan.FromSeconds(30);
+            _defaultTs = TimeSpan.FromHours(1);
         }
 
         [Fact]
@@ -70,7 +70,10 @@ namespace EasyCaching.UnitTests
         [Fact]
         public async Task Expired_Cache_Should_Be_Removed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var conn = _dbProvider.GetConnection();
+            var sql = $"SELECT count(1) FROM {SCHEMA_NAME}.{TABLE_NAME} WHERE [cacheKey]=@cacheKey";
+
+            var cacheKey = $"TestExpire-{Guid.NewGuid().ToString()}";
             var cacheKey2 = cacheKey + "_2";
             var cacheValue = "value";
             
@@ -78,15 +81,24 @@ namespace EasyCaching.UnitTests
             _provider.Set(cacheKey2, cacheValue, _defaultTs);
             
             await Task.Delay(TimeSpan.FromSeconds(2));
+            _provider.Set("RemoveExpire", "", TimeSpan.FromMilliseconds(10));
 
             var cache = _provider.Get<string>(cacheKey);
+            var actualRow = conn.ExecuteScalar<int>(sql, new { cachekey = cacheKey });
             Assert.False(cache.HasValue);
+            Assert.False(actualRow > 0);
             cache = _provider.Get<string>(cacheKey2);
+            actualRow = conn.ExecuteScalar<int>(sql, new { cachekey = cacheKey2 });
             Assert.True(cache.HasValue);
+            Assert.True(actualRow > 0);
 
             await Task.Delay(TimeSpan.FromSeconds(2));
+            _provider.Set("RemoveExpire", "", TimeSpan.FromMilliseconds(10));
+
             cache = _provider.Get<string>(cacheKey2);
+            actualRow = conn.ExecuteScalar<int>(sql, new { cachekey = cacheKey2 });
             Assert.True(cache.HasValue);
+            Assert.True(actualRow > 0);
         }
     }
 
