@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
     using System;
+    using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
 
@@ -33,7 +34,7 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions WithRedisBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = "redisbus")
+        public static EasyCachingOptions WithRedisBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = EasyCachingConstValue.RedisBusSection)
         {
             var dbConfig = configuration.GetSection(sectionName);
             var redisOptions = new RedisBusOptions();

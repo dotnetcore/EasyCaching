@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Bus.RabbitMQ
 {
     using System;
+    using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
 
@@ -33,7 +34,7 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions WithRabbitMQBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = "rabbitmqbus")
+        public static EasyCachingOptions WithRabbitMQBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = EasyCachingConstValue.RabbitMQBusSection)
         {
             var dbConfig = configuration.GetSection(sectionName);
             var busOptions = new RabbitMQBusOptions();
