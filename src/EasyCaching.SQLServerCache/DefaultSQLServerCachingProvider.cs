@@ -49,9 +49,11 @@ namespace EasyCaching.SQLServer
         private DateTimeOffset _lastScanTime;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.SQLServer.DefaultSQLServerCachingProvider" /> class.
         /// </summary>
         /// <param name="dbProvider">dbProvider.</param>
+        /// <param name="options">The options.</param>
+        /// <param name="loggerFactory">The logger factory.</param>
         public DefaultSQLServerCachingProvider(
             ISQLDatabaseProvider dbProvider,
             IOptionsMonitor<SQLServerOptions> options,
@@ -82,10 +84,12 @@ namespace EasyCaching.SQLServer
         }
 
         /// <summary>
-        /// <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> is not distributed cache.
+        ///   <see cref="T:EasyCaching.SQLServer.DefaultSQLServerCachingProvider" /> is distributed cache.
         /// </summary>
-        /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
-        public bool IsDistributedCache => false;
+        /// <value>
+        ///   <c>true</c> if is distributed cache; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsDistributedCache => true;
 
         /// <summary>
         /// Gets the order.
@@ -118,7 +122,7 @@ namespace EasyCaching.SQLServer
         public string Name => this._name;
 
         /// <summary>
-        /// Exists the specified cacheKey.
+        /// Check whether the specified cacheKey exists or not.
         /// </summary>
         /// <returns>The exists.</returns>
         /// <param name="cacheKey">Cache key.</param>
@@ -136,7 +140,7 @@ namespace EasyCaching.SQLServer
         }
 
         /// <summary>
-        /// Existses the specified cacheKey async.
+        /// Check whether the specified cacheKey exists or not.
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
