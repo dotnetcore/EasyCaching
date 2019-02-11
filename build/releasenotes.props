@@ -1,8 +1,8 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageNotes>
-        1. EasyCaching Bus
-        2. HybridCaching
+		<EasyCachingCorePackageNotes>        
+        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync
+        2. Add Bus Section Const value.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Adjust reference namespace.
@@ -17,7 +17,7 @@
         1. Adjust reference namespace.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Refactor.
+        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Adjust reference namespace.
@@ -41,10 +41,10 @@
         1. Adjust reference namespace.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Init.
+        1. Modify the default section name.
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Init.
+        1. Modify the default section name.
         </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>

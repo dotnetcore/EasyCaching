@@ -88,6 +88,21 @@
             // each clients will recive the message, current client should ignore.
             if (!string.IsNullOrWhiteSpace(message.Id) && message.Id.Equals(_cacheId, StringComparison.OrdinalIgnoreCase))
                 return;
+           
+            //remove by prefix
+            if(message.IsPrefix)
+            {
+                var prefix = message.CacheKeys.First();
+
+                _localCache.RemoveByPrefix(prefix);
+
+                if (_options.EnableLogging)
+                {
+                    _logger.LogTrace($"remove local cache that prefix is {prefix}");
+                }
+
+                return;
+            }
 
             foreach (var item in message.CacheKeys)
             {
@@ -428,6 +443,39 @@
             return result.HasValue
                 ? result
                 : CacheValue<T>.NoValue;
+        }
+
+        /// <summary>
+        /// Removes the by prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        public void RemoveByPrefix(string prefix)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            //distributed cache at first
+            _distributedCache.RemoveByPrefix(prefix);
+            _localCache.RemoveByPrefix(prefix);
+
+            //send message to bus 
+            _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix } , IsPrefix = true });
+        }
+
+        /// <summary>
+        /// Removes the by prefix async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public async Task RemoveByPrefixAsync(string prefix)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            await _localCache.RemoveByPrefixAsync(prefix);
+
+            await _distributedCache.RemoveByPrefixAsync(prefix);
+
+            //send message to bus in order to notify other clients.
+            await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
         }
     }
 }
