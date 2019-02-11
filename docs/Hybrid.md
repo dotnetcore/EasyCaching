@@ -2,16 +2,23 @@
 
 HybridCachingProvider will combine local caching and distributed caching together.
 
+And the most important problem is to keep the newest local cached value.
+
+When we modify a cached value, the provider will send a message to `EasyCaching Bus` so that we can notify other Apps to remove the old value.
+
+The following image shows how it runs.
+
+![](https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/hybrid_details.png)
+
 # How to use ?
 
 ## 1. Install the packages via Nuget
 
 ```
 Install-Package EasyCaching.HybridCache
-
 Install-Package EasyCaching.InMemory
-
 Install-Package EasyCaching.Redis
+Install-Package EasyCaching.Bus.Redis
 ```
 
 ## 2. Config in Startup class
@@ -25,28 +32,34 @@ public class Startup
     {
         services.AddMvc();
         
-        //Important step for using Hybrid Cache
-        //1. Local Cache
-        services.AddDefaultInMemoryCache(x=>
+        services.AddEasyCaching(option =>
         {
-            x.Order = 1;
+            // local
+            option.UseInMemory("m1");
+            // distributed
+            option.UseRedis(config =>
+            {
+                config.DBConfig.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
+                config.DBConfig.Database = 5;
+            }, "myredis");
+
+            // combine local and distributed
+            option.UseHybrid(config => 
+            {
+                config.TopicName = "test-topic";
+                config.EnableLogging = false;
+            })
+            // use redis bus
+            .WithRedisBus(busConf => 
+            {
+                busConf.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+            });
         });
-        //2. Distributed Cache
-        services.AddDefaultRedisCache(option =>
-        {
-            option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            option.Password = "";
-        }, x=>
-        {
-            x.Order = 2;//this value should greater than local caching provider
-        });
-        //3. Hybrid
-        services.AddDefaultHybridCache();
     }
 }
 ```
 
-### 3. Call the EasyCachingProvider
+### 3. Call `IHybridCachingProvider`
 
 The following code show how to use EasyCachingProvider in ASP.NET Core Web API.
 
@@ -64,73 +77,11 @@ public class ValuesController : Controller
     [HttpGet]
     public string Get()
     {
-        //Remove
-        _provider.Remove("demo");
-        
         //Set
         _provider.Set("demo", "123", TimeSpan.FromMinutes(1));
-            
-        //Get
-        var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
         
-        //Get without data retriever
-        var res = _provider.Get<string>("demo");
-        
-        //Remove Async
-        await _provider.RemoveAsync("demo");
-           
-        //Set Async
-        await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));   
-            
-        //Get Async    
-        var res = await _provider.GetAsync("demo",async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));   
-        
-        //Get without data retriever Async
-        var res = await _provider.GetAsync<string>("demo");
-
-        //Refresh
-        _provider.Refresh("key", "123", TimeSpan.FromMinutes(1));
-
-        //Refresh Async
-        await _provider.RefreshAsync("key", "123", TimeSpan.FromMinutes(1));
-        
-        //RemoveByPrefix
-        _provider.RemoveByPrefix("prefix");
-        
-        //RemoveByPrefix async
-        await _provider.RemoveByPrefixAsync("prefix");
-        
-         //SetAll
-        _provider.SetAll(new Dictionary<string, string>()
-        {
-            {"key:1","value1"},
-            {"key:2","value2"}
-        }, TimeSpan.FromMinutes(1));
-
-        //SetAllAsync
-        await _provider.SetAllAsync(new Dictionary<string, string>()
-        {
-            {"key:1","value1"},
-            {"key:2","value2"}
-        }, TimeSpan.FromMinutes(1));
-
-        //GetAll
-        var res = _provider.GetAll(new List<string> { "key:1", "key:2" });
-
-        //GetAllAsync
-        var res = await _provider.GetAllAsync(new List<string> { "key:1", "key:2" });
-        
-        //GetByPrefix
-        var res = _provider.GetByPrefix<T>("prefix");
-        
-        //GetByPrefixAsync
-        var res = await _provider.GetByPrefixAsync<T>("prefix");
-        
-        //RemoveAll
-        _provider.RemoveAll(new List<string> { "key:1", "key:2" });
-
-        //RemoveAllAsync
-        awiat _provider.RemoveAllAsync(new List<string> { "key:1", "key:2" });
+        //others
+        //...
     }
 }
 ```
