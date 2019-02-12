@@ -1,19 +1,20 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageVersion>0.5.0.1</EasyCachingCorePackageVersion>
-		<EasyCachingMemcachedPackageVersion>0.5.0</EasyCachingMemcachedPackageVersion>
-		<EasyCachingRedisPackageVersion>0.5.0</EasyCachingRedisPackageVersion>
-		<EasyCachingSQLitePackageVersion>0.5.0</EasyCachingSQLitePackageVersion>
-		<EasyCachingInMemoryPackageVersion>0.5.0</EasyCachingInMemoryPackageVersion>
-		<EasyCachingHybridPackageVersion>0.5.0.1</EasyCachingHybridPackageVersion>
-		<EasyCachingAspectCorePackageVersion>0.5.0</EasyCachingAspectCorePackageVersion>
-		<EasyCachingCastlePackageVersion>0.5.0</EasyCachingCastlePackageVersion>
-		<EasyCachingResponseCachingPackageVersion>0.5.0</EasyCachingResponseCachingPackageVersion>
-		<EasyCachingJsonPackageVersion>0.5.0</EasyCachingJsonPackageVersion>
-		<EasyCachingMessagePackPackageVersion>0.5.0</EasyCachingMessagePackPackageVersion>
-		<EasyCachingProtobufPackageVersion>0.5.0</EasyCachingProtobufPackageVersion>
-		<EasyCachingCSRedisPackageVersion>0.5.0</EasyCachingCSRedisPackageVersion>
-		<EasyCachingRedisBusPackageVersion>0.5.0.1</EasyCachingRedisBusPackageVersion>
-		<EasyCachingRabbitBusPackageVersion>0.5.0-beta</EasyCachingRabbitBusPackageVersion>
+		<EasyCachingCorePackageVersion>0.5.1-alpha</EasyCachingCorePackageVersion>
+		<EasyCachingMemcachedPackageVersion>0.5.1-alpha</EasyCachingMemcachedPackageVersion>
+		<EasyCachingRedisPackageVersion>0.5.1-alpha</EasyCachingRedisPackageVersion>
+		<EasyCachingSQLitePackageVersion>0.5.1-alpha</EasyCachingSQLitePackageVersion>
+		<EasyCachingInMemoryPackageVersion>0.5.1-alpha</EasyCachingInMemoryPackageVersion>
+		<EasyCachingHybridPackageVersion>0.5.1-alpha</EasyCachingHybridPackageVersion>
+		<EasyCachingAspectCorePackageVersion>0.5.1-alpha</EasyCachingAspectCorePackageVersion>
+		<EasyCachingCastlePackageVersion>0.5.1-alpha</EasyCachingCastlePackageVersion>
+		<EasyCachingResponseCachingPackageVersion>0.5.1-alpha</EasyCachingResponseCachingPackageVersion>
+		<EasyCachingJsonPackageVersion>0.5.1-alpha</EasyCachingJsonPackageVersion>
+		<EasyCachingMessagePackPackageVersion>0.5.1-alpha</EasyCachingMessagePackPackageVersion>
+		<EasyCachingProtobufPackageVersion>0.5.1-alpha</EasyCachingProtobufPackageVersion>
+		<EasyCachingCSRedisPackageVersion>0.5.1-alpha</EasyCachingCSRedisPackageVersion>
+		<EasyCachingRedisBusPackageVersion>0.5.1-alpha</EasyCachingRedisBusPackageVersion>
+		<EasyCachingCSRedisBusPackageVersion>0.5.1-alpha</EasyCachingCSRedisBusPackageVersion>
+		<EasyCachingRabbitBusPackageVersion>0.5.1-alpha</EasyCachingRabbitBusPackageVersion>
 	</PropertyGroup>
 </Project>
