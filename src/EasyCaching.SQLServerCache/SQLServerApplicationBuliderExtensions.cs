@@ -31,9 +31,9 @@ namespace EasyCaching.SQLServer
                 }
 
                 var optionsMon = app.ApplicationServices.GetRequiredService<IOptionsMonitor<SQLServerOptions>>();
-                var options = optionsMon.Get(dbProvider.DBProviderName);
-                conn.Execute(string.Format(ConstSQL.CREATESQL, options.DBConfig.SchemaName,
-                    options.DBConfig.TableName));
+                var options = optionsMon.CurrentValue.DBConfig;
+                conn.Execute(string.Format(ConstSQL.CREATESQL, options.SchemaName,
+                    options.TableName));
             }
             catch (Exception ex)
             {

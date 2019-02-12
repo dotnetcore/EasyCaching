@@ -4,6 +4,12 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>EasyCaching.SQLServer</AssemblyName>
     <RootNamespace>EasyCaching.SQLServer</RootNamespace>
+    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <FileVersion>0.2.0.0</FileVersion>
+    <Version>0.2.0</Version>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Authors>Wasenshi</Authors>
+    <Description>Use SQL server as a provider for caching.</Description>
   </PropertyGroup>
 
   <ItemGroup>
