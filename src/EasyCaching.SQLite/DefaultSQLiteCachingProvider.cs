@@ -60,7 +60,7 @@
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
-            this._name = EasyCachingConstValue.DefaultRedisName;
+            this._name = EasyCachingConstValue.DefaultSQLiteName;
         }
 
         public DefaultSQLiteCachingProvider(
