@@ -8,6 +8,7 @@
     using global::RabbitMQ.Client;
     using global::RabbitMQ.Client.Events;
     using Microsoft.Extensions.ObjectPool;
+    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Default RabbitMQ Bus.
@@ -52,10 +53,10 @@
         /// <param name="serializer">Serializer.</param>
         public DefaultRabbitMQBus(
             IPooledObjectPolicy<IConnection> _objectPolicy
-            ,RabbitMQBusOptions rabbitMQOptions
-            ,IEasyCachingSerializer serializer)
+            , IOptions<RabbitMQBusOptions> rabbitMQOptions
+            , IEasyCachingSerializer serializer)
         {
-            this._options = rabbitMQOptions;
+            this._options = rabbitMQOptions.Value;
             this._serializer = serializer;
 
             var factory = new ConnectionFactory
@@ -132,7 +133,7 @@
             }
             return Task.CompletedTask;
         }
-              
+
         /// <summary>
         /// Subscribe the specified topic and action.
         /// </summary>
@@ -142,7 +143,7 @@
         {
             _handler = action;
             var queueName = string.Empty;
-            if(string.IsNullOrWhiteSpace(_options.QueueName))
+            if (string.IsNullOrWhiteSpace(_options.QueueName))
             {
                 queueName = $"rmq.queue.undurable.easycaching.subscriber.{_busId}";
             }
@@ -151,13 +152,13 @@
                 queueName = _options.QueueName;
             }
 
-            Task.Factory.StartNew(() => 
+            Task.Factory.StartNew(() =>
             {
                 var model = _subConnection.CreateModel();
                 model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
                 model.QueueDeclare(queueName, false, false, true, null);
                 // bind the queue with the exchange.
-                model.QueueBind(_options.TopicExchangeName, queueName, _options.RouteKey);
+                model.QueueBind(queueName, _options.TopicExchangeName, topic);
                 var consumer = new EventingBasicConsumer(model);
                 consumer.Received += OnMessage;
                 consumer.Shutdown += OnConsumerShutdown;

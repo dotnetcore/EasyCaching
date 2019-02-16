@@ -47,7 +47,7 @@
                 x.Port = busOptions.Port;
                 x.QueueMessageExpires = busOptions.QueueMessageExpires;
                 x.RequestedConnectionTimeout = busOptions.RequestedConnectionTimeout;
-                x.RouteKey = busOptions.RouteKey;
+                //x.RouteKey = busOptions.RouteKey;
                 x.SocketReadTimeout = busOptions.SocketReadTimeout;
                 x.SocketWriteTimeout = busOptions.SocketWriteTimeout;
                 x.TopicExchangeName = busOptions.TopicExchangeName;

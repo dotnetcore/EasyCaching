@@ -46,8 +46,8 @@
         2. Update EasyCaching.Core.
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Modify the default section name.
-        2. Update EasyCaching.Core.
+        1. Fixed Options Bug.
+        2. Fixed Queue Bind Bug.
         </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>
