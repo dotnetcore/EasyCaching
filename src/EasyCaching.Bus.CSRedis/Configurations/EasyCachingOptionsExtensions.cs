@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Bus.Redis
+﻿namespace EasyCaching.Bus.CSRedis
 {
     using System;
     using EasyCaching.Core;
@@ -16,14 +16,14 @@
         /// <returns>The redis bus.</returns>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure.</param>
-        public static EasyCachingOptions WithRedisBus(this EasyCachingOptions options, Action<RedisBusOptions> configure)
+        public static EasyCachingOptions WithCSRedisBus(this EasyCachingOptions options, Action<CSRedisBusOptions> configure)
         {
             if (configure == null)
             {
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            options.RegisterExtension(new RedisBusOptionsExtension(configure));
+            options.RegisterExtension(new CSRedisOptionsExtension(configure));
             return options;
         }
 
@@ -34,27 +34,18 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions WithRedisBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = EasyCachingConstValue.RedisBusSection)
+        public static EasyCachingOptions WithCSRedisBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = EasyCachingConstValue.RedisBusSection)
         {
             var dbConfig = configuration.GetSection(sectionName);
-            var redisOptions = new RedisBusOptions();
+            var redisOptions = new CSRedisBusOptions();
             dbConfig.Bind(redisOptions);
 
-            void configure(RedisBusOptions x)
+            void configure(CSRedisBusOptions x)
             {
-                x.AbortOnConnectFail = redisOptions.AbortOnConnectFail;
-                x.AllowAdmin = redisOptions.AllowAdmin;
-                x.Configuration = redisOptions.Configuration;
-                x.ConnectionTimeout = redisOptions.ConnectionTimeout;
-                x.Database = redisOptions.Database;
-                x.IsSsl = redisOptions.IsSsl;
-                x.Password = redisOptions.Password;
-                x.SslHost = redisOptions.SslHost;
-
-                foreach (var item in redisOptions.Endpoints) x.Endpoints.Add(item);
+                x.ConnectionStrings = redisOptions.ConnectionStrings;
             }
 
-            options.RegisterExtension(new RedisBusOptionsExtension(configure));
+            options.RegisterExtension(new CSRedisOptionsExtension(configure));
             return options;
         }
     }

@@ -7,7 +7,7 @@
     <Authors>Catcher Wong</Authors>    
     <Version>$(EasyCachingRedisBusPackageVersion)</Version>
     <Description>      
-      A simple caching bus(message bus) based on StackExchange.Redis.
+      A simple caching bus(message bus) based on CSRedis.
     </Description>
     <PackageTags>Bus,Hybrid,Redis,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="2.0.519" />
+    <PackageReference Include="CSRedisCore" Version="3.0.33" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
   </ItemGroup>
   <ItemGroup>
@@ -29,5 +29,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configurations\" />
-  </ItemGroup>  
+  </ItemGroup>
 </Project>

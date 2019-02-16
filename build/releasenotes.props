@@ -1,50 +1,53 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageNotes>
-        1. EasyCaching Bus
-        2. HybridCaching
+		<EasyCachingCorePackageNotes>        
+        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync
+        2. Add Bus Section Const value.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
+        2. Update Default name of provider.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Refactor.
+        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync        
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Adjust reference namespace.
+        1. Update EasyCaching.Core.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Init.
+        1. Modify the default section name.
+        2. Update EasyCaching.Core.
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Init.
+        1. Fixed Options Bug.
+        2. Fixed Queue Bind Bug.
         </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>

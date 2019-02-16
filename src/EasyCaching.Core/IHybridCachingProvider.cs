@@ -141,5 +141,16 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration);
 
+        /// <summary>
+        /// Removes cached item by cachekey's prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        void RemoveByPrefix(string prefix);
+
+        /// <summary>
+        /// Removes cached item by cachekey's prefix async.
+        /// </summary>
+        /// <param name="prefix">Prefix of CacheKey.</param>
+        Task RemoveByPrefixAsync(string prefix);
     }
 }

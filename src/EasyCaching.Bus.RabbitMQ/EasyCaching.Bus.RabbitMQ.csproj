@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+  <Import Project="../../build/version.props" />
+  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>Catcher Wong</Owners>
@@ -13,7 +14,7 @@
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/easycaching-icon.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
     $(EasyCachingRabbitBusPackageNotes)
     </PackageReleaseNotes>
