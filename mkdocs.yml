@@ -8,6 +8,7 @@ pages:
 - Caching Provider:
     - In-Memory : In-Memory.md
     - Redis : Redis.md
+    - CSRedis: CSRedis.md
     - Memcached : Memcached.md
     - SQLite : SQLite.md
     - Hybird : Hybrid.md
