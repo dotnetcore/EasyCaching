@@ -30,10 +30,12 @@ public class Startup
         //other services.
 
         //Important step for Redis Caching       
-        services.AddDefaultRedisCache(option=>
-        {                
-            option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            option.DBConfig.Password = "";
+        services.AddEasyCaching(option =>
+        {
+            option.UseRedis(config => 
+            {
+                config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+            }, "redis1");
         });
     }
 }
@@ -51,7 +53,10 @@ public class Startup
         //other services.
 
         //Important step for Redis Caching
-        services.AddDefaultRedisCache(Configuration); 
+        services.AddEasyCaching(option =>
+        {
+            option.UseRedis(Configuration, "myredisname");
+        });
     }
 }
 ```
@@ -82,7 +87,7 @@ And what we add in `appsettings.json` are as following:
 }
 ```
 
-### 3. Call the EasyCachingProvider
+### 3. Call the IEasyCachingProvider
 
 The following code show how to use EasyCachingProvider in ASP.NET Core Web API.
 
@@ -106,29 +111,41 @@ public class ValuesController : Controller
         //Set
         _provider.Set("demo", "123", TimeSpan.FromMinutes(1));
             
-        //Get
-        var res = _provider.Get("demo", () => "456", TimeSpan.FromMinutes(1));
-        
-        //Get without data retriever
-        var res = _provider.Get<string>("demo");
-        
-        //Remove Async
-        await _provider.RemoveAsync("demo");
-           
-        //Set Async
-        await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));   
+        //others ...
+    }
+}
+```
+
+### 4. Redis Feature Provider
+
+Redis has many other data types, such as Hash, List .etc.
+
+EasyCaching.Redis also support those types that named redis feature provider.
+
+If you want to use this feature provider, just call `IRedisCachingProvider` to replace `IEasyCachingProvider` .
+
+
+```csharp
+[Route("api/[controller]")]
+public class ValuesController : Controller
+{
+    private readonly IRedisCachingProvider _provider;
+
+    public ValuesController(IRedisCachingProvider provider)
+    {
+        this._provider = provider;
+    }
+
+    [HttpGet]
+    public string Get()
+    {
+        // HMSet
+        var res = _provider.HMSet(cacheKey, new Dictionary<string, string>
+        {
+            {"a1","v1"},{"a2","v2"}
+        });
             
-        //Get Async    
-        var res = await _provider.GetAsync("demo",async () => await Task.FromResult("456"), TimeSpan.FromMinutes(1));   
-        
-        //Get without data retriever Async
-        var res = await _provider.GetAsync<string>("demo");
-
-        //Refresh
-        _provider.Refresh("key", "123", TimeSpan.FromMinutes(1));
-
-        //Refresh Async
-        await _provider.RefreshAsync("key", "123", TimeSpan.FromMinutes(1));
+        //others ...
     }
 }
 ```
