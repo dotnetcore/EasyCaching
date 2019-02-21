@@ -149,8 +149,8 @@
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
-                
-            if (! _cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
+
+            if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
             {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);
@@ -224,6 +224,7 @@
             }
         }
 
+
         /// <summary>
         /// Get the specified cacheKey.
         /// </summary>
@@ -284,6 +285,38 @@
                 CacheStats.OnMiss();
 
                 return CacheValue<T>.NoValue;
+            }
+        }
+
+        /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="type">Object Type.</param>
+        public async Task<object> GetAsync(string cacheKey, Type type)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var result = await Task.FromResult(_cache.Get(BuildCacheKey(Name, cacheKey)));
+
+            if (result != null)
+            {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
+
+                CacheStats.OnHit();
+
+                return result;
+            }
+            else
+            {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
+
+                CacheStats.OnMiss();
+
+                return null;
             }
         }
 
@@ -705,5 +738,6 @@
             //var val = new CacheValue<T>(cacheValue, true, expiration);
             return Task.FromResult(_cache.Add(cacheKey, cacheValue, expiration));
         }
+
     }
 }

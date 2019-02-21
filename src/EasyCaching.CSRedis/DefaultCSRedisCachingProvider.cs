@@ -339,6 +339,38 @@
         }
 
         /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="type">Object Type.</param>
+        public async Task<object> GetAsync(string cacheKey, Type type)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var result = await _cache.GetAsync<byte[]>(cacheKey);
+            if (result != null)
+            {
+                CacheStats.OnHit();
+
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                var value = _serializer.Deserialize(result, type);
+                return value;
+            }
+            else
+            {
+                CacheStats.OnMiss();
+
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Gets the async.
         /// </summary>
         /// <returns>The async.</returns>
@@ -403,14 +435,14 @@
             long nextCursor = 0;
             do
             {
-                var scanResult = _cache.Scan( nextCursor,  pattern, 500);
+                var scanResult = _cache.Scan(nextCursor, pattern, 500);
                 nextCursor = scanResult.Cursor;
                 var items = scanResult.Items;
                 keys.AddRange(items);
             }
             while (nextCursor != 0);
 
-            return keys.Distinct().ToArray();                      
+            return keys.Distinct().ToArray();
         }
 
         /// <summary>
@@ -432,7 +464,7 @@
             foreach (var item in redisKeys)
             {
                 var cachedValue = _cache.Get<byte[]>(item);
-                if (cachedValue!=null)
+                if (cachedValue != null)
                     result.Add(item, new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
                 else
                     result.Add(item, CacheValue<T>.NoValue);
@@ -469,11 +501,11 @@
             return result;
         }
 
-       /// <summary>
-       /// Gets the count.
-       /// </summary>
-       /// <returns>The count.</returns>
-       /// <param name="prefix">Prefix.</param>
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
         public int GetCount(string prefix = "")
         {
             if (string.IsNullOrWhiteSpace(prefix))
@@ -487,7 +519,7 @@
                     allCount += item.value;
                 }
 
-                return (int)allCount;                              
+                return (int)allCount;
             }
 
             return this.SearchRedisKeys(this.HandlePrefix(prefix)).Length;
@@ -621,7 +653,7 @@
 
             foreach (var item in redisKeys)
             {
-               tasks.Add(  _cache.DelAsync(item));
+                tasks.Add(_cache.DelAsync(item));
             }
 
             await Task.WhenAll(tasks);
@@ -784,5 +816,6 @@
                 RedisExistence.Nx
                 );
         }
+
     }
 }

@@ -53,7 +53,7 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration); 
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration);
 
         /// <summary>
         /// Get the specified cacheKey.
@@ -62,6 +62,14 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         CacheValue<T> Get<T>(string cacheKey);
+
+        /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="type">Object Type.</param>
+        Task<object> GetAsync(string cacheKey, Type type);
 
         /// <summary>
         /// Gets the specified cacheKey async.

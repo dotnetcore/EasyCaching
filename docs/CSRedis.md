@@ -1,6 +1,6 @@
-# DefaultRedisCachingProvider
+# DefaultCSRedisCachingProvider
 
-EasyCaching.Redis is a redis caching lib which is based on **EasyCaching.Core** and **StackExchange.Redis**.
+EasyCaching.CSRedis is a redis caching lib which is based on **EasyCaching.Core** and **CSRedisCore**.
 
 When you use this lib , it means that you will handle the data of your redis servers . As usual , we will use it as distributed caching .
 
@@ -11,7 +11,7 @@ When you use this lib , it means that you will handle the data of your redis ser
 ### 1. Install the package via Nuget
 
 ```
-Install-Package EasyCaching.Redis
+Install-Package EasyCaching.CSRedis
 ```
 
 ### 2. Config in Startup class
@@ -32,10 +32,16 @@ public class Startup
         //Important step for Redis Caching       
         services.AddEasyCaching(option =>
         {
-            option.UseRedis(config => 
+            option.UseCSRedis(config =>
             {
-                config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            }, "redis1");
+                config.DBConfig = new CSRedisDBOptions
+                {
+                    ConnectionStrings = new System.Collections.Generic.List<string>
+                    {
+                        "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
+                    }
+                };
+            });
         });
     }
 }
@@ -53,9 +59,10 @@ public class Startup
         //other services.
 
         //Important step for Redis Caching
+        services.AddDefaultRedisCache(Configuration); 
         services.AddEasyCaching(option =>
         {
-            option.UseRedis(Configuration, "myredisname");
+            option.UseCSRedis(Configuration, "myredisname", "easycaching:csredis");
         });
     }
 }
@@ -65,23 +72,14 @@ And what we add in `appsettings.json` are as following:
 
 ```JSON
 "easycaching": {
-    "redis": {
+    "csredis": {
         "CachingProviderType": 2,
         "MaxRdSecond": 120,
         "Order": 2,
         "dbconfig": {
-            "Password": null,
-            "IsSsl": false,
-            "SslHost": null,
-            "ConnectionTimeout": 5000,
-            "AllowAdmin": true,
-            "Endpoints": [
-                {
-                    "Host": "localhost",
-                    "Port": 6739
-                }
-            ],
-            "Database": 0
+            "ConnectionStrings":[
+                "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
+            ]
         }
     }
 }
@@ -120,7 +118,7 @@ public class ValuesController : Controller
 
 Redis has many other data types, such as Hash, List .etc.
 
-EasyCaching.Redis also support those types that named redis feature provider.
+EasyCaching.CSRedis also support those types that named redis feature provider.
 
 If you want to use this feature provider, just call `IRedisCachingProvider` to replace `IEasyCachingProvider` .
 

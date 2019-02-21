@@ -67,13 +67,13 @@
             if (context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
             {
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
-                var cacheValue = await CacheProvider.GetAsync<object>(cacheKey);
+                var cacheValue = await CacheProvider.GetAsync(cacheKey, context.ServiceMethod.ReturnType);
 
                 var returnType = context.IsAsync()
                         ? context.ServiceMethod.ReturnType.GetGenericArguments().First()
                         : context.ServiceMethod.ReturnType;
 
-                if (cacheValue.HasValue)
+                if (cacheValue != null)
                 {
                     if (context.IsAsync())
                     {
@@ -84,12 +84,12 @@
 
                         //#2                                               
                         context.ReturnValue =
-                            TypeofTaskResultMethod.GetOrAdd(returnType, t => typeof(Task).GetMethods().First(p => p.Name == "FromResult" && p.ContainsGenericParameters).MakeGenericMethod(returnType)).Invoke(null, new object[] { cacheValue.Value });
+                            TypeofTaskResultMethod.GetOrAdd(returnType, t => typeof(Task).GetMethods().First(p => p.Name == "FromResult" && p.ContainsGenericParameters).MakeGenericMethod(returnType)).Invoke(null, new object[] { cacheValue });
                     }
                     else
                     {
                         //context.ReturnValue = System.Convert.ChangeType(cacheValue.Value, context.ServiceMethod.ReturnType);
-                        context.ReturnValue = cacheValue.Value;
+                        context.ReturnValue = cacheValue;
                     }
                 }
                 else
