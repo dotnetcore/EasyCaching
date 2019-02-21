@@ -24,6 +24,20 @@
         }
 
         /// <summary>
+        /// Deserialize the specified bytes.
+        /// </summary>
+        /// <returns>The deserialize.</returns>
+        /// <param name="bytes">Bytes.</param>
+        /// <param name="type">Type.</param>
+        public object Deserialize(byte[] bytes, Type type)
+        {
+            using (var ms = new MemoryStream(bytes))
+            {
+                return (new BinaryFormatter().Deserialize(ms));
+            }
+        }
+
+        /// <summary>
         /// Deserializes the object.
         /// </summary>
         /// <returns>The object.</returns>

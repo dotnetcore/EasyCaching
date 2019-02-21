@@ -319,6 +319,43 @@
         }
 
         /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="type">Object Type.</param>
+        public async Task<object> GetAsync(string cacheKey, Type type)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            {
+                cachekey = cacheKey,
+                name = _name
+            });
+
+            var dbResult = list.FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(dbResult))
+            {
+                CacheStats.OnHit();
+
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                return Newtonsoft.Json.JsonConvert.DeserializeObject(dbResult, type);
+            }
+            else
+            {
+                CacheStats.OnMiss();
+
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                return null;
+            }
+        }
+        /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
         /// <returns>The remove.</returns>
@@ -740,5 +777,6 @@
 
             return rows > 0;
         }
+
     }
 }

@@ -75,6 +75,31 @@
             }
         }
 
+        public object Get(string key)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(key, nameof(key));
+
+            if (!_memory.TryGetValue(key, out var cacheEntry))
+            {
+                return null;
+            }
+
+            if (cacheEntry.ExpiresAt < SystemClock.UtcNow)
+            {
+                _memory.TryRemove(key, out _);
+                return null;
+            }
+
+            try
+            {
+                return cacheEntry.Value;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public bool Add<T>(string key, T value, TimeSpan? expiresIn = null)
         {
             ArgumentCheck.NotNullOrWhiteSpace(key, nameof(key));

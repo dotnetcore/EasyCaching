@@ -31,6 +31,17 @@
         }
 
         /// <summary>
+        /// Deserialize the specified bytes.
+        /// </summary>
+        /// <returns>The deserialize.</returns>
+        /// <param name="bytes">Bytes.</param>
+        /// <param name="type">Type.</param>
+        public object Deserialize(byte[] bytes, Type type)
+        {
+            return MessagePackSerializer.NonGeneric.Deserialize(type, bytes);
+        }
+
+        /// <summary>
         /// Serialize the specified value.
         /// </summary>
         /// <returns>The serialize.</returns>
@@ -48,7 +59,7 @@
         /// <param name="value">Value.</param>
         public ArraySegment<byte> SerializeObject(object value)
         {
-            return MessagePackSerializer.SerializeUnsafe<object>(value , TypelessContractlessStandardResolver.Instance);
+            return MessagePackSerializer.SerializeUnsafe<object>(value, TypelessContractlessStandardResolver.Instance);
         }
 
         /// <summary>
@@ -60,5 +71,6 @@
         {
             return MessagePackSerializer.Deserialize<object>(value, TypelessContractlessStandardResolver.Instance);
         }
+
     }
 }

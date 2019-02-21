@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
     using EasyCaching.Core;
     using EasyCaching.Core.Interceptor;
     using global::Castle.DynamicProxy;
@@ -64,11 +65,12 @@
             {
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
-                var cacheValue = _cacheProvider.Get<object>(cacheKey);
+                var cacheValue = (_cacheProvider.GetAsync(cacheKey, serviceMethod.ReturnType)).GetAwaiter().GetResult();
 
-                if (cacheValue.HasValue)
+
+                if (cacheValue != null)
                 {
-                    invocation.ReturnValue = cacheValue.Value;
+                    invocation.ReturnValue = cacheValue;
                 }
                 else
                 {
