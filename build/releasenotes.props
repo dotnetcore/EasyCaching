@@ -1,53 +1,49 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>        
-        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync
-        2. Add Bus Section Const value.
+        1. Fixed ReturnValue bugs of Interceptors        
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Update EasyCaching.Core.
-        2. Update Default name of provider.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. HybridCaching add RemoveByPrefix/RemoveByPrefixAsync        
+        1. Fixed ReturnValue bugs of Interceptors     
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Update EasyCaching.Core.
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Fixed ReturnValue bugs of Interceptors
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Modify the default section name.
-        2. Update EasyCaching.Core.
+        1. Update EasyCaching.Core.    
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Fixed Options Bug.
-        2. Fixed Queue Bind Bug.
+        1. Update EasyCaching.Core.
         </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>

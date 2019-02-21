@@ -2,6 +2,7 @@
 {
     using System.Threading.Tasks;
     using EasyCaching.Core.Interceptor;
+    using ProtoBuf;
 
     public interface IAspectCoreService //: EasyCaching.Core.Internal.IEasyCaching
     {
@@ -38,12 +39,12 @@
 
         public Demo GetDemo(int id)
         {
-             return new Demo { Id = id, CreateTime = System.DateTime.Now, Name = "catcher" };
+            return new Demo { Id = id, CreateTime = System.DateTime.Now, Name = "catcher" };
         }
 
         public Task<Demo> GetDemoAsync(int id)
         {
-            return Task.FromResult(new Demo{ Id = id, CreateTime = System.DateTime.Now, Name = "catcher"});
+            return Task.FromResult(new Demo { Id = id, CreateTime = System.DateTime.Now, Name = "catcher" });
         }
 
         public async Task<string> GetUtcTimeAsync()
@@ -58,11 +59,15 @@
 
     }
 
+    [ProtoContract]
     [System.Serializable]
     public class Demo
     {
+        [ProtoMember(1)]
         public int Id { get; set; }
+        [ProtoMember(2)]
         public string Name { get; set; }
+        [ProtoMember(3)]
         public System.DateTime CreateTime { get; set; }
     }
 }

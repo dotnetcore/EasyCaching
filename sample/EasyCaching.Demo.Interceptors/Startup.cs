@@ -7,12 +7,14 @@
     using EasyCaching.InMemory;
     using EasyCaching.Redis;
     using EasyCaching.Serialization.MessagePack;
+    using EasyCaching.Serialization.Json;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
+    using EasyCaching.Serialization.Protobuf;
 
     public class Startup
     {
@@ -28,7 +30,7 @@
         {
             services.AddScoped<IAspectCoreService, AspectCoreService>();
 
-            services.AddEasyCaching(options=> 
+            services.AddEasyCaching(options =>
             {
                 options.UseInMemory();
 
@@ -39,6 +41,12 @@
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            //services.AddDefaultMessagePackSerializer();
+
+            //services.AddDefaultProtobufSerializer();
+
+            //services.AddDefaultJsonSerializer(config => { config.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None; });
 
             //1.1. all default
             return services.ConfigureAspectCoreInterceptor();

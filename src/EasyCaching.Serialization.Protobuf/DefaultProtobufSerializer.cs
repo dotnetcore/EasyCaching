@@ -27,6 +27,21 @@
         }
 
         /// <summary>
+        /// Deserialize the specified bytes.
+        /// </summary>
+        /// <returns>The deserialize.</returns>
+        /// <param name="bytes">Bytes.</param>
+        /// <param name="type">Type.</param>
+        public object Deserialize(byte[] bytes, Type type)
+        {
+            using (MemoryStream ms = new MemoryStream(bytes))
+            {
+                return Serializer.Deserialize(type, ms);
+            }
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Serialize the specified value.
         /// </summary>
         /// <returns>The serialize.</returns>
@@ -125,6 +140,7 @@
             // BinaryWrite String
             ms.Write(typeArray, 0, len);
         }
+
         #endregion
     }
 }

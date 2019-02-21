@@ -56,6 +56,22 @@
         }
 
         /// <summary>
+        /// Deserialize the specified bytes.
+        /// </summary>
+        /// <returns>The deserialize.</returns>
+        /// <param name="bytes">Bytes.</param>
+        /// <param name="type">Type.</param>
+        public object Deserialize(byte[] bytes, Type type)
+        {
+            using (var ms = new MemoryStream(bytes))
+            using (var sr = new StreamReader(ms, Encoding.UTF8))
+            using (var jtr = new JsonTextReader(sr))
+            {
+                return jsonSerializer.Deserialize(jtr, type);
+            }
+        }
+
+        /// <summary>
         /// Serialize the specified value.
         /// </summary>
         /// <returns>The serialize.</returns>
@@ -127,6 +143,7 @@
                 }
             }
         }
-        #endregion           
+
+        #endregion
     }
 }

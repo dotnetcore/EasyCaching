@@ -8,6 +8,8 @@
     {
         int GetCount(string prefix = "");
         CacheValue<T> Get<T>(string key);
+
+        object Get(string key);
         IDictionary<string, CacheValue<T>> GetByPrefix<T>(string key);
         bool Add<T>(string key, T value, TimeSpan? expiresIn = null);
         bool Set<T>(string key, T value, TimeSpan? expiresIn = null);
