@@ -22,6 +22,9 @@
         Task<Demo> GetDemoAsync(int id);
 
         [EasyCachingAble(Expiration = 10)]
+        Task<System.Collections.Generic.List<Demo>> GetDemoListAsync(int id);
+
+        [EasyCachingAble(Expiration = 10)]
         Demo GetDemo(int id);
     }
 
@@ -45,6 +48,11 @@
         public Task<Demo> GetDemoAsync(int id)
         {
             return Task.FromResult(new Demo { Id = id, CreateTime = System.DateTime.Now, Name = "catcher" });
+        }
+
+        public Task<System.Collections.Generic.List<Demo>> GetDemoListAsync(int id)
+        {
+            return Task.FromResult(new System.Collections.Generic.List<Demo>() { new Demo { Id = id, CreateTime = System.DateTime.Now, Name = "catcher" } });
         }
 
         public async Task<string> GetUtcTimeAsync()
