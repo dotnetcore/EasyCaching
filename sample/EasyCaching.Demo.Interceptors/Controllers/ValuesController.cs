@@ -57,6 +57,11 @@
                 var res = await _aService.GetDemoAsync(999);
                 return $"{res.Id}-{res.Name}-{res.CreateTime}";
             }
+            else if (type == 3)
+            {
+                var res = await _aService.GetDemoListAsync(999);
+                return $"{res.Count}";
+            }
             else
             {
                 return await Task.FromResult("wait");
@@ -103,6 +108,11 @@
             {
                 var res = await _cService.GetDemoAsync(999);
                 return $"{res.Id}-{res.Name}-{res.CreateTime}";
+            }
+            else if (type == 3)
+            {
+                var res = await _aService.GetDemoListAsync(999);
+                return $"{res.Count}";
             }
             else
             {
