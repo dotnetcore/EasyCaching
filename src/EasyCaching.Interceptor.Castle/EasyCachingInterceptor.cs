@@ -1,7 +1,9 @@
 ﻿namespace EasyCaching.Interceptor.Castle
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using EasyCaching.Core.Interceptor;
@@ -21,6 +23,12 @@
         /// The key generator.
         /// </summary>
         private readonly IEasyCachingKeyGenerator _keyGenerator;
+
+        /// <summary>
+        /// The typeof task result method.
+        /// </summary>
+        private static readonly ConcurrentDictionary<Type, MethodInfo>
+                    TypeofTaskResultMethod = new ConcurrentDictionary<Type, MethodInfo>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Interceptor.Castle.EasyCachingInterceptor"/> class.
@@ -63,14 +71,26 @@
 
             if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
             {
-                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
+                var returnType = serviceMethod.IsReturnTask()
+                        ? serviceMethod.ReturnType.GetGenericArguments().First()
+                        : serviceMethod.ReturnType;
 
-                var cacheValue = (_cacheProvider.GetAsync(cacheKey, serviceMethod.ReturnType)).GetAwaiter().GetResult();
+                var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
+                
+                var cacheValue = (_cacheProvider.GetAsync(cacheKey, returnType)).GetAwaiter().GetResult();
 
 
                 if (cacheValue != null)
                 {
-                    invocation.ReturnValue = cacheValue;
+                    if (serviceMethod.IsReturnTask())
+                    {                                            
+                        invocation.ReturnValue =
+                            TypeofTaskResultMethod.GetOrAdd(returnType, t => typeof(Task).GetMethods().First(p => p.Name == "FromResult" && p.ContainsGenericParameters).MakeGenericMethod(returnType)).Invoke(null, new object[] { cacheValue });
+                    }
+                    else
+                    {
+                        invocation.ReturnValue = cacheValue;
+                    }
                 }
                 else
                 {
@@ -78,7 +98,20 @@
                     invocation.Proceed();
 
                     if (!string.IsNullOrWhiteSpace(cacheKey) && invocation.ReturnValue != null)
-                        _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    {
+                        if (serviceMethod.IsReturnTask())
+                        {
+                            //get the result
+                            var returnValue = invocation.UnwrapAsyncReturnValue().Result;
+
+                            _cacheProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                        }
+                        else
+                        {
+                            _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                        }
+                    }
+
                 }
             }
             else
@@ -100,7 +133,17 @@
             {
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
-                _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                if (serviceMethod.IsReturnTask())
+                {
+                    //get the result
+                    var returnValue = invocation.UnwrapAsyncReturnValue().Result;
+
+                    _cacheProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                }
+                else
+                {
+                    _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                }
             }
         }
 
