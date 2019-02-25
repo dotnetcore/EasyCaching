@@ -1,110 +1,10 @@
 ﻿namespace EasyCaching.UnitTests
 {
+    using EasyCaching.Core;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Threading.Tasks;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Diagnostics;
-    using Xunit;
 
-    public class DiagnosticsTest
-    {
-        [Fact]
-        public void WriteExistsCacheTest()
-        {
-            var statsLogged = false;
-
-            MyCachingProvider provider = new MyCachingProvider();
-
-            FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
-            {
-                if (kvp.Key.Equals("WriteExistsCache"))
-                {
-                    Assert.NotNull(kvp.Value);
-
-                    statsLogged = true;
-                }
-            });
-
-            diagnosticListenerObserver.Enable();
-            using (DiagnosticListener.AllListeners.Subscribe(diagnosticListenerObserver))
-            {
-                var cacheKey = "test-key";
-
-                var res = provider.Exists(cacheKey);
-
-                Assert.True(statsLogged);
-
-                diagnosticListenerObserver.Disable();
-            }
-        }
-    }
-
-    // borrowed from https://github.com/dotnet/corefx/blob/master/src/System.Data.SqlClient/tests/FunctionalTests/FakeDiagnosticListenerObserver.cs
-    public sealed class FakeDiagnosticListenerObserver : IObserver<DiagnosticListener>
-    {
-        private class FakeDiagnosticSourceWriteObserver : IObserver<KeyValuePair<string, object>>
-        {
-            private readonly Action<KeyValuePair<string, object>> _writeCallback;
-
-            public FakeDiagnosticSourceWriteObserver(Action<KeyValuePair<string, object>> writeCallback)
-            {
-                _writeCallback = writeCallback;
-            }
-
-            public void OnCompleted()
-            {
-            }
-
-            public void OnError(Exception error)
-            {
-            }
-
-            public void OnNext(KeyValuePair<string, object> value)
-            {
-                _writeCallback(value);
-            }
-        }
-
-        private readonly Action<KeyValuePair<string, object>> _writeCallback;
-        private bool _writeObserverEnabled;
-
-        public FakeDiagnosticListenerObserver(Action<KeyValuePair<string, object>> writeCallback)
-        {
-            _writeCallback = writeCallback;
-        }
-
-        public void OnCompleted()
-        {
-        }
-
-        public void OnError(Exception error)
-        {
-        }
-
-        public void OnNext(DiagnosticListener value)
-        {
-            if (value.Name.Equals(EasyCachingDiagnosticListenerExtensions.DiagnosticListenerName))
-            {
-                value.Subscribe(new FakeDiagnosticSourceWriteObserver(_writeCallback), IsEnabled);
-            }
-        }
-
-        public void Enable()
-        {
-            _writeObserverEnabled = true;
-        }
-        public void Disable()
-        {
-            _writeObserverEnabled = false;
-        }
-        private bool IsEnabled(string s)
-        {
-            return _writeObserverEnabled;
-        }
-    }
-     
     public class MyCachingProvider : EasyCachingAbstractProvider
     {
         public MyCachingProvider()
@@ -159,7 +59,7 @@
 
         public override Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
         {
-            return Task.FromResult( CacheValue<T>.NoValue);
+            return Task.FromResult(CacheValue<T>.NoValue);
         }
 
         public override Task<object> BaseGetAsync(string cacheKey, Type type)
@@ -204,7 +104,7 @@
 
         public override void BaseRemoveAll(IEnumerable<string> cacheKeys)
         {
-         
+
         }
 
         public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
@@ -229,7 +129,7 @@
 
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
-        
+
         }
 
         public override void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration)

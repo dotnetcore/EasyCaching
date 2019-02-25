@@ -2,15 +2,14 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.Internal;
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;
-    using Xunit;    
+    using Xunit;
 
     public class SERedisFeatureCachingProviderTest : BaseRedisFeatureCachingProviderTest
-    {     
+    {
         public SERedisFeatureCachingProviderTest()
         {
             IServiceCollection services = new ServiceCollection();
@@ -29,13 +28,14 @@
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IRedisCachingProvider>();
+            _baseProvider = serviceProvider.GetService<IEasyCachingProvider>();
             _nameSpace = "SERedisFeature";
         }
 
         [Fact]
         protected override async Task LPushXAsync_Not_Exist_CacheKey_Should_Return_Zero()
         {
-            await Task.FromResult(1);                
+            await Task.FromResult(1);
         }
 
         [Fact]
@@ -53,19 +53,19 @@
         [Fact]
         protected override void LPushX_Not_Exist_CacheKey_Should_Return_Zero()
         {
-            
+
         }
 
         [Fact]
         protected override void LPushX_Should_Succeed()
         {
-            
+
         }
 
         [Fact]
         protected override void RPushX_Should_Succeed()
         {
-            
+
         }
     }
 }
