@@ -2,7 +2,7 @@
 {
     using System.Diagnostics;
 
-    public static class EasyCachingDiagnosticListenerExtensions
+    internal static class EasyCachingDiagnosticListenerExtensions
     {
         /// <summary>
         /// The name of the diagnostic listener.
@@ -16,6 +16,31 @@
         public const string EasyCachingGetCache = nameof(WriteGetCache);
         public const string EasyCachingGetCount = nameof(WriteGetCount);
         public const string EasyCachingSetAll = nameof(WriteSetAll);
+        public const string EasyCachingPublishMessage = nameof(WritePublishMessage);
+        public const string EasyCachingSubscribeMessage = nameof(WriteSubscribeMessage);
+
+        public static void WriteSubscribeMessage(this DiagnosticListener @this, object message)
+        {
+            if (@this.IsEnabled(EasyCachingSubscribeMessage))
+            {
+                @this.Write(EasyCachingSubscribeMessage, new
+                {
+                    Message = message
+                });
+            }
+        }
+
+        public static void WritePublishMessage(this DiagnosticListener @this, string topic, object message)
+        {
+            if (@this.IsEnabled(EasyCachingPublishMessage))
+            {
+                @this.Write(EasyCachingPublishMessage, new
+                {
+                    Topic = topic,
+                    Message = message
+                });
+            }
+        }
 
         public static void WriteSetCache(this DiagnosticListener @this, SetCacheEventData eventData)
         {

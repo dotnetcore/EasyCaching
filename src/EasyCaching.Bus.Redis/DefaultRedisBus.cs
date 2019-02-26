@@ -11,7 +11,7 @@
     /// <summary>
     /// Default redis bus.
     /// </summary>
-    public class DefaultRedisBus : IEasyCachingBus
+    public class DefaultRedisBus : EasyCachingAbstractBus
     {
         /// <summary>
         /// The subscriber.
@@ -56,6 +56,8 @@
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(value);
 
+            LogMessage(message);
+
             _handler?.Invoke(message);
         }
 
@@ -64,7 +66,7 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
-        public void Publish(string topic, EasyCachingMessage message)
+        public override void BasePublish(string topic, EasyCachingMessage message)
         {
             ArgumentCheck.NotNullOrWhiteSpace(topic, nameof(topic));
 
@@ -78,7 +80,7 @@
         /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task BasePublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
             ArgumentCheck.NotNullOrWhiteSpace(topic, nameof(topic));
 
@@ -90,7 +92,7 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="action">Action.</param>
-        public void Subscribe(string topic, Action<EasyCachingMessage> action)
+        public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
             _handler = action;
             _subscriber.Subscribe(topic, OnMessage);

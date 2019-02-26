@@ -5,10 +5,11 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using Newtonsoft.Json;
 
-    public class DefaultCSRedisBus : IEasyCachingBus
+    public class DefaultCSRedisBus : EasyCachingAbstractBus
     {
         /// <summary>
         /// The cache.
@@ -34,7 +35,7 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
-        public void Publish(string topic, EasyCachingMessage message)
+        public override void BasePublish(string topic, EasyCachingMessage message)
         {
             var msg = JsonConvert.SerializeObject(message);
 
@@ -48,7 +49,7 @@
         /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public async Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task BasePublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
             var msg = JsonConvert.SerializeObject(message);
 
@@ -60,7 +61,7 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="action">Action.</param>
-        public void Subscribe(string topic, Action<EasyCachingMessage> action)
+        public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
             _handler = action;
 
@@ -76,6 +77,8 @@
         private void OnMessage(string body)
         {
             var message = JsonConvert.DeserializeObject<EasyCachingMessage>(body);
+
+            LogMessage(message);
 
             _handler?.Invoke(message);
         }
