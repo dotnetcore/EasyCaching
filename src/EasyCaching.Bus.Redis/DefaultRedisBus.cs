@@ -24,11 +24,6 @@
         private readonly IRedisSubscriberProvider _subscriberProvider;
 
         /// <summary>
-        /// The handler.
-        /// </summary>
-        private Action<EasyCachingMessage> _handler;
-
-        /// <summary>
         /// The serializer.
         /// </summary>
         private readonly IEasyCachingSerializer _serializer;
@@ -56,9 +51,7 @@
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(value);
 
-            LogMessage(message);
-
-            _handler?.Invoke(message);
+            BaseOnMessage(message);
         }
 
         /// <summary>
@@ -94,7 +87,6 @@
         /// <param name="action">Action.</param>
         public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
-            _handler = action;
             _subscriber.Subscribe(topic, OnMessage);
         }
     }

@@ -17,11 +17,6 @@
         private readonly EasyCachingCSRedisClient _client;
 
         /// <summary>
-        /// The handler.
-        /// </summary>
-        private Action<EasyCachingMessage> _handler;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.CSRedis.DefaultCSRedisBus"/> class.
         /// </summary>
         /// <param name="clients">Clients.</param>
@@ -63,8 +58,6 @@
         /// <param name="action">Action.</param>
         public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
-            _handler = action;
-
             _client.Subscribe(
                 (topic, msg => OnMessage(msg.Body))
             );
@@ -78,9 +71,7 @@
         {
             var message = JsonConvert.DeserializeObject<EasyCachingMessage>(body);
 
-            LogMessage(message);
-
-            _handler?.Invoke(message);
+            BaseOnMessage(message);
         }
     }
 }

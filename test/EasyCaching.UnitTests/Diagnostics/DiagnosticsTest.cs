@@ -16,7 +16,13 @@
 
             FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
             {
-                if (kvp.Key.Equals("WriteExistsCache"))
+                if (kvp.Key.Equals("EasyCaching.WriteExistsCacheBefore"))
+                {
+                    Assert.NotNull(kvp.Value);
+
+                    statsLogged = true;
+                }
+                else if (kvp.Key.Equals("EasyCaching.WriteExistsCacheAfter"))
                 {
                     Assert.NotNull(kvp.Value);
 
@@ -46,7 +52,7 @@
 
             FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
             {
-                if (kvp.Key.Equals("WriteSetCache"))
+                if (kvp.Key.Equals("EasyCaching.WriteSetCacheBefore"))
                 {
                     Assert.NotNull(kvp.Value);
 
@@ -59,7 +65,7 @@
             {
                 var cacheKey = "WriteSetCache-key";
 
-                provider.Set(cacheKey,"aa", TimeSpan.FromSeconds(10));
+                provider.Set(cacheKey, "aa", TimeSpan.FromSeconds(10));
 
                 Assert.True(statsLogged);
 
@@ -76,7 +82,7 @@
 
             FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
             {
-                if (kvp.Key.Equals("WriteFlushCache"))
+                if (kvp.Key.Equals("EasyCaching.WriteFlushCacheBefore"))
                 {
                     Assert.NotNull(kvp.Value);
 
@@ -104,7 +110,7 @@
 
             FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
             {
-                if (kvp.Key.Equals("WriteRemoveCache"))
+                if (kvp.Key.Equals("EasyCaching.WriteRemoveCacheBefore"))
                 {
                     Assert.NotNull(kvp.Value);
 
@@ -134,7 +140,7 @@
 
             FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
             {
-                if (kvp.Key.Equals("WriteGetCache"))
+                if (kvp.Key.Equals("EasyCaching.WriteGetCacheBefore"))
                 {
                     Assert.NotNull(kvp.Value);
 
@@ -148,62 +154,6 @@
                 var cacheKey = "WriteGetCache-key";
 
                 provider.Get<string>(cacheKey);
-
-                Assert.True(statsLogged);
-
-                diagnosticListenerObserver.Disable();
-            }
-        }
-
-        [Fact]
-        public void WriteGetCountTest()
-        {
-            var statsLogged = false;
-
-            MyCachingProvider provider = new MyCachingProvider();
-
-            FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
-            {
-                if (kvp.Key.Equals("WriteGetCount"))
-                {
-                    Assert.NotNull(kvp.Value);
-
-                    statsLogged = true;
-                }
-            });
-
-            diagnosticListenerObserver.Enable();
-            using (DiagnosticListener.AllListeners.Subscribe(diagnosticListenerObserver))
-            {
-                provider.GetCount();
-
-                Assert.True(statsLogged);
-
-                diagnosticListenerObserver.Disable();
-            }
-        }
-
-        [Fact]
-        public void WriteSetAllTest()
-        {
-            var statsLogged = false;
-
-            MyCachingProvider provider = new MyCachingProvider();
-
-            FakeDiagnosticListenerObserver diagnosticListenerObserver = new FakeDiagnosticListenerObserver(kvp =>
-            {
-                if (kvp.Key.Equals("WriteSetAll"))
-                {
-                    Assert.NotNull(kvp.Value);
-
-                    statsLogged = true;
-                }
-            });
-
-            diagnosticListenerObserver.Enable();
-            using (DiagnosticListener.AllListeners.Subscribe(diagnosticListenerObserver))
-            {
-                provider.SetAll(new Dictionary<string, string>{ { "aa", "bb" } }, TimeSpan.FromSeconds(10));
 
                 Assert.True(statsLogged);
 

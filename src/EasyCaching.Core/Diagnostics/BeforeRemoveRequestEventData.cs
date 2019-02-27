@@ -1,8 +1,10 @@
 ﻿namespace EasyCaching.Core.Diagnostics
 {
-    public class RemoveCacheEventData : EventData
+    using System;
+
+    public class BeforeRemoveRequestEventData : EventData
     {
-        public RemoveCacheEventData(string cacheType, string name, string operation, string[] cacheKeys)
+        public BeforeRemoveRequestEventData(string cacheType, string name, string operation, string[] cacheKeys)
             : base(cacheType, name, operation)
         {
             this.CacheKeys = cacheKeys;

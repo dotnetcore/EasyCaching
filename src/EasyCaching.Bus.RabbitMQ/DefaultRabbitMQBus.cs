@@ -27,11 +27,6 @@
         private readonly ObjectPool<IConnection> _pubConnectionPool;
 
         /// <summary>
-        /// The handler.
-        /// </summary>
-        private Action<EasyCachingMessage> _handler;
-
-        /// <summary>
         /// The rabbitMQ Bus options.
         /// </summary>
         private readonly RabbitMQBusOptions _options;
@@ -142,7 +137,6 @@
         /// <param name="action">Action.</param>
         public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
-            _handler = action;
             var queueName = string.Empty;
             if (string.IsNullOrWhiteSpace(_options.QueueName))
             {
@@ -188,9 +182,7 @@
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(e.Body);
 
-            LogMessage(message);
-
-            _handler?.Invoke(message);
+            BaseOnMessage(message);
         }
     }
 }
