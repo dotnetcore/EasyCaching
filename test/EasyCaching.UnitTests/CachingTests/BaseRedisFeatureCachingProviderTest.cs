@@ -1,7 +1,6 @@
 ﻿namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
-    using EasyCaching.CSRedis;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -10,7 +9,8 @@
     public abstract class BaseRedisFeatureCachingProviderTest
     {
         protected IRedisCachingProvider _provider;
-        protected string _nameSpace = string.Empty;      
+        protected IEasyCachingProvider _baseProvider;
+        protected string _nameSpace = string.Empty;
 
         #region Hash
         [Fact]
@@ -545,8 +545,8 @@
 
             System.Threading.Thread.Sleep(1050);
 
-            var flag = _provider.Exists(cacheKey);
-            Assert.False(flag);
+            var val = _provider.HGet(cacheKey, "a1");
+            Assert.Null(val);
 
             _provider.HDel(cacheKey);
         }
@@ -565,8 +565,8 @@
 
             await Task.Delay(1050);
 
-            var flag = await _provider.ExistsAsync(cacheKey);
-            Assert.False(flag);
+            var val = await _provider.HGetAsync(cacheKey, "a1");
+            Assert.Null(val);
 
             await _provider.HDelAsync(cacheKey);
         }
@@ -584,7 +584,7 @@
             var val = _provider.LPop<string>(cacheKey);
             Assert.Equal("p2", val);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -598,7 +598,7 @@
             var val = await _provider.LPopAsync<string>(cacheKey);
             Assert.Equal("p2", val);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -615,7 +615,7 @@
             var pop = _provider.LPop<string>(cacheKey);
             Assert.Equal("p4", pop);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
 
@@ -633,7 +633,7 @@
             var pop = await _provider.LPopAsync<string>(cacheKey);
             Assert.Equal("p4", pop);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -672,7 +672,7 @@
             Assert.Single(list);
             Assert.Equal("p3", list[0]);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -691,7 +691,7 @@
             Assert.Single(list);
             Assert.Equal("p3", list[0]);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -709,7 +709,7 @@
             Assert.Equal("p2", val0);
             Assert.Equal("p1", val1);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -727,7 +727,7 @@
             Assert.Equal("p2", val0);
             Assert.Equal("p1", val1);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -748,7 +748,7 @@
             var len2 = _provider.LLen(cacheKey);
             Assert.Equal(1, len2);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
 
@@ -770,7 +770,7 @@
             var len2 = await _provider.LLenAsync(cacheKey);
             Assert.Equal(1, len2);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -788,7 +788,7 @@
             Assert.Single(vals);
             Assert.Equal("p1", vals[0]);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -806,7 +806,7 @@
             Assert.Single(vals);
             Assert.Equal("p1", vals[0]);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -820,7 +820,7 @@
             var len = _provider.LLen(cacheKey);
             Assert.Equal(2, len);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -834,7 +834,7 @@
             var len = await _provider.LLenAsync(cacheKey);
             Assert.Equal(2, len);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -848,7 +848,7 @@
             var val = _provider.RPop<string>(cacheKey);
             Assert.Equal("p2", val);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
 
@@ -863,7 +863,7 @@
             var val = await _provider.RPopAsync<string>(cacheKey);
             Assert.Equal("p2", val);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -880,7 +880,7 @@
             var pop = _provider.RPop<string>(cacheKey);
             Assert.Equal("p4", pop);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -897,7 +897,7 @@
             var pop = await _provider.RPopAsync<string>(cacheKey);
             Assert.Equal("p4", pop);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -914,7 +914,7 @@
             var list = _provider.LRange<string>(cacheKey, 0, -1);
             Assert.Equal("p4", list[1]);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -931,7 +931,7 @@
             var list = await _provider.LRangeAsync<string>(cacheKey, 0, -1);
             Assert.Equal("p4", list[1]);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -948,7 +948,7 @@
             var list = _provider.LRange<string>(cacheKey, 0, -1);
             Assert.Equal("p4", list[2]);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -965,7 +965,7 @@
             var list = await _provider.LRangeAsync<string>(cacheKey, 0, -1);
             Assert.Equal("p4", list[2]);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
         #endregion
 
@@ -983,7 +983,7 @@
 
             Assert.Equal(2, len);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -997,11 +997,11 @@
 
             System.Threading.Thread.Sleep(1050);
 
-            var flag = _provider.Exists(cacheKey);
+            var flag = _baseProvider.Exists(cacheKey);
 
             Assert.False(flag);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1019,7 +1019,7 @@
             Assert.True(i1);
             Assert.True(i2);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1035,7 +1035,7 @@
 
             Assert.False(i1);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1051,7 +1051,7 @@
             Assert.Contains("s1", vals);
             Assert.Contains("s2", vals);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1068,7 +1068,7 @@
             var flag = _provider.SIsMember<string>(cacheKey, "s1");
             Assert.False(flag);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1082,10 +1082,10 @@
 
             Assert.Equal(1, len);
 
-            var flag = _provider.Exists(cacheKey);
+            var flag = _baseProvider.Exists(cacheKey);
             Assert.False(flag);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1097,7 +1097,7 @@
 
             Assert.Empty(len);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1111,7 +1111,7 @@
 
             Assert.Equal(2, vals.Count);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1127,7 +1127,7 @@
 
             Assert.Equal(2, len);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -1145,7 +1145,7 @@
 
             Assert.Equal(0, len);
 
-            _provider.Remove(cacheKey);
+            _baseProvider.Remove(cacheKey);
         }
 
         [Fact]
@@ -1163,7 +1163,7 @@
             Assert.True(i1);
             Assert.True(i2);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -1179,7 +1179,7 @@
 
             Assert.False(i1);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -1195,7 +1195,7 @@
             Assert.Contains("s1", vals);
             Assert.Contains("s2", vals);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
 
@@ -1213,7 +1213,7 @@
             var flag = await _provider.SIsMemberAsync<string>(cacheKey, "s1");
             Assert.False(flag);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -1227,10 +1227,10 @@
 
             Assert.Equal(1, len);
 
-            var flag = await _provider.ExistsAsync(cacheKey);
+            var flag = await _baseProvider.ExistsAsync(cacheKey);
             Assert.False(flag);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -1242,7 +1242,7 @@
 
             Assert.Empty(len);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -1256,7 +1256,7 @@
 
             Assert.Equal(2, vals.Count);
 
-            await _provider.RemoveAsync(cacheKey);
+            await _baseProvider.RemoveAsync(cacheKey);
         }
         #endregion
     }

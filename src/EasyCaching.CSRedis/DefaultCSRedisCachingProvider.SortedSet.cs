@@ -7,7 +7,6 @@
 
     public partial class DefaultCSRedisCachingProvider : IRedisCachingProvider
     {
-
         public long ZAdd<T>(string cacheKey, Dictionary<T, double> cacheValues)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));

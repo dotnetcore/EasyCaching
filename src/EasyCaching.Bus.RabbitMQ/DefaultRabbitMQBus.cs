@@ -3,6 +3,7 @@
     using System;
     using System.Threading;
     using System.Threading.Tasks;
+    using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using EasyCaching.Core.Serialization;
     using global::RabbitMQ.Client;
@@ -13,7 +14,7 @@
     /// <summary>
     /// Default RabbitMQ Bus.
     /// </summary>
-    public class DefaultRabbitMQBus : IEasyCachingBus
+    public class DefaultRabbitMQBus : EasyCachingAbstractBus
     {
         /// <summary>
         /// The subscriber connection.
@@ -24,11 +25,6 @@
         /// The publish connection pool.
         /// </summary>
         private readonly ObjectPool<IConnection> _pubConnectionPool;
-
-        /// <summary>
-        /// The handler.
-        /// </summary>
-        private Action<EasyCachingMessage> _handler;
 
         /// <summary>
         /// The rabbitMQ Bus options.
@@ -83,7 +79,7 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
-        public void Publish(string topic, EasyCachingMessage message)
+        public override void BasePublish(string topic, EasyCachingMessage message)
         {
             var conn = _pubConnectionPool.Get();
 
@@ -112,7 +108,7 @@
         /// <param name="topic">Topic.</param>
         /// <param name="message">Message.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
-        public Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task BasePublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
             var conn = _pubConnectionPool.Get();
             try
@@ -139,9 +135,8 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="action">Action.</param>
-        public void Subscribe(string topic, Action<EasyCachingMessage> action)
+        public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
-            _handler = action;
             var queueName = string.Empty;
             if (string.IsNullOrWhiteSpace(_options.QueueName))
             {
@@ -187,7 +182,7 @@
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(e.Body);
 
-            _handler?.Invoke(message);
+            BaseOnMessage(message);
         }
     }
 }
