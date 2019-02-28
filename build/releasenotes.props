@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>        
         1. Support diagnostics.
+        2. Interceptor should generate valid cache key for basic type parameters
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Update EasyCaching.Core.    
