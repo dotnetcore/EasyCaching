@@ -10,7 +10,7 @@
     /// <remarks>
     /// Contains some features of redis
     /// </remarks>
-    public interface IRedisCachingProvider : IEasyCachingProvider
+    public interface IRedisCachingProvider //: IEasyCachingProvider
     {
         #region Hashes
         /// <summary>

@@ -5,8 +5,8 @@
     using Microsoft.Extensions.DependencyInjection;
     using System;
 
-    public class CSRedisFeatureCachingProviderTest  : BaseRedisFeatureCachingProviderTest
-    {     
+    public class CSRedisFeatureCachingProviderTest : BaseRedisFeatureCachingProviderTest
+    {
         public CSRedisFeatureCachingProviderTest()
         {
             IServiceCollection services = new ServiceCollection();
@@ -26,7 +26,8 @@
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IRedisCachingProvider>();
+            _baseProvider = serviceProvider.GetService<IEasyCachingProvider>();
             _nameSpace = "CSRedisFeature";
-        }    
+        }
     }
 }

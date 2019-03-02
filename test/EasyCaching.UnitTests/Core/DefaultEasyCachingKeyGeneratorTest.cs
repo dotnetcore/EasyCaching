@@ -72,6 +72,18 @@
         }
 
         [Fact]
+        public void Generate_CacheKey_With_Guid_Param_Method_Should_Succeed()
+        {
+            var methodName = "Method3";
+            MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
+
+            var newGuid = Guid.NewGuid();
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { newGuid }, string.Empty);
+
+            Assert.Equal($"Demo:Method3:{newGuid.ToString()}", key);
+        }
+
+        [Fact]
         public void Generate_CacheKey_With_String_Param_And_Prefix_Method_Should_Succeed()
         {
             var methodName = "Method3";
@@ -88,9 +100,10 @@
             var methodName = "Method4";
             MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
 
-            var key = _keyGenerator.GetCacheKey(methodInfo, null, string.Empty);
+            var dateTime = DateTime.Now;
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { dateTime }, string.Empty);
 
-            Assert.Equal($"Demo:Method4:0", key);
+            Assert.Equal($"Demo:Method4:{dateTime:O}", key);
         }
 
         [Fact]
@@ -99,9 +112,58 @@
             var methodName = "Method4";
             MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
 
-            var key = _keyGenerator.GetCacheKey(methodInfo, null, "GenKey");
+            var dateTime = DateTime.Now;
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { dateTime }, "GenKey");
 
-            Assert.Equal($"GenKey:0", key);
+            Assert.Equal($"GenKey:{dateTime:O}", key);
+        }
+
+        [Fact]
+        public void Generate_CacheKey_With_DateTimeOffset_Param_Method_Should_Succeed()
+        {
+            var methodName = "Method4";
+            MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
+
+            var dateTime = DateTimeOffset.Now;
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { dateTime }, string.Empty);
+
+            Assert.Equal($"Demo:Method4:{dateTime:O}", key);
+        }
+
+        [Fact]
+        public void Generate_CacheKey_With_DateTimeOffset_Param_And_Prefix_Method_Should_Succeed()
+        {
+            var methodName = "Method4";
+            MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
+
+            var dateTime = DateTimeOffset.Now;
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { dateTime }, "GenKey");
+
+            Assert.Equal($"GenKey:{dateTime:O}", key);
+        }
+
+        [Fact]
+        public void Generate_CacheKey_With_Array_Param_Method_Should_Succeed()
+        {
+            var methodName = "Method4";
+            MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
+
+            var array = new[] { 1, 2, 3 };
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { array }, string.Empty);
+
+            Assert.Equal($"Demo:Method4:[1,2,3]", key);
+        }
+
+        [Fact]
+        public void Generate_CacheKey_With_Array_Param_And_Prefix_Method_Should_Succeed()
+        {
+            var methodName = "Method4";
+            MethodInfo methodInfo = typeof(Demo).GetMethod(methodName);
+
+            var array = new[] { 1, 2, 3 };
+            var key = _keyGenerator.GetCacheKey(methodInfo, new object[] { array }, "GenKey");
+
+            Assert.Equal($"GenKey:[1,2,3]", key);
         }
 
         [Fact]

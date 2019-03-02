@@ -1,43 +1,44 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>        
-        1. Fixed ReturnValue bugs of Interceptors        
+        1. Support diagnostics.
+        2. Interceptor should generate valid cache key for basic type parameters
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors     
+        1. Update EasyCaching.Core.    
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Update EasyCaching.Core.
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Fixed ReturnValue bugs of Interceptors
+        1. Update EasyCaching.Core.    
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
         1. Update EasyCaching.Core.    

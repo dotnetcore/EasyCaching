@@ -1,20 +1,19 @@
 ﻿namespace EasyCaching.Memcached
 {
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Generic;
-    using System.Security.Cryptography;
     using System.Linq;
+    using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
-    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Default memcached caching provider.
     /// </summary>
-    public class DefaultMemcachedCachingProvider : IEasyCachingProvider
+    public class DefaultMemcachedCachingProvider : EasyCachingAbstractProvider
     {
         /// <summary>
         /// The memcached client.
@@ -40,43 +39,7 @@
         /// The name.
         /// </summary>
         private readonly string _name;
-
-        /// <summary>
-        /// <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/>
-        /// is distributed cache.
-        /// </summary>
-        public bool IsDistributedCache => true;
-
-        /// <summary>
-        /// Gets the order.
-        /// </summary>
-        /// <value>The order.</value>
-        public int Order => _options.Order;
-
-        /// <summary>
-        /// Gets the max rd second.
-        /// </summary>
-        /// <value>The max rd second.</value>
-        public int MaxRdSecond => _options.MaxRdSecond;
-
-        /// <summary>
-        /// Gets the type of the caching provider.
-        /// </summary>
-        /// <value>The type of the caching provider.</value>
-        public CachingProviderType CachingProviderType => _options.CachingProviderType;
-
-        /// <summary>
-        /// Gets the cache stats.
-        /// </summary>
-        /// <value>The cache stats.</value>
-        public CacheStats CacheStats => _cacheStats;
-
-        /// <summary>
-        /// Gets the name.
-        /// </summary>
-        /// <value>The name.</value>
-        public string Name => this._name;
-
+       
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
@@ -94,6 +57,13 @@
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
 
             this._cacheStats = new CacheStats();
+
+            this.ProviderName = this._name;
+            this.ProviderStats = this._cacheStats;
+            this.ProviderType = _options.CachingProviderType;
+            this.ProviderOrder = _options.Order;
+            this.ProviderMaxRdSecond = _options.MaxRdSecond;
+            this.IsDistributedProvider = true;
         }
 
         /// <summary>
@@ -113,8 +83,14 @@
             this._memcachedClient = memcachedClients.FirstOrDefault(x => x.Name.Equals(this._name));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
-
             this._cacheStats = new CacheStats();
+
+            this.ProviderName = this._name;
+            this.ProviderStats = this._cacheStats;
+            this.ProviderType = _options.CachingProviderType;
+            this.ProviderOrder = _options.Order;
+            this.ProviderMaxRdSecond = _options.MaxRdSecond;
+            this.IsDistributedProvider = true;
         }
 
         /// <summary>
@@ -125,7 +101,7 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration)
+        public override CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
@@ -174,7 +150,7 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
@@ -222,7 +198,7 @@
         /// <returns>The get.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public CacheValue<T> Get<T>(string cacheKey)
+        public override CacheValue<T> BaseGet<T>(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -252,7 +228,7 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -283,7 +259,7 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="type">Object Type.</param>
-        public async Task<object> GetAsync(string cacheKey, Type type)
+        public override async Task<object> BaseGetAsync(string cacheKey, Type type)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -313,7 +289,7 @@
         /// </summary>
         /// <returns>The remove.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public void Remove(string cacheKey)
+        public override void BaseRemove(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -325,7 +301,7 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public async Task RemoveAsync(string cacheKey)
+        public override async Task BaseRemoveAsync(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -340,7 +316,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -363,7 +339,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -383,7 +359,7 @@
         /// </summary>
         /// <returns>The exists.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public bool Exists(string cacheKey)
+        public override bool BaseExists(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -395,7 +371,7 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public async Task<bool> ExistsAsync(string cacheKey)
+        public override async Task<bool> BaseExistsAsync(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -409,7 +385,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override void BaseRefresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -427,7 +403,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override async Task BaseRefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -446,7 +422,7 @@
         /// and confirm that you use the namespacing when you set and get the cache.
         /// </remarks>
         /// <param name="prefix">Prefix of CacheKey.</param>
-        public void RemoveByPrefix(string prefix)
+        public override void BaseRemoveByPrefix(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
@@ -474,7 +450,7 @@
         /// </remarks>
         /// <param name="prefix">Prefix of CacheKey.</param>
         /// <returns></returns>
-        public async Task RemoveByPrefixAsync(string prefix)
+        public override async Task BaseRemoveByPrefixAsync(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
@@ -519,7 +495,7 @@
         /// <param name="values">Values.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public void SetAll<T>(IDictionary<string, T> values, TimeSpan expiration)
+        public override void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
@@ -537,7 +513,7 @@
         /// <param name="values">Values.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task SetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)
+        public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
@@ -556,7 +532,7 @@
         /// <returns>The all.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
@@ -580,7 +556,7 @@
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
@@ -604,7 +580,7 @@
         /// <returns>The by prefix.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix)
+        public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
             throw new NotImplementedException();
         }
@@ -615,7 +591,7 @@
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix)
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix)
         {
             throw new NotImplementedException();
         }
@@ -624,7 +600,7 @@
         /// Removes all.
         /// </summary>
         /// <param name="cacheKeys">Cache keys.</param>
-        public void RemoveAll(IEnumerable<string> cacheKeys)
+        public override void BaseRemoveAll(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
@@ -637,7 +613,7 @@
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
-        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
@@ -653,7 +629,7 @@
         /// </summary>
         /// <returns>The count.</returns>
         /// <param name="prefix">Prefix.</param>
-        public int GetCount(string prefix = "")
+        public override int BaseGetCount(string prefix = "")
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {
@@ -669,7 +645,7 @@
         /// <summary>
         /// Flush All Cached Item.
         /// </summary>
-        public void Flush()
+        public override void BaseFlush()
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("Memcached -- Flush");
@@ -682,7 +658,7 @@
         /// Flush All Cached Item async.
         /// </summary>
         /// <returns>The async.</returns>
-        public async Task FlushAsync()
+        public override async Task BaseFlushAsync()
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("Memcached -- FlushAsync");
@@ -698,7 +674,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public bool TrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -721,7 +697,7 @@
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -735,6 +711,5 @@
 
             return _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }
-
     }
 }
