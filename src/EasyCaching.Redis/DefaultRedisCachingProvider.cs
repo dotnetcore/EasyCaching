@@ -169,6 +169,8 @@
             }
             else
             {
+                //remove mutex key
+                _cache.KeyDelete($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -254,6 +256,8 @@
             }
             else
             {
+                //remove mutex key
+                await _cache.KeyDeleteAsync($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
