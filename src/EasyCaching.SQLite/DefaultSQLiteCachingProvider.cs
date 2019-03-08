@@ -51,11 +51,11 @@
         /// <param name="dbProvider">dbProvider.</param>
         public DefaultSQLiteCachingProvider(
             ISQLiteDatabaseProvider dbProvider,
-            IOptionsMonitor<SQLiteOptions> options,
+            SQLiteOptions options,
             ILoggerFactory loggerFactory = null)
         {
             this._dbProvider = dbProvider;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
@@ -72,7 +72,7 @@
         public DefaultSQLiteCachingProvider(
             string name,
             IEnumerable<ISQLiteDatabaseProvider> dbProviders,
-           SQLiteOptions options,
+            SQLiteOptions options,
            ILoggerFactory loggerFactory = null)
         {
             this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));

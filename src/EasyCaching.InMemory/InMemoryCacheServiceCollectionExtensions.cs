@@ -126,7 +126,8 @@
             services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>(x =>
             {
                 var mCache = x.GetRequiredService<IInMemoryCaching>();
-                var options = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
+                var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
+                var options = optionsMon.Get(providerName);
                 //ILoggerFactory can be null
                 var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
                 return new DefaultInMemoryCachingProvider(providerName, mCache, options, factory);

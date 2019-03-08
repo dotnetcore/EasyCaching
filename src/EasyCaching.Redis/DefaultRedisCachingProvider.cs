@@ -65,7 +65,7 @@
         public DefaultRedisCachingProvider(
             IRedisDatabaseProvider dbProvider,
             IEasyCachingSerializer serializer,
-            IOptionsMonitor<RedisOptions> options,
+            RedisOptions options,
             ILoggerFactory loggerFactory = null)
         {
             ArgumentCheck.NotNull(dbProvider, nameof(dbProvider));
@@ -73,7 +73,7 @@
 
             this._dbProvider = dbProvider;
             this._serializer = serializer;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
@@ -100,7 +100,7 @@
             string name,
             IEnumerable<IRedisDatabaseProvider> dbProviders,
             IEasyCachingSerializer serializer,
-            IOptionsMonitor<RedisOptions> options,
+            RedisOptions options,
             ILoggerFactory loggerFactory = null)
         {
             ArgumentCheck.NotNullAndCountGTZero(dbProviders, nameof(dbProviders));
@@ -108,7 +108,7 @@
 
             this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
             this._serializer = serializer;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();

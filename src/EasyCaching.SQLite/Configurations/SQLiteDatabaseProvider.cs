@@ -18,9 +18,9 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteDatabaseProvider"/> class.
         /// </summary>
         /// <param name="optionAction">Option action.</param>
-        public SQLiteDatabaseProvider(IOptionsMonitor<SQLiteOptions> optionAction)
+        public SQLiteDatabaseProvider(SQLiteOptions optionAction)
         {
-            this._options = optionAction.CurrentValue.DBConfig;
+            this._options = optionAction.DBConfig;
         }
 
 

@@ -37,7 +37,7 @@
             }
             conn.Execute(ConstSQL.CREATESQL);
 
-            _provider = new DefaultSQLiteCachingProvider(_dbProvider, new TestOptionMonitorWrapper<SQLiteOptions>(new SQLiteOptions()));
+            _provider = new DefaultSQLiteCachingProvider(_dbProvider, new SQLiteOptions());
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 

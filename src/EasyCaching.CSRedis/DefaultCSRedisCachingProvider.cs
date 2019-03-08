@@ -55,12 +55,12 @@
            string name,
            IEnumerable<EasyCachingCSRedisClient> clients,
            IEasyCachingSerializer serializer,
-           IOptionsMonitor<RedisOptions> options,
+           RedisOptions options,
            ILoggerFactory loggerFactory = null)
         {
             this._name = name;
             this._serializer = serializer;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
             this._cache = clients.FirstOrDefault(x => x.Name.Equals(_name));
             this._cacheStats = new CacheStats();

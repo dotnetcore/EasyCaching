@@ -46,11 +46,11 @@
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultInMemoryCachingProvider(
             IInMemoryCaching cache,
-            IOptionsMonitor<InMemoryOptions> options,
+            InMemoryOptions options,
             ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
 
             this._cacheStats = new CacheStats();
@@ -75,11 +75,11 @@
         public DefaultInMemoryCachingProvider(
            string name,
            IInMemoryCaching cache,
-           IOptionsMonitor<InMemoryOptions> options,
+           InMemoryOptions options,
            ILoggerFactory loggerFactory = null)
         {
             this._cache = cache;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
 
             this._cacheStats = new CacheStats();

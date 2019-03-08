@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.Redis
 {
-    using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
     using System.Collections.Generic;
@@ -26,13 +25,13 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisDatabaseProvider"/> class.
         /// </summary>
         /// <param name="options">Options.</param>
-        public RedisDatabaseProvider(IOptionsMonitor<RedisOptions> options)
+        public RedisDatabaseProvider(RedisOptions options)
         {
-            _options = options.CurrentValue.DBConfig;
+            _options = options.DBConfig;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
         }
 
-        public RedisDatabaseProvider(string name,RedisOptions options)
+        public RedisDatabaseProvider(string name, RedisOptions options)
         {
             _options = options.DBConfig;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
@@ -48,7 +47,7 @@
         /// </summary>
         public IDatabase GetDatabase()
         {
-            return _connectionMultiplexer.Value.GetDatabase();            
+            return _connectionMultiplexer.Value.GetDatabase();
         }
 
         /// <summary>
@@ -71,7 +70,7 @@
         /// <returns>The connection multiplexer.</returns>
         private ConnectionMultiplexer CreateConnectionMultiplexer()
         {
-            if(string.IsNullOrWhiteSpace(_options.Configuration))
+            if (string.IsNullOrWhiteSpace(_options.Configuration))
             {
                 var configurationOptions = new ConfigurationOptions
                 {

@@ -76,7 +76,8 @@
             {
                 var clients = x.GetServices<EasyCachingCSRedisClient>();
                 var serializer = x.GetRequiredService<IEasyCachingSerializer>();
-                var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var options = optionsMon.Get(_name);
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultCSRedisCachingProvider(_name, clients, serializer, options, factory);
             };
