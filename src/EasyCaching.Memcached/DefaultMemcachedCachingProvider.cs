@@ -138,6 +138,7 @@
             }
             else
             {
+                _memcachedClient.Remove(this.HandleCacheKey($"{cacheKey}_Lock"));
                 return CacheValue<T>.NoValue;
             }
         }
@@ -188,6 +189,7 @@
             }
             else
             {
+                await _memcachedClient.RemoveAsync(this.HandleCacheKey($"{cacheKey}_Lock"));
                 return CacheValue<T>.NoValue;
             }
         }

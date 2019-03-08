@@ -143,6 +143,8 @@
             }
             else
             {
+                //remove mutex key
+                _cache.Remove($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -195,6 +197,8 @@
             }
             else
             {
+                //remove mutex key
+                _cache.Remove($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
