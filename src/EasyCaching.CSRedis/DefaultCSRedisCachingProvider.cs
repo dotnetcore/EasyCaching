@@ -655,7 +655,7 @@
             _cache.Set(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
-                expiration.Seconds
+                (int)expiration.TotalSeconds
                 );
         }
 
@@ -676,7 +676,7 @@
 
             foreach (var item in value)
             {
-                _cache.Set(item.Key, _serializer.Serialize(item.Value), expiration.Seconds);
+                _cache.Set(item.Key, _serializer.Serialize(item.Value), (int)expiration.TotalSeconds);
             }
         }
 
@@ -700,7 +700,7 @@
 
             foreach (var item in value)
             {
-                tasks.Add(_cache.SetAsync(item.Key, _serializer.Serialize(item.Value), expiration.Seconds));
+                tasks.Add(_cache.SetAsync(item.Key, _serializer.Serialize(item.Value), (int)expiration.TotalSeconds));
             }
 
             await Task.WhenAll(tasks);
@@ -731,7 +731,7 @@
             await _cache.SetAsync(
                 cacheKey,
                 val,
-                expiration.Seconds
+                (int)expiration.TotalSeconds
                 );
         }
 
@@ -758,7 +758,7 @@
             return _cache.Set(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
-                expiration.Seconds,
+                (int)expiration.TotalSeconds,
                 RedisExistence.Nx
                 );
         }
@@ -786,7 +786,7 @@
             return await _cache.SetAsync(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
-                expiration.Seconds,
+                (int)expiration.TotalSeconds,
                 RedisExistence.Nx
                 );
         }

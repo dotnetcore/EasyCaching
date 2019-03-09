@@ -5,16 +5,16 @@
         2. Interceptor should generate valid cache key for basic type parameters
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. fix mutex lock error
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Update EasyCaching.Core.    
+        1. fix mutex lock error 
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Update EasyCaching.Core.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. fix mutex lock error
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. Update EasyCaching.Core.    
@@ -38,7 +38,8 @@
         1. Update EasyCaching.Core.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. fix mutex lock error
+        2. fix expiration
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
         1. Update EasyCaching.Core.    
