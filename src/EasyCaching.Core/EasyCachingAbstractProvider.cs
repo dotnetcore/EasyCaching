@@ -420,7 +420,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }
@@ -446,7 +446,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }
@@ -628,7 +628,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }
@@ -654,7 +654,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }
@@ -680,7 +680,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }
@@ -706,7 +706,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }
@@ -732,7 +732,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }
@@ -758,7 +758,7 @@
                 }
                 else
                 {
-                    s_diagnosticListener.WriteSubscribeMessageAfter(operationId);
+                    s_diagnosticListener.WriteSetCacheAfter(operationId);
                 }
             }
         }

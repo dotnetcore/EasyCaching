@@ -224,11 +224,7 @@
                 @this.Write(EasyCachingBeforeSetCache, new
                 {
                     OperationId = operationId,
-                    eventData.Operation,
-                    eventData.CacheType,
-                    ProviderName = eventData.Name,
-                    Data = eventData.Dict,
-                    eventData.Expiration,
+                    EventData = eventData,
                     Timestamp = Stopwatch.GetTimestamp()
                 });
 
@@ -246,10 +242,7 @@
                 @this.Write(EasyCachingBeforeRemoveCache, new
                 {
                     OperationId = operationId,
-                    eventData.Operation,
-                    eventData.CacheType,
-                    ProviderName = eventData.Name,
-                    Data = eventData.CacheKeys,
+                    EventData = eventData,
                     Timestamp = Stopwatch.GetTimestamp()
                 });
                 return operationId;
@@ -267,11 +260,7 @@
                 @this.Write(EasyCachingBeforeGetCache, new
                 {
                     OperationId = operationId,
-                    eventData.Operation,
-                    eventData.CacheType,
-                    ProviderName = eventData.Name,
-                    Data = eventData.CacheKeys,
-                    eventData.Expiration,
+                    EventData = eventData,
                     Timestamp = Stopwatch.GetTimestamp()
                 });
 
@@ -290,10 +279,7 @@
                 @this.Write(EasyCachingBeforeExistsCache, new
                 {
                     OperationId = operationId,
-                    eventData.Operation,
-                    eventData.CacheType,
-                    ProviderName = eventData.Name,
-                    Data = eventData.CacheKey,
+                    EventData = eventData,
                     Timestamp = Stopwatch.GetTimestamp()
                 });
 
@@ -312,9 +298,7 @@
                 @this.Write(EasyCachingBeforeFlushCache, new
                 {
                     OperationId = operationId,
-                    eventData.Operation,
-                    eventData.CacheType,
-                    ProviderName = eventData.Name,
+                    EventData = eventData,
                     Timestamp = Stopwatch.GetTimestamp()
                 });
 
@@ -324,7 +308,7 @@
             return Guid.Empty;
         }
 
-        public static Guid WriteSubscribeMessageBefore(this DiagnosticListener @this, object message)
+        public static Guid WriteSubscribeMessageBefore(this DiagnosticListener @this, BeforeSubscribeMessageRequestEventData eventData)
         {
             if (@this.IsEnabled(EasyCachingBeforeSubscribeMessage))
             {
@@ -333,7 +317,7 @@
                 @this.Write(EasyCachingBeforeSubscribeMessage, new
                 {
                     OperationId = operationId,
-                    Message = message,
+                    EventData = eventData,
                     Timestamp = Stopwatch.GetTimestamp()
                 });
 
@@ -343,7 +327,7 @@
             return Guid.Empty;
         }
 
-        public static Guid WritePublishMessageBefore(this DiagnosticListener @this, string topic, object message)
+        public static Guid WritePublishMessageBefore(this DiagnosticListener @this, BeforePublishMessageRequestEventData eventData)
         {
             if (@this.IsEnabled(EasyCachingBeforePublishMessage))
             {
@@ -352,8 +336,7 @@
                 @this.Write(EasyCachingBeforePublishMessage, new
                 {
                     OperationId = operationId,
-                    Topic = topic,
-                    Message = message,
+                    EventData = eventData,
                     Timestamp = Stopwatch.GetTimestamp()
                 });
 

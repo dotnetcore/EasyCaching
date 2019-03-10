@@ -1,20 +1,19 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>        
-        1. Support diagnostics.
-        2. Interceptor should generate valid cache key for basic type parameters
+        1. Modity diagnostics.        
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. fix mutex lock error
+        1. Update EasyCaching.Core.    
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. fix mutex lock error 
+        1. Update EasyCaching.Core.    
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Update EasyCaching.Core.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. fix mutex lock error
+        1. Update EasyCaching.Core.    
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. Update EasyCaching.Core.    
@@ -38,8 +37,7 @@
         1. Update EasyCaching.Core.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. fix mutex lock error
-        2. fix expiration
+        1. Update EasyCaching.Core.    
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
         1. Update EasyCaching.Core.    
