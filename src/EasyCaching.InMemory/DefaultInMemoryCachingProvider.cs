@@ -580,7 +580,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            _cache.Clear(_name);
+            _cache.Clear();
         }
 
         /// <summary>
@@ -592,7 +592,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            _cache.Clear(_name);
+            _cache.Clear();
             await Task.CompletedTask;
         }
 
