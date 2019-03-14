@@ -1,16 +1,15 @@
 ﻿namespace EasyCaching.Interceptor.AspectCore
 {
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Interceptor;
     using global::AspectCore.Configuration;
     using global::AspectCore.Extensions.DependencyInjection;
     using global::AspectCore.Injector;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
     using System.Linq;
     using System.Reflection;
-    using EasyCaching.Core.Interceptor;
 
     /// <summary>
     /// Aspectcore interceptor service collection extensions.
@@ -22,29 +21,20 @@
         /// </summary>
         /// <returns>The aspect core interceptor.</returns>
         /// <param name="services">Services.</param>
-        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services)
-        {
-            services.TryAddSingleton<IEasyCachingKeyGenerator,DefaultEasyCachingKeyGenerator>();
+        /// <param name="options">Easycaching Interceptor config</param>
+        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services, Action<EasyCachingInterceptorOptions> options) => services.ConfigureAspectCoreInterceptor(x => { }, options);
 
-            var container = services.ToServiceContainer();
-
-            return container.Configure(config =>
-            {
-                bool all(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));               
-
-                config.Interceptors.AddTyped<EasyCachingInterceptor>(all);
-            }).Build();                        
-        }
-               
         /// <summary>
         /// Configures the AspectCore interceptor.
         /// </summary>
         /// <returns>The aspect core interceptor.</returns>
         /// <param name="services">Services.</param>
         /// <param name="action">Action.</param>
-        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services, Action<IServiceContainer> action)
+        /// <param name="options">Easycaching Interceptor config</param>
+        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services, Action<IServiceContainer> action, Action<EasyCachingInterceptorOptions> options)
         {
             services.TryAddSingleton<IEasyCachingKeyGenerator, DefaultEasyCachingKeyGenerator>();
+            services.Configure(options);
 
             var container = services.ToServiceContainer();
 
@@ -65,11 +55,13 @@
         /// <param name="services">Services.</param>
         /// <param name="action">Action.</param>
         /// <param name="isRemoveDefault">If set to <c>true</c> is remove default.</param>
-        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services, Action<IServiceContainer> action, bool isRemoveDefault)
+        /// <param name="options">Easycaching Interceptor config</param>
+        public static IServiceProvider ConfigureAspectCoreInterceptor(this IServiceCollection services, Action<IServiceContainer> action, bool isRemoveDefault, Action<EasyCachingInterceptorOptions> options)
         {
             if (isRemoveDefault)
             {
                 services.TryAddSingleton<IEasyCachingKeyGenerator, DefaultEasyCachingKeyGenerator>();
+                services.Configure(options);
 
                 var container = services.ToServiceContainer();
 
@@ -79,7 +71,7 @@
             }
             else
             {
-                return services.ConfigureAspectCoreInterceptor(action);
+                return services.ConfigureAspectCoreInterceptor(action, options);
             }
         }
     }

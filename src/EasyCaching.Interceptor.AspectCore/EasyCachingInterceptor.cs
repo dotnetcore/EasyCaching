@@ -1,14 +1,17 @@
 ﻿namespace EasyCaching.Interceptor.AspectCore
 {
+    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Interceptor;
+    using global::AspectCore.DynamicProxy;
+    using global::AspectCore.Injector;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Interceptor;
-    using global::AspectCore.DynamicProxy;
-    using global::AspectCore.Injector;
 
     /// <summary>
     /// Easy caching interceptor.
@@ -16,11 +19,11 @@
     public class EasyCachingInterceptor : AbstractInterceptor
     {
         /// <summary>
-        /// Gets or sets the cache provider.
+        /// Gets or sets the cache provider factory.
         /// </summary>
         /// <value>The cache provider.</value>
         [FromContainer]
-        public IEasyCachingProvider CacheProvider { get; set; }
+        public IEasyCachingProviderFactory CacheProviderFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the key generator.
@@ -30,10 +33,33 @@
         public IEasyCachingKeyGenerator KeyGenerator { get; set; }
 
         /// <summary>
+        /// Get or set the options
+        /// </summary>
+        [FromContainer]
+        public IOptions<EasyCachingInterceptorOptions> Options { get; set; }
+
+        /// <summary>
+        /// logger
+        /// </summary>
+        [FromContainer]
+        public ILogger<EasyCachingInterceptor> Logger { get; set; }
+
+        /// <summary>
+        /// The cache provider.
+        /// </summary>
+        private IEasyCachingProvider _cacheProvider;
+
+        /// <summary>
         /// The typeof task result method.
         /// </summary>
         private static readonly ConcurrentDictionary<Type, MethodInfo>
                     TypeofTaskResultMethod = new ConcurrentDictionary<Type, MethodInfo>();
+
+        /// <summary>
+        /// The typeof task result method.
+        /// </summary>
+        private static readonly ConcurrentDictionary<MethodInfo, object[]>
+                    MethodAttributes = new ConcurrentDictionary<MethodInfo, object[]>();
 
         /// <summary>
         /// Invoke the specified context and next.
@@ -43,6 +69,7 @@
         /// <param name="next">Next.</param>
         public async override Task Invoke(AspectContext context, AspectDelegate next)
         {
+            _cacheProvider = _cacheProvider ?? CacheProviderFactory.GetCachingProvider(Options.Value.CacheProviderName);
             //Process any early evictions 
             await ProcessEvictAsync(context, true);
 
@@ -56,6 +83,11 @@
             await ProcessEvictAsync(context, false);
         }
 
+        private object[] GetMethodAttributes(MethodInfo mi)
+        {
+            return MethodAttributes.GetOrAdd(mi, mi.GetCustomAttributes(true));
+        }
+
         /// <summary>
         /// Proceeds the able async.
         /// </summary>
@@ -64,7 +96,7 @@
         /// <param name="next">Next.</param>
         private async Task ProceedAbleAsync(AspectContext context, AspectDelegate next)
         {
-            if (context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
+            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
             {
                 var returnType = context.IsAsync()
                         ? context.ServiceMethod.ReturnType.GetGenericArguments().First()
@@ -72,7 +104,24 @@
 
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
-                object cacheValue = await CacheProvider.GetAsync(cacheKey, returnType);
+                object cacheValue = null;
+                var isAvailable = true;
+                try
+                {
+                    cacheValue = await _cacheProvider.GetAsync(cacheKey, returnType);
+                }
+                catch (Exception ex)
+                {
+                    if (!attribute.IsHightAvailability)
+                    {
+                        throw;
+                    }
+                    else
+                    {
+                        isAvailable = false;
+                        Logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" get error.");
+                    }
+                }
 
                 if (cacheValue != null)
                 {
@@ -98,16 +147,19 @@
                     // Invoke the method if we don't have a cache hit
                     await next(context);
 
-                    if (context.IsAsync())
+                    if (isAvailable)
                     {
-                        //get the result
-                        var returnValue = await context.UnwrapAsyncReturnValue();
+                        if (context.IsAsync())
+                        {
+                            //get the result
+                            var returnValue = await context.UnwrapAsyncReturnValue();
 
-                        await CacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                    }
-                    else
-                    {
-                        await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                            await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                        }
+                        else
+                        {
+                            await _cacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                        }
                     }
                 }
             }
@@ -125,20 +177,28 @@
         /// <param name="context">Context.</param>
         private async Task ProcessPutAsync(AspectContext context)
         {
-            if (context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && context.ReturnValue != null)
+            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && context.ReturnValue != null)
             {
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
-                if (context.IsAsync())
+                try
                 {
-                    //get the result
-                    var returnValue = await context.UnwrapAsyncReturnValue();
+                    if (context.IsAsync())
+                    {
+                        //get the result
+                        var returnValue = await context.UnwrapAsyncReturnValue();
 
-                    await CacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                        await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    }
+                    else
+                    {
+                        await _cacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    await CacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    if (!attribute.IsHightAvailability) throw;
+                    else Logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" set error.");
                 }
             }
         }
@@ -151,21 +211,29 @@
         /// <param name="isBefore">If set to <c>true</c> is before.</param>
         private async Task ProcessEvictAsync(AspectContext context, bool isBefore)
         {
-            if (context.ServiceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
+            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {
-                if (attribute.IsAll)
+                try
                 {
-                    //If is all , clear all cached items which cachekey start with the prefix.
-                    var cachePrefix = KeyGenerator.GetCacheKeyPrefix(context.ServiceMethod, attribute.CacheKeyPrefix);
+                    if (attribute.IsAll)
+                    {
+                        //If is all , clear all cached items which cachekey start with the prefix.
+                        var cachePrefix = KeyGenerator.GetCacheKeyPrefix(context.ServiceMethod, attribute.CacheKeyPrefix);
 
-                    await CacheProvider.RemoveByPrefixAsync(cachePrefix);
+                        await _cacheProvider.RemoveByPrefixAsync(cachePrefix);
+                    }
+                    else
+                    {
+                        //If not all , just remove the cached item by its cachekey.
+                        var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
+
+                        await _cacheProvider.RemoveAsync(cacheKey);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    //If not all , just remove the cached item by its cachekey.
-                    var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
-
-                    await CacheProvider.RemoveAsync(cacheKey);
+                    if (!attribute.IsHightAvailability) throw;
+                    else Logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" remove error.");
                 }
             }
         }

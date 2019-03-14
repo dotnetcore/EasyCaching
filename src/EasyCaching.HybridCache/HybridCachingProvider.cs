@@ -38,39 +38,38 @@
         /// The cache identifier.
         /// </summary>
         private readonly string _cacheId;
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
         /// </summary>
         /// <param name="optionsAccs">Options accs.</param>
-        /// <param name="providers">Providers.</param>
+        /// <param name="IEasyCachingProviderFactory">Providers factory</param>
         /// <param name="bus">Bus.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public HybridCachingProvider(
-            IOptions<HybridCachingOptions> optionsAccs
-            , IEnumerable<IEasyCachingProvider> providers
+            HybridCachingOptions optionsAccs
+            , IEasyCachingProviderFactory factory
             , IEasyCachingBus bus = null
             , ILoggerFactory loggerFactory = null
             )
         {
-            ArgumentCheck.NotNullAndCountGTZero(providers, nameof(providers));
+            ArgumentCheck.NotNull(factory, nameof(factory));
 
-            this._options = optionsAccs.Value;
+            this._options = optionsAccs;
 
             ArgumentCheck.NotNullOrWhiteSpace(_options.TopicName, nameof(_options.TopicName));
 
             this._logger = loggerFactory?.CreateLogger<HybridCachingProvider>();
 
             //Here use the order to distinguish traditional provider
-            var local = providers.OrderBy(x => x.Order).FirstOrDefault(x => !x.IsDistributedCache);
-
-            if (local == null) throw new NotFoundCachingProviderException("Can not found any local caching providers.");
+            var local = factory.GetCachingProvider(_options.LocalCacheProviderName);
+            if (local.IsDistributedCache) throw new NotFoundCachingProviderException("Can not found any local caching providers.");
             else this._localCache = local;
 
             //Here use the order to distinguish traditional provider
-            var distributed = providers.OrderBy(x => x.Order).FirstOrDefault(x => x.IsDistributedCache);
+            var distributed = factory.GetCachingProvider(_options.DistributedCacheProviderName);
 
-            if (distributed == null) throw new NotFoundCachingProviderException("Can not found any distributed caching providers.");
+            if (!distributed.IsDistributedCache) throw new NotFoundCachingProviderException("Can not found any distributed caching providers.");
             else this._distributedCache = distributed;
 
             this._bus = bus ?? NullEasyCachingBus.Instance;

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build/version.props" />
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
@@ -26,5 +26,6 @@
   <ItemGroup>
     <PackageReference Include="AspectCore.Core" Version="1.1.0" />
     <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
   </ItemGroup>
 </Project>

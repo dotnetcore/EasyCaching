@@ -1,13 +1,13 @@
 ﻿namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
-    using EasyCaching.Serialization.MessagePack;
+    using EasyCaching.Core.Serialization;
     using EasyCaching.Serialization.Json;
+    using EasyCaching.Serialization.MessagePack;
     using EasyCaching.Serialization.Protobuf;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using Xunit;
-    using EasyCaching.Core.Serialization;
 
     public class SerializerServiceCollectionExtensionsTest
     {
@@ -15,7 +15,7 @@
         public void AddDefaultMessagePackSerializer_Should_Get_DefaultMessagePackSerializer()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultMessagePackSerializer();
+            services.AddEasyCaching(x => x.WithMessagePack());
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var serializer = serviceProvider.GetService<IEasyCachingSerializer>();
@@ -27,7 +27,7 @@
         public void AddDefaultJsonSerializer_Should_Get_DefaultJsonSerializer()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultJsonSerializer();
+            services.AddEasyCaching(x => x.WithJson());
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var serializer = serviceProvider.GetService<IEasyCachingSerializer>();
@@ -39,7 +39,7 @@
         public void AddDefaultProtobufSerializer_Should_Get_DefaultProtobufSerializer()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultProtobufSerializer();
+            services.AddEasyCaching(x => x.WithProtobuf());
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var serializer = serviceProvider.GetService<IEasyCachingSerializer>();

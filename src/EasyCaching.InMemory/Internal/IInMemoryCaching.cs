@@ -6,6 +6,7 @@
 
     public interface IInMemoryCaching
     {
+        string ProviderName { get; }
         int GetCount(string prefix = "");
         CacheValue<T> Get<T>(string key);
 

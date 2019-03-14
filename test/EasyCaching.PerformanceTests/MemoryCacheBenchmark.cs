@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.PerformanceTests
+﻿using EasyCaching.Core;
+
+namespace EasyCaching.PerformanceTests
 {
     using BenchmarkDotNet.Attributes;
     using EasyCaching.InMemory;
@@ -9,7 +11,9 @@
     public class SetBenchmark
     {
         private readonly MemoryCache _msCache = new MemoryCache(new MemoryCacheOptions());
-        private readonly InMemoryCaching _cache = new InMemoryCaching(new InMemoryCachingOptions());
+
+        private readonly InMemoryCaching _cache =
+            new InMemoryCaching(EasyCachingConstValue.DefaultInMemoryName, new InMemoryCachingOptions());
 
         [Benchmark]
         public void MS()
@@ -29,7 +33,9 @@
     public class GetBenchmark
     {
         private readonly MemoryCache _msCache = new MemoryCache(new MemoryCacheOptions());
-        private readonly InMemoryCaching _cache = new InMemoryCaching(new InMemoryCachingOptions());
+
+        private readonly InMemoryCaching _cache =
+            new InMemoryCaching(EasyCachingConstValue.DefaultInMemoryName, new InMemoryCachingOptions());
 
         [GlobalSetup]
         public void Setup()

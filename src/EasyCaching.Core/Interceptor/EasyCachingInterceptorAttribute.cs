@@ -19,6 +19,12 @@
         /// </summary>
         /// <value>The cache key prefix.</value>
         public string CacheKeyPrefix { get; set; } = string.Empty;
+
+        /// <summary>
+        ///  Prevent cache provider errors from affecting business
+        /// </summary>
+        /// <value>The cache key prefix.</value>
+        public bool IsHightAvailability { get; set; } = true;
     }
 
     /// <summary>

@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.ResponseCaching
+﻿using EasyCaching.Core;
+
+namespace EasyCaching.ResponseCaching
 {
     using Microsoft.AspNetCore.ResponseCaching;
     using Microsoft.AspNetCore.ResponseCaching.Internal;
@@ -16,19 +18,11 @@
         /// </summary>
         /// <returns>The easy caching response caching.</returns>
         /// <param name="services">Services.</param>
-        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            services.TryAddSingleton<IResponseCachingPolicyProvider, ResponseCachingPolicyProvider>();
-            services.TryAddSingleton<IResponseCachingKeyProvider, ResponseCachingKeyProvider>();
-            services.AddSingleton<IResponseCache, EasyCachingResponseCache>();
-
-            return services;
-        }
+        /// <param name="name">Provider name.</param>
+        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services, string name) =>
+            services.AddEasyCachingResponseCaching(
+                x => { }, name
+            );
 
         /// <summary>
         /// Adds the EasyCaching response caching.
@@ -36,7 +30,9 @@
         /// <returns>The easy caching response caching.</returns>
         /// <param name="services">Services.</param>
         /// <param name="action">Action.</param>
-        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services, Action<ResponseCachingOptions> action)
+        /// <param name="name">Provider name.</param>
+        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services,
+            Action<ResponseCachingOptions> action, string name)
         {
             if (services == null)
             {
@@ -47,7 +43,11 @@
 
             services.TryAddSingleton<IResponseCachingPolicyProvider, ResponseCachingPolicyProvider>();
             services.TryAddSingleton<IResponseCachingKeyProvider, ResponseCachingKeyProvider>();
-            services.AddSingleton<IResponseCache, EasyCachingResponseCache>();
+            services.AddSingleton<IResponseCache, EasyCachingResponseCache>(x =>
+            {
+                var factory = x.GetRequiredService<IEasyCachingProviderFactory>();
+                return new EasyCachingResponseCache(name, factory);
+            });
 
             return services;
         }

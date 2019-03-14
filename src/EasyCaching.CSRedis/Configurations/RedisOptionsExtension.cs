@@ -50,7 +50,7 @@
 
             services.Configure(_name, _configure);
 
-            services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
 
             services.AddSingleton<EasyCachingCSRedisClient>(x =>
             {
@@ -76,7 +76,8 @@
             {
                 var clients = x.GetServices<EasyCachingCSRedisClient>();
                 var serializer = x.GetRequiredService<IEasyCachingSerializer>();
-                var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var options = optionsMon.Get(_name);
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultCSRedisCachingProvider(_name, clients, serializer, options, factory);
             };
