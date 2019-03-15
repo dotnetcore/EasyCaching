@@ -15,6 +15,7 @@
     using Microsoft.Net.Http.Headers;
     using EasyCaching.InMemory;
     using Microsoft.AspNetCore.ResponseCaching;
+    using EasyCaching.Core;
 
     public class ResponseCachingTestUtils
     {
@@ -35,14 +36,16 @@
                 headers.CacheControl = new CacheControlHeaderValue
                 {
                     Public = true,
-                    MaxAge = string.IsNullOrEmpty(expires) ? TimeSpan.FromSeconds(10) : (TimeSpan?)null
+                    MaxAge = string.IsNullOrEmpty(expires) ? TimeSpan.FromSeconds(10) : (TimeSpan?) null
                 };
             }
             else
             {
                 headers.CacheControl.Public = true;
-                headers.CacheControl.MaxAge = string.IsNullOrEmpty(expires) ? TimeSpan.FromSeconds(10) : (TimeSpan?)null;
+                headers.CacheControl.MaxAge =
+                    string.IsNullOrEmpty(expires) ? TimeSpan.FromSeconds(10) : (TimeSpan?) null;
             }
+
             headers.Date = DateTimeOffset.UtcNow;
             headers.Headers["X-Value"] = guid;
 
@@ -50,6 +53,7 @@
             {
                 return true;
             }
+
             return false;
         }
 
@@ -69,6 +73,7 @@
             {
                 context.Response.Write(uniqueId);
             }
+
             return Task.CompletedTask;
         }
 
@@ -79,18 +84,18 @@
             Action<HttpContext> contextAction = null)
         {
             return CreateBuildersWithResponseCaching(configureDelegate, options, new RequestDelegate[]
+            {
+                context =>
                 {
-                    context =>
-                    {
-                        contextAction?.Invoke(context);
-                        return TestRequestDelegateWrite(context);
-                    },
-                    context =>
-                    {
-                        contextAction?.Invoke(context);
-                        return TestRequestDelegateWriteAsync(context);
-                    },
-                });
+                    contextAction?.Invoke(context);
+                    return TestRequestDelegateWrite(context);
+                },
+                context =>
+                {
+                    contextAction?.Invoke(context);
+                    return TestRequestDelegateWriteAsync(context);
+                },
+            });
         }
 
         private static IEnumerable<IWebHostBuilder> CreateBuildersWithResponseCaching(
@@ -102,6 +107,7 @@
             {
                 configureDelegate = app => { };
             }
+
             if (requestDelegates == null)
             {
                 requestDelegates = new RequestDelegate[]
@@ -123,9 +129,9 @@
                                 responseCachingOptions.MaximumBodySize = options.MaximumBodySize;
                                 responseCachingOptions.UseCaseSensitivePaths = options.UseCaseSensitivePaths;
                             }
-                        });
+                        }, EasyCachingConstValue.DefaultInMemoryName);
                         // Test with in memory ResponseCache
-                        services.AddDefaultInMemoryCache();
+                        services.AddEasyCaching(x => x.UseInMemory());
                     })
                     .Configure(app =>
                     {

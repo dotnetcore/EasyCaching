@@ -1,8 +1,5 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
     using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
@@ -10,16 +7,17 @@
     using EasyCaching.InMemory;
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
+    using System;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class HybridCachingTest //: BaseCachingProviderTest
     {
-
         private HybridCachingProvider hybridCaching_1;
         private HybridCachingProvider hybridCaching_2;
         private IEasyCachingProviderFactory factory;
         private string _namespace;
+
         public HybridCachingTest()
         {
             _namespace = "hybrid";
@@ -45,31 +43,23 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
 
-            var providers_1 = new List<IEasyCachingProvider>
-            {
-                factory.GetCachingProvider("m1"),
-                factory.GetCachingProvider("myredis")
-            };
-
-            var providers_2 = new List<IEasyCachingProvider>
-            {
-                factory.GetCachingProvider("m2"),
-                factory.GetCachingProvider("myredis")
-            };
-
             var bus = serviceProvider.GetService<IEasyCachingBus>();
 
-            hybridCaching_1 = new HybridCachingProvider(new OptionsWrapper<HybridCachingOptions>(new HybridCachingOptions
+            hybridCaching_1 = new HybridCachingProvider(new HybridCachingOptions
             {
                 EnableLogging = false,
-                TopicName = "test_topic"
-            }), providers_1, bus);
+                TopicName = "test_topic",
+                LocalCacheProviderName = "m1",
+                DistributedCacheProviderName = "myredis"
+            }, factory, bus);
 
-            hybridCaching_2 = new HybridCachingProvider(new OptionsWrapper<HybridCachingOptions>(new HybridCachingOptions
+            hybridCaching_2 = new HybridCachingProvider(new HybridCachingOptions
             {
                 EnableLogging = false,
-                TopicName = "test_topic"
-            }), providers_2, bus);
+                TopicName = "test_topic",
+                LocalCacheProviderName = "m2",
+                DistributedCacheProviderName = "myredis"
+            }, factory, bus);
         }
 
         [Fact]

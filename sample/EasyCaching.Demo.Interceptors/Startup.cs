@@ -2,19 +2,18 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Demo.Interceptors.Services;
-    using EasyCaching.Interceptor.AspectCore;
-    using EasyCaching.Interceptor.Castle;
     using EasyCaching.InMemory;
-    using EasyCaching.Redis;
-    using EasyCaching.Serialization.MessagePack;
+    using EasyCaching.Interceptor.AspectCore;
     using EasyCaching.Serialization.Json;
+    using EasyCaching.Serialization.MessagePack;
+    using EasyCaching.Serialization.Protobuf;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
-    using EasyCaching.Serialization.Protobuf;
+    using AspectCore.Injector;
 
     public class Startup
     {
@@ -38,26 +37,22 @@
                 //{
                 //    config.DBConfig = new RedisDBOptions { Configuration = "localhost" };
                 //});
+
+                //options.WithJson(config => { config.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None; });
+                //options.WithMessagePack();
+                //options.WithProtobuf();
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            //services.AddDefaultMessagePackSerializer();
-
-            //services.AddDefaultProtobufSerializer();
-
-            //services.AddDefaultJsonSerializer(config => { config.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None; });
-
             //1.1. all default
-            return services.ConfigureAspectCoreInterceptor();
+            return services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
 
             //1.2. default and customize
-            //Action<IServiceContainer> action = x =>
-            //{
-            //    x.AddType<IAspectCoreService, AspectCoreService>();
-            //};
+            //Action<IServiceContainer> action = x => { x.AddType<IAspectCoreService, AspectCoreService>(); };
 
-            //return services.ConfigureAspectCoreInterceptor(action);
+            //return services.ConfigureAspectCoreInterceptor(action,
+            //    options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
 
             //1.3. all customize
             //Action<IServiceContainer> action = x =>

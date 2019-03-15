@@ -45,38 +45,28 @@
 
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
 
-            if (string.IsNullOrWhiteSpace(_name))
+            services.Configure(_name, configure);
+
+            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(x =>
             {
-                services.Configure(configure);
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var options = optionsMon.Get(_name);
+                return new RedisDatabaseProvider(_name, options);
+            });
 
-                services.TryAddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>();
-                services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>();
-                services.AddSingleton<IRedisCachingProvider, DefaultRedisCachingProvider>();
-            }
-            else
+            Func<IServiceProvider, DefaultRedisCachingProvider> createFactory = x =>
             {
-                services.Configure(_name, configure);
+                var dbProviders = x.GetServices<IRedisDatabaseProvider>();
+                var serializer = x.GetRequiredService<IEasyCachingSerializer>();
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var options = optionsMon.Get(_name);
+                var factory = x.GetService<ILoggerFactory>();
+                return new DefaultRedisCachingProvider(_name, dbProviders, serializer, options, factory);
+            };
 
-                services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-                services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(x =>
-                {
-                    var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
-                    var options = optionsMon.Get(_name);
-                    return new RedisDatabaseProvider(_name, options);
-                });
-
-                Func<IServiceProvider, DefaultRedisCachingProvider> createFactory = x =>
-                {
-                    var dbProviders = x.GetServices<IRedisDatabaseProvider>();
-                    var serializer = x.GetRequiredService<IEasyCachingSerializer>();
-                    var options = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
-                    var factory = x.GetService<ILoggerFactory>();
-                    return new DefaultRedisCachingProvider(_name, dbProviders, serializer, options, factory);
-                };
-
-                services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(createFactory);             
-                services.AddSingleton<IRedisCachingProvider, DefaultRedisCachingProvider>(createFactory);
-            }
+            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(createFactory);
+            services.AddSingleton<IRedisCachingProvider, DefaultRedisCachingProvider>(createFactory);
         }
 
         /// <summary>

@@ -2,7 +2,6 @@ namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.Internal;
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
     using System;
@@ -10,18 +9,22 @@ namespace EasyCaching.UnitTests
 
     public class RedisCachingProviderTest : BaseCachingProviderTest
     {
+        private readonly string ProviderName = "Test";
+
         public RedisCachingProviderTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultRedisCache(options =>
-            {
-                options.DBConfig = new RedisDBOptions
+            services.AddEasyCaching(x =>
+                x.UseRedis(options =>
                 {
-                    AllowAdmin = true
-                };
-                options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                options.DBConfig.Database = 5;
-            });
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 5;
+                }, ProviderName)
+            );
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
@@ -38,12 +41,13 @@ namespace EasyCaching.UnitTests
         public void Fulsh_Should_Fail_When_AllowAdmin_Is_False()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultRedisCache(options =>
-            {
-                options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-            });
+            services.AddEasyCaching(x =>
+                x.UseRedis(options => { options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380)); },
+                    ProviderName)
+            );
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            var provider = serviceProvider.GetService<IEasyCachingProvider>();
+            var factory = serviceProvider.GetRequiredService<IEasyCachingProviderFactory>();
+            var provider = factory.GetCachingProvider(ProviderName);
 
             Assert.Throws<StackExchange.Redis.RedisCommandException>(() => provider.Flush());
         }
@@ -74,42 +78,47 @@ namespace EasyCaching.UnitTests
         public void Use_Configuration_String_Should_Succeed()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultRedisCache(options =>
-            {
-                options.DBConfig.Configuration = "127.0.0.1:6380,allowAdmin=false,defaultdatabase=8";
-            });
+            services.AddEasyCaching(x =>
+                x.UseRedis(options =>
+                {
+                    options.DBConfig.Configuration = "127.0.0.1:6380,allowAdmin=false,defaultdatabase=8";
+                }));
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var dbProvider = serviceProvider.GetService<IRedisDatabaseProvider>();
             Assert.NotNull(dbProvider);
 
             Assert.Equal(8, dbProvider.GetDatabase().Database);
         }
-
     }
 
 
     public class RedisCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
-    {       
+    {
         public RedisCachingProviderWithFactoryTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultRedisCacheWithFactory(EasyCachingConstValue.DefaultRedisName, options =>
+            services.AddEasyCaching(x =>
             {
-                options.DBConfig = new RedisDBOptions
+                x.UseRedis(options =>
                 {
-                    AllowAdmin = true
-                };
-                options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                options.DBConfig.Database = 3;
-            });
-            services.AddDefaultRedisCacheWithFactory(SECOND_PROVIDER_NAME, options =>
-            {
-                options.DBConfig = new RedisDBOptions
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 3;
+                });
+
+
+                x.UseRedis(options =>
                 {
-                    AllowAdmin = true
-                };
-                options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                options.DBConfig.Database = 4;
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 4;
+                }, SECOND_PROVIDER_NAME);
             });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();

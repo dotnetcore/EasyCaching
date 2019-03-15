@@ -1,8 +1,6 @@
 ﻿namespace EasyCaching.InMemory
 {
-    using EasyCaching.Core.Internal;
     using EasyCaching.Core;
-    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -15,15 +13,19 @@
         private readonly ConcurrentDictionary<string, CacheEntry> _memory;
         private DateTimeOffset _lastExpirationScan;
         private readonly InMemoryCachingOptions _options;
+        private readonly string _name;
 
-        public InMemoryCaching(IOptions<InMemoryCachingOptions> optionsAccessor)
+        public InMemoryCaching(string name, InMemoryCachingOptions optionsAccessor)
         {
             ArgumentCheck.NotNull(optionsAccessor, nameof(optionsAccessor));
 
-            _options = optionsAccessor.Value;
+            _name = name;
+            _options = optionsAccessor;
             _memory = new ConcurrentDictionary<string, CacheEntry>();
             _lastExpirationScan = SystemClock.UtcNow;
         }
+
+        public string ProviderName => this._name;
 
         public void Clear(string prefix = "")
         {

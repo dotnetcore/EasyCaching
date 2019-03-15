@@ -44,38 +44,14 @@
         /// The name.
         /// </summary>
         private readonly string _name;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteCachingProvider"/> class.
-        /// </summary>
-        /// <param name="dbProvider">dbProvider.</param>
-        public DefaultSQLiteCachingProvider(
-            ISQLiteDatabaseProvider dbProvider,
-            IOptionsMonitor<SQLiteOptions> options,
-            ILoggerFactory loggerFactory = null)
-        {
-            this._dbProvider = dbProvider;
-            this._options = options.CurrentValue;
-            this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
-            this._cache = _dbProvider.GetConnection();
-            this._cacheStats = new CacheStats();
-            this._name = EasyCachingConstValue.DefaultSQLiteName;
-
-            this.ProviderName = this._name;
-            this.ProviderStats = this._cacheStats;
-            this.ProviderType = _options.CachingProviderType;
-            this.ProviderOrder = _options.Order;
-            this.ProviderMaxRdSecond = _options.MaxRdSecond;
-            this.IsDistributedProvider = false;
-        }
-
+        
         public DefaultSQLiteCachingProvider(
             string name,
             IEnumerable<ISQLiteDatabaseProvider> dbProviders,
-           SQLiteOptions options,
+            SQLiteOptions options,
            ILoggerFactory loggerFactory = null)
         {
-            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
+            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
             this._cache = _dbProvider.GetConnection();
