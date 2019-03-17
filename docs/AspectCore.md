@@ -72,7 +72,11 @@ public class Startup
     {
         services.AddScoped<IDemoService, DemoService>();
 
-        services.AddDefaultInMemoryCache();
+        services.AddEasyCaching(option=> 
+        {
+            //use memory cache
+            option.UseInMemory("default");
+        });
 
         services.AddMvc();
 
@@ -101,7 +105,7 @@ public class ValuesController : Controller
     {
         if(type == 1)
         {
-            return _service.GetCurrentUtcTime();   
+            return _service.GetCurrentUtcTime();
         }
         else if(type == 2)
         {
@@ -115,7 +119,7 @@ public class ValuesController : Controller
         else
         {
             return "other";
-        }                
+        }
     }
 }
 ```

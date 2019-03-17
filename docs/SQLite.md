@@ -32,13 +32,20 @@ public class Startup
         services.AddMvc();
         
         //Important step for SQLite Cache
-        services.AddSQLiteCache(option=>{});       
+        services.AddEasyCaching(option => 
+        {
+            //use sqlite cache
+            option.UseSQLite(config =>
+            {
+                config.DBConfig = new SQLiteDBOptions { FileName = "my.db" };
+            });
+        });
     }
     
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
         //Important step for SQLite Cache
-        app.UseSQLiteCache(); 
+        app.UseEasyCaching();
     }
 }
 ```

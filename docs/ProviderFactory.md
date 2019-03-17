@@ -30,24 +30,27 @@ Install-Package EasyCaching.Redis
 public void ConfigureServices(IServiceCollection services)  
 {  
     //other ..  
-      
-    //configure the first in-memory caching provider  
-    services.AddDefaultInMemoryCacheWithFactory("inmemory1");  
-      
-    //configure the second in-memory caching provider  
-    services.AddDefaultInMemoryCacheWithFactory("inmemory2");  
-    
-    //configure the first redis caching provider  
-    services.AddDefaultRedisCacheWithFactory("redis1",option =>  
-    {  
-        option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));  
-    });  
-  
-    //configure the second redis caching provider  
-    services.AddDefaultRedisCacheWithFactory("redis2", option =>  
-    {  
-        option.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));  
-    });  
+
+    services.AddEasyCaching(option=> 
+    {
+        //use memory cache
+        option.UseInMemory("inmemory1");
+
+        //use memory cache
+        option.UseInMemory("inmemory2");
+
+        //use redis cache
+        option.UseRedis(config => 
+        {
+            config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+        }, "redis1");
+
+        //use redis cache
+        option.UseRedis(config => 
+        {
+            config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+        }, "redis2");
+    });
 }  
 ```
 

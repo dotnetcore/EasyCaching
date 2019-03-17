@@ -25,7 +25,10 @@ public class Startup
         //add response caching
         services.AddEasyCachingResponseCaching();
         //which type of caching that you want to use
-        services.AddDefaultInMemoryCache();
+        services.AddEasyCaching(option=> 
+        {            
+            // option.Usexxx(...);
+        });
     }
     
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)

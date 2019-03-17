@@ -15,6 +15,7 @@ Install-Package EasyCaching.Interceptor.Castle
 
 Install-Package EasyCaching.InMemory
 ```
+
 ## 2. Define services
 
 ### 2.1 Define the interface
@@ -23,7 +24,7 @@ Just define a regular interface.
 
 ```csharp
 public interface IDemoService 
-{        
+{
     string GetCurrentUtcTime();
 
     string PutSomething(string str);
@@ -72,7 +73,11 @@ public class Startup
     {
         services.AddScoped<IDemoService, DemoService>();
 
-        services.AddDefaultInMemoryCache();
+        services.AddEasyCaching(option =>
+        {
+            //use memory cache
+            option.UseInMemory("default");
+        });
 
         services.AddMvc();
 
@@ -101,7 +106,7 @@ public class ValuesController : Controller
     {
         if(type == 1)
         {
-            return _service.GetCurrentUtcTime();   
+            return _service.GetCurrentUtcTime();
         }
         else if(type == 2)
         {
@@ -115,7 +120,7 @@ public class ValuesController : Controller
         else
         {
             return "other";
-        }                
+        }
     }
 }
 ```

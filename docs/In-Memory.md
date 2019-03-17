@@ -22,13 +22,17 @@ First of all, we can config by C# code.
 public class Startup
 {
     //...
-    
+
     public void ConfigureServices(IServiceCollection services)
     {
         //other services.
 
         //Important step for In-Memory Caching
-        services.AddDefaultInMemoryCache(); 
+        services.AddEasyCaching(option =>
+        {
+            //use memory cache
+            option.UseInMemory("default");
+        });
     }
 }
 ```
@@ -39,13 +43,17 @@ What's more, we also can read the configuration from `appsettings.json`.
 public class Startup
 {
     //...
-    
+
     public void ConfigureServices(IServiceCollection services)
     {
         //other services.
 
         //Important step for In-Memory Caching
-        services.AddDefaultInMemoryCache(Configuration); 
+        services.AddEasyCaching(option =>
+        {
+            //use memory cache
+            option.UseInMemory(Configuration, "default", "easycahing:inmemory");
+        });
     }
 }
 ```

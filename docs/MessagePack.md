@@ -10,7 +10,7 @@ DefaultMessagePackSerializer is is a serializer based on **MessagePack**.
 Install-Package EasyCaching.Serialization.MessagePack
 ```
 
-## Use In EasyCaching.Redis
+## Configuration
 
 ```
 public class Startup
@@ -21,34 +21,11 @@ public class Startup
     {
         services.AddMvc();
 
-        services.AddDefaultRedisCache(option=>
-        {                
-            option.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-            option.Password = "";                                                  
-        });        
-        //specify to use messagepack serializer
-        services.AddDefaultMessagePackSerializer();
-    }
-}
-```
-
-## Use In EasyCaching.Memcached
-
-```
-public class Startup
-{
-    //others...
-
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddMvc();
-
-        services.AddDefaultMemcached(op=>
-        {                
-            op.AddServer("127.0.0.1",11211);                        
+        services.AddEasyCaching(option =>
+        {
+            //specify to use messagepack serializer
+            option.WithMessagePack();
         });
-        //specify the Transcoder use messagepack serializer.
-        services.AddDefaultMessagePackSerializer();
     }
 }
 ```

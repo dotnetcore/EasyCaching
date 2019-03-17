@@ -24,12 +24,12 @@ First of all, we can config by C# code.
 public class Startup
 {
     //...
-    
+
     public void ConfigureServices(IServiceCollection services)
     {
         //other services.
 
-        //Important step for Redis Caching       
+        //Important step for Redis Caching
         services.AddEasyCaching(option =>
         {
             option.UseCSRedis(config =>
@@ -53,13 +53,12 @@ What's more, we also can read the configuration from `appsettings.json`.
 public class Startup
 {
     //...
-    
+
     public void ConfigureServices(IServiceCollection services)
     {
         //other services.
 
         //Important step for Redis Caching
-        services.AddDefaultRedisCache(Configuration); 
         services.AddEasyCaching(option =>
         {
             option.UseCSRedis(Configuration, "myredisname", "easycaching:csredis");
