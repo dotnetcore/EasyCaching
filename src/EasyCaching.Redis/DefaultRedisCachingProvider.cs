@@ -54,40 +54,7 @@
         /// The name.
         /// </summary>
         private readonly string _name;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
-        /// </summary>
-        /// <param name="dbProvider">Db provider.</param>
-        /// <param name="serializer">Serializer.</param>
-        /// <param name="options">Options.</param>
-        /// <param name="loggerFactory">Logger factory.</param>
-        public DefaultRedisCachingProvider(
-            IRedisDatabaseProvider dbProvider,
-            IEasyCachingSerializer serializer,
-            IOptionsMonitor<RedisOptions> options,
-            ILoggerFactory loggerFactory = null)
-        {
-            ArgumentCheck.NotNull(dbProvider, nameof(dbProvider));
-            ArgumentCheck.NotNull(serializer, nameof(serializer));
-
-            this._dbProvider = dbProvider;
-            this._serializer = serializer;
-            this._options = options.CurrentValue;
-            this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
-            this._cache = _dbProvider.GetDatabase();
-            this._servers = _dbProvider.GetServerList();
-            this._cacheStats = new CacheStats();
-            this._name = EasyCachingConstValue.DefaultRedisName;
-
-            this.ProviderName = this._name;
-            this.ProviderStats = this._cacheStats;
-            this.ProviderType = _options.CachingProviderType;
-            this.ProviderOrder = _options.Order;
-            this.ProviderMaxRdSecond = _options.MaxRdSecond;
-            this.IsDistributedProvider = true;
-        }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
@@ -100,15 +67,15 @@
             string name,
             IEnumerable<IRedisDatabaseProvider> dbProviders,
             IEasyCachingSerializer serializer,
-            IOptionsMonitor<RedisOptions> options,
+            RedisOptions options,
             ILoggerFactory loggerFactory = null)
         {
             ArgumentCheck.NotNullAndCountGTZero(dbProviders, nameof(dbProviders));
             ArgumentCheck.NotNull(serializer, nameof(serializer));
 
-            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
+            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
             this._serializer = serializer;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
@@ -169,6 +136,8 @@
             }
             else
             {
+                //remove mutex key
+                _cache.KeyDelete($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -254,6 +223,8 @@
             }
             else
             {
+                //remove mutex key
+                await _cache.KeyDeleteAsync($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }

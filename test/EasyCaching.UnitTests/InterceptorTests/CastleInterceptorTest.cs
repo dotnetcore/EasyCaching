@@ -1,11 +1,5 @@
 namespace EasyCaching.UnitTests
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Threading;
-    using System.Threading.Tasks;
     using Autofac;
     using Autofac.Extras.DynamicProxy;
     using EasyCaching.Core;
@@ -14,6 +8,12 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Interceptor.Castle;
     using EasyCaching.UnitTests.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Xunit;
 
     public abstract class BaseCastleInterceptorTest
@@ -101,7 +101,7 @@ namespace EasyCaching.UnitTests
         [Fact]
         protected virtual void EvictAll_Should_Succeed()
         {
-            System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("EvictAllTest");
+            System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("EvictAllTest");
 
             var prefix = _keyGenerator.GetCacheKeyPrefix(method, "CastleExample");
 
@@ -153,7 +153,7 @@ namespace EasyCaching.UnitTests
         [Fact]
         protected virtual async Task Interceptor_Evict_With_Task_Method_Should_Succeed()
         {
-            System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("EvictTest");
+            System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("EvictTest");
 
             var key = _keyGenerator.GetCacheKey(method, null, "CastleExample");
 
@@ -181,11 +181,12 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<ICastleExampleService, CastleExampleService>();
-            services.AddDefaultInMemoryCache(x=> 
+            services.AddEasyCaching(x =>
             {
-                x.MaxRdSecond = 0;
+                x.UseInMemory(options => options.MaxRdSecond = 0);
             });
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor();
+            //services.AddLogging();
+            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
 
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
             _service = serviceProvider.GetService<ICastleExampleService>();
@@ -200,18 +201,19 @@ namespace EasyCaching.UnitTests
         public CastleInterceptorWithActionTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-            services.AddDefaultInMemoryCache(x =>
+            services.AddTransient<ICastleExampleService, CastleExampleService>();
+            services.AddEasyCaching(x =>
             {
-                x.MaxRdSecond = 0;
+                x.UseInMemory(options => options.MaxRdSecond = 0);
             });
 
+            services.AddLogging();
             Action<ContainerBuilder> action = x =>
             {
                 x.RegisterType<TestInterface>().As<ITestInterface>();
             };
 
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(action);
+            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor( action, options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
 
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
             _service = serviceProvider.GetService<ICastleExampleService>();
@@ -234,12 +236,13 @@ namespace EasyCaching.UnitTests
         public CastleInterceptorWithActionAndIsRemoveDefaultTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-            services.AddDefaultInMemoryCache(x =>
+            services.AddTransient<ICastleExampleService, CastleExampleService>();
+            services.AddEasyCaching(x =>
             {
-                x.MaxRdSecond = 0;
+                x.UseInMemory(options => options.MaxRdSecond = 0);
             });
 
+            services.AddLogging();
             Action<ContainerBuilder> action = x =>
             {
                 x.RegisterType<TestInterface>().As<ITestInterface>();
@@ -283,7 +286,7 @@ namespace EasyCaching.UnitTests
                 //.InterceptedBy(typeof(EasyCachingInterceptor));
             };
 
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(action, true);
+            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(action, true, options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
 
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
             _service = serviceProvider.GetService<ICastleExampleService>();

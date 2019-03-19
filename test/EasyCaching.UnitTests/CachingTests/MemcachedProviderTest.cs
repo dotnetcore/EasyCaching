@@ -1,23 +1,23 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Memcached;
     using EasyCaching.Core;
+    using EasyCaching.Memcached;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
+    using System.IO;
     using System.Threading.Tasks;
     using Xunit;
-    using System.IO;
-    using Microsoft.Extensions.Configuration;
 
     public class MemcachedProviderTest : BaseCachingProviderTest
     {
         public MemcachedProviderTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultMemcached(options =>
-            {
-                options.DBConfig.AddServer("127.0.0.1", 11211);
-            });
+            services.AddEasyCaching(x =>
+                x.UseMemcached(
+                    options => { options.DBConfig.AddServer("127.0.0.1", 11211); })
+            );
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
@@ -105,7 +105,6 @@
         [Fact]
         protected override void GetByPrefix_Should_Succeed()
         {
-
         }
 
         [Fact]
@@ -117,7 +116,6 @@
         [Fact]
         protected override void GetByPrefix_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
         {
-
         }
 
         [Fact]
@@ -130,13 +128,11 @@
         [Fact]
         protected override void Get_Count_Without_Prefix_Should_Succeed()
         {
-
         }
 
         [Fact]
         protected override void Get_Count_With_Prefix_Should_Succeed()
         {
-
         }
 
         private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
@@ -168,13 +164,11 @@
         public MemcachedProviderWithFactoryTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddDefaultMemcachedWithFactory("MyTest",options =>
+            services.AddEasyCaching(x =>
             {
-                options.DBConfig.AddServer("127.0.0.1", 11212);
-            });
-            services.AddDefaultMemcachedWithFactory(SECOND_PROVIDER_NAME, options =>
-            {
-                options.DBConfig.AddServer("127.0.0.1", 11211);
+                x.UseMemcached(options => { options.DBConfig.AddServer("127.0.0.1", 11212); }, SECOND_PROVIDER_NAME)
+                    .UseMemcached(
+                        options => { options.DBConfig.AddServer("127.0.0.1", 11211); }, "MyTest");
             });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -262,7 +256,7 @@
             var val = _provider.Get<string>(cacheKey);
             Assert.True(val.HasValue);
         }
-               
+
         private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
         {
             var pre = _provider.Get<string>(prefix);
@@ -297,14 +291,14 @@
             {
                 option.UseMemcached(config =>
                 {
-                    config.DBConfig = new  EasyCachingMemcachedClientOptions
+                    config.DBConfig = new EasyCachingMemcachedClientOptions
                     {
-                        Servers = new System.Collections.Generic.List<Enyim.Caching.Configuration.Server> 
+                        Servers = new System.Collections.Generic.List<Enyim.Caching.Configuration.Server>
                         {
-                            new Enyim.Caching.Configuration.Server(){ Address="127.0.0.1", Port=11212}
+                            new Enyim.Caching.Configuration.Server() {Address = "127.0.0.1", Port = 11212}
                         }
                     };
-                }, EasyCachingConstValue.DefaultMemcachedName);              
+                }, EasyCachingConstValue.DefaultMemcachedName);
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -347,13 +341,10 @@
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
             services.AddLogging();
-            services.AddEasyCaching(option =>
-            {
-                option.UseMemcached(config, "mName");
-            });
+            services.AddEasyCaching(option => { option.UseMemcached(config, "mName"); });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _provider = serviceProvider.GetService<IEasyCachingProvider>();                      
+            _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 

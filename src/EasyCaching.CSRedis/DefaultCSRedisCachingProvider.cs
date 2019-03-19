@@ -55,14 +55,14 @@
            string name,
            IEnumerable<EasyCachingCSRedisClient> clients,
            IEasyCachingSerializer serializer,
-           IOptionsMonitor<RedisOptions> options,
+           RedisOptions options,
            ILoggerFactory loggerFactory = null)
         {
             this._name = name;
             this._serializer = serializer;
-            this._options = options.CurrentValue;
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
-            this._cache = clients.FirstOrDefault(x => x.Name.Equals(_name));
+            this._cache = clients.Single(x => x.Name.Equals(_name));
             this._cacheStats = new CacheStats();
 
             this.ProviderName = this._name;
@@ -166,6 +166,8 @@
             }
             else
             {
+                //remove mutex key
+                _cache.Del($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -304,6 +306,8 @@
             }
             else
             {
+                //remove mutex key
+                await _cache.DelAsync($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -651,7 +655,7 @@
             _cache.Set(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
-                expiration.Seconds
+                (int)expiration.TotalSeconds
                 );
         }
 
@@ -672,7 +676,7 @@
 
             foreach (var item in value)
             {
-                _cache.Set(item.Key, _serializer.Serialize(item.Value), expiration.Seconds);
+                _cache.Set(item.Key, _serializer.Serialize(item.Value), (int)expiration.TotalSeconds);
             }
         }
 
@@ -696,7 +700,7 @@
 
             foreach (var item in value)
             {
-                tasks.Add(_cache.SetAsync(item.Key, _serializer.Serialize(item.Value), expiration.Seconds));
+                tasks.Add(_cache.SetAsync(item.Key, _serializer.Serialize(item.Value), (int)expiration.TotalSeconds));
             }
 
             await Task.WhenAll(tasks);
@@ -727,7 +731,7 @@
             await _cache.SetAsync(
                 cacheKey,
                 val,
-                expiration.Seconds
+                (int)expiration.TotalSeconds
                 );
         }
 
@@ -754,7 +758,7 @@
             return _cache.Set(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
-                expiration.Seconds,
+                (int)expiration.TotalSeconds,
                 RedisExistence.Nx
                 );
         }
@@ -782,7 +786,7 @@
             return await _cache.SetAsync(
                 cacheKey,
                 _serializer.Serialize(cacheValue),
-                expiration.Seconds,
+                (int)expiration.TotalSeconds,
                 RedisExistence.Nx
                 );
         }

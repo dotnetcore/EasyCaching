@@ -20,7 +20,7 @@
 
         public void Publish(string topic, EasyCachingMessage message)
         {
-            var operationId = s_diagnosticListener.WritePublishMessageBefore(topic, message);
+            var operationId = s_diagnosticListener.WritePublishMessageBefore(new BeforePublishMessageRequestEventData(topic, message));
             Exception e = null;
             try
             {
@@ -46,7 +46,7 @@
 
         public async Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var operationId = s_diagnosticListener.WritePublishMessageBefore(topic, message);
+            var operationId = s_diagnosticListener.WritePublishMessageBefore(new BeforePublishMessageRequestEventData(topic, message));
             Exception e = null;
             try
             {
@@ -78,7 +78,7 @@
 
         public virtual void BaseOnMessage(EasyCachingMessage message)
         {
-            var operationId = s_diagnosticListener.WriteSubscribeMessageBefore(message);
+            var operationId = s_diagnosticListener.WriteSubscribeMessageBefore(new BeforeSubscribeMessageRequestEventData(message));
             Exception e = null;
             try
             {

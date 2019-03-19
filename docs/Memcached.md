@@ -20,22 +20,26 @@ Install-Package EasyCaching.Memcached
 public class Startup
 {
     //...
-    
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddMvc();
-        
+
         //Important step for Memcached Cache
-        services.AddDefaultMemcached(option=>
-        {                
-            option.AddServer("127.0.0.1",11211);            
-        });        
+        services.AddEasyCaching(option => 
+        {
+            //use memmemcachedory cache
+            option.UseMemcached(config => 
+            {
+                config.DBConfig.AddServer("127.0.0.1", 11211);
+            });
+        });
     }
-    
+
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
-        //Important step for Memcache Cache
-        app.UseDefaultMemcached();    
+        // Important step for Memcache Cache
+        app.UseEasyCaching();
     }
 }
 ```

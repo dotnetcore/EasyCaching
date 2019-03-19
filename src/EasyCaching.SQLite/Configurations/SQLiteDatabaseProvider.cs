@@ -13,17 +13,7 @@
         /// The options.
         /// </summary>
         private readonly SQLiteDBOptions _options;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteDatabaseProvider"/> class.
-        /// </summary>
-        /// <param name="optionAction">Option action.</param>
-        public SQLiteDatabaseProvider(IOptionsMonitor<SQLiteOptions> optionAction)
-        {
-            this._options = optionAction.CurrentValue.DBConfig;
-        }
-
-
+        
         public SQLiteDatabaseProvider(string name , SQLiteOptions options)
         {
             this._name = name;

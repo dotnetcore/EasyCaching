@@ -43,32 +43,6 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
-        /// <param name="memcachedClients">Memcached client.</param>
-        /// <param name="options">Options.</param>
-        /// <param name="loggerFactory">Logger factory.</param>
-        public DefaultMemcachedCachingProvider(
-            IEnumerable<EasyCachingMemcachedClient> memcachedClients,
-            IOptionsMonitor<MemcachedOptions> options,
-            ILoggerFactory loggerFactory = null)
-        {
-            this._name = EasyCachingConstValue.DefaultMemcachedName;
-            this._memcachedClient = memcachedClients.FirstOrDefault(x => x.Name.Equals(this._name));
-            this._options = options.CurrentValue;
-            this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
-
-            this._cacheStats = new CacheStats();
-
-            this.ProviderName = this._name;
-            this.ProviderStats = this._cacheStats;
-            this.ProviderType = _options.CachingProviderType;
-            this.ProviderOrder = _options.Order;
-            this.ProviderMaxRdSecond = _options.MaxRdSecond;
-            this.IsDistributedProvider = true;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
-        /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="memcachedClients">Memcached client.</param>
         /// <param name="options">Options.</param>
@@ -80,7 +54,7 @@
             ILoggerFactory loggerFactory = null)
         {
             this._name = name;
-            this._memcachedClient = memcachedClients.FirstOrDefault(x => x.Name.Equals(this._name));
+            this._memcachedClient = memcachedClients.Single(x => x.Name.Equals(this._name));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
             this._cacheStats = new CacheStats();
@@ -138,6 +112,7 @@
             }
             else
             {
+                _memcachedClient.Remove(this.HandleCacheKey($"{cacheKey}_Lock"));
                 return CacheValue<T>.NoValue;
             }
         }
@@ -188,6 +163,7 @@
             }
             else
             {
+                await _memcachedClient.RemoveAsync(this.HandleCacheKey($"{cacheKey}_Lock"));
                 return CacheValue<T>.NoValue;
             }
         }

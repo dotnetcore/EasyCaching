@@ -16,7 +16,7 @@
         /// <returns>The in memory.</returns>
         /// <param name="options">Options.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, string name = "")
+        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, string name = EasyCachingConstValue.DefaultInMemoryName)
         {
             var option = new InMemoryOptions();
 
@@ -29,9 +29,7 @@
                 x.DBConfig = option.DBConfig;
             }
 
-            options.RegisterExtension(new InMemoryOptionsExtension(name, configure));
-
-            return options;
+            return options.UseInMemory(configure, name);
         }
 
         /// <summary>
@@ -41,7 +39,7 @@
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, Action<InMemoryOptions> configure, string name = "")
+        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, Action<InMemoryOptions> configure, string name = EasyCachingConstValue.DefaultInMemoryName)
         {
             if (configure == null)
             {
@@ -60,7 +58,7 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.InMemorySection)
+        public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, IConfiguration configuration, string name = EasyCachingConstValue.DefaultInMemoryName, string sectionName = EasyCachingConstValue.InMemorySection)
         {
             var dbConfig = configuration.GetSection(sectionName);
             var memoryOptions = new InMemoryOptions();
@@ -74,10 +72,7 @@
                 x.Order = memoryOptions.Order;
                 x.DBConfig = memoryOptions.DBConfig;
             }
-
-            options.RegisterExtension(new InMemoryOptionsExtension(name, configure));
-
-            return options;
+            return options.UseInMemory(configure,name);
         }
     }
 }

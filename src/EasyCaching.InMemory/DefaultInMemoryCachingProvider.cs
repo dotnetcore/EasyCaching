@@ -1,12 +1,11 @@
 ﻿namespace EasyCaching.InMemory
 {
+    using EasyCaching.Core;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using EasyCaching.Core;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// MemoryCaching provider.
@@ -41,49 +40,22 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.DefaultInMemoryCachingProvider"/> class.
         /// </summary>
-        /// <param name="cache">Cache.</param>
-        /// <param name="options">Options.</param>
-        /// <param name="loggerFactory">Logger factory.</param>
-        public DefaultInMemoryCachingProvider(
-            IInMemoryCaching cache,
-            IOptionsMonitor<InMemoryOptions> options,
-            ILoggerFactory loggerFactory = null)
-        {
-            this._cache = cache;
-            this._options = options.CurrentValue;
-            this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
-
-            this._cacheStats = new CacheStats();
-            //this._name = EasyCachingConstValue.DefaultInMemoryName;
-
-            this.ProviderName = _name;
-            this.ProviderStats = _cacheStats;
-            this.ProviderType = _options.CachingProviderType;
-            this.ProviderMaxRdSecond = _options.MaxRdSecond;
-            this.ProviderOrder = _options.Order;
-            this.IsDistributedProvider = false;
-
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.DefaultInMemoryCachingProvider"/> class.
-        /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="cache">Cache.</param>
         /// <param name="options">Options.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultInMemoryCachingProvider(
-           string name,
-           IInMemoryCaching cache,
-           IOptionsMonitor<InMemoryOptions> options,
-           ILoggerFactory loggerFactory = null)
+            string name,
+            IEnumerable<IInMemoryCaching> cache,
+            InMemoryOptions options,
+            ILoggerFactory loggerFactory = null)
         {
-            this._cache = cache;
-            this._options = options.CurrentValue;
+            this._name = name;
+            this._cache = cache.Single(x => x.ProviderName == _name);
+            this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
 
             this._cacheStats = new CacheStats();
-            this._name = name;
 
             this.ProviderName = _name;
             this.ProviderStats = _cacheStats;
@@ -92,7 +64,7 @@
             this.ProviderOrder = _options.Order;
             this.IsDistributedProvider = false;
         }
-               
+
         /// <summary>
         /// Get the specified cacheKey, dataRetriever and expiration.
         /// </summary>
@@ -109,11 +81,11 @@
             ////mutex key
             //Lock(cacheKey);
 
-            var result = _cache.Get<T>(BuildCacheKey(Name, cacheKey));
+            var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
@@ -123,7 +95,7 @@
             CacheStats.OnMiss();
 
             if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
             {
@@ -143,6 +115,8 @@
             }
             else
             {
+                //remove mutex key
+                _cache.Remove($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -155,16 +129,17 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever,
+            TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _cache.Get<T>(BuildCacheKey(Name, cacheKey));
+            var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
@@ -174,7 +149,7 @@
             CacheStats.OnMiss();
 
             if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
             if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
             {
@@ -195,6 +170,8 @@
             }
             else
             {
+                //remove mutex key
+                _cache.Remove($"{cacheKey}_Lock");
                 return CacheValue<T>.NoValue;
             }
         }
@@ -210,11 +187,11 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _cache.Get<T>(BuildCacheKey(Name, cacheKey));
+            var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
@@ -223,7 +200,7 @@
             else
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
                 CacheStats.OnMiss();
 
@@ -241,12 +218,12 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await Task.FromResult(_cache.Get<T>(BuildCacheKey(Name, cacheKey)));
+            var result = await Task.FromResult(_cache.Get<T>(cacheKey));
 
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
@@ -255,7 +232,7 @@
             else
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
                 CacheStats.OnMiss();
 
@@ -273,12 +250,12 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await Task.FromResult(_cache.Get(BuildCacheKey(Name, cacheKey)));
+            var result = await Task.FromResult(_cache.Get(cacheKey));
 
             if (result != null)
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
@@ -287,7 +264,7 @@
             else
             {
                 if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {BuildCacheKey(Name, cacheKey)}");
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
                 CacheStats.OnMiss();
 
@@ -304,7 +281,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _cache.Remove(BuildCacheKey(Name, cacheKey));
+            _cache.Remove(cacheKey);
         }
 
         /// <summary>
@@ -316,10 +293,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await Task.Run(() =>
-            {
-                _cache.Remove(BuildCacheKey(Name, cacheKey));
-            });
+            await Task.Run(() => { _cache.Remove(cacheKey); });
         }
 
         /// <summary>
@@ -344,7 +318,7 @@
 
             //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
             //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-            _cache.Set(BuildCacheKey(Name, cacheKey), cacheValue, expiration);
+            _cache.Set(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -371,7 +345,7 @@
             {
                 //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
                 //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-                _cache.Set(BuildCacheKey(Name, cacheKey), cacheValue, expiration);
+                _cache.Set(cacheKey, cacheValue, expiration);
             });
         }
 
@@ -384,7 +358,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return _cache.Exists(BuildCacheKey(Name, cacheKey));
+            return _cache.Exists(cacheKey);
         }
 
         /// <summary>
@@ -396,7 +370,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return await Task.FromResult(_cache.Exists(BuildCacheKey(Name, cacheKey)));
+            return await Task.FromResult(_cache.Exists(cacheKey));
         }
 
         /// <summary>
@@ -442,8 +416,6 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            prefix = BuildCacheKey(Name, prefix);
-
             var count = _cache.RemoveByPrefix(prefix);
 
             if (_options.EnableLogging)
@@ -458,8 +430,6 @@
         public override async Task BaseRemoveByPrefixAsync(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-
-            prefix = BuildCacheKey(Name, prefix);
 
             var count = await Task.Run(() => _cache.RemoveByPrefix(prefix));
 
@@ -478,16 +448,7 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var newDict = new Dictionary<string, T>();
-
-            foreach (var item in values)
-            {
-                //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
-                //var val = new CacheValue<T>(item.Value, true, valExpiration);
-                newDict.Add(BuildCacheKey(this._name, item.Key), item.Value);
-            }
-
-            _cache.SetAll(newDict, expiration);
+            _cache.SetAll(values, expiration);
         }
 
         /// <summary>
@@ -502,16 +463,7 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var newDict = new Dictionary<string, T>();
-
-            foreach (var item in values)
-            {
-                //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
-                //var val = new CacheValue<T>(item.Value, true, valExpiration);
-                newDict.Add(BuildCacheKey(this._name, item.Key), item.Value);
-            }
-
-            await Task.Run(() => _cache.SetAll(newDict, expiration));
+            await Task.Run(() => _cache.SetAll(values, expiration));
         }
 
         /// <summary>
@@ -527,14 +479,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            var keys = new List<string>();
-
-            foreach (var item in cacheKeys)
-            {
-                keys.Add(BuildCacheKey(this._name, item));
-            }
-
-            return _cache.GetAll<T>(keys);
+            return _cache.GetAll<T>(cacheKeys);
         }
 
         /// <summary>
@@ -550,14 +495,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            var keys = new List<string>();
-
-            foreach (var item in cacheKeys)
-            {
-                keys.Add(BuildCacheKey(this._name, item));
-            }
-
-            return await Task.FromResult(_cache.GetAll<T>(keys));
+            return await Task.FromResult(_cache.GetAll<T>(cacheKeys));
         }
 
         /// <summary>
@@ -571,8 +509,6 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             var map = new Dictionary<string, CacheValue<T>>();
-
-            prefix = BuildCacheKey(Name, prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
@@ -590,7 +526,6 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
             var map = new Dictionary<string, CacheValue<T>>();
-            prefix = BuildCacheKey(Name, prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
@@ -606,8 +541,6 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            cacheKeys = cacheKeys.Select(x => BuildCacheKey(this._name, x));
-
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
@@ -622,8 +555,6 @@
         public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
-
-            cacheKeys = cacheKeys.Select(x => BuildCacheKey(Name, x));
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
@@ -649,7 +580,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            _cache.Clear(_name);
+            _cache.Clear();
         }
 
         /// <summary>
@@ -661,21 +592,8 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            _cache.Clear(_name);
+            _cache.Clear();
             await Task.CompletedTask;
-        }
-
-        /// <summary>
-        /// Builds the cache key.
-        /// </summary>
-        /// <returns>The cache key.</returns>
-        /// <param name="prividerName">Privider name.</param>
-        /// <param name="cacheKey">Cache key.</param>
-        private string BuildCacheKey(string prividerName, string cacheKey)
-        {
-            return string.IsNullOrWhiteSpace(prividerName)
-                         ? cacheKey
-                         : $"{prividerName}-{cacheKey}";
         }
 
         /// <summary>
@@ -713,6 +631,5 @@
             //var val = new CacheValue<T>(cacheValue, true, expiration);
             return Task.FromResult(_cache.Add(cacheKey, cacheValue, expiration));
         }
-
     }
 }

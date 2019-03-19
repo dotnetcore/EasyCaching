@@ -23,13 +23,14 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.ResponseCaching.EasyCachingResponseCache"/> class.
         /// </summary>
-        /// <param name="provider">Provider.</param>
-        public EasyCachingResponseCache(
-            IEasyCachingProvider provider)
+        /// <param name="name">Provider Name</param>
+        /// <param name="providerFactory">Provider factory</param>
+        public EasyCachingResponseCache(string name,
+            IEasyCachingProviderFactory providerFactory)
         {
-            ArgumentCheck.NotNull(provider, nameof(provider));
+            ArgumentCheck.NotNull(providerFactory, nameof(providerFactory));
 
-            _provider = provider;
+            _provider = providerFactory.GetCachingProvider(name);
         }
 
         /// <summary>

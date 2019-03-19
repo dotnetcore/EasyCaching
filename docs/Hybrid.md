@@ -27,11 +27,11 @@ Install-Package EasyCaching.Bus.Redis
 public class Startup
 {
     //...
-    
+
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddMvc();
-        
+
         services.AddEasyCaching(option =>
         {
             // local
@@ -44,10 +44,15 @@ public class Startup
             }, "myredis");
 
             // combine local and distributed
-            option.UseHybrid(config => 
+            option.UseHybrid(config =>
             {
                 config.TopicName = "test-topic";
                 config.EnableLogging = false;
+
+                // specify the local cache provider name after v0.5.4
+                config.LocalCacheProviderName = "m1";
+                // specify the distributed cache provider name after v0.5.4
+                config.DistributedCacheProviderName = "myredis";
             })
             // use redis bus
             .WithRedisBus(busConf => 
@@ -79,7 +84,7 @@ public class ValuesController : Controller
     {
         //Set
         _provider.Set("demo", "123", TimeSpan.FromMinutes(1));
-        
+
         //others
         //...
     }

@@ -1,13 +1,16 @@
 ﻿namespace EasyCaching.Interceptor.Castle
 {
+    using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Interceptor;
+    using global::Castle.DynamicProxy;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Collections.Concurrent;
     using System.Linq;
     using System.Reflection;
     using System.Threading.Tasks;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Interceptor;
-    using global::Castle.DynamicProxy;
 
     /// <summary>
     /// Easycaching interceptor.
@@ -15,15 +18,19 @@
     public class EasyCachingInterceptor : IInterceptor
     {
         /// <summary>
+        /// The key generator.
+        /// </summary>
+        private readonly IEasyCachingKeyGenerator _keyGenerator;
+
+        /// <summary>
         /// The cache provider.
         /// </summary>
         private readonly IEasyCachingProvider _cacheProvider;
 
         /// <summary>
-        /// The key generator.
+        /// logger
         /// </summary>
-        private readonly IEasyCachingKeyGenerator _keyGenerator;
-
+        public ILogger<EasyCachingInterceptor> _logger;
         /// <summary>
         /// The typeof task result method.
         /// </summary>
@@ -31,14 +38,22 @@
                     TypeofTaskResultMethod = new ConcurrentDictionary<Type, MethodInfo>();
 
         /// <summary>
+        /// The typeof task result method.
+        /// </summary>
+        private static readonly ConcurrentDictionary<MethodInfo, object[]>
+                    MethodAttributes = new ConcurrentDictionary<MethodInfo, object[]>();
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Interceptor.Castle.EasyCachingInterceptor"/> class.
         /// </summary>
         /// <param name="cacheProvider">Cache provider.</param>
         /// <param name="keyGenerator">Key generator.</param>
-        public EasyCachingInterceptor(IEasyCachingProvider cacheProvider, IEasyCachingKeyGenerator keyGenerator)
+        /// <param name="logger">logger </param>
+        public EasyCachingInterceptor(IEasyCachingProviderFactory cacheProviderFactory, IEasyCachingKeyGenerator keyGenerator, IOptions<EasyCachingInterceptorOptions> options, ILogger<EasyCachingInterceptor> logger = null)
         {
-            _cacheProvider = cacheProvider;
+            _cacheProvider = cacheProviderFactory.GetCachingProvider(options.Value.CacheProviderName);
             _keyGenerator = keyGenerator;
+            _logger = logger;
         }
 
         /// <summary>
@@ -60,6 +75,10 @@
             // Process any late evictions
             ProcessEvict(invocation, false);
         }
+        private object[] GetMethodAttributes(MethodInfo mi)
+        {
+            return MethodAttributes.GetOrAdd(mi, mi.GetCustomAttributes(true));
+        }
 
         /// <summary>
         /// Proceeds the able.
@@ -69,21 +88,37 @@
         {
             var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
-            if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
+            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
             {
                 var returnType = serviceMethod.IsReturnTask()
                         ? serviceMethod.ReturnType.GetGenericArguments().First()
                         : serviceMethod.ReturnType;
 
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
-                
-                var cacheValue = (_cacheProvider.GetAsync(cacheKey, returnType)).GetAwaiter().GetResult();
 
+                object cacheValue = null;
+                var isAvailable = true;
+                try
+                {
+                    cacheValue = (_cacheProvider.GetAsync(cacheKey, returnType)).GetAwaiter().GetResult();
+                }
+                catch (Exception ex)
+                {
+                    if (!attribute.IsHightAvailability)
+                    {
+                        throw;
+                    }
+                    else
+                    {
+                        isAvailable = false;
+                        _logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" get error.");
+                    }
+                }
 
                 if (cacheValue != null)
                 {
                     if (serviceMethod.IsReturnTask())
-                    {                                            
+                    {
                         invocation.ReturnValue =
                             TypeofTaskResultMethod.GetOrAdd(returnType, t => typeof(Task).GetMethods().First(p => p.Name == "FromResult" && p.ContainsGenericParameters).MakeGenericMethod(returnType)).Invoke(null, new object[] { cacheValue });
                     }
@@ -97,7 +132,7 @@
                     // Invoke the method if we don't have a cache hit                    
                     invocation.Proceed();
 
-                    if (!string.IsNullOrWhiteSpace(cacheKey) && invocation.ReturnValue != null)
+                    if (!string.IsNullOrWhiteSpace(cacheKey) && invocation.ReturnValue != null && isAvailable)
                     {
                         if (serviceMethod.IsReturnTask())
                         {
@@ -110,6 +145,7 @@
                         {
                             _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
                         }
+
                     }
 
                 }
@@ -129,20 +165,28 @@
         {
             var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
-            if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && invocation.ReturnValue != null)
+            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && invocation.ReturnValue != null)
             {
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
-                if (serviceMethod.IsReturnTask())
+                try
                 {
-                    //get the result
-                    var returnValue = invocation.UnwrapAsyncReturnValue().Result;
+                    if (serviceMethod.IsReturnTask())
+                    {
+                        //get the result
+                        var returnValue = invocation.UnwrapAsyncReturnValue().Result;
 
-                    _cacheProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                        _cacheProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    }
+                    else
+                    {
+                        _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    if (!attribute.IsHightAvailability) throw;
+                    else _logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" set error.");
                 }
             }
         }
@@ -156,21 +200,29 @@
         {
             var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
-            if (serviceMethod.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
+            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {
-                if (attribute.IsAll)
+                try
                 {
-                    //If is all , clear all cached items which cachekey start with the prefix.
-                    var cacheKeyPrefix = _keyGenerator.GetCacheKeyPrefix(serviceMethod, attribute.CacheKeyPrefix);
+                    if (attribute.IsAll)
+                    {
+                        //If is all , clear all cached items which cachekey start with the prefix.
+                        var cacheKeyPrefix = _keyGenerator.GetCacheKeyPrefix(serviceMethod, attribute.CacheKeyPrefix);
 
-                    _cacheProvider.RemoveByPrefix(cacheKeyPrefix);
+                        _cacheProvider.RemoveByPrefix(cacheKeyPrefix);
+                    }
+                    else
+                    {
+                        //If not all , just remove the cached item by its cachekey.
+                        var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
+
+                        _cacheProvider.Remove(cacheKey);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    //If not all , just remove the cached item by its cachekey.
-                    var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
-
-                    _cacheProvider.Remove(cacheKey);
+                    if (!attribute.IsHightAvailability) throw;
+                    else _logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" remove error.");
                 }
             }
         }

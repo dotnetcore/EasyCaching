@@ -22,7 +22,8 @@
             {
                 app.ApplicationServices.GetService<IMemcachedClient>()
                     .GetAsync<string>("EnyimMemcached").Wait();
-                Console.WriteLine("EnyimMemcached Started.");
+                app.ApplicationServices.GetService<ILogger<IMemcachedClient>>()
+                    .LogInformation(new EventId(), "EnyimMemcached Started.");
             }
             catch (Exception ex)
             {

@@ -1,41 +1,55 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>        
-        1. Support diagnostics.
-        2. Interceptor should generate valid cache key for basic type parameters
+        1. Modity diagnostics.   
+        2. Add EasyCachingInterceptorOptions
+        3. Add hight availability configuration for Interceptor    
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Update EasyCaching.Core.    
+        2. Remove AddDefaultMemcached related extension methods
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
         1. Update EasyCaching.Core.    
+        2. Remove AddDefaultRedisCache related extension methods 
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Update EasyCaching.Core.    
+        2. Remove AddSQLiteCache extension method 
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
         1. Update EasyCaching.Core.    
+        2. Remove AddDefaultInMemoryCache related extension methods 
+        3. Remove key prefix for different instance
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. Update EasyCaching.Core.    
+        2. Add distributed cache providers and local cache providers configuration.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Update EasyCaching.Core.    
+        2. Add hight availability configuration
+        3. Add provider configuration.
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
         1. Update EasyCaching.Core.    
+        2. Add hight availability configuration
+        3. Add provider Configuration.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Update EasyCaching.Core.
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
         1. Update EasyCaching.Core.    
+        2. Remove AddDefaultJsonSerializer extension method 
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Update EasyCaching.Core.   
+        2. Remove AddDefaultMessagePackSerializer extension method  
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
         1. Update EasyCaching.Core.    
+        2. Remove AddDefaultProtobufSerializer extension method 
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
         1. Update EasyCaching.Core.    

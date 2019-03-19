@@ -33,7 +33,7 @@
         /// <param name="configuration">Configuration.</param>
         /// <param name="name">Name.</param>
         /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions UseCSRedis(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.CSRedisSection)
+        public static EasyCachingOptions UseCSRedis(this EasyCachingOptions options, IConfiguration configuration, string name = EasyCachingConstValue.DefaultCSRedisName, string sectionName = EasyCachingConstValue.CSRedisSection)
         {
             var dbConfig = configuration.GetSection(sectionName);
             var redisOptions = new RedisOptions();

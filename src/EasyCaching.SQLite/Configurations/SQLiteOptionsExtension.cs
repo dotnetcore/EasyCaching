@@ -43,34 +43,25 @@
         {
             services.AddOptions();
 
-            if (string.IsNullOrWhiteSpace(_name))
+            services.Configure(_name, configure);
+
+            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.AddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>(x =>
             {
-                services.Configure(configure);
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
+                var options = optionsMon.Get(_name);
+                return new SQLiteDatabaseProvider(_name, options);
+            });
 
-                services.TryAddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>();
-                services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>();
-            }
-            else
+            services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>(x =>
             {
-                services.Configure(_name, configure);
+                var dbProviders = x.GetServices<ISQLiteDatabaseProvider>();
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
+                var options = optionsMon.Get(_name);
+                var factory = x.GetService<ILoggerFactory>();
+                return new DefaultSQLiteCachingProvider(_name, dbProviders, options, factory);
+            });
 
-                services.AddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-                services.AddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>(x =>
-                {
-                    var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
-                    var options = optionsMon.Get(_name);
-                    return new SQLiteDatabaseProvider(_name, options);
-                });
-
-                services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>(x =>
-                {
-                    var dbProviders = x.GetServices<ISQLiteDatabaseProvider>();
-                    var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
-                    var options = optionsMon.Get(_name);
-                    var factory = x.GetService<ILoggerFactory>();
-                    return new DefaultSQLiteCachingProvider(_name, dbProviders, options, factory);
-                });
-            }
         }
 
         /// <summary>
@@ -79,25 +70,18 @@
         /// <param name="app">App.</param>
         public void WithServices(IApplicationBuilder app)
         {
-            try
-            {
-                var dbProviders = app.ApplicationServices.GetServices<ISQLiteDatabaseProvider>();
+            var dbProviders = app.ApplicationServices.GetServices<ISQLiteDatabaseProvider>();
 
-                foreach (var dbProvider in dbProviders)
+            foreach (var dbProvider in dbProviders)
+            {
+                var conn = dbProvider.GetConnection();
+
+                if (conn.State == System.Data.ConnectionState.Closed)
                 {
-                    var conn = dbProvider.GetConnection();
-
-                    if (conn.State == System.Data.ConnectionState.Closed)
-                    {
-                        conn.Open();
-                    }
-
-                    conn.Execute(ConstSQL.CREATESQL);
+                    conn.Open();
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+
+                conn.Execute(ConstSQL.CREATESQL);
             }
         }
     }

@@ -12,13 +12,15 @@
     9. GetByPrefix/GetByPrefixAsync
     10. RemoveAll/RemoveAllAsync
     11. GetCount
-    12. Flush/FlushAsync    
+    12. Flush/FlushAsync
+    13. TrySet/TrySetAsync
 - Caching Providers(Both local caching and distributed caching)
     1. In-Memory
     2. Memcached
-    3. Redis
-    4. SQLite
-    5. Hybrid    
+    3. Redis(Based on StackExchange.Redis)
+    4. Redis(Based on csredis)
+    5. SQLite
+    6. Hybrid
 - Caching Interceptors
     1. AspectCore
     2. Castle

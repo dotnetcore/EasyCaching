@@ -187,11 +187,12 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-            services.AddDefaultInMemoryCache(x =>
+            services.AddEasyCaching(x =>
             {
-                x.MaxRdSecond = 0;
+                x.UseInMemory(options => options.MaxRdSecond = 0);
             });
-            IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor();
+            services.AddLogging();
+            IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor(options=>options.CacheProviderName= EasyCachingConstValue.DefaultInMemoryName);
 
             _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
             _service = serviceProvider.GetService<IAspectCoreExampleService>();
