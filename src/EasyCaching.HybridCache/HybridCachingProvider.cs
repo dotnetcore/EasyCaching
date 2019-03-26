@@ -47,7 +47,7 @@
         /// <param name="bus">Bus.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public HybridCachingProvider(
-            HybridCachingOptions optionsAccs
+            IOptions<HybridCachingOptions> optionsAccs
             , IEasyCachingProviderFactory factory
             , IEasyCachingBus bus = null
             , ILoggerFactory loggerFactory = null
@@ -55,7 +55,7 @@
         {
             ArgumentCheck.NotNull(factory, nameof(factory));
 
-            this._options = optionsAccs;
+            this._options = optionsAccs.Value;
 
             ArgumentCheck.NotNullOrWhiteSpace(_options.TopicName, nameof(_options.TopicName));
 
