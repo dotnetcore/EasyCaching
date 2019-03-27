@@ -7,14 +7,15 @@
     using EasyCaching.InMemory;
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
     using System;
     using System.Threading.Tasks;
     using Xunit;
 
     public class HybridCachingTest //: BaseCachingProviderTest
     {
-        private HybridCachingProvider hybridCaching_1;
-        private HybridCachingProvider hybridCaching_2;
+        private IHybridCachingProvider hybridCaching_1;
+        //private HybridCachingProvider hybridCaching_2;
         private IEasyCachingProviderFactory factory;
         private string _namespace;
 
@@ -33,11 +34,21 @@
                     config.DBConfig.Database = 5;
                 }, "myredis");
 
+                option.UseHybrid(config =>
+                {
+                    config.EnableLogging = false;
+                    config.TopicName = "test_topic";
+                    config.LocalCacheProviderName = "m1";
+                    config.DistributedCacheProviderName = "myredis";
+                });
+
                 option.WithRedisBus(config =>
                 {
                     config.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
                     config.Database = 6;
                 });
+
+                
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -45,21 +56,7 @@
 
             var bus = serviceProvider.GetService<IEasyCachingBus>();
 
-            hybridCaching_1 = new HybridCachingProvider(new HybridCachingOptions
-            {
-                EnableLogging = false,
-                TopicName = "test_topic",
-                LocalCacheProviderName = "m1",
-                DistributedCacheProviderName = "myredis"
-            }, factory, bus);
-
-            hybridCaching_2 = new HybridCachingProvider(new HybridCachingOptions
-            {
-                EnableLogging = false,
-                TopicName = "test_topic",
-                LocalCacheProviderName = "m2",
-                DistributedCacheProviderName = "myredis"
-            }, factory, bus);
+            hybridCaching_1 = serviceProvider.GetService<IHybridCachingProvider>();
         }
 
         [Fact]
@@ -122,7 +119,7 @@
 
             hybridCaching_1.Set(cacheKey, "val", TimeSpan.FromSeconds(30));
 
-            hybridCaching_2.Set(cacheKey, "value", TimeSpan.FromSeconds(30));
+            //hybridCaching_2.Set(cacheKey, "value", TimeSpan.FromSeconds(30));
 
             //System.Threading.Thread.Sleep(5000);
 
