@@ -9,6 +9,7 @@
     <Description>      
       A simple local caching provider based on Microsoft.Data.SQLite
     </Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>SQLite,LocalCache,Caching,Cache,InMemory,Persisted</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
