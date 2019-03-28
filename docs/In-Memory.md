@@ -1,6 +1,6 @@
 # DefaultInMemoryCachingProvider
 
-EasyCaching.InMemory is a in-memory caching lib which is based on **EasyCaching.Core** and **Microsoft.Extensions.Caching.Memory**.
+EasyCaching.InMemory is a in-memory caching lib which is based on **EasyCaching.Core**.
 
 When you use this lib , it means that you will handle the memory of current server . As usual , we named it as local caching .
 
@@ -30,8 +30,28 @@ public class Startup
         //Important step for In-Memory Caching
         services.AddEasyCaching(option =>
         {
-            //use memory cache
+            // use memory cache with a simple way
             option.UseInMemory("default");
+            
+            // use memory cache with your own configuration
+            config.UseInMemory(options=> 
+            {
+                options.DBConfig = new InMemoryCachingOptions
+                {
+                    // scan time, default value is 1 min
+                    ExpirationScanFrequency = TimeSpan.FromMinutes(1), 
+                    // total count of cache items, default value is 10000
+                    SizeLimit = 100 
+                };
+                // the max random second will be added to cache's expiration, default value is 120
+                options.MaxRdSecond = 120;
+                // whether enable logging, default is false
+                options.EnableLogging = false;
+                // mutex key's alive time(ms), default is 5000
+                options.LockMs = 5000;
+                // when mutex key alive, it will sleep some time, default is 300
+                options.SleepMs = 300;
+            }, "default1");
         });
     }
 }
@@ -66,6 +86,9 @@ And what we add in `appsettings.json` are as following:
         "CachingProviderType": 1,
         "MaxRdSecond": 120,
         "Order": 2,
+        "DBConfig":{
+            "SizeLimit": 10000
+        }
     }
 }
 ```

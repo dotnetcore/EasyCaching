@@ -9,6 +9,7 @@
     <Description>      
       A serialize library based on protobuf-net
     </Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>Caching,Serialization,Protobuf</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>

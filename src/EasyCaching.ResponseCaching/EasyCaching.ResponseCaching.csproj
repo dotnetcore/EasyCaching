@@ -9,6 +9,7 @@
     <Description>      
       EasyCaching.ResponseCaching is the extension of ResponseCaching
     </Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>Caching,Cache,ResponseCaching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>

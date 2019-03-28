@@ -9,6 +9,7 @@
     <Description>      
       A simple caching bus(message bus) based on CSRedis.
     </Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTags>Bus,Hybrid,Redis,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>

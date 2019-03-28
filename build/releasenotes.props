@@ -1,64 +1,50 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>        
-        1. Modity diagnostics.   
-        2. Add EasyCachingInterceptorOptions
-        3. Add hight availability configuration for Interceptor    
+        1. Add GenerateDocumentationFile.    
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Remove AddDefaultMemcached related extension methods
+        1. Add GenerateDocumentationFile.    
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Update EasyCaching.Core.    
-        2. Remove AddDefaultRedisCache related extension methods 
+        1. Add GenerateDocumentationFile.    
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Remove AddSQLiteCache extension method 
+        1. Add GenerateDocumentationFile.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Remove AddDefaultInMemoryCache related extension methods 
-        3. Remove key prefix for different instance
+        1. Add GenerateDocumentationFile.    
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Add distributed cache providers and local cache providers configuration.
+        1. Add GenerateDocumentationFile.    
+        2. Fixed bug of Unable to resolve service for type 'EasyCaching.HybridCache.HybridCachingOptions'
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Add hight availability configuration
-        3. Add provider configuration.
+        1. Add GenerateDocumentationFile.    
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Add hight availability configuration
-        3. Add provider Configuration.
+        1. Add GenerateDocumentationFile.    
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Add GenerateDocumentationFile.    
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Remove AddDefaultJsonSerializer extension method 
+        1. Add GenerateDocumentationFile.    
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Update EasyCaching.Core.   
-        2. Remove AddDefaultMessagePackSerializer extension method  
+        1. Add GenerateDocumentationFile.    
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Remove AddDefaultProtobufSerializer extension method 
+        1. Add GenerateDocumentationFile.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Add GenerateDocumentationFile.    
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Add GenerateDocumentationFile.    
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Update EasyCaching.Core.
+        1. Add GenerateDocumentationFile.    
         </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>
