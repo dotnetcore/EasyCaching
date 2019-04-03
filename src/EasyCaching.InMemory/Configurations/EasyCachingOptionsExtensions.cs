@@ -58,6 +58,7 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">Configuration.</param>
         /// <param name="name">Name.</param>
+        /// <param name="sectionName">SectionName.</param>
         public static EasyCachingOptions UseInMemory(this EasyCachingOptions options, IConfiguration configuration, string name = EasyCachingConstValue.DefaultInMemoryName, string sectionName = EasyCachingConstValue.InMemorySection)
         {
             var dbConfig = configuration.GetSection(sectionName);

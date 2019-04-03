@@ -43,7 +43,7 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
         /// </summary>
         /// <param name="optionsAccs">Options accs.</param>
-        /// <param name="IEasyCachingProviderFactory">Providers factory</param>
+        /// <param name="factory">Providers factory</param>
         /// <param name="bus">Bus.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public HybridCachingProvider(

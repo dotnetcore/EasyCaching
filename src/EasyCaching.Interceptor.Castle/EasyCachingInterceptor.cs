@@ -46,8 +46,9 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Interceptor.Castle.EasyCachingInterceptor"/> class.
         /// </summary>
-        /// <param name="cacheProvider">Cache provider.</param>
+        /// <param name="cacheProviderFactory">Cache provider factory.</param>
         /// <param name="keyGenerator">Key generator.</param>
+        /// <param name="options">Options.</param>
         /// <param name="logger">logger </param>
         public EasyCachingInterceptor(IEasyCachingProviderFactory cacheProviderFactory, IEasyCachingKeyGenerator keyGenerator, IOptions<EasyCachingInterceptorOptions> options, ILogger<EasyCachingInterceptor> logger = null)
         {

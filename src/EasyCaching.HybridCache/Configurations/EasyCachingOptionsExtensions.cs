@@ -13,6 +13,7 @@
         /// </summary>
         /// <returns>The hybrid.</returns>
         /// <param name="options">Options.</param>
+        /// <param name="configure">Configure.</param>
         public static EasyCachingOptions UseHybrid(this EasyCachingOptions options, Action<HybridCachingOptions> configure)
         {
             options.RegisterExtension(new HybridCacheOptionsExtension(configure));
