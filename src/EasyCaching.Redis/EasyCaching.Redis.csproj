@@ -8,8 +8,7 @@
     <Version>$(EasyCachingRedisPackageVersion)</Version>
     <Description>            
       A simple distributed caching provider based on StackExchange.Redis.
-    </Description>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </Description>    
     <PackageTags>Redis,DistributedCache,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
@@ -19,6 +18,11 @@
     <PackageReleaseNotes>      
       $(EasyCachingRedisPackageNotes)
     </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

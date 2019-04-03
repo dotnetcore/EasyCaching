@@ -8,8 +8,7 @@
     <Version>$(EasyCachingCorePackageVersion)</Version>
     <Description>          
       EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
-    </Description>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </Description>    
     <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Hybrid,ResponseCaching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
@@ -19,6 +18,11 @@
     <PackageReleaseNotes>      
       $(EasyCachingCorePackageNotes)
     </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

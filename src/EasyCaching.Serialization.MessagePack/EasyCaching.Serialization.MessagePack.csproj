@@ -8,10 +8,9 @@
     <Version>$(EasyCachingMessagePackPackageVersion)</Version>
     <Description>      
       A serialize library based on MessagePack
-    </Description>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </Description>    
     <PackageTags>Caching,Serialization,MessagePack</PackageTags>
-   <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
@@ -19,6 +18,11 @@
     <PackageReleaseNotes>
       $(EasyCachingMessagePackPackageNotes)
     </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
