@@ -254,6 +254,17 @@
             return values.ToDictionary(k => k.Key, v => new CacheValue<T>(v.GetValue<T>(), true));
         }
 
+        public TimeSpan GetExpiration(string key)
+        {
+            if (!_memory.TryGetValue(key, out var value))
+                return TimeSpan.Zero;
+
+            if (value.ExpiresAt >= SystemClock.UtcNow)
+                return value.ExpiresAt.Subtract(SystemClock.UtcNow);
+
+            return TimeSpan.Zero;
+        }
+
         private class CacheEntry
         {
             private object _cacheValue;

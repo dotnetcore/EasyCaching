@@ -55,6 +55,9 @@
         public abstract bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration);
         public abstract Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
 
+        public abstract TimeSpan BaseGetExpiration(string cacheKey);
+        public abstract Task<TimeSpan> BaseGetExpirationAsync(string cacheKey);
+
         public bool Exists(string cacheKey)
         {
             var operationId = s_diagnosticListener.WriteExistsCacheBefore(new BeforeExistsRequestEventData(CachingProviderType.ToString(), Name, nameof(Exists), cacheKey));
@@ -762,5 +765,15 @@
                 }
             }
         }
+
+        public TimeSpan GetExpiration(string cacheKey)
+        {
+            return BaseGetExpiration(cacheKey);
+        }
+
+        public async Task<TimeSpan> GetExpirationAsync(string cacheKey)
+        {
+            return await BaseGetExpirationAsync(cacheKey);
+        }        
     }
 }

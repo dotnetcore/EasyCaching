@@ -43,6 +43,13 @@
                     WHERE [cachekey] = @cachekey AND [name]=@name AND [expiration] > strftime('%s','now')";
 
         /// <summary>
+        /// The getsql.
+        /// </summary>
+        public const string GETEXPIRATIONSQL = @"SELECT strftime('%s','now') - [expiration] 
+                    FROM [easycaching]
+                    WHERE [cachekey] = @cachekey AND [name]=@name ";
+
+        /// <summary>
         /// The getallsql.
         /// </summary>
         public const string GETALLSQL = @"SELECT [cachekey],[cachevalue]

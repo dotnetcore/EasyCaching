@@ -808,5 +808,21 @@
                 When.NotExists
                 );
         }
+
+        public override TimeSpan BaseGetExpiration(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var timeSpan = _cache.KeyTimeToLive(cacheKey);
+            return timeSpan.HasValue ? timeSpan.Value : TimeSpan.Zero;
+        }
+
+        public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var timeSpan = await _cache.KeyTimeToLiveAsync(cacheKey);
+            return timeSpan.HasValue ? timeSpan.Value : TimeSpan.Zero;
+        }
     }
 }

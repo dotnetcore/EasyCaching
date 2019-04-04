@@ -135,6 +135,19 @@
         {
         }
 
+        [Fact]
+        protected override void GetExpiration_Should_Succeed()
+        {
+
+        }
+
+
+        [Fact]
+        protected override async Task GetExpiration_Async_Should_Succeed()
+        {
+            await Task.Yield();
+        }
+
         private void SetCacheItem(string cacheKey, string cacheValue, string prefix)
         {
             var pre = _provider.Get<string>(prefix);

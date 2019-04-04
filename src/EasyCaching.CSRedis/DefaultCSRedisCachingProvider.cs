@@ -791,5 +791,20 @@
                 );
         }
 
+        public override TimeSpan BaseGetExpiration(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var second = _cache.Ttl(cacheKey);
+            return TimeSpan.FromSeconds(second);
+        }
+
+        public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var second = await _cache.TtlAsync(cacheKey);
+            return TimeSpan.FromSeconds(second);
+        }
     }
 }

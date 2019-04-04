@@ -1123,6 +1123,34 @@
         }
         #endregion
 
+        #region GetExpiration
+        [Fact]
+        protected virtual void GetExpiration_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheValue1 = "value1";
+
+            _provider.Set(cacheKey, cacheValue1, _defaultTs);
+
+            var ts = _provider.GetExpiration(cacheKey);
+
+            Assert.InRange(ts, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(30 + 120));
+        }
+
+        [Fact]
+        protected virtual async Task GetExpiration_Async_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheValue1 = "value1";
+
+            await _provider.SetAsync(cacheKey, cacheValue1, _defaultTs);
+
+            var ts = await _provider.GetExpirationAsync(cacheKey);
+
+            Assert.InRange(ts, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(30 + 120));
+        }
+        #endregion
+
         #region common method
         protected Dictionary<string, string> GetMultiDict(string prefix = "")
         {
