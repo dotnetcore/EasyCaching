@@ -45,7 +45,7 @@
         /// <summary>
         /// The getsql.
         /// </summary>
-        public const string GETEXPIRATIONSQL = @"SELECT strftime('%s','now') - [expiration] 
+        public const string GETEXPIRATIONSQL = @"SELECT [expiration] - strftime('%s','now')
                     FROM [easycaching]
                     WHERE [cachekey] = @cachekey AND [name]=@name ";
 
