@@ -757,7 +757,7 @@
             });
 
             if (time <= 0) return TimeSpan.Zero;
-            else return TimeSpan.FromMilliseconds(time);
+            else return TimeSpan.FromSeconds(time);
         }
     }
 }
