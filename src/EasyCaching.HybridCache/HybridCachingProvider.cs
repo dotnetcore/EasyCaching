@@ -38,7 +38,7 @@
         /// The cache identifier.
         /// </summary>
         private readonly string _cacheId;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
         /// </summary>
@@ -87,9 +87,9 @@
             // each clients will recive the message, current client should ignore.
             if (!string.IsNullOrWhiteSpace(message.Id) && message.Id.Equals(_cacheId, StringComparison.OrdinalIgnoreCase))
                 return;
-           
+
             //remove by prefix
-            if(message.IsPrefix)
+            if (message.IsPrefix)
             {
                 var prefix = message.CacheKeys.First();
 
@@ -164,8 +164,23 @@
 
             if (cacheValue.HasValue)
             {
-                //TODO: What about the value of expiration? Form configuration or others?
-                _localCache.Set(cacheKey, cacheValue.Value, TimeSpan.FromSeconds(60));
+                TimeSpan ts = TimeSpan.Zero;
+
+                try
+                {
+                    ts = _distributedCache.GetExpiration(cacheKey);
+                }
+                catch
+                {
+
+                }
+
+                if (ts <= TimeSpan.Zero)
+                {
+                    ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+                }
+
+                _localCache.Set(cacheKey, cacheValue.Value, ts);
 
                 return cacheValue;
             }
@@ -203,9 +218,24 @@
             cacheValue = await _distributedCache.GetAsync<T>(cacheKey);
 
             if (cacheValue.HasValue)
-            {
-                //TODO: What about the value of expiration? Form configuration or others?
-                await _localCache.SetAsync(cacheKey, cacheValue.Value, TimeSpan.FromSeconds(60));
+            {                
+                TimeSpan ts = TimeSpan.Zero;
+
+                try
+                {
+                    ts = await _distributedCache.GetExpirationAsync(cacheKey);
+                }
+                catch
+                {
+
+                }
+
+                if (ts <= TimeSpan.Zero)
+                {
+                    ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+                }
+
+                await _localCache.SetAsync(cacheKey, cacheValue.Value, ts);
 
                 return cacheValue;
             }
@@ -405,12 +435,12 @@
 
             var result = _localCache.Get<T>(cacheKey);
 
-            if(result.HasValue)
+            if (result.HasValue)
             {
                 return result;
             }
 
-            result = _distributedCache.Get<T>(cacheKey, dataRetriever , expiration);
+            result = _distributedCache.Get<T>(cacheKey, dataRetriever, expiration);
 
             return result.HasValue
                ? result
@@ -437,7 +467,7 @@
                 return result;
             }
 
-            result = await _distributedCache.GetAsync<T>(cacheKey, dataRetriever , expiration);
+            result = await _distributedCache.GetAsync<T>(cacheKey, dataRetriever, expiration);
 
             return result.HasValue
                 ? result
@@ -457,7 +487,7 @@
             _localCache.RemoveByPrefix(prefix);
 
             //send message to bus 
-            _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix } , IsPrefix = true });
+            _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
         }
 
         /// <summary>

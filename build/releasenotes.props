@@ -16,7 +16,8 @@
         1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Update EasyCaching.Core.            
+        1. Add DefaultExpirationForTtlFailed for HybridCachingOptions.
+        2. Get distributed cached item's expiration when local cache is null.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Update EasyCaching.Core.    

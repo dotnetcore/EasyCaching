@@ -24,5 +24,10 @@
         /// distribute cache provider name
         /// </summary>
         public string DistributedCacheProviderName { get; set; }
+
+        /// <summary>
+        /// Gets the default expiration when get ttl from distributed cache was failed
+        /// </summary>        
+        public int DefaultExpirationForTtlFailed { get; set; } = 60;
     }
 }
