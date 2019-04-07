@@ -1,50 +1,49 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageNotes>        
-        1. Add GenerateDocumentationFile.    
+		<EasyCachingCorePackageNotes>                
+        1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Add GenerateDocumentationFile.    
+        1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Add GenerateDocumentationFile.    
-        2. Fixed bug of Unable to resolve service for type 'EasyCaching.HybridCache.HybridCachingOptions'
+        1. Update EasyCaching.Core.            
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.    
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.        
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.    
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.    
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.    
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.    
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Add GenerateDocumentationFile.    
+        1. Update EasyCaching.Core.    
         </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>
