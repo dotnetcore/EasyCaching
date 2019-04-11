@@ -9,25 +9,16 @@
     /// </summary>
     public class DefaultEasyCachingProviderFactory : IEasyCachingProviderFactory
     {
-        /// <summary>
-        /// The caching providers.
-        /// </summary>
         private readonly IEnumerable<IEasyCachingProvider> _cachingProviders;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.DefaultEasyCachingProviderFactory"/> class.
-        /// </summary>
-        /// <param name="cachingProviders">Caching providers.</param>
-        public DefaultEasyCachingProviderFactory(IEnumerable<IEasyCachingProvider> cachingProviders)
+        private readonly IEnumerable<IRedisCachingProvider> _redisProviders;
+
+        public DefaultEasyCachingProviderFactory(IEnumerable<IEasyCachingProvider> cachingProviders, IEnumerable<IRedisCachingProvider> redisProviders)
         {
             this._cachingProviders = cachingProviders;
+            this._redisProviders = redisProviders;
         }
 
-        /// <summary>
-        /// Gets the caching provider.
-        /// </summary>
-        /// <returns>The caching provider.</returns>
-        /// <param name="name">Name.</param>
         public IEasyCachingProvider GetCachingProvider(string name)
         {
             ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
@@ -35,6 +26,17 @@
             var provider = _cachingProviders.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
             if (provider == null) throw new ArgumentException("can not find a match caching provider!");
+
+            return provider;
+        }
+
+        public IRedisCachingProvider GetRedisProvider(string name)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
+
+            var provider = _redisProviders.FirstOrDefault(x => x.RedisName.Equals(name, StringComparison.OrdinalIgnoreCase));
+
+            if (provider == null) throw new ArgumentException("can not find a match redis provider!");
 
             return provider;
         }

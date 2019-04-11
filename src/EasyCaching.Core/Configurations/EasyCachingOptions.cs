@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.Core.Configurations
 {
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -30,6 +31,11 @@
             ArgumentCheck.NotNull(extension, nameof(extension));
 
             Extensions.Add(extension);
+        }
+
+        public void UseCSRedis(Func<object, object> p, string v)
+        {
+            throw new NotImplementedException();
         }
     }
 }
