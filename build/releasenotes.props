@@ -2,12 +2,15 @@
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>                
         1. Add GetExpiration/GetExpirationAsync for caching provider.
+        2. IEasyCachingProviderFactory support multi redis provider instances.
+        3. IRedisCachingProvider add some string and keys methods.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Add GetExpiration/GetExpirationAsync for caching provider.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
         1. Add GetExpiration/GetExpirationAsync for caching provider.
+        2. Add some string and keys methods.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Add GetExpiration/GetExpirationAsync for caching provider.
@@ -39,6 +42,7 @@
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
         1. Add GetExpiration/GetExpirationAsync for caching provider.
+        2. Add some string and keys methods.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
         1. Update EasyCaching.Core.    
