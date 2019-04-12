@@ -1,4 +1,4 @@
-namespace EasyCaching.UnitTests
+﻿namespace EasyCaching.UnitTests
 {
     using System;
     using System.Linq;
@@ -15,6 +15,8 @@ namespace EasyCaching.UnitTests
     public abstract class BaseAspectCoreInterceptorTest
     {
         protected IEasyCachingProvider _cachingProvider;
+
+        protected IEasyCachingProvider _secondCachingProvider;
 
         protected IAspectCoreExampleService _service;
 
@@ -71,9 +73,10 @@ namespace EasyCaching.UnitTests
             Assert.True(value.HasValue);
             Assert.Equal("PutTest-1", value.Value);
         }
+        
 
         [Fact]
-        protected virtual void Evict_Should_Succeed()
+        protected virtual void Evict_And_Switch_Provider_Should_Succeed()
         {
             System.Reflection.MethodInfo method = typeof(AspectCoreExampleService).GetMethod("EvictTest");
 
@@ -85,6 +88,11 @@ namespace EasyCaching.UnitTests
 
             Assert.Equal("AAA", value.Value);
 
+            _service.EvictSwitchProviderTest();
+
+            value = _cachingProvider.Get<string>(key);
+
+            Assert.Equal("AAA", value.Value);
 
             _service.EvictTest();
 
@@ -185,16 +193,21 @@ namespace EasyCaching.UnitTests
     {
         public AspectCoreInterceptorTest()
         {
+            const string firstCacheProviderName = "first";
+            const string secondCacheProviderName = "second";
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
             services.AddEasyCaching(x =>
             {
-                x.UseInMemory(options => options.MaxRdSecond = 0);
+                x.UseInMemory(options => options.MaxRdSecond = 0, firstCacheProviderName);
+                x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
             });
             services.AddLogging();
-            IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor(options=>options.CacheProviderName= EasyCachingConstValue.DefaultInMemoryName);
+            IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor(options=>options.CacheProviderName= firstCacheProviderName);
 
-            _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
+            _secondCachingProvider = factory.GetCachingProvider(secondCacheProviderName);
             _service = serviceProvider.GetService<IAspectCoreExampleService>();
             _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
         }
