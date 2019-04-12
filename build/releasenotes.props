@@ -4,6 +4,7 @@
         1. Add GetExpiration/GetExpirationAsync for caching provider.
         2. IEasyCachingProviderFactory support multi redis provider instances.
         3. IRedisCachingProvider add some string and keys methods.
+        4. Interceptor attribute add cache provider
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Add GetExpiration/GetExpirationAsync for caching provider.
@@ -24,9 +25,11 @@
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Update EasyCaching.Core.    
+        2. Swich caching provider via attribute.
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
         1. Update EasyCaching.Core.        
+        2. Swich caching provider via attribute.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Update EasyCaching.Core.    
