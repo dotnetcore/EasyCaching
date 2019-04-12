@@ -23,9 +23,14 @@
         private readonly IEasyCachingKeyGenerator _keyGenerator;
 
         /// <summary>
-        /// The cache provider.
+        /// The cache provider factory.
         /// </summary>
-        private readonly IEasyCachingProvider _cacheProvider;
+        private readonly IEasyCachingProviderFactory _cacheProviderFactory;
+
+        /// <summary>
+        /// Get or set the options
+        /// </summary>
+        public IOptions<EasyCachingInterceptorOptions> _options { get; set; }
 
         /// <summary>
         /// logger
@@ -52,7 +57,8 @@
         /// <param name="logger">logger </param>
         public EasyCachingInterceptor(IEasyCachingProviderFactory cacheProviderFactory, IEasyCachingKeyGenerator keyGenerator, IOptions<EasyCachingInterceptorOptions> options, ILogger<EasyCachingInterceptor> logger = null)
         {
-            _cacheProvider = cacheProviderFactory.GetCachingProvider(options.Value.CacheProviderName);
+            _options = options;
+            _cacheProviderFactory = cacheProviderFactory;
             _keyGenerator = keyGenerator;
             _logger = logger;
         }
@@ -95,6 +101,7 @@
                         ? serviceMethod.ReturnType.GetGenericArguments().First()
                         : serviceMethod.ReturnType;
 
+                var _cacheProvider = _cacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? _options.Value.CacheProviderName);
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
                 object cacheValue = null;
@@ -168,6 +175,7 @@
 
             if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && invocation.ReturnValue != null)
             {
+                var _cacheProvider = _cacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? _options.Value.CacheProviderName);
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
                 try
@@ -203,6 +211,7 @@
 
             if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {
+                var _cacheProvider = _cacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? _options.Value.CacheProviderName);
                 try
                 {
                     if (attribute.IsAll)

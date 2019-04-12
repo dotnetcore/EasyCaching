@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.Core.Interceptor
 {
+    using EasyCaching.Core.Configurations;
     using System;
 
     /// <summary>
@@ -19,6 +20,12 @@
         /// </summary>
         /// <value>The cache key prefix.</value>
         public string CacheKeyPrefix { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Gets or sets the cache provider name. The default value is <seealso cref="EasyCachingInterceptorOptions.CacheProviderName"/> 
+        /// </summary>
+        /// <value>The cache key prefix.</value>
+        public string CacheProviderName { get; set; }
 
         /// <summary>
         ///  Prevent cache provider errors from affecting business

@@ -1,4 +1,4 @@
-namespace EasyCaching.UnitTests
+﻿namespace EasyCaching.UnitTests
 {
     using Autofac;
     using Autofac.Extras.DynamicProxy;
@@ -19,6 +19,8 @@ namespace EasyCaching.UnitTests
     public abstract class BaseCastleInterceptorTest
     {
         protected IEasyCachingProvider _cachingProvider;
+
+        protected IEasyCachingProvider _secondCachingProvider;
 
         protected ICastleExampleService _service;
 
@@ -75,6 +77,24 @@ namespace EasyCaching.UnitTests
 
             Assert.True(value.HasValue);
             Assert.Equal("PutTest-1", value.Value);
+        }
+
+        [Fact]
+        protected virtual void Put_Switch_Provider_Should_Succeed()
+        {
+            var str = _service.PutSwitchProviderTest(1);
+
+            System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("PutTest");
+
+            var key = _keyGenerator.GetCacheKey(method, new object[] { 1, "123" }, "CastleExample");
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.False(value.HasValue);
+
+            value = _secondCachingProvider.Get<string>(key);
+
+            Assert.True(value.HasValue);
         }
 
         [Fact]
@@ -179,16 +199,21 @@ namespace EasyCaching.UnitTests
     {
         public CastleInterceptorTest()
         {
+            const string firstCacheProviderName = "first";
+            const string secondCacheProviderName = "second";
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<ICastleExampleService, CastleExampleService>();
             services.AddEasyCaching(x =>
             {
-                x.UseInMemory(options => options.MaxRdSecond = 0);
+                x.UseInMemory(options => options.MaxRdSecond = 0, firstCacheProviderName);
+                x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
             });
             //services.AddLogging();
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
+            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(options => options.CacheProviderName = firstCacheProviderName);
 
-            _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
+            _secondCachingProvider = factory.GetCachingProvider(secondCacheProviderName);
             _service = serviceProvider.GetService<ICastleExampleService>();
             _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
         }
@@ -200,11 +225,14 @@ namespace EasyCaching.UnitTests
 
         public CastleInterceptorWithActionTest()
         {
+            const string firstCacheProviderName = "first";
+            const string secondCacheProviderName = "second";
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<ICastleExampleService, CastleExampleService>();
             services.AddEasyCaching(x =>
             {
-                x.UseInMemory(options => options.MaxRdSecond = 0);
+                x.UseInMemory(options => options.MaxRdSecond = 0, firstCacheProviderName);
+                x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
             });
 
             services.AddLogging();
@@ -213,9 +241,11 @@ namespace EasyCaching.UnitTests
                 x.RegisterType<TestInterface>().As<ITestInterface>();
             };
 
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor( action, options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
+            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor( action, options => options.CacheProviderName = firstCacheProviderName);
 
-            _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
+            _secondCachingProvider = factory.GetCachingProvider(secondCacheProviderName);
             _service = serviceProvider.GetService<ICastleExampleService>();
             _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
 
@@ -235,11 +265,14 @@ namespace EasyCaching.UnitTests
 
         public CastleInterceptorWithActionAndIsRemoveDefaultTest()
         {
+            const string firstCacheProviderName = "first";
+            const string secondCacheProviderName = "second";
             IServiceCollection services = new ServiceCollection();
             services.AddTransient<ICastleExampleService, CastleExampleService>();
             services.AddEasyCaching(x =>
             {
-                x.UseInMemory(options => options.MaxRdSecond = 0);
+                x.UseInMemory(options => options.MaxRdSecond = 0, firstCacheProviderName);
+                x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
             });
 
             services.AddLogging();
@@ -286,9 +319,11 @@ namespace EasyCaching.UnitTests
                 //.InterceptedBy(typeof(EasyCachingInterceptor));
             };
 
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(action, true, options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
+            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(action, true, options => options.CacheProviderName = firstCacheProviderName);
 
-            _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
+            _secondCachingProvider = factory.GetCachingProvider(secondCacheProviderName);
             _service = serviceProvider.GetService<ICastleExampleService>();
             _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
 

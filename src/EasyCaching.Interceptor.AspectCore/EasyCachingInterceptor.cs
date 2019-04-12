@@ -45,11 +45,6 @@
         public ILogger<EasyCachingInterceptor> Logger { get; set; }
 
         /// <summary>
-        /// The cache provider.
-        /// </summary>
-        private IEasyCachingProvider _cacheProvider;
-
-        /// <summary>
         /// The typeof task result method.
         /// </summary>
         private static readonly ConcurrentDictionary<Type, MethodInfo>
@@ -69,7 +64,6 @@
         /// <param name="next">Next.</param>
         public async override Task Invoke(AspectContext context, AspectDelegate next)
         {
-            _cacheProvider = _cacheProvider ?? CacheProviderFactory.GetCachingProvider(Options.Value.CacheProviderName);
             //Process any early evictions 
             await ProcessEvictAsync(context, true);
 
@@ -102,6 +96,7 @@
                         ? context.ServiceMethod.ReturnType.GetGenericArguments().First()
                         : context.ServiceMethod.ReturnType;
 
+                var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
                 object cacheValue = null;
@@ -179,6 +174,7 @@
         {
             if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && context.ReturnValue != null)
             {
+                var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
                 try
@@ -213,6 +209,7 @@
         {
             if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {
+                var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
                 try
                 {
                     if (attribute.IsAll)
