@@ -1,15 +1,14 @@
 ﻿namespace EasyCaching.InMemory
 {
     using Microsoft.Extensions.Options;
-    using System;
 
     public class InMemoryCachingOptions : IOptions<InMemoryCachingOptions>
     {
         /// <summary>
-        /// Gets or sets the expiration scan frequency.
+        /// Gets or sets the expiration scan frequency, the unit is second.
         /// </summary>
         /// <value>The expiration scan frequency.</value>
-        public TimeSpan ExpirationScanFrequency { get; set; } = TimeSpan.FromMinutes(1);
+        public int ExpirationScanFrequency { get; set; } = 60;
 
         /// <summary>
         /// Gets or sets the size limit.

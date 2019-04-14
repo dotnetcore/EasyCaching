@@ -231,7 +231,7 @@
         private void StartScanForExpiredItems()
         {
             var utcNow = SystemClock.UtcNow;
-            if (_options.ExpirationScanFrequency < utcNow - _lastExpirationScan)
+            if (TimeSpan.FromSeconds(_options.ExpirationScanFrequency) < utcNow - _lastExpirationScan)
             {
                 _lastExpirationScan = utcNow;
                 Task.Factory.StartNew(state => ScanForExpiredItems((InMemoryCaching)state), this,

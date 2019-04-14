@@ -21,6 +21,10 @@
             'CachingProviderType': 1,
             'MaxRdSecond': 600,
             'Order': 99,
+            'DBConfig':{
+                'ExpirationScanFrequency': 120,
+                'SizeLimit' : 100
+            }
         },
          'sqlite': {
             'CachingProviderType': 3,
@@ -51,6 +55,8 @@
             var memoryOptions = serviceProvider.GetService<IOptionsMonitor<InMemoryOptions>>().Get(MemoryName);
             Assert.NotNull(memoryOptions);
             Assert.Equal(600, memoryOptions.MaxRdSecond);
+            Assert.Equal(120, memoryOptions.DBConfig.ExpirationScanFrequency);
+            Assert.Equal(100, memoryOptions.DBConfig.SizeLimit);
 
             var sqliteOptions = serviceProvider.GetService<IOptionsMonitor<SQLiteOptions>>().Get(SQLiteName);
             Assert.NotNull(sqliteOptions);
