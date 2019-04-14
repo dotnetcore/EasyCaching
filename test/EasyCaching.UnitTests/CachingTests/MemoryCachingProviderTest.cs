@@ -8,6 +8,7 @@ namespace EasyCaching.UnitTests
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -54,6 +55,37 @@ namespace EasyCaching.UnitTests
 
             Assert.False(flag);
         }
+
+        [Fact]
+        public void Issues105_StackOverflowException_Test()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var cacheValue = new Dictionary<string, IList<MySettingForCaching>>()
+            {
+                { "ss", new List<MySettingForCaching>{ new MySettingForCaching { Name = "aa" } } }
+            };
+
+            // without data retriever
+            // _provider.Set(cacheKey, cacheValue, TimeSpan.FromMilliseconds(200));
+
+            // with data retriever
+            var res = _provider.Get(cacheKey, () =>
+            {
+                return cacheValue;
+            }, _defaultTs);
+
+            var first = res.Value.First();
+
+            Assert.Equal("ss", first.Key);
+            Assert.Equal(1, first.Value.Count);
+        }
+
+        [Serializable]
+        public class MySettingForCaching
+        {
+            public string Name { get; set; }
+        }
     }
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {
@@ -71,7 +103,7 @@ namespace EasyCaching.UnitTests
             _secondProvider = factory.GetCachingProvider(SECOND_PROVIDER_NAME);
             _defaultTs = TimeSpan.FromSeconds(30);
         }
-        
+
     }
 
     public class MemoryCachingProviderUseEasyCachingTest : BaseUsingEasyCachingTest
