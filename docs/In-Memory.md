@@ -34,12 +34,12 @@ public class Startup
             option.UseInMemory("default");
             
             // use memory cache with your own configuration
-            config.UseInMemory(options=> 
+            config.UseInMemory(options => 
             {
                 options.DBConfig = new InMemoryCachingOptions
                 {
-                    // scan time, default value is 1 min
-                    ExpirationScanFrequency = TimeSpan.FromMinutes(1), 
+                    // scan time, default value is 60s
+                    ExpirationScanFrequency = 60, 
                     // total count of cache items, default value is 10000
                     SizeLimit = 100 
                 };
@@ -87,7 +87,8 @@ And what we add in `appsettings.json` are as following:
         "MaxRdSecond": 120,
         "Order": 2,
         "DBConfig":{
-            "SizeLimit": 10000
+            "SizeLimit": 10000,
+            "ExpirationScanFrequency": 60
         }
     }
 }
