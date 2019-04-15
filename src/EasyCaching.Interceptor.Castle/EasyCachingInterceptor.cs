@@ -142,20 +142,19 @@
 
                     if (!string.IsNullOrWhiteSpace(cacheKey) && invocation.ReturnValue != null && isAvailable)
                     {
-                        if (serviceMethod.IsReturnTask())
-                        {
-                            //get the result
-                            var returnValue = invocation.UnwrapAsyncReturnValue().Result;
+                        // get the result
+                        var returnValue = serviceMethod.IsReturnTask()
+                           ? invocation.UnwrapAsyncReturnValue().Result
+                           : invocation.ReturnValue;
 
+                        // should we do something when method return null?
+                        // 1. cached a null value for a short time
+                        // 2. do nothing
+                        if (returnValue != null)
+                        {
                             _cacheProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
                         }
-                        else
-                        {
-                            _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-
                     }
-
                 }
             }
             else

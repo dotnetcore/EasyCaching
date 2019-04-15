@@ -33,6 +33,8 @@
         [EasyCachingPut(CacheKeyPrefix = "CastleExample")]
         Task<string> PutTestAsync(int num, string str = "123");
 
+        [EasyCachingAble(Expiration = 1)]
+        Task<string> AbleTestWithNullValueAsync();
     }
 
     public class CastleExampleService : ICastleExampleService//, IEasyCaching
@@ -82,7 +84,10 @@
             return await Task.FromResult($"PutTestAsync-{num}");
         }
 
-
+        public Task<string> AbleTestWithNullValueAsync()
+        {
+            return Task.FromResult<string>(null);
+        }
     }
 
     public interface IAspectCoreExampleService //: IEasyCaching
@@ -121,6 +126,9 @@
 
         [EasyCachingAble(Expiration = 1)]
         Task<List<Model>> AbleListTest();
+
+        [EasyCachingAble(Expiration = 1)]
+        Task<string> AbleTestWithNullValueAsync();
     }
 
     public class AspectCoreExampleService : IAspectCoreExampleService
@@ -187,5 +195,9 @@
             return Task.FromResult(list);
         }
 
+        public Task<string> AbleTestWithNullValueAsync()
+        {
+            return Task.FromResult<string>(null);
+        }
     }
 }

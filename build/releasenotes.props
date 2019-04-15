@@ -26,10 +26,12 @@
 		<EasyCachingAspectCorePackageNotes>
         1. Update EasyCaching.Core.    
         2. Swich caching provider via attribute.
+        3. Handle exception when method return null.
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
         1. Update EasyCaching.Core.        
         2. Swich caching provider via attribute.
+        3. Handle exception when method return null.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Update EasyCaching.Core.    

@@ -144,16 +144,17 @@
 
                     if (isAvailable)
                     {
-                        if (context.IsAsync())
-                        {
-                            //get the result
-                            var returnValue = await context.UnwrapAsyncReturnValue();
+                        // get the result
+                        var returnValue = context.IsAsync()
+                            ? await context.UnwrapAsyncReturnValue()
+                            : context.ReturnValue;
 
-                            await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-                        else
+                        // should we do something when method return null?
+                        // 1. cached a null value for a short time
+                        // 2. do nothing
+                        if (returnValue != null)
                         {
-                            await _cacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                            await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
                         }
                     }
                 }

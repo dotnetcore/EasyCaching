@@ -193,6 +193,16 @@
             Assert.False(after.HasValue);
         }
 
+        [Fact]
+        protected virtual async Task Issues106_Interceptor_Able_Null_Value_Test()
+        {
+            var tick1 = await _service.AbleTestWithNullValueAsync();
+
+            var tick2 = await _service.AbleTestWithNullValueAsync();
+
+            Assert.Null(tick1);
+            Assert.Equal(tick1, tick2);
+        }
     }
 
     public class CastleInterceptorTest : BaseCastleInterceptorTest
