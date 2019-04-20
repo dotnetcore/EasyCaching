@@ -12,6 +12,297 @@
         protected IEasyCachingProvider _baseProvider;
         protected string _nameSpace = string.Empty;
 
+        #region Keys             
+        [Fact]
+        protected virtual void KeyDel_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.StringSet(cacheKey, "123");
+
+            Assert.True(res);
+
+            var flag = _provider.KeyDel(cacheKey);
+
+            Assert.True(flag);
+        }
+
+        [Fact]
+        protected virtual async Task KeyDelAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.StringSet(cacheKey, "123");
+
+            Assert.True(res);
+
+            var flag = await _provider.KeyDelAsync(cacheKey);
+
+            Assert.True(flag);
+        }
+
+        [Fact]
+        protected virtual void StringSet_And_KeyExpire_And_TTL_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.StringSet(cacheKey, "123");
+
+            Assert.True(res);
+
+            var flag = _provider.KeyExpire(cacheKey, 10);
+
+            Assert.True(flag);
+
+            var ttl = _provider.TTL(cacheKey);
+
+            Assert.InRange(ttl, 1, 10);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task StringSet_And_KeyExpire_And_TTL_Async_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.StringSetAsync(cacheKey, "123");
+
+            Assert.True(res);
+
+            var flag = await _provider.KeyExpireAsync(cacheKey, 10);
+
+            Assert.True(flag);
+
+            var ttl = await _provider.TTLAsync(cacheKey);
+
+            Assert.InRange(ttl, 1, 10);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+        #endregion
+
+        #region String
+
+        [Fact]
+        protected virtual void StringSet_And_StringGet_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = Guid.NewGuid().ToString();
+
+            var res = _provider.StringSet(cacheKey, cacheValue);
+
+            Assert.True(res);
+
+            var val = _provider.StringGet(cacheKey);
+
+            Assert.Equal(cacheValue, val);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task StringSet_And_StringGet_Async_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = Guid.NewGuid().ToString();
+
+            var res = await _provider.StringSetAsync(cacheKey, cacheValue);
+
+            Assert.True(res);
+
+            var val = await _provider.StringGetAsync(cacheKey);
+
+            Assert.Equal(cacheValue, val);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void IncrBy_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.IncrBy(cacheKey);
+
+            Assert.Equal(1, res);
+
+            var val = _provider.IncrBy(cacheKey, 3);
+
+            Assert.Equal(4, val);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task IncrByAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.IncrByAsync(cacheKey);
+
+            Assert.Equal(1, res);
+
+            var val = await _provider.IncrByAsync(cacheKey, 3);
+
+            Assert.Equal(4, val);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void IncrByFloat_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.IncrByFloat(cacheKey);
+
+            Assert.Equal(1d, res);
+
+            var val = _provider.IncrByFloat(cacheKey, 3d);
+
+            Assert.Equal(4d, val);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task IncrByFloatAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.IncrByFloatAsync(cacheKey);
+
+            Assert.Equal(1d, res);
+
+            var val = await _provider.IncrByFloatAsync(cacheKey, 3d);
+
+            Assert.Equal(4d, val);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void StringLen_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = "catcherwong";
+
+            var flag = _provider.StringSet(cacheKey, cacheValue);
+
+            Assert.True(flag);
+
+            var len = _provider.StringLen(cacheKey);
+
+            Assert.Equal(11, len);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task StringLenAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = "catcherwong";
+
+            var flag = await _provider.StringSetAsync(cacheKey, cacheValue);
+
+            Assert.True(flag);
+
+            var len = await _provider.StringLenAsync(cacheKey);
+
+            Assert.Equal(11, len);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void StringSetRange_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = "Hello World";
+
+            var flag = _provider.StringSet(cacheKey, cacheValue);
+
+            Assert.True(flag);
+
+            var len = _provider.StringSetRange(cacheKey, 6, "Redis");
+
+            Assert.Equal(11, len);
+
+            var val = _provider.StringGet(cacheKey);
+
+            Assert.Equal("Hello Redis", val);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task StringSetRangeAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = "Hello World";
+
+            var flag = await _provider.StringSetAsync(cacheKey, cacheValue);
+
+            Assert.True(flag);
+
+            var len = await _provider.StringSetRangeAsync(cacheKey, 6, "Redis");
+
+            Assert.Equal(11, len);
+
+            var val = await _provider.StringGetAsync(cacheKey);
+
+            Assert.Equal("Hello Redis", val);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void StringGetRange_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = "This is a string";
+
+            var flag = _provider.StringSet(cacheKey, cacheValue);
+
+            Assert.True(flag);
+
+            var res1 = _provider.StringGetRange(cacheKey, 0, 3);
+
+            Assert.Equal("This", res1);
+
+            var res2 = _provider.StringGetRange(cacheKey, -3, -1);
+
+            Assert.Equal("ing", res2);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task StringGetRangeAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = "This is a string";
+
+            var flag = await _provider.StringSetAsync(cacheKey, cacheValue);
+
+            Assert.True(flag);
+
+            var res1 = await _provider.StringGetRangeAsync(cacheKey, 0, 3);
+
+            Assert.Equal("This", res1);
+
+            var res2 = await _provider.StringGetRangeAsync(cacheKey, -3, -1);
+
+            Assert.Equal("ing", res2);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+
+        #endregion
+
         #region Hash
         [Fact]
         protected virtual void HMSet_And_HMGet_Should_Succeed()

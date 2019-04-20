@@ -21,7 +21,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Serialization.Json.DefaultJsonSerializer"/> class.
         /// </summary>
-        /// <param name="options">Options.</param>
+        /// <param name="optionsAcc">Options.</param>
         public DefaultJsonSerializer(IOptions<EasyCachingJsonSerializerOptions> optionsAcc)
         {
             var options = optionsAcc.Value;

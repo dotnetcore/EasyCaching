@@ -44,7 +44,7 @@
         /// The name.
         /// </summary>
         private readonly string _name;
-        
+
         public DefaultSQLiteCachingProvider(
             string name,
             IEnumerable<ISQLiteDatabaseProvider> dbProviders,
@@ -730,6 +730,34 @@
             });
 
             return rows > 0;
+        }
+
+        public override TimeSpan BaseGetExpiration(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var time = _cache.ExecuteScalar<long>(ConstSQL.GETEXPIRATIONSQL, new
+            {
+                cachekey = cacheKey,
+                name = _name
+            });
+
+            if (time <= 0) return TimeSpan.Zero;
+            else return TimeSpan.FromSeconds(time);
+        }
+
+        public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var time = await _cache.ExecuteScalarAsync<long>(ConstSQL.GETEXPIRATIONSQL, new
+            {
+                cachekey = cacheKey,
+                name = _name
+            });
+
+            if (time <= 0) return TimeSpan.Zero;
+            else return TimeSpan.FromSeconds(time);
         }
     }
 }

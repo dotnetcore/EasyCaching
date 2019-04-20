@@ -22,5 +22,6 @@
         int SetAll<T>(IDictionary<string, T> values, TimeSpan? expiresIn = null);
         bool Replace<T>(string key, T value, TimeSpan? expiresIn = null);
         void Clear(string prefix = "");
+        TimeSpan GetExpiration(string key);
     }
 }

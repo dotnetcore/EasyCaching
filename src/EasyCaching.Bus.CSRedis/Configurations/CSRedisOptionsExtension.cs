@@ -26,8 +26,7 @@
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.CSRedis.RedisOptionsExtension"/> class.
-        /// </summary>
-        /// <param name="name">Name.</param>
+        /// </summary>        
         /// <param name="configure">Configure.</param>
         public CSRedisOptionsExtension(Action<CSRedisBusOptions> configure)
         {

@@ -631,5 +631,19 @@
             //var val = new CacheValue<T>(cacheValue, true, expiration);
             return Task.FromResult(_cache.Add(cacheKey, cacheValue, expiration));
         }
+
+        public override TimeSpan BaseGetExpiration(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return _cache.GetExpiration(cacheKey);
+        }
+
+        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return Task.FromResult(_cache.GetExpiration(cacheKey));
+        }
     }
 }

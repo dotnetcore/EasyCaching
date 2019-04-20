@@ -231,7 +231,7 @@
         private void StartScanForExpiredItems()
         {
             var utcNow = SystemClock.UtcNow;
-            if (_options.ExpirationScanFrequency < utcNow - _lastExpirationScan)
+            if (TimeSpan.FromSeconds(_options.ExpirationScanFrequency) < utcNow - _lastExpirationScan)
             {
                 _lastExpirationScan = utcNow;
                 Task.Factory.StartNew(state => ScanForExpiredItems((InMemoryCaching)state), this,
@@ -252,6 +252,17 @@
         {
             var values = _memory.Values.Where(x => x.Key.StartsWith(key, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow);
             return values.ToDictionary(k => k.Key, v => new CacheValue<T>(v.GetValue<T>(), true));
+        }
+
+        public TimeSpan GetExpiration(string key)
+        {
+            if (!_memory.TryGetValue(key, out var value))
+                return TimeSpan.Zero;
+
+            if (value.ExpiresAt >= SystemClock.UtcNow)
+                return value.ExpiresAt.Subtract(SystemClock.UtcNow);
+
+            return TimeSpan.Zero;
         }
 
         private class CacheEntry

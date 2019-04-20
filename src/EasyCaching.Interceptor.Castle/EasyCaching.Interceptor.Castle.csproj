@@ -8,8 +8,7 @@
     <Version>$(EasyCachingCastlePackageVersion)</Version>
     <Description>
       A simple caching AOP extension library based on Castle
-    </Description>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </Description>    
     <PackageTags>Interceptor,Castle,AOP,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/dotnetcore/EasyCaching/blob/master/LICENSE</PackageLicenseUrl>
@@ -19,6 +18,11 @@
     <PackageReleaseNotes>
       $(EasyCachingCastlePackageNotes)
     </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

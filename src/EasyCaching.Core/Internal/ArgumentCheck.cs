@@ -15,7 +15,7 @@
         /// </summary>
         /// <param name="argument">Argument.</param>
         /// <param name="argumentName">Argument name.</param>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException" />
         public static void NotNull(object argument, string argumentName)
         {
             if (argument == null)
@@ -29,7 +29,7 @@
         /// </summary>
         /// <param name="argument">Argument.</param>
         /// <param name="argumentName">Argument name.</param>
-        /// <exception cref="ArgumentNullException">
+        /// <exception cref="ArgumentNullException" />
         public static void NotNullOrWhiteSpace(string argument, string argumentName)
         {
             if (string.IsNullOrWhiteSpace(argument))

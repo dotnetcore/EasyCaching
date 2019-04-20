@@ -87,6 +87,16 @@
             return 1;
         }
 
+        public override TimeSpan BaseGetExpiration(string cacheKey)
+        {
+            return TimeSpan.FromSeconds(1);
+        }
+
+        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        {
+            return Task.FromResult(TimeSpan.FromSeconds(1));
+        }
+
         public override void BaseRefresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
 

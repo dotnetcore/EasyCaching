@@ -10,8 +10,166 @@
     /// <remarks>
     /// Contains some features of redis
     /// </remarks>
-    public interface IRedisCachingProvider //: IEasyCachingProvider
+    public interface IRedisCachingProvider
     {
+        string RedisName { get; }
+
+        #region Keys
+        /// <summary>
+        /// https://redis.io/commands/del
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        bool KeyDel(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/del
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        Task<bool> KeyDelAsync(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/expire
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        bool KeyExpire(string cacheKey, int second);
+        /// <summary>
+        /// https://redis.io/commands/expire
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="second"></param>
+        /// <returns></returns>
+        Task<bool> KeyExpireAsync(string cacheKey, int second);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="cacheKey"></param>
+        Task<bool> KeyExistsAsync(string cacheKey);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        /// <param name="cacheKey"></param>
+        bool KeyExists(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/ttl
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        long TTL(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/ttl
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        Task<long> TTLAsync(string cacheKey);
+        #endregion
+
+        #region String
+        /// <summary>
+        /// https://redis.io/commands/incrby
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        long IncrBy(string cacheKey, long value = 1);
+        /// <summary>
+        /// https://redis.io/commands/incrby
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<long> IncrByAsync(string cacheKey, long value = 1);
+        /// <summary>
+        /// https://redis.io/commands/incrbyfloat
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        double IncrByFloat(string cacheKey, double value = 1);
+        /// <summary>
+        /// https://redis.io/commands/incrbyfloat
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<double> IncrByFloatAsync(string cacheKey, double value = 1);
+        /// <summary>
+        /// https://redis.io/commands/set
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="cacheValue"></param>
+        /// <param name="expiration"></param>
+        /// <returns></returns>
+        bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration = null);
+        /// <summary>
+        /// https://redis.io/commands/set
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="cacheValue"></param>
+        /// <param name="expiration"></param>
+        /// <returns></returns>
+        Task<bool> StringSetAsync(string cacheKey, string cacheValue, System.TimeSpan? expiration = null);
+        /// <summary>
+        /// https://redis.io/commands/get
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        string StringGet(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/get
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        Task<string> StringGetAsync(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/strlen
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        long StringLen(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/strlen
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        Task<long> StringLenAsync(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/setrange
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="offest"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        long StringSetRange(string cacheKey, long offest, string value);
+        /// <summary>
+        /// https://redis.io/commands/setrange
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="offest"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        Task<long> StringSetRangeAsync(string cacheKey, long offest, string value);
+        /// <summary>
+        /// https://redis.io/commands/getrange
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        string StringGetRange(string cacheKey, long start, long end);
+        /// <summary>
+        /// https://redis.io/commands/getrange
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        Task<string> StringGetRangeAsync(string cacheKey, long start, long end);
+        #endregion
+
         #region Hashes
         /// <summary>
         /// https://redis.io/commands/hmset

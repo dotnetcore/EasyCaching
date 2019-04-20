@@ -687,5 +687,15 @@
 
             return _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey(cacheKey), cacheValue, expiration);
         }
+
+        public override TimeSpan BaseGetExpiration(string cacheKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
