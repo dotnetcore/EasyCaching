@@ -4,7 +4,7 @@ solution: EasyCaching.sln
 
 sudo: required
     
-dotnet: 2.1.301
+dotnet: 2.2
 
 mono: none
 
