@@ -1,11 +1,8 @@
 language: csharp
-
 solution: EasyCaching.sln
-
-sudo: required
-    
+dist: xenial
+sudo: required    
 dotnet: 2.2
-
 mono: none
 
 services:
