@@ -14,6 +14,8 @@ After releasing v0.4.0 of EasyCaching, we can deal with this scenario.
 
 This usage of `EasyCachingProviderFactory` is similar with `HttpClientFactory`.
 
+There are two types of providers(`IEasyCachingProvider` and `IRedisCachingProvider`) can use `EasyCachingProviderFactory` to create.
+
 Here use two InMemory caching provders and two Redis caching providers to show.
 
 ## 1. Install the packages via Nuget
@@ -115,6 +117,22 @@ public class ValuesController : Controller
         var res = provider.Get("named-provider", () => val, TimeSpan.FromMinutes(1));  
         Console.WriteLine($"Type=redis2,Key=named-provider,Value={res},Time:{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");  
         return $"cached value : {res}";  
+    }  
+
+    // GET api/values/redis3 
+    [HttpGet]  
+    [Route("redis3")]  
+    public string GetRedis3()  
+    {  
+        var redis1 = factory.GetRedisProvider("redis1");
+        var redis2 = factory.GetRedisProvider("redis2");
+
+         _redis1.StringSet("keyredis1", "val");
+
+        var res1 = _redis1.StringGet("keyredis1");
+        var res2 = _redis2.StringGet("keyredis1");
+
+        return $"redis1 cached value: {res1}, redis2 cached value : {res2}";  
     }  
 }  
 ```
