@@ -28,7 +28,7 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             //new configuration
             services.AddEasyCaching(option=> 
@@ -77,7 +77,7 @@
                 app.UseDeveloperExceptionPage();
             }
 
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
             // Important step for using Memcached Cache or SQLite Cache
             app.UseEasyCaching();

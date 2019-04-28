@@ -1,59 +1,49 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>                
-        1. Add GetExpiration/GetExpirationAsync for caching provider.
-        2. IEasyCachingProviderFactory support multi redis provider instances.
-        3. IRedisCachingProvider add some string and keys methods.
-        4. Interceptor attribute add cache provider
+        1. Upgrading dependencies.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Add GetExpiration/GetExpirationAsync for caching provider.
+        1. Upgrading dependencies.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Add GetExpiration/GetExpirationAsync for caching provider.
-        2. Add some string and keys methods.
+        1. Upgrading dependencies.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Add GetExpiration/GetExpirationAsync for caching provider.
+        1. Upgrading dependencies.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Add GetExpiration/GetExpirationAsync for caching provider.
+        1. Upgrading dependencies.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Add DefaultExpirationForTtlFailed for HybridCachingOptions.
-        2. Get distributed cached item's expiration when local cache is null.
+        1. Upgrading dependencies.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Update EasyCaching.Core.    
-        2. Swich caching provider via attribute.
-        3. Handle exception when method return null.
+        1. Upgrading dependencies.
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Update EasyCaching.Core.        
-        2. Swich caching provider via attribute.
-        3. Handle exception when method return null.
+        1. Upgrading dependencies.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Upgrading dependencies.
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Upgrading dependencies.
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Upgrading dependencies.
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Upgrading dependencies.
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Add GetExpiration/GetExpirationAsync for caching provider.
-        2. Add some string and keys methods.
+        1. Upgrading dependencies.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Upgrading dependencies.
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Update EasyCaching.Core.    
+        1. Upgrading dependencies.
         </EasyCachingRabbitBusPackageNotes>
 	</PropertyGroup>
 </Project>

@@ -29,9 +29,8 @@
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="5.0.1" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.1.1" />    
+    <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />    
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.2.0" />    
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configurations\" />
