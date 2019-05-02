@@ -26,7 +26,7 @@
 - [x] GetCount
 - [x] Flush/FlushAsync
 - [x] TrySet/TrySetAsync
-- [ ] GetExpiration/GetExpirationAsync
+- [x] GetExpiration/GetExpirationAsync
 - [ ] Others...
 
 ## Serializer Extensions 
