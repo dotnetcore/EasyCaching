@@ -14,6 +14,7 @@
     11. GetCount
     12. Flush/FlushAsync
     13. TrySet/TrySetAsync
+    14. GetExpiration/GetExpirationAsync
 - Caching Providers(Both local caching and distributed caching)
     1. In-Memory
     2. Memcached

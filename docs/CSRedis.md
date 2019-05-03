@@ -72,9 +72,10 @@ And what we add in `appsettings.json` are as following:
 ```JSON
 "easycaching": {
     "csredis": {
-        "CachingProviderType": 2,
         "MaxRdSecond": 120,
-        "Order": 2,
+        "EnableLogging": false,
+        "LockMs": 5000,
+        "SleepMs": 300,
         "dbconfig": {
             "ConnectionStrings":[
                 "127.0.0.1:6388,defaultDatabase=13,poolsize=10"

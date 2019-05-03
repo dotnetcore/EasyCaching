@@ -20,41 +20,58 @@ Install-Package EasyCaching.InMemory
 
 ### 2.1 Define the interface
 
-Just define a regular interface.
+We need to add `EasyCachingAble`,`EasyCachingPut` or `EasyCachingEvict` on the methods that we want to simplify the caching operation.
 
-```csharp
-public interface IDemoService 
-{
-    string GetCurrentUtcTime();
-
-    string PutSomething(string str);
-
-    void DeleteSomething(int id);
-}
-```
-
-This implement must inherit **IEasyCaching** by default. And we need to add `EasyCachingAble`,`EasyCachingPut` and `EasyCachingEvict` to the methods that we want to simplify the caching operation.
+The following unordered list shows you what the attribute will affect the caching.  
 
 - EasyCachingAble , Read from cached items
 - EasyCachingPut , Update the cached item
 - EasyCachingEvict , Remove one cached item or multi cached items
 
+There are some properties that we should know
+
+Property | Description | Apply
+---|---|---
+CacheKeyPrefix | To specify the prefix of your cache key | All
+CacheProviderName | To specify which provider you want to use | All
+IsHightAvailability | Whether caching opreation will break your method | All
+Expiration | To specify the expiration of your cache item，the unit is second | EasyCachingAble and EasyCachingPut
+IsAll | Whether remove all the cached items start with the CacheKeyPrefix | EasyCachingEvict only
+IsBefore | Remove the cached item before method excute or after method excute | EasyCachingEvict only
+
+Here is a easy sample to show you how to use.
+
+Defining a regular interface at first.
+
 ```csharp
-public class DemoService : IDemoService ,  IEasyCaching
+public interface IDemoService 
 {
+    [EasyCachingAble(Expiration = 10)]
+    string GetCurrentUtcTime();
+
+    [EasyCachingPut(CacheKeyPrefix = "Castle")]
+    string PutSomething(string str);
+
     [EasyCachingEvict(IsBefore = true)]
+    void DeleteSomething(int id);
+}
+```
+
+Just implement the above interface.
+
+```csharp
+public class DemoService : IDemoService
+{
     public void DeleteSomething(int id)
     {
         System.Console.WriteLine("Handle delete something..");
     }
 
-    [EasyCachingAble(Expiration = 10)]
     public string GetCurrentUtcTime()
     {
         return System.DateTime.UtcNow.ToString();
     }
 
-    [EasyCachingPut(CacheKeyPrefix = "Castle")]
     public string PutSomething(string str)
     {
         return str;
@@ -75,13 +92,17 @@ public class Startup
 
         services.AddEasyCaching(option =>
         {
-            //use memory cache
+            // use memory cache
             option.UseInMemory("default");
         });
 
         services.AddMvc();
 
-        return services.ConfigureCastleInterceptor();
+        return services.ConfigureCastleInterceptor(options =>
+        {
+            // Specify which provider you want to use
+            options.CacheProviderName = "default";
+        });
     } 
 }
 ```

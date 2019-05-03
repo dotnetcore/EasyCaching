@@ -83,9 +83,10 @@ And what we add in `appsettings.json` are as following:
 ```JSON
 "easycaching": {
     "inmemory": {
-        "CachingProviderType": 1,
         "MaxRdSecond": 120,
-        "Order": 2,
+        "EnableLogging": false,
+        "LockMs": 5000,
+        "SleepMs": 300,
         "DBConfig":{
             "SizeLimit": 10000,
             "ExpirationScanFrequency": 60

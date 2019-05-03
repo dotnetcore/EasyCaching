@@ -62,15 +62,15 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         //configuration
-        services.AddEasyCaching(option=> 
+        services.AddEasyCaching(options => 
         {
             //use memory cache that named default
-            option.UseInMemory("default");
+            options.UseInMemory("default");
 
             // // use memory cache with your own configuration
-            // config.UseInMemory(options => 
+            // options.UseInMemory(config => 
             // {
-            //     options.DBConfig = new InMemoryCachingOptions
+            //     config.DBConfig = new InMemoryCachingOptions
             //     {
             //         // scan time, default value is 60s
             //         ExpirationScanFrequency = 60, 
@@ -78,17 +78,17 @@ public class Startup
             //         SizeLimit = 100 
             //     };
             //     // the max random second will be added to cache's expiration, default value is 120
-            //     options.MaxRdSecond = 120;
+            //     config.MaxRdSecond = 120;
             //     // whether enable logging, default is false
-            //     options.EnableLogging = false;
+            //     config.EnableLogging = false;
             //     // mutex key's alive time(ms), default is 5000
-            //     options.LockMs = 5000;
+            //     config.LockMs = 5000;
             //     // when mutex key alive, it will sleep some time, default is 300
-            //     options.SleepMs = 300;
+            //     config.SleepMs = 300;
             // }, "m2");
 
             //use redis cache that named redis1
-            option.UseRedis(config => 
+            options.UseRedis(config => 
             {
                 config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             }, "redis1")
