@@ -112,7 +112,7 @@
                 }
                 catch (Exception ex)
                 {
-                    if (!attribute.IsHightAvailability)
+                    if (!attribute.IsHighAvailability)
                     {
                         throw;
                     }
@@ -193,7 +193,7 @@
                 }
                 catch (Exception ex)
                 {
-                    if (!attribute.IsHightAvailability) throw;
+                    if (!attribute.IsHighAvailability) throw;
                     else _logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" set error.");
                 }
             }
@@ -230,7 +230,7 @@
                 }
                 catch (Exception ex)
                 {
-                    if (!attribute.IsHightAvailability) throw;
+                    if (!attribute.IsHighAvailability) throw;
                     else _logger?.LogError(new EventId(), ex, $"Cache provider \"{_cacheProvider.Name}\" remove error.");
                 }
             }

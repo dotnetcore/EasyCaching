@@ -34,7 +34,7 @@ Property | Description | Apply
 ---|---|---
 CacheKeyPrefix | To specify the prefix of your cache key | All
 CacheProviderName | To specify which provider you want to use | All
-IsHightAvailability | Whether caching opreation will break your method | All
+IsHighAvailability | Whether caching opreation will break your method | All
 Expiration | To specify the expiration of your cache item，the unit is second | EasyCachingAble and EasyCachingPut
 IsAll | Whether remove all the cached items start with the CacheKeyPrefix | EasyCachingEvict only
 IsBefore | Remove the cached item before method excute or after method excute | EasyCachingEvict only
