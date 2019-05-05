@@ -31,7 +31,7 @@
         ///  Prevent cache provider errors from affecting business
         /// </summary>
         /// <value>The cache key prefix.</value>
-        public bool IsHightAvailability { get; set; } = true;
+        public bool IsHighAvailability { get; set; } = true;
     }
 
     /// <summary>
