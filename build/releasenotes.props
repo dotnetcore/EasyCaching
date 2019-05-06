@@ -1,7 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>                
-        1. Upgrading dependencies.
+        1. fix typo: IsHightAvailability -> IsHighAvailability.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Upgrading dependencies.
