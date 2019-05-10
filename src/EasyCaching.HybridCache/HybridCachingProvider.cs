@@ -61,12 +61,12 @@
 
             this._logger = loggerFactory?.CreateLogger<HybridCachingProvider>();
 
-            //Here use the order to distinguish traditional provider
+            // Here use the order to distinguish traditional provider
             var local = factory.GetCachingProvider(_options.LocalCacheProviderName);
             if (local.IsDistributedCache) throw new NotFoundCachingProviderException("Can not found any local caching providers.");
             else this._localCache = local;
 
-            //Here use the order to distinguish traditional provider
+            // Here use the order to distinguish traditional provider
             var distributed = factory.GetCachingProvider(_options.DistributedCacheProviderName);
 
             if (!distributed.IsDistributedCache) throw new NotFoundCachingProviderException("Can not found any distributed caching providers.");
@@ -88,17 +88,14 @@
             if (!string.IsNullOrWhiteSpace(message.Id) && message.Id.Equals(_cacheId, StringComparison.OrdinalIgnoreCase))
                 return;
 
-            //remove by prefix
+            // remove by prefix
             if (message.IsPrefix)
             {
                 var prefix = message.CacheKeys.First();
 
                 _localCache.RemoveByPrefix(prefix);
 
-                if (_options.EnableLogging)
-                {
-                    _logger.LogTrace($"remove local cache that prefix is {prefix}");
-                }
+                LogMessage($"remove local cache that prefix is {prefix}");
 
                 return;
             }
@@ -107,10 +104,7 @@
             {
                 _localCache.Remove(item);
 
-                if (_options.EnableLogging)
-                {
-                    _logger.LogTrace($"remove local cache that cache key is {item}");
-                }
+                LogMessage($"remove local cache that cache key is {item}");
             }
         }
 
@@ -123,7 +117,20 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return _distributedCache.Exists(cacheKey);
+            var flag = false;
+
+            try
+            {
+                flag = _distributedCache.Exists(cacheKey);
+                return flag;
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Check cache key [{cacheKey}] exists error", ex);
+            }
+
+            flag = _localCache.Exists(cacheKey);
+            return flag;
         }
 
         /// <summary>
@@ -135,7 +142,20 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return await _distributedCache.ExistsAsync(cacheKey);
+            var flag = false;
+
+            try
+            {
+                flag = await _distributedCache.ExistsAsync(cacheKey);
+                return flag;
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"Check cache key [{cacheKey}] exists error", ex);
+            }
+
+            flag = await _localCache.ExistsAsync(cacheKey);
+            return flag;
         }
 
         /// <summary>
@@ -155,10 +175,7 @@
                 return cacheValue;
             }
 
-            if (_options.EnableLogging)
-            {
-                _logger.LogTrace($"local cache can not get the value of {cacheKey}");
-            }
+            LogMessage($"local cache can not get the value of {cacheKey}");
 
             cacheValue = _distributedCache.Get<T>(cacheKey);
 
@@ -185,10 +202,7 @@
                 return cacheValue;
             }
 
-            if (_options.EnableLogging)
-            {
-                _logger.LogTrace($"distributed cache can not get the value of {cacheKey}");
-            }
+            LogMessage($"distributed cache can not get the value of {cacheKey}");
 
             return CacheValue<T>.NoValue;
         }
@@ -210,15 +224,12 @@
                 return cacheValue;
             }
 
-            if (_options.EnableLogging)
-            {
-                _logger.LogTrace($"local cache can not get the value of {cacheKey}");
-            }
+            LogMessage($"local cache can not get the value of {cacheKey}");
 
             cacheValue = await _distributedCache.GetAsync<T>(cacheKey);
 
             if (cacheValue.HasValue)
-            {                
+            {
                 TimeSpan ts = TimeSpan.Zero;
 
                 try
@@ -240,10 +251,7 @@
                 return cacheValue;
             }
 
-            if (_options.EnableLogging)
-            {
-                _logger.LogTrace($"distributed cache can not get the value of {cacheKey}");
-            }
+            LogMessage($"distributed cache can not get the value of {cacheKey}");
 
             return CacheValue<T>.NoValue;
         }
@@ -256,11 +264,19 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            //distributed cache at first
-            _distributedCache.Remove(cacheKey);
+            try
+            {
+                // distributed cache at first
+                _distributedCache.Remove(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"remove cache key [{cacheKey}] error", ex);
+            }
+
             _localCache.Remove(cacheKey);
 
-            //send message to bus 
+            // send message to bus 
             _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
@@ -273,11 +289,19 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            //distributed cache at first
-            await _distributedCache.RemoveAsync(cacheKey);
+            try
+            {
+                // distributed cache at first
+                await _distributedCache.RemoveAsync(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"remove cache key [{cacheKey}] error", ex);
+            }
+
             await _localCache.RemoveAsync(cacheKey);
 
-            //send message to bus 
+            // send message to bus 
             await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
@@ -293,9 +317,17 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             _localCache.Set(cacheKey, cacheValue, expiration);
-            _distributedCache.Set(cacheKey, cacheValue, expiration);
 
-            //When create/update cache, send message to bus so that other clients can remove it.
+            try
+            {
+                _distributedCache.Set(cacheKey, cacheValue, expiration);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"set cache key [{cacheKey}] error", ex);
+            }
+
+            // When create/update cache, send message to bus so that other clients can remove it.
             _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
         }
 
@@ -312,7 +344,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             await _localCache.SetAsync(cacheKey, cacheValue, expiration);
-            await _distributedCache.SetAsync(cacheKey, cacheValue, expiration);
+
+            try
+            {
+                await _distributedCache.SetAsync(cacheKey, cacheValue, expiration);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"set cache key [{cacheKey}] error", ex);
+            }
 
             //When create/update cache, send message to bus so that other clients can remove it.
             await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
@@ -330,7 +370,16 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var flag = _distributedCache.TrySet(cacheKey, cacheValue, expiration);
+            bool flag = false;
+
+            try
+            {
+                flag = _distributedCache.TrySet(cacheKey, cacheValue, expiration);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"tryset cache key [{cacheKey}] error", ex);
+            }
 
             if (flag)
             {
@@ -353,7 +402,16 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var flag = await _distributedCache.TrySetAsync(cacheKey, cacheValue, expiration);
+            bool flag = false;
+
+            try
+            {
+                flag = await _distributedCache.TrySetAsync(cacheKey, cacheValue, expiration);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"tryset cache key [{cacheKey}] error", ex);
+            }
 
             if (flag)
             {
@@ -505,6 +563,26 @@
 
             //send message to bus in order to notify other clients.
             await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
+        }
+
+        /// <summary>
+        /// Logs the message.
+        /// </summary>
+        /// <param name="message">Message.</param>
+        /// <param name="ex">Ex.</param>
+        private void LogMessage(string message, Exception ex = null)
+        {
+            if (_options.EnableLogging)
+            {
+                if (ex == null)
+                {
+                    _logger.LogDebug(message);
+                }
+                else
+                {
+                    _logger.LogError(ex, message);
+                }
+            }
         }
     }
 }
