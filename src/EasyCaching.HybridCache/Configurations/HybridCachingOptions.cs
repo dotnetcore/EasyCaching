@@ -36,6 +36,6 @@
         /// <remarks>
         /// When sending message failed, we will retry some times, default is 3 times.
         /// </remarks>
-        public int BusRetryCount = 3;
+        public int BusRetryCount { get; set; } = 3;
     }
 }
