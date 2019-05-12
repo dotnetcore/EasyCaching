@@ -8,6 +8,10 @@
     using EasyCaching.Core.Bus;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Polly;
+    using Polly.Fallback;
+    using Polly.Retry;
+    using Polly.Wrap;
 
     /// <summary>
     /// Hybrid caching provider.
@@ -38,6 +42,13 @@
         /// The cache identifier.
         /// </summary>
         private readonly string _cacheId;
+
+        private readonly AsyncPolicyWrap _busAsyncWrap;
+        private readonly PolicyWrap _busSyncWrap;
+        private readonly RetryPolicy retryPolicy;
+        private readonly AsyncRetryPolicy retryAsyncPolicy;
+        private readonly FallbackPolicy fallbackPolicy;
+        private readonly AsyncFallbackPolicy fallbackAsyncPolicy;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
@@ -76,6 +87,25 @@
             this._bus.Subscribe(_options.TopicName, OnMessage);
 
             this._cacheId = Guid.NewGuid().ToString("N");
+
+
+            // policy
+
+            retryAsyncPolicy = Policy.Handle<Exception>()
+                    .WaitAndRetryAsync(this._options.BusRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt - 1)));
+
+            retryPolicy = Policy.Handle<Exception>()
+                   .WaitAndRetry(this._options.BusRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt - 1)));
+
+            fallbackPolicy = Policy.Handle<Exception>().Fallback(()=> { });
+
+            fallbackAsyncPolicy = Policy.Handle<Exception>().FallbackAsync(ct =>
+            {
+                return Task.CompletedTask;
+            });
+
+            _busSyncWrap = Policy.Wrap(fallbackPolicy, retryPolicy);
+            _busAsyncWrap = Policy.WrapAsync(fallbackAsyncPolicy, retryAsyncPolicy);
         }
 
         /// <summary>
@@ -120,6 +150,7 @@
             var flag = false;
 
             // TODO: Circuit Breaker
+
             try
             {
                 flag = _distributedCache.Exists(cacheKey);
@@ -288,14 +319,14 @@
             {
                 // distributed cache at first
                 _distributedCache.Remove(cacheKey);
-
-                // send message to bus 
-                _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
             }
             catch (Exception ex)
             {
                 LogMessage($"remove cache key [{cacheKey}] error", ex);
             }
+
+            // send message to bus 
+            _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
         }
 
         /// <summary>
@@ -313,14 +344,14 @@
             {
                 // distributed cache at first
                 await _distributedCache.RemoveAsync(cacheKey);
-
-                // send message to bus 
-                await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
             }
             catch (Exception ex)
             {
                 LogMessage($"remove cache key [{cacheKey}] error", ex);
             }
+
+            // send message to bus 
+            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
         }
 
         /// <summary>
@@ -339,14 +370,14 @@
             try
             {
                 _distributedCache.Set(cacheKey, cacheValue, expiration);
-
-                // When create/update cache, send message to bus so that other clients can remove it.
-                _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
             }
             catch (Exception ex)
             {
                 LogMessage($"set cache key [{cacheKey}] error", ex);
             }
+
+            // When create/update cache, send message to bus so that other clients can remove it.
+            _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
         }
 
         /// <summary>
@@ -366,14 +397,14 @@
             try
             {
                 await _distributedCache.SetAsync(cacheKey, cacheValue, expiration);
-
-                // When create/update cache, send message to bus so that other clients can remove it.
-                await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } });
             }
             catch (Exception ex)
             {
                 LogMessage($"set cache key [{cacheKey}] error", ex);
             }
+
+            // When create/update cache, send message to bus so that other clients can remove it.
+            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
         }
 
         /// <summary>
@@ -459,16 +490,16 @@
             _localCache.SetAll(value, expiration);
 
             try
-            {   
+            {
                 _distributedCache.SetAll(value, expiration);
-
-                // send message to bus 
-                _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = value.Keys.ToArray(), IsPrefix = false });
             }
             catch (Exception ex)
             {
                 LogMessage($"set all from distributed provider error [{string.Join(",", value.Keys)}]", ex);
             }
+
+            // send message to bus 
+            _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = value.Keys.ToArray(), IsPrefix = false }));
         }
 
         /// <summary>
@@ -485,14 +516,14 @@
             try
             {
                 await _distributedCache.SetAllAsync(value, expiration);
-
-                // send message to bus 
-                await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = value.Keys.ToArray(), IsPrefix = false });
             }
             catch (Exception ex)
             {
                 LogMessage($"set all from distributed provider error [{string.Join(",", value.Keys)}]", ex);
             }
+
+            // send message to bus 
+            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = value.Keys.ToArray(), IsPrefix = false }));
         }
 
         /// <summary>
@@ -508,14 +539,14 @@
             try
             {
                 _distributedCache.RemoveAllAsync(cacheKeys);
-
-                //send message to bus in order to notify other clients.
-                _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() });
             }
             catch (Exception ex)
             {
                 LogMessage($"remove all from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
             }
+
+            // send message to bus in order to notify other clients.
+            _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() }));
         }
 
         /// <summary>
@@ -532,14 +563,14 @@
             try
             {
                 await _distributedCache.RemoveAllAsync(cacheKeys);
-
-                //send message to bus in order to notify other clients.
-                await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() });
             }
             catch (Exception ex)
             {
                 LogMessage($"remove all async from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
             }
+
+            // send message to bus in order to notify other clients.
+            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() }));
         }
 
         /// <summary>
@@ -623,14 +654,14 @@
             try
             {
                 _distributedCache.RemoveByPrefix(prefix);
-
-                // send message to bus 
-                _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
             }
             catch (Exception ex)
             {
-                LogMessage($"remove by prefix [{cacheKey}] error", ex);
+                LogMessage($"remove by prefix [{prefix}] error", ex);
             }
+
+            // send message to bus 
+            _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true }));
         }
 
         /// <summary>
@@ -647,14 +678,14 @@
             try
             {
                 await _distributedCache.RemoveByPrefixAsync(prefix);
-
-                // send message to bus in order to notify other clients.
-                await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
             }
             catch (Exception ex)
             {
-                LogMessage($"remove by prefix [{cacheKey}] error", ex);
+                LogMessage($"remove by prefix [{prefix}] error", ex);
             }
+
+            // send message to bus in order to notify other clients.
+            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true }));
         }
 
         /// <summary>

@@ -36,5 +36,6 @@
   <ItemGroup>
     <Folder Include="Core\" />
     <Folder Include="ResponseCachingTests\" />
+    <Folder Include="Fake\" />
   </ItemGroup>
 </Project>

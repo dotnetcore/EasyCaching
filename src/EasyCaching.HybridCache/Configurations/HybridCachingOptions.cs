@@ -29,5 +29,13 @@
         /// Gets the default expiration when get ttl from distributed cache was failed
         /// </summary>        
         public int DefaultExpirationForTtlFailed { get; set; } = 60;
+
+        /// <summary>
+        /// The bus retry count.
+        /// </summary>
+        /// <remarks>
+        /// When sending message failed, we will retry some times, default is 3 times.
+        /// </remarks>
+        public int BusRetryCount = 3;
     }
 }
