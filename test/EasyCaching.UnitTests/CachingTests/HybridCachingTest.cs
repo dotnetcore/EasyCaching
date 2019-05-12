@@ -64,8 +64,6 @@
                     config.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
                     config.Database = 6;
                 });
-
-
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
