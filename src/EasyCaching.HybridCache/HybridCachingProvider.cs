@@ -311,8 +311,6 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _localCache.Remove(cacheKey);
-
             try
             {
                 // distributed cache at first
@@ -322,6 +320,8 @@
             {
                 LogMessage($"remove cache key [{cacheKey}] error", ex);
             }
+
+            _localCache.Remove(cacheKey);
 
             // send message to bus 
             _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
@@ -336,8 +336,6 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _localCache.RemoveAsync(cacheKey);
-
             try
             {
                 // distributed cache at first
@@ -347,6 +345,8 @@
             {
                 LogMessage($"remove cache key [{cacheKey}] error", ex);
             }
+
+            await _localCache.RemoveAsync(cacheKey);
 
             // send message to bus 
             await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
@@ -532,8 +532,6 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            _localCache.RemoveAll(cacheKeys);
-
             try
             {
                 _distributedCache.RemoveAllAsync(cacheKeys);
@@ -542,6 +540,8 @@
             {
                 LogMessage($"remove all from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
             }
+
+            _localCache.RemoveAll(cacheKeys);
 
             // send message to bus in order to notify other clients.
             _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() }));
@@ -556,8 +556,6 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            await _localCache.RemoveAllAsync(cacheKeys);
-
             try
             {
                 await _distributedCache.RemoveAllAsync(cacheKeys);
@@ -566,6 +564,8 @@
             {
                 LogMessage($"remove all async from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
             }
+
+            await _localCache.RemoveAllAsync(cacheKeys);
 
             // send message to bus in order to notify other clients.
             await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() }));
@@ -647,8 +647,6 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _localCache.RemoveByPrefix(prefix);
-
             try
             {
                 _distributedCache.RemoveByPrefix(prefix);
@@ -657,6 +655,8 @@
             {
                 LogMessage($"remove by prefix [{prefix}] error", ex);
             }
+
+            _localCache.RemoveByPrefix(prefix);
 
             // send message to bus 
             _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true }));
@@ -671,8 +671,6 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            await _localCache.RemoveByPrefixAsync(prefix);
-
             try
             {
                 await _distributedCache.RemoveByPrefixAsync(prefix);
@@ -681,6 +679,8 @@
             {
                 LogMessage($"remove by prefix [{prefix}] error", ex);
             }
+
+            await _localCache.RemoveByPrefixAsync(prefix);
 
             // send message to bus in order to notify other clients.
             await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true }));
