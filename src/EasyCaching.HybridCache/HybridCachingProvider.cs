@@ -417,6 +417,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
+            bool distributedError = false;
             bool flag = false;
 
             try
@@ -425,19 +426,26 @@
             }
             catch (Exception ex)
             {
+                distributedError = true;
                 LogMessage($"tryset cache key [{cacheKey}] error", ex);
             }
 
-            if (flag)
+            if (flag && !distributedError)
             {
-                //When TrySet succeed in distributed cache, Set(not TrySet) this cache to local cache.
+                // When we TrySet succeed in distributed cache, we should Set this cache to local cache.
+                // It's mainly to prevent the cache value was changed
                 _localCache.Set(cacheKey, cacheValue, expiration);
+
+                // Here should send message to bus due to distributed cache was set successfully.
+                _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
             }
-            else
+
+            // distributed cache occur error, have a try with local cache
+            if (distributedError)
             {
                 flag = _localCache.TrySet(cacheKey, cacheValue, expiration);
             }
-
+                       
             return flag;
         }
 
@@ -453,6 +461,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
+            bool distributedError = false;
             bool flag = false;
 
             try
@@ -461,15 +470,22 @@
             }
             catch (Exception ex)
             {
+                distributedError = true;
                 LogMessage($"tryset cache key [{cacheKey}] error", ex);
             }
 
-            if (flag)
+            if (flag && !distributedError)
             {
                 // When we TrySet succeed in distributed cache, we should Set this cache to local cache.
+                // It's mainly to prevent the cache value was changed
                 await _localCache.SetAsync(cacheKey, cacheValue, expiration);
+
+                // Here should send message to bus due to distributed cache was set successfully.
+                await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
             }
-            else
+
+            // distributed cache occur error, have a try with local cache
+            if (distributedError)
             {
                 flag = await _localCache.TrySetAsync(cacheKey, cacheValue, expiration);
             }
