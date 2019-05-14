@@ -435,15 +435,18 @@
                 // When we TrySet succeed in distributed cache, we should Set this cache to local cache.
                 // It's mainly to prevent the cache value was changed
                 _localCache.Set(cacheKey, cacheValue, expiration);
-
-                // Here should send message to bus due to distributed cache was set successfully.
-                _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
             }
 
             // distributed cache occur error, have a try with local cache
             if (distributedError)
             {
                 flag = _localCache.TrySet(cacheKey, cacheValue, expiration);
+            }
+
+            if(flag)
+            {
+                // Here should send message to bus due to cache was set successfully.
+                _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
             }
                        
             return flag;
@@ -479,15 +482,18 @@
                 // When we TrySet succeed in distributed cache, we should Set this cache to local cache.
                 // It's mainly to prevent the cache value was changed
                 await _localCache.SetAsync(cacheKey, cacheValue, expiration);
-
-                // Here should send message to bus due to distributed cache was set successfully.
-                await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
             }
 
             // distributed cache occur error, have a try with local cache
             if (distributedError)
             {
                 flag = await _localCache.TrySetAsync(cacheKey, cacheValue, expiration);
+            }
+
+            if(flag)
+            {
+                // Here should send message to bus due to cache was set successfully.
+                await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
             }
 
             return flag;
