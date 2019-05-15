@@ -57,7 +57,7 @@
 
             var list = new List<T>();
 
-            var bytes = _cache.SortedSetRangeByValue(cacheKey, start, stop);
+            var bytes = _cache.SortedSetRangeByRank(cacheKey, start, stop);
 
             foreach (var item in bytes)
             {
@@ -153,7 +153,7 @@
 
             var list = new List<T>();
 
-            var bytes = await _cache.SortedSetRangeByValueAsync(cacheKey, start, stop);
+            var bytes = await _cache.SortedSetRangeByRankAsync(cacheKey, start, stop);
 
             foreach (var item in bytes)
             {
