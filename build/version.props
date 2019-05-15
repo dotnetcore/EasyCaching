@@ -5,7 +5,7 @@
 		<EasyCachingRedisPackageVersion>0.5.6</EasyCachingRedisPackageVersion>
 		<EasyCachingSQLitePackageVersion>0.5.6</EasyCachingSQLitePackageVersion>
 		<EasyCachingInMemoryPackageVersion>0.5.6</EasyCachingInMemoryPackageVersion>
-		<EasyCachingHybridPackageVersion>0.5.6</EasyCachingHybridPackageVersion>
+		<EasyCachingHybridPackageVersion>0.5.6.1</EasyCachingHybridPackageVersion>
 		<EasyCachingAspectCorePackageVersion>0.5.6</EasyCachingAspectCorePackageVersion>
 		<EasyCachingCastlePackageVersion>0.5.6</EasyCachingCastlePackageVersion>
 		<EasyCachingResponseCachingPackageVersion>0.5.6</EasyCachingResponseCachingPackageVersion>

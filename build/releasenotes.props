@@ -16,7 +16,7 @@
         1. Upgrading dependencies.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Upgrading dependencies.
+        1. Can be downgraded to LocalCacheProvider.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Upgrading dependencies.

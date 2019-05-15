@@ -11,17 +11,34 @@
     using System;
     using System.Threading.Tasks;
     using Xunit;
+    using FakeItEasy;
+    using System.Threading;
 
     public class HybridCachingTest //: BaseCachingProviderTest
     {
-        private IHybridCachingProvider hybridCaching_1;
-        //private HybridCachingProvider hybridCaching_2;
-        private IEasyCachingProviderFactory factory;
         private string _namespace;
+        private IHybridCachingProvider hybridCaching_1;
+        private IEasyCachingProviderFactory factory;
+
+        private HybridCachingProvider fakeHybrid;
+        private IEasyCachingProviderFactory fakeFactory;
+        private IEasyCachingBus fakeBus;
+        private FakeDistributedCachingProvider fakeDisProvider;
 
         public HybridCachingTest()
         {
             _namespace = "hybrid";
+
+            var options = new HybridCachingOptions
+            {
+                EnableLogging = false,
+                TopicName = "test_topic",
+                LocalCacheProviderName = "m1",
+                DistributedCacheProviderName = "myredis",
+                BusRetryCount = 1,
+                DefaultExpirationForTtlFailed = 60
+            };
+
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(option =>
             {
@@ -47,8 +64,6 @@
                     config.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
                     config.Database = 6;
                 });
-
-                
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -57,6 +72,13 @@
             var bus = serviceProvider.GetService<IEasyCachingBus>();
 
             hybridCaching_1 = serviceProvider.GetService<IHybridCachingProvider>();
+
+            fakeBus = A.Fake<IEasyCachingBus>();
+            fakeFactory = A.Fake<IEasyCachingProviderFactory>();
+            fakeDisProvider = A.Fake<FakeDistributedCachingProvider>();
+            var myOptions = Options.Create(options);
+            FakeCreatProvider();
+            fakeHybrid = new HybridCachingProvider(myOptions, fakeFactory, fakeBus);
         }
 
         [Fact]
@@ -126,6 +148,83 @@
             var res = hybridCaching_1.Get<string>(cacheKey);
 
             Assert.Equal("value", res.Value);
+        }
+
+        [Fact]
+        public void Send_Msg_Throw_Exception_Should_Not_Break()
+        {
+            A.CallTo(() => fakeBus.Publish("test_topic", A<EasyCachingMessage>._)).Throws((arg) => new Exception());
+
+            fakeHybrid.Remove("fake-remove");
+
+            Assert.True(true);
+        }
+
+        [Fact]
+        public async Task Send_Msg_Async_Throw_Exception_Should_Not_Break()
+        {
+            CancellationToken token = new CancellationToken();
+            A.CallTo(() => fakeBus.PublishAsync("test_topic", A<EasyCachingMessage>._, token)).ThrowsAsync((arg) => new Exception());
+
+            await fakeHybrid.RemoveAsync("fake-remove");
+
+            Assert.True(true);
+        }
+              
+        [Fact]
+        public void Distributed_Remove_Throw_Exception_Should_Not_Break()
+        {
+            A.CallTo(() => fakeDisProvider.Remove("fake-remove-key")).Throws(new Exception());
+
+            fakeHybrid.Remove("fake-remove-key");
+
+            Assert.True(true);
+        }
+
+        [Fact]
+        public async Task Distributed_Remove_Async_Throw_Exception_Should_Not_Break()
+        {
+            A.CallTo(() => fakeDisProvider.RemoveAsync("fake-remove-key")).ThrowsAsync(new Exception());
+
+            await fakeHybrid.RemoveAsync("fake-remove-key");
+
+            Assert.True(true);
+        }
+
+        [Fact]
+        public void Distributed_Set_Throw_Exception_Should_Not_Break()
+        {
+            A.CallTo(() => fakeDisProvider.Set(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).Throws(new Exception());
+
+            var key = $"d-set-{Guid.NewGuid().ToString()}";
+
+            fakeHybrid.Set(key, "123", TimeSpan.FromSeconds(30));
+
+            var res = fakeHybrid.Get<string>(key);
+
+            Assert.True(res.HasValue);
+            Assert.Equal(default(string), res.Value);
+        }
+
+        [Fact]
+        public async Task Distributed_Set_Async_Throw_Exception_Should_Not_Break()
+        {
+            A.CallTo(() => fakeDisProvider.SetAsync(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).ThrowsAsync(new Exception());
+
+            var key = $"d-set-{Guid.NewGuid().ToString()}";
+
+            await fakeHybrid.SetAsync(key, "123", TimeSpan.FromSeconds(30));
+
+            var res = await fakeHybrid.GetAsync<string>(key);
+
+            Assert.True(res.HasValue);
+            Assert.Equal(default(string), res.Value);
+        }
+
+        private void FakeCreatProvider()
+        {
+            A.CallTo(() => fakeFactory.GetCachingProvider("m1")).Returns(new FakeLocalCachingProvider());
+            A.CallTo(() => fakeFactory.GetCachingProvider("myredis")).Returns(fakeDisProvider);
         }
     }
 }

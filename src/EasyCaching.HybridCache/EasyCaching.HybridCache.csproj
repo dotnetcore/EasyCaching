@@ -32,4 +32,7 @@
   <ItemGroup>
     <Folder Include="Configurations\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Polly" Version="7.1.0" />
+  </ItemGroup>
 </Project>
