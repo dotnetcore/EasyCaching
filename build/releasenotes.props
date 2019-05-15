@@ -7,7 +7,7 @@
         1. Upgrading dependencies.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Upgrading dependencies.
+        1. Fixed zrange error.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Upgrading dependencies.
