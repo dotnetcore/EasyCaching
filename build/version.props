@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<EasyCachingCorePackageVersion>0.5.6</EasyCachingCorePackageVersion>
 		<EasyCachingMemcachedPackageVersion>0.5.6</EasyCachingMemcachedPackageVersion>
-		<EasyCachingRedisPackageVersion>0.5.6</EasyCachingRedisPackageVersion>
+		<EasyCachingRedisPackageVersion>0.5.6.1</EasyCachingRedisPackageVersion>
 		<EasyCachingSQLitePackageVersion>0.5.6</EasyCachingSQLitePackageVersion>
 		<EasyCachingInMemoryPackageVersion>0.5.6</EasyCachingInMemoryPackageVersion>
 		<EasyCachingHybridPackageVersion>0.5.6.1</EasyCachingHybridPackageVersion>
