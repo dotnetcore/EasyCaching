@@ -2,7 +2,9 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
+    using System.Net.Sockets;
     using Enyim.Caching.Configuration;
     using Enyim.Caching.Memcached;
     using Enyim.Caching.Memcached.Protocol.Binary;
@@ -35,11 +37,8 @@
             _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
 
             var options = optionsAccessor.DBConfig;
-            Servers = new List<DnsEndPoint>();
-            foreach (var server in options.Servers)
-            {
-                Servers.Add(new DnsEndPoint(server.Address, server.Port));
-            }
+
+            ConfigureServers(options);
 
             SocketPool = new SocketPoolConfiguration();
             if (options.SocketPool != null)
@@ -64,6 +63,8 @@
 
                 SocketPool.QueueTimeout = options.SocketPool.QueueTimeout;
                 _logger.LogInformation($"{nameof(SocketPool.QueueTimeout)}: {SocketPool.QueueTimeout}");
+
+                SocketPool.InitPoolTimeout = options.SocketPool.InitPoolTimeout;
             }
 
             Protocol = options.Protocol;
@@ -119,24 +120,33 @@
             }
         }
 
-        /// <summary>
-        /// Adds a new server to the pool.
-        /// </summary>
-        /// <param name="address">The address and the port of the server in the format 'host:port'.</param>
-        public void AddServer(string address)
+        private void ConfigureServers(EasyCachingMemcachedClientOptions options)
         {
-            this.Servers.Add(ConfigurationHelper.ResolveToEndPoint(address));
-        }
+            Servers = new List<EndPoint>();
+            foreach (var server in options.Servers)
+            {
+                if (!IPAddress.TryParse(server.Address, out var address))
+                {
+                    address = Dns.GetHostAddresses(server.Address)
+                        .FirstOrDefault(i => i.AddressFamily == AddressFamily.InterNetwork);
 
-        /// <summary>
-        /// Adds the server.
-        /// </summary>
-        /// <param name="host">Host.</param>
-        /// <param name="port">Port.</param>
-        public void AddServer(string host, int port)
-        {
-            this.Servers.Add(new DnsEndPoint(host, port));
-        }
+                    if (address == null)
+                    {
+                        _logger.LogError($"Could not resolve host '{server.Address}'.");
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"Memcached server address - {address}");
+                    }
+                }
+                else
+                {
+                    _logger.LogInformation($"Memcached server address - {server.Address }:{server.Port}");
+                }
+
+                Servers.Add(new IPEndPoint(address, server.Port));
+            }
+        }              
 
         /// <summary>
         /// Gets the name.
@@ -147,7 +157,7 @@
         /// <summary>
         /// Gets a list of <see cref="T:IPEndPoint"/> each representing a Memcached server in the pool.
         /// </summary>
-        public IList<DnsEndPoint> Servers { get; private set; }
+        public IList<EndPoint> Servers { get; private set; }
 
         /// <summary>
         /// Gets the configuration of the socket pool.
@@ -204,7 +214,7 @@
 
         #region [ interface                     ]
 
-        IList<System.Net.DnsEndPoint> IMemcachedClientConfiguration.Servers
+        IList<EndPoint> IMemcachedClientConfiguration.Servers
         {
             get { return this.Servers; }
         }
