@@ -48,18 +48,18 @@
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="clients">Clients.</param>
-        /// <param name="serializer">Serializer.</param>
+        /// <param name="serializers">Serializers.</param>
         /// <param name="options">Options.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultCSRedisCachingProvider(
            string name,
            IEnumerable<EasyCachingCSRedisClient> clients,
-           IEasyCachingSerializer serializer,
+           IEnumerable<IEasyCachingSerializer> serializers,
            RedisOptions options,
            ILoggerFactory loggerFactory = null)
         {
             this._name = name;
-            this._serializer = serializer;
+            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
             this._cache = clients.Single(x => x.Name.Equals(_name));
@@ -72,7 +72,7 @@
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = true;
         }
-        
+
         /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>

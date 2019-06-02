@@ -10,7 +10,6 @@
     using Enyim.Caching.Memcached.Protocol.Binary;
     using Enyim.Reflection;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
 
     public class EasyCachingMemcachedClientConfiguration : IMemcachedClientConfiguration
     {
@@ -20,12 +19,12 @@
         private IMemcachedKeyTransformer _keyTransformer;
         private ILogger<EasyCachingMemcachedClientConfiguration> _logger;
         private string _name;
-        
+
         public EasyCachingMemcachedClientConfiguration(
             string name,
             ILoggerFactory loggerFactory,
             MemcachedOptions optionsAccessor,
-            ITranscoder transcoder = null,
+            IEnumerable<EasyCachingTranscoder> transcoders = null,
             IMemcachedKeyTransformer keyTransformer = null)
         {
             this._name = name;
@@ -108,10 +107,15 @@
                 NodeLocator = options.Servers.Count > 1 ? typeof(DefaultNodeLocator) : typeof(SingleNodeLocator);
             }
 
-            if (transcoder != null)
+            if (transcoders != null)
             {
-                this._transcoder = transcoder;
-                _logger.LogDebug($"Use Transcoder Type : '{transcoder.ToString()}'");
+                var coder = transcoders.FirstOrDefault(x => x.Name.Equals(_name));
+
+                if (coder != null)
+                {
+                    this._transcoder = coder;
+                    _logger.LogDebug($"Use Transcoder Type : '{coder.ToString()}'");
+                }
             }
 
             if (options.NodeLocatorFactory != null)
@@ -146,7 +150,7 @@
 
                 Servers.Add(new IPEndPoint(address, server.Port));
             }
-        }              
+        }
 
         /// <summary>
         /// Gets the name.

@@ -60,27 +60,27 @@
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="dbProviders">Db providers.</param>
-        /// <param name="serializer">Serializer.</param>
+        /// <param name="serializers">Serializers.</param>
         /// <param name="options">Options.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultRedisCachingProvider(
             string name,
             IEnumerable<IRedisDatabaseProvider> dbProviders,
-            IEasyCachingSerializer serializer,
+            IEnumerable<IEasyCachingSerializer> serializers,
             RedisOptions options,
             ILoggerFactory loggerFactory = null)
         {
             ArgumentCheck.NotNullAndCountGTZero(dbProviders, nameof(dbProviders));
-            ArgumentCheck.NotNull(serializer, nameof(serializer));
+            ArgumentCheck.NotNullAndCountGTZero(serializers, nameof(serializers));
 
+            this._name = name;
             this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
-            this._serializer = serializer;
+            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
-            this._name = name;
 
             this.ProviderName = this._name;
             this.ProviderStats = this._cacheStats;
