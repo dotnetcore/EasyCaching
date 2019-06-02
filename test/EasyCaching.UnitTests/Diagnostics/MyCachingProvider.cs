@@ -13,7 +13,6 @@
             this.ProviderStats = new CacheStats();
             this.ProviderType = CachingProviderType.InMemory;
             this.ProviderMaxRdSecond = 120;
-            this.ProviderOrder = 1;
             this.IsDistributedProvider = false;
         }
 

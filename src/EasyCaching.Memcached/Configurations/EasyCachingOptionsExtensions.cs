@@ -44,10 +44,8 @@
 
             void configure(MemcachedOptions x)
             {
-                x.CachingProviderType = mOptions.CachingProviderType;
                 x.EnableLogging = mOptions.EnableLogging;
                 x.MaxRdSecond = mOptions.MaxRdSecond;
-                x.Order = mOptions.Order;
                 x.DBConfig = mOptions.DBConfig;
             }
 

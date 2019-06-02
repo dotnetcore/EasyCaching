@@ -44,10 +44,8 @@
 
             void configure(SQLiteOptions x)
             {
-                x.CachingProviderType = sqliteOptions.CachingProviderType;
                 x.EnableLogging = sqliteOptions.EnableLogging;
-                x.MaxRdSecond = sqliteOptions.MaxRdSecond;
-                x.Order = sqliteOptions.Order;
+                x.MaxRdSecond = sqliteOptions.MaxRdSecond;             
                 x.DBConfig = sqliteOptions.DBConfig;
             }
 

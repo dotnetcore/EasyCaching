@@ -66,9 +66,8 @@
             this._cacheStats = new CacheStats();
 
             this.ProviderName = this._name;
+            this.ProviderType = CachingProviderType.Redis;
             this.ProviderStats = this._cacheStats;
-            this.ProviderType = _options.CachingProviderType;
-            this.ProviderOrder = _options.Order;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = true;
         }

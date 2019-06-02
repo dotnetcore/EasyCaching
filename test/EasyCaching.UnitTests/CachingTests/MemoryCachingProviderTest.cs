@@ -165,9 +165,7 @@ namespace EasyCaching.UnitTests
 {
     'easycaching': {
         'inmemory': {
-            'CachingProviderType': 1,
             'MaxRdSecond': 600,
-            'Order': 99,
             'dbconfig': {      
                 'SizeLimit' :  50
             }
@@ -194,7 +192,7 @@ namespace EasyCaching.UnitTests
         public void Provider_Information_Should_Be_Correct()
         {
             Assert.Equal(600, _provider.MaxRdSecond);
-            Assert.Equal(99, _provider.Order);
+            //Assert.Equal(99, _provider.Order);
             Assert.Equal("mName", _provider.Name);
         }
     }

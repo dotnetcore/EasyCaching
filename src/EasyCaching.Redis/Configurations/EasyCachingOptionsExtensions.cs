@@ -44,10 +44,8 @@
 
             void configure(RedisOptions x)
             {
-                x.CachingProviderType = redisOptions.CachingProviderType;
                 x.EnableLogging = redisOptions.EnableLogging;
-                x.MaxRdSecond = redisOptions.MaxRdSecond;
-                x.Order = redisOptions.Order;
+                x.MaxRdSecond = redisOptions.MaxRdSecond;             
                 x.DBConfig = redisOptions.DBConfig;
             }
 

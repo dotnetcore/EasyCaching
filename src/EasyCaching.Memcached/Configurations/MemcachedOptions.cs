@@ -7,7 +7,7 @@
     {
         public MemcachedOptions()
         {
-            this.CachingProviderType = CachingProviderType.Memcached;
+
         }
 
         public EasyCachingMemcachedClientOptions DBConfig { get; set; } = new EasyCachingMemcachedClientOptions();

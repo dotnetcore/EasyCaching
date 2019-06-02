@@ -223,12 +223,6 @@
         Task FlushAsync();
 
         /// <summary>
-        /// Gets the order.
-        /// </summary>
-        /// <value>The order.</value>
-        int Order { get; }
-
-        /// <summary>
         /// Gets the max rd second.
         /// </summary>
         /// <value>The max random second.</value>

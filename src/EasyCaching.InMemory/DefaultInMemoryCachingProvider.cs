@@ -58,10 +58,9 @@
             this._cacheStats = new CacheStats();
 
             this.ProviderName = _name;
+            this.ProviderType = CachingProviderType.InMemory;
             this.ProviderStats = _cacheStats;
-            this.ProviderType = _options.CachingProviderType;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
-            this.ProviderOrder = _options.Order;
             this.IsDistributedProvider = false;
         }
 

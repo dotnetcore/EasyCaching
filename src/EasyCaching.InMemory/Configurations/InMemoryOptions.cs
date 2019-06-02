@@ -7,7 +7,7 @@
     {
         public InMemoryOptions()
         {
-            this.CachingProviderType = CachingProviderType.InMemory;
+
         }
 
         public InMemoryCachingOptions DBConfig { get; set; } = new InMemoryCachingOptions();
