@@ -69,5 +69,10 @@
         /// The default name of the SQLite.
         /// </summary>
         public const string DefaultSQLiteName = "DefaultSQLite";
+
+        /// <summary>
+        /// The default name of the serializer.
+        /// </summary>
+        public const string DefaultSerializerName = "binary"; 
     }
 }

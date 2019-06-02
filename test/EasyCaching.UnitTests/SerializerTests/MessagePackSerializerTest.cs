@@ -6,7 +6,7 @@ namespace EasyCaching.UnitTests
     {
         public MessagePackSerializerTest()
         {
-            _serializer = new DefaultMessagePackSerializer();
+            _serializer = new DefaultMessagePackSerializer("msgpack");
         }
     }
 }

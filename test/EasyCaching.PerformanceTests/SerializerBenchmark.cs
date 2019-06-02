@@ -14,9 +14,9 @@
     [AllStatisticsColumn]
     public abstract class SerializerBenchmark
     {
-        private DefaultJsonSerializer _json = new DefaultJsonSerializer(new OptionsWrapper<EasyCachingJsonSerializerOptions>(new EasyCachingJsonSerializerOptions()));
-        private DefaultMessagePackSerializer _messagepack = new DefaultMessagePackSerializer();
-        private DefaultProtobufSerializer _protobuf = new DefaultProtobufSerializer();
+        private DefaultJsonSerializer _json = new DefaultJsonSerializer("json", new EasyCachingJsonSerializerOptions());
+        private DefaultMessagePackSerializer _messagepack = new DefaultMessagePackSerializer("msgpack");
+        private DefaultProtobufSerializer _protobuf = new DefaultProtobufSerializer("proto");
         private DefaultBinaryFormatterSerializer _binary = new DefaultBinaryFormatterSerializer();
         protected MyPoco _single;
         protected List<MyPoco> _list;
