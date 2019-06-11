@@ -39,7 +39,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 
 ### Step 1 : Install the package
 
-Choose one kinds of caching type that you needs and install it via Nuget.
+Choose caching provider that you need and install it via Nuget.
 
 ```
 Install-Package EasyCaching.InMemory
@@ -48,11 +48,11 @@ Install-Package EasyCaching.SQLite
 Install-Package EasyCaching.Memcached
 ```
 
-### Step 2 : Config in your Startup class
+### Step 2 : Configure Startup class
 
-Different types of caching hvae their own way to config.
+Each caching provider has it's own configuration options.
 
-Here is a sample show you how to config.
+Here is a sample configuration for InMemory and Redis caching provider.
 
 ```csharp
 public class Startup
@@ -137,7 +137,7 @@ public class ValuesController : Controller
 
 ## Documentation
 
-For more helpful information about EasyCaching, please click [here](http://easycaching.readthedocs.io/en/latest/) for EasyCaching's documentation. 
+Detailed EasyCaching documentation can be found [here](http://easycaching.readthedocs.io/en/latest/).
 
 ## Extension Libs
 
