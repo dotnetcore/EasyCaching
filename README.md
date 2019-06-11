@@ -39,7 +39,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 
 ### Step 1 : Install the package
 
-Choose one kind of caching provider that you need and install it via Nuget.
+Choose caching provider that you need and install it via Nuget.
 
 ```
 Install-Package EasyCaching.InMemory
@@ -48,7 +48,7 @@ Install-Package EasyCaching.SQLite
 Install-Package EasyCaching.Memcached
 ```
 
-### Step 2 : Config your Startup class
+### Step 2 : Configure Startup class
 
 Each caching provider has it's own configuration options.
 
