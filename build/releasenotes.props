@@ -45,5 +45,8 @@
         <EasyCachingRabbitBusPackageNotes>
         1. Upgrading dependencies.
         </EasyCachingRabbitBusPackageNotes>
+        <EasyCachingDiskPackageNotes>
+        1. init.
+        </EasyCachingDiskPackageNotes>
 	</PropertyGroup>
 </Project>
