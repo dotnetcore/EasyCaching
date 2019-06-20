@@ -12,6 +12,7 @@
             Expiration = DateTimeOffset.UtcNow.AddSeconds(second);
         }
 
+
         [Key(0)]
         public byte[] Value { get; private set; }
 

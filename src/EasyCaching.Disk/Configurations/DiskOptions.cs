@@ -7,5 +7,7 @@
         public DiskOptions()
         {
         }
+
+        public DiskDbOptions DBConfig { get; set; } = new DiskDbOptions();
     }
 }
