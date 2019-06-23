@@ -7,6 +7,7 @@
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using MessagePack;
@@ -36,6 +37,7 @@
 
         private readonly ConcurrentDictionary<string, string> _cacheKeysMap;
 
+        private Timer _saveKeyTimer;
 
         public DefaultDiskCachingProvider(string name,
             DiskOptions options,
@@ -56,6 +58,41 @@
             this.IsDistributedProvider = false;
 
             InitCacheKey();
+
+            _saveKeyTimer = new Timer(SaveKeyToFile, null, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2));
+        }
+
+        private void SaveKeyToFile(object state)
+        {
+            if (!_cacheKeysMap.IsEmpty)
+            {
+                var md5FolderName = GetMd5Str(_name);
+                var path = Path.Combine(_options.DBConfig.BasePath, md5FolderName, $"key.dat");
+
+                var keys = _cacheKeysMap.Keys.ToArray();
+
+                var value = string.Join("\n", keys);
+
+                var bytes = Encoding.UTF8.GetBytes(value);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    try
+                    {
+                        using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write))
+                        {
+                            // batch , not all in one
+                            stream.Write(bytes, 0, bytes.Length);
+                        }
+
+                        break;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
         }
 
         private void InitCacheKey()
@@ -78,11 +115,11 @@
                                 _cacheKeysMap.TryAdd(line, GetMd5Str(line));
                             }
                         }
-                    }                                         
+                    }
 
                     break;
                 }
-                catch 
+                catch
                 {
 
                 }
@@ -165,14 +202,14 @@
             if (res != null)
             {
                 Set(cacheKey, res, expiration);
-                //remove mutex key
+                // remove mutex key
                 _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
 
                 return new CacheValue<T>(res, true);
             }
             else
             {
-                //remove mutex key
+                // remove mutex key
                 _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
                 return CacheValue<T>.NoValue;
             }
@@ -199,12 +236,84 @@
 
         public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys)
         {
-            throw new NotImplementedException();
+            IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
+
+            foreach (var item in cacheKeys)
+            {
+                var path = GetRawPath(item);
+
+                if (!File.Exists(path))
+                {
+                    if (!dict.ContainsKey(item))
+                    {
+                        dict.Add(item, CacheValue<T>.Null);
+                    }
+                }
+                else
+                {
+                    var cached = GetDiskCacheValue(path);
+
+                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    {
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+
+                        if (!dict.ContainsKey(item))
+                        {
+                            dict.Add(item, new CacheValue<T>(t, true));
+                        }
+                    }
+                    else
+                    {
+                        if (!dict.ContainsKey(item))
+                        {
+                            dict.Add(item, CacheValue<T>.NoValue);
+                        }
+                    }
+                }
+            }
+
+            return dict;
         }
 
-        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
         {
-            throw new NotImplementedException();
+            IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
+
+            foreach (var item in cacheKeys)
+            {
+                var path = GetRawPath(item);
+
+                if (!File.Exists(path))
+                {
+                    if (!dict.ContainsKey(item))
+                    {
+                        dict.Add(item, CacheValue<T>.Null);
+                    }
+                }
+                else
+                {
+                    var cached = await GetDiskCacheValueAsync(path);
+
+                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    {
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+
+                        if (!dict.ContainsKey(item))
+                        {
+                            dict.Add(item, new CacheValue<T>(t, true));
+                        }
+                    }
+                    else
+                    {
+                        if (!dict.ContainsKey(item))
+                        {
+                            dict.Add(item, CacheValue<T>.NoValue);
+                        }
+                    }
+                }
+            }
+
+            return dict;
         }
 
         public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
@@ -464,7 +573,10 @@
                     continue;
                 }
 
-                DeleteFileWithRetry(path);
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(key, out _);
+                }
             }
         }
 
@@ -482,7 +594,10 @@
                     continue;
                 }
 
-                DeleteFileWithRetry(path);
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(key, out _);
+                }
             }
 
             return Task.CompletedTask;
@@ -498,32 +613,41 @@
                 //return true;
             }
 
-            DeleteFileWithRetry(path);
+            if (DeleteFileWithRetry(path))
+            {
+                _cacheKeysMap.TryRemove(cacheKey, out _);
+            }
 
             return Task.CompletedTask;
         }
 
         public override void BaseRemoveByPrefix(string prefix)
         {
-            var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Value).ToList();
+            var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Key).ToList();
 
             foreach (var item in list)
             {
-                var path = BuildRawPath(item);
+                var path = BuildMd5Path(item);
 
-                DeleteFileWithRetry(path);
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(item, out _);
+                }
             }
         }
 
         public override Task BaseRemoveByPrefixAsync(string prefix)
         {
-            var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Value).ToList();
+            var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Key).ToList();
 
             foreach (var item in list)
             {
-                var path = BuildRawPath(item);
+                var path = BuildMd5Path(item);
 
-                DeleteFileWithRetry(path);
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(item, out _);
+                }
             }
 
             return Task.CompletedTask;
@@ -696,13 +820,16 @@
             return path;
         }
 
-        private void DeleteFileWithRetry(string path)
+        private bool DeleteFileWithRetry(string path)
         {
+            bool flag = false;
+
             for (int i = 0; i < 3; i++)
             {
                 try
                 {
                     File.Delete(path);
+                    flag = true;
                     break;
                 }
                 catch
@@ -710,6 +837,8 @@
                     //return false;
                 }
             }
+
+            return flag;
         }
 
         private DiskCacheValue GetDiskCacheValue(string path)
@@ -724,30 +853,7 @@
 
         private void AppendKey(string key, string md5Key)
         {
-            if (_cacheKeysMap.TryAdd(key, md5Key))
-            {
-                var md5FolderName = GetMd5Str(_name);
-                var path = Path.Combine(_options.DBConfig.BasePath, md5FolderName, $"key.dat");
-
-                var bytes = Encoding.UTF8.GetBytes(key);
-
-                for (int i = 0; i < 3; i++)
-                {
-                    try
-                    {
-                        using (FileStream stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Read))
-                        {
-                            stream.Write(bytes, 0, bytes.Length);
-                        }
-
-                        break;
-                    }
-                    catch
-                    {
-
-                    }
-                }
-            }
+            _cacheKeysMap.TryAdd(key, md5Key);
         }
 
         private async Task<DiskCacheValue> GetDiskCacheValueAsync(string path)
