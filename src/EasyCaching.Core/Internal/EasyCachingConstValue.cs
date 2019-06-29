@@ -36,6 +36,11 @@
         public const string InMemorySection = "easycaching:inmemory";
 
         /// <summary>
+        /// The disk section.
+        /// </summary>
+        public const string DiskSection = "easycaching:disk";
+
+        /// <summary>
         /// The redis bus section.
         /// </summary>
         public const string RedisBusSection = "easycaching:redisbus";
@@ -69,6 +74,11 @@
         /// The default name of the SQLite.
         /// </summary>
         public const string DefaultSQLiteName = "DefaultSQLite";
+
+        /// <summary>
+        /// The default name of the disk.
+        /// </summary>
+        public const string DefaultDiskName = "DefaultDisk";
 
         /// <summary>
         /// The default name of the serializer.

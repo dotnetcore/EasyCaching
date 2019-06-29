@@ -1,23 +1,40 @@
 ﻿namespace EasyCaching.Disk
 {
+    using System;
+    using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Configuration;
 
-    internal sealed class EasyCachingOptionsExtensions : IEasyCachingOptionsExtension
+    public static class EasyCachingOptionsExtensions 
     {
-        public EasyCachingOptionsExtensions()
+        /// <summary>
+        /// Uses the disk caching provider.
+        /// </summary>
+        /// <param name="options">Options.</param>
+        /// <param name="configure">Configure.</param>
+        /// <param name="name">Name.</param>
+        public static EasyCachingOptions UseDisk(this EasyCachingOptions options, Action<DiskOptions> configure, string name = EasyCachingConstValue.DefaultDiskName)
         {
+            ArgumentCheck.NotNull(configure, nameof(configure));
+
+            options.RegisterExtension(new DiskOptionsExtension(name, configure));
+
+            return options;
         }
 
-        public void AddServices(IServiceCollection services)
+        public static EasyCachingOptions UseDisk(this EasyCachingOptions options, IConfiguration configuration, string name = EasyCachingConstValue.DefaultDiskName, string sectionName = EasyCachingConstValue.DiskSection)
         {
-            throw new System.NotImplementedException();
-        }
+            var dbConfig = configuration.GetSection(sectionName);
+            var diskOptions = new DiskOptions();
+            dbConfig.Bind(diskOptions);
 
-        public void WithServices(IApplicationBuilder app)
-        {
-            throw new System.NotImplementedException();
+            void configure(DiskOptions x)
+            {
+                x.EnableLogging = diskOptions.EnableLogging;
+                x.MaxRdSecond = diskOptions.MaxRdSecond;
+                x.DBConfig = diskOptions.DBConfig;
+            }
+            return options.UseDisk(configure, name);
         }
     }
 }

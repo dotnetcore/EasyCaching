@@ -11,6 +11,7 @@
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using MessagePack;
+    using MessagePack.Resolvers;
     using Microsoft.Extensions.Logging;
 
     public class DefaultDiskCachingProvider : EasyCachingAbstractProvider
@@ -57,9 +58,30 @@
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = false;
 
-            InitCacheKey();
+            Init();
 
             _saveKeyTimer = new Timer(SaveKeyToFile, null, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(2));
+        }
+
+        private void Init()
+        {
+            var md5FolderName = GetMd5Str(_name);
+
+            var basePath = Path.Combine(_options.DBConfig.BasePath, md5FolderName);
+
+            if (!Directory.Exists(basePath))
+            {
+                Directory.CreateDirectory(basePath);
+            }
+
+            var path = Path.Combine(basePath, $"key.dat");
+
+            if (!File.Exists(path))
+            {
+                File.Create(path);
+            }
+
+            InitCacheKey();
         }
 
         private void SaveKeyToFile(object state)
@@ -128,6 +150,8 @@
 
         public override bool BaseExists(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = BuildMd5Path(cacheKey);
 
             if (!File.Exists(path)) return false;
@@ -139,6 +163,8 @@
 
         public override async Task<bool> BaseExistsAsync(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = BuildMd5Path(cacheKey);
 
             if (!File.Exists(path)) return false;
@@ -150,6 +176,9 @@
 
         public override void BaseFlush()
         {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("Flush");
+
             var path = Path.Combine(_options.DBConfig.BasePath, _name);
 
             Directory.Delete(path, true);
@@ -157,6 +186,9 @@
 
         public override Task BaseFlushAsync()
         {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("FlushAsync");
+
             var path = Path.Combine(_options.DBConfig.BasePath, _name);
 
             Directory.Delete(path, true);
@@ -166,6 +198,9 @@
 
         public override CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
             var path = GetRawPath(cacheKey);
 
             if (File.Exists(path))
@@ -217,6 +252,8 @@
 
         public override CacheValue<T> BaseGet<T>(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = GetRawPath(cacheKey);
 
             if (!File.Exists(path)) return CacheValue<T>.Null;
@@ -236,6 +273,8 @@
 
         public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys)
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
 
             foreach (var item in cacheKeys)
@@ -277,6 +316,8 @@
 
         public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
 
             foreach (var item in cacheKeys)
@@ -318,6 +359,9 @@
 
         public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
             var path = GetRawPath(cacheKey);
 
             if (File.Exists(path))
@@ -368,6 +412,8 @@
 
         public override async Task<object> BaseGetAsync(string cacheKey, Type type)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = GetRawPath(cacheKey);
 
             if (!File.Exists(path))
@@ -395,6 +441,8 @@
 
         public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = GetRawPath(cacheKey);
 
             if (!File.Exists(path)) return CacheValue<T>.Null;
@@ -414,6 +462,8 @@
 
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
 
             var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Key).ToList();
@@ -459,6 +509,8 @@
 
         public override async Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
 
             var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Key).ToList();
@@ -504,11 +556,20 @@
 
         public override int BaseGetCount(string prefix = "")
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return _cacheKeysMap.Count;
+            }
+            else
+            {
+                return _cacheKeysMap.Count(x => x.Key.StartsWith(prefix, StringComparison.Ordinal));
+            }
         }
 
         public override TimeSpan BaseGetExpiration(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = GetRawPath(cacheKey);
 
             if (!File.Exists(path))
@@ -523,6 +584,8 @@
 
         public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = GetRawPath(cacheKey);
 
             if (!File.Exists(path))
@@ -548,6 +611,8 @@
 
         public override void BaseRemove(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = GetRawPath(cacheKey);
 
             if (!File.Exists(path))
@@ -561,6 +626,8 @@
 
         public override void BaseRemoveAll(IEnumerable<string> cacheKeys)
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             foreach (string key in cacheKeys)
             {
                 if (string.IsNullOrWhiteSpace(key))
@@ -582,6 +649,8 @@
 
         public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
         {
+            ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
+
             foreach (string key in cacheKeys)
             {
                 if (string.IsNullOrWhiteSpace(key))
@@ -605,6 +674,8 @@
 
         public override Task BaseRemoveAsync(string cacheKey)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
             var path = GetRawPath(cacheKey);
 
             if (!File.Exists(path))
@@ -623,6 +694,8 @@
 
         public override void BaseRemoveByPrefix(string prefix)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Key).ToList();
 
             foreach (var item in list)
@@ -638,6 +711,8 @@
 
         public override Task BaseRemoveByPrefixAsync(string prefix)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
             var list = _cacheKeysMap.Where(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)).Select(x => x.Key).ToList();
 
             foreach (var item in list)
@@ -655,6 +730,10 @@
 
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
             var (path, fileName) = GetFilePath(cacheKey);
 
             var bytes = BuildDiskCacheValue(cacheValue, expiration);
@@ -670,6 +749,9 @@
 
         public override void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration)
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+
             foreach (var item in values)
             {
                 try
@@ -694,6 +776,9 @@
 
         public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)
         {
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+            ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+
             foreach (var item in values)
             {
                 try
@@ -718,6 +803,10 @@
 
         public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
             var (path, fileName) = GetFilePath(cacheKey);
 
             var bytes = BuildDiskCacheValue(cacheValue, expiration);
@@ -733,6 +822,10 @@
 
         public override bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
             var (path, fileName) = GetFilePath(cacheKey);
 
             if (File.Exists(path))
@@ -757,6 +850,10 @@
 
         public override async Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
+
             var (path, fileName) = GetFilePath(cacheKey);
 
             if (File.Exists(path))
@@ -870,7 +967,7 @@
         {
             var value = MessagePackSerializer.Serialize(t);
 
-            var cached = new DiskCacheValue(value, (int)ts.TotalSeconds);
+            var cached = new DiskCacheValue(value, DateTimeOffset.UtcNow.AddSeconds((int)ts.TotalSeconds));
 
             var bytes = MessagePackSerializer.Serialize(cached);
 
@@ -881,12 +978,16 @@
         {
             using (MD5 md5 = MD5.Create())
             {
-                byte[] bytes_md5_in = Encoding.UTF8.GetBytes(src);
-                byte[] bytes_md5_out = md5.ComputeHash(bytes_md5_in);
+                byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(src));
 
-                var md5_out = BitConverter.ToString(bytes_md5_out);
+                StringBuilder sBuilder = new StringBuilder(64);
 
-                return md5_out;
+                for (int i = 0; i < data.Length; i++)
+                {
+                    sBuilder.Append(data[i].ToString("x2"));
+                }
+
+                return sBuilder.ToString();
             }
         }
     }

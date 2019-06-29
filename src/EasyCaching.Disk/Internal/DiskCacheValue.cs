@@ -3,13 +3,14 @@
     using System;
     using MessagePack;
 
+    [MessagePackObject]
     public class DiskCacheValue
     {
         [SerializationConstructor]
-        public DiskCacheValue(byte[] val, int second)
+        public DiskCacheValue(byte[] val, DateTimeOffset time)
         {
             Value = val;
-            Expiration = DateTimeOffset.UtcNow.AddSeconds(second);
+            Expiration = time;
         }
 
 
