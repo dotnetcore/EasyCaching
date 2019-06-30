@@ -259,7 +259,15 @@
 
             var path = GetRawPath(cacheKey);
 
-            if (!File.Exists(path)) return CacheValue<T>.Null;
+            if (!File.Exists(path))
+            {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                CacheStats.OnMiss();
+
+                return CacheValue<T>.Null;
+            }
 
             var cached = GetDiskCacheValue(path);
 
@@ -468,17 +476,35 @@
 
             var path = GetRawPath(cacheKey);
 
-            if (!File.Exists(path)) return CacheValue<T>.Null;
+            if (!File.Exists(path))
+            {
+                CacheStats.OnMiss();
+
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                    
+                return CacheValue<T>.Null;
+            }
 
             var cached = await GetDiskCacheValueAsync(path);
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                CacheStats.OnHit();
+
                 var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                 return new CacheValue<T>(t, true);
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                CacheStats.OnMiss();
+
                 return CacheValue<T>.NoValue;
             }
         }
