@@ -52,7 +52,7 @@
             this._cacheStats = new CacheStats();
 
             this.ProviderName = _name;
-            this.ProviderType = CachingProviderType.Ext1;
+            this.ProviderType = CachingProviderType.Disk;
             this.ProviderStats = _cacheStats;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = false;
