@@ -11,7 +11,6 @@
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using MessagePack;
-    using MessagePack.Resolvers;
     using Microsoft.Extensions.Logging;
 
     public class DefaultDiskCachingProvider : EasyCachingAbstractProvider
@@ -179,7 +178,9 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            var path = Path.Combine(_options.DBConfig.BasePath, _name);
+            var md5FolderName = GetMd5Str(_name);
+
+            var path = Path.Combine(_options.DBConfig.BasePath, md5FolderName);
 
             Directory.Delete(path, true);
         }
@@ -189,7 +190,9 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            var path = Path.Combine(_options.DBConfig.BasePath, _name);
+            var md5FolderName = GetMd5Str(_name);
+
+            var path = Path.Combine(_options.DBConfig.BasePath, md5FolderName);
 
             Directory.Delete(path, true);
 
@@ -209,7 +212,7 @@
 
                 if (cached.Expiration > DateTimeOffset.UtcNow)
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -262,11 +265,21 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                CacheStats.OnHit();
+
+                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                 return new CacheValue<T>(t, true);
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                CacheStats.OnMiss();
+
                 return CacheValue<T>.NoValue;
             }
         }
@@ -337,7 +350,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -370,7 +383,7 @@
 
                 if (cached.Expiration > DateTimeOffset.UtcNow)
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -430,11 +443,21 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                CacheStats.OnHit();
+
                 var t = MessagePackSerializer.NonGeneric.Deserialize(type, cached.Value);
                 return t;
             }
             else
             {
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                CacheStats.OnMiss();
+
                 return null;
             }
         }
@@ -451,7 +474,7 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
                 return new CacheValue<T>(t, true);
             }
             else
@@ -534,7 +557,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -965,7 +988,7 @@
 
         private byte[] BuildDiskCacheValue<T>(T t, TimeSpan ts)
         {
-            var value = MessagePackSerializer.Serialize(t);
+            var value = MessagePackSerializer.Serialize(t, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
 
             var cached = new DiskCacheValue(value, DateTimeOffset.UtcNow.AddSeconds((int)ts.TotalSeconds));
 
