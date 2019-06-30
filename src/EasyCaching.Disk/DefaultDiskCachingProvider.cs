@@ -182,7 +182,9 @@
 
             var path = Path.Combine(_options.DBConfig.BasePath, md5FolderName);
 
-            Directory.Delete(path, true);
+            DeleteDirectory(path);
+
+            _cacheKeysMap.Clear();
         }
 
         public override Task BaseFlushAsync()
@@ -194,7 +196,9 @@
 
             var path = Path.Combine(_options.DBConfig.BasePath, md5FolderName);
 
-            Directory.Delete(path, true);
+            DeleteDirectory(path);
+
+            _cacheKeysMap.Clear();
 
             return Task.CompletedTask;
         }
@@ -266,7 +270,7 @@
 
                 CacheStats.OnMiss();
 
-                return CacheValue<T>.Null;
+                return CacheValue<T>.NoValue;
             }
 
             var cached = GetDiskCacheValue(path);
@@ -306,7 +310,7 @@
                 {
                     if (!dict.ContainsKey(item))
                     {
-                        dict.Add(item, CacheValue<T>.Null);
+                        dict.Add(item, CacheValue<T>.NoValue);
                     }
                 }
                 else
@@ -349,7 +353,7 @@
                 {
                     if (!dict.ContainsKey(item))
                     {
-                        dict.Add(item, CacheValue<T>.Null);
+                        dict.Add(item, CacheValue<T>.NoValue);
                     }
                 }
                 else
@@ -482,8 +486,8 @@
 
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-                    
-                return CacheValue<T>.Null;
+
+                return CacheValue<T>.NoValue;
             }
 
             var cached = await GetDiskCacheValueAsync(path);
@@ -527,7 +531,7 @@
                 {
                     if (!dict.ContainsKey(item))
                     {
-                        dict.Add(item, CacheValue<T>.Null);
+                        dict.Add(item, CacheValue<T>.NoValue);
                     }
                 }
                 else
@@ -574,7 +578,7 @@
                 {
                     if (!dict.ContainsKey(item))
                     {
-                        dict.Add(item, CacheValue<T>.Null);
+                        dict.Add(item, CacheValue<T>.NoValue);
                     }
                 }
                 else
@@ -670,7 +674,10 @@
                 //return true;
             }
 
-            DeleteFileWithRetry(path);
+            if (DeleteFileWithRetry(path))
+            {
+                _cacheKeysMap.TryRemove(cacheKey, out _);
+            }
         }
 
         public override void BaseRemoveAll(IEnumerable<string> cacheKeys)
@@ -787,7 +794,7 @@
 
             var bytes = BuildDiskCacheValue(cacheValue, expiration);
 
-            using (FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read))
+            using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
             {
                 stream.Write(bytes, 0, bytes.Length);
                 //return true;
@@ -809,7 +816,7 @@
 
                     var bytes = BuildDiskCacheValue(item.Value, expiration);
 
-                    using (FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read))
+                    using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
                     {
                         stream.Write(bytes, 0, bytes.Length);
                     }
@@ -836,7 +843,7 @@
 
                     var bytes = BuildDiskCacheValue(item.Value, expiration);
 
-                    using (FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read))
+                    using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
                     {
                         await stream.WriteAsync(bytes, 0, bytes.Length);
                     }
@@ -860,7 +867,7 @@
 
             var bytes = BuildDiskCacheValue(cacheValue, expiration);
 
-            using (FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.Read))
+            using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
             {
                 await stream.WriteAsync(bytes, 0, bytes.Length);
                 //return true;
@@ -883,7 +890,7 @@
 
                 if (cached.Expiration.Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
                 {
-                    return true;
+                    return false;
                 }
             }
 
@@ -911,7 +918,7 @@
 
                 if (cached.Expiration.Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
                 {
-                    return true;
+                    return false;
                 }
             }
 
@@ -1037,6 +1044,31 @@
                 }
 
                 return sBuilder.ToString();
+            }
+        }
+
+        private void DeleteDirectory(string path)
+        {
+            try
+            {
+                DirectoryInfo dir = new DirectoryInfo(path);
+                FileSystemInfo[] fileinfo = dir.GetFileSystemInfos();
+                foreach (FileSystemInfo i in fileinfo)
+                {
+                    if (i is DirectoryInfo)
+                    {
+                        DirectoryInfo subdir = new DirectoryInfo(i.FullName);
+                        subdir.Delete(true);
+                    }
+                    else
+                    {
+                        File.Delete(i.FullName);
+                    }
+                }
+            }
+            catch
+            {
+
             }
         }
     }
