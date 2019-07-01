@@ -1,6 +1,6 @@
 # EasyCachingProviderFactory
 
-`EasyCachingProviderFactory` is a new feature after v0.4.0 which provides a factory to get providers 
+`EasyCachingProviderFactory` is a new feature which was implemented in v0.4.0. It provides a factory to get providers 
 that we register in startup.
 
 # Why ?
@@ -14,9 +14,9 @@ After releasing v0.4.0 of EasyCaching, we can deal with this scenario.
 
 This usage of `EasyCachingProviderFactory` is similar with `HttpClientFactory`.
 
-There are two types of providers(`IEasyCachingProvider` and `IRedisCachingProvider`) can use `EasyCachingProviderFactory` to create.
+There are two types of providers(`IEasyCachingProvider` and `IRedisCachingProvider`) that `EasyCachingProviderFactory` can create.
 
-Here use two InMemory caching provders and two Redis caching providers to show.
+Following examples uses two InMemory caching provders and two Redis caching providers.
 
 ## 1. Install the packages via Nuget
 
@@ -58,7 +58,7 @@ public void ConfigureServices(IServiceCollection services)
 
 ### 3. Call the IEasyCachingProviderFactory
 
-The following code show how to use IEasyCachingProviderFactory in ASP.NET Core Web API.
+Following code shows how to use IEasyCachingProviderFactory in ASP.NET Core Web API.
 
 ```csharp
 [Route("api/[controller]")]  
