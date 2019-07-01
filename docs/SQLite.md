@@ -2,7 +2,7 @@
 
 SQLite is another choice of local caching. 
 
-There are two scenarios are good for us to use SQLite as our local caching!
+There are two scenarios where SQLite is recommended to use as our local caching!
 
 1. Persisted caching item.
 2. Rebuild caching item.

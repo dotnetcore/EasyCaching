@@ -1,8 +1,8 @@
 # DefaultInMemoryCachingProvider
 
-EasyCaching.InMemory is a in-memory caching lib which is based on **EasyCaching.Core**.
+EasyCaching.InMemory is an in-memory caching lib which is based on **EasyCaching.Core**.
 
-When you use this lib , it means that you will handle the memory of current server . As usual , we named it as local caching .
+When you use this lib, it means that you will handle the memory of current server. As usual, we named it as local caching.
 
 ## How to use ?
 
@@ -14,9 +14,9 @@ Install-Package EasyCaching.InMemory
 
 ### 2. Config in Startup class
 
-There are two options you can choose when you config the caching provider.
+There are two way's how you can configure caching provider.
 
-First of all, we can config by C# code.
+By C# code:
 
 ```csharp
 public class Startup
@@ -57,7 +57,7 @@ public class Startup
 }
 ```
 
-What's more, we also can read the configuration from `appsettings.json`.
+Alternatively you can store configuration in the `appsettings.json`.
 
 ```csharp
 public class Startup
@@ -78,7 +78,7 @@ public class Startup
 }
 ```
 
-And what we add in `appsettings.json` are as following:
+`appsettings.json` example:
 
 ```JSON
 "easycaching": {
@@ -97,7 +97,7 @@ And what we add in `appsettings.json` are as following:
 
 ### 3. Call the EasyCachingProvider
 
-The following code show how to use EasyCachingProvider in ASP.NET Core Web API.
+Following code shows how to use EasyCachingProvider in ASP.NET Core Web API.
 
 ```csharp
 [Route("api/[controller]")]

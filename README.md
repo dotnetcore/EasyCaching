@@ -99,7 +99,7 @@ public class Startup
 }
 ```
 
-###  Step 3 : Write code in you controller 
+###  Step 3 : Write code in your controller 
 
 ```csharp
 [Route("api/[controller]")]
