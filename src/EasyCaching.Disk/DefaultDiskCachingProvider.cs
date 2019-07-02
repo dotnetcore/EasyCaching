@@ -585,7 +585,7 @@
 
         private DiskCacheValue GetDiskCacheValue(string path)
         {
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 var cached = MessagePackSerializer.Deserialize<DiskCacheValue>(stream);
 

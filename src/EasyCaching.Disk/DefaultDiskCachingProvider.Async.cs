@@ -423,7 +423,7 @@
                
         private async Task<DiskCacheValue> GetDiskCacheValueAsync(string path)
         {
-            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 var cached = await MessagePackSerializer.DeserializeAsync<DiskCacheValue>(stream);
 
