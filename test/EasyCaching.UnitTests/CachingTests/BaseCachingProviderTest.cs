@@ -609,7 +609,7 @@
 
         #region Refresh/RefreshAsync
         [Fact]
-        public void Refresh_Should_Succeed()
+        protected virtual void Refresh_Should_Succeed()
         {
             var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
@@ -629,7 +629,7 @@
         }
 
         [Fact]
-        public async Task Refresh_Async_Should_Succeed()
+        protected virtual async Task Refresh_Async_Should_Succeed()
         {
             var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = "value";
@@ -651,7 +651,7 @@
         }
 
         [Fact]
-        public void Refresh_Value_Type_Object_Should_Succeed()
+        protected virtual void Refresh_Value_Type_Object_Should_Succeed()
         {
             var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
@@ -671,7 +671,7 @@
         }
 
         [Fact]
-        public async Task Refresh_Value_Type_Object_Async_Should_Succeed()
+        protected virtual async Task Refresh_Value_Type_Object_Async_Should_Succeed()
         {
             var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
