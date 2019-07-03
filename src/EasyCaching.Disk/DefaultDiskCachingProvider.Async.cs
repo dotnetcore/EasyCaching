@@ -92,7 +92,8 @@
 
             if (File.Exists(path))
             {
-                var cached = await GetDiskCacheValueAsync(path);
+                //var cached = await GetDiskCacheValueAsync(path);
+                var cached = GetDiskCacheValue(path);
 
                 if (cached.Expiration > DateTimeOffset.UtcNow)
                 {
