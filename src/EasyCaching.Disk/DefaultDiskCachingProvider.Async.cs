@@ -277,13 +277,7 @@
 
             return cached.Expiration.Subtract(DateTimeOffset.UtcNow);
         }             
-
-        public override Task BaseRefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            // Obsolete
-            return Task.CompletedTask;
-        }
-         
+              
         public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));

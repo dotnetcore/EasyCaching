@@ -383,12 +383,7 @@
 
             return cached.Expiration.Subtract(DateTimeOffset.UtcNow);
         }
-
-        public override void BaseRefresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            // Obsolete
-        }
-
+               
         public override void BaseRemove(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));

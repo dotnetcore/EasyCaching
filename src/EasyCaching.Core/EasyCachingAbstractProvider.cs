@@ -38,8 +38,6 @@
         public abstract IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix);
         public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix);
         public abstract int BaseGetCount(string prefix = "");
-        public abstract void BaseRefresh<T>(string cacheKey, T cacheValue, TimeSpan expiration);
-        public abstract Task BaseRefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
         public abstract void BaseRemove(string cacheKey);
         public abstract void BaseRemoveAll(IEnumerable<string> cacheKeys);
         public abstract Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys);
@@ -398,58 +396,6 @@
         public int GetCount(string prefix = "")
         {
             return BaseGetCount(prefix);
-        }
-
-        public void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(Refresh), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
-            Exception e = null;
-            try
-            {
-                BaseRefresh(cacheKey, cacheValue, expiration);
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-                throw;
-            }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
-        }
-
-        public async Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(RefreshAsync), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
-            Exception e = null;
-            try
-            {
-                await BaseRefreshAsync(cacheKey, cacheValue, expiration);
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-                throw;
-            }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
         }
 
         public void Remove(string cacheKey)

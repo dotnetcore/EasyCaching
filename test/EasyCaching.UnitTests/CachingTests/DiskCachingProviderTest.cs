@@ -26,29 +26,5 @@ namespace EasyCaching.UnitTests
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
         }
-
-        [Fact(Skip = "")]
-        protected override void Refresh_Should_Succeed()
-        {
-            
-        }
-
-        [Fact(Skip = "")]
-        protected override Task Refresh_Async_Should_Succeed()
-        {
-            return Task.CompletedTask;
-        }
-
-        [Fact(Skip = "")]
-        protected override void Refresh_Value_Type_Object_Should_Succeed()
-        {
-
-        }
-
-        [Fact(Skip = "")]
-        protected override Task Refresh_Value_Type_Object_Async_Should_Succeed()
-        {
-            return Task.CompletedTask;
-        }
     }   
 }
