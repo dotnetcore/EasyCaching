@@ -152,5 +152,13 @@
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>
         Task RemoveByPrefixAsync(string prefix);
+
+        /// <summary>
+        /// Gets the specified cacheKey async.
+        /// </summary>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        /// <param name="type">Object Type.</param>
+        Task<object> GetAsync(string cacheKey, Type type);
     }
 }

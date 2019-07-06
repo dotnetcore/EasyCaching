@@ -97,7 +97,7 @@
             retryPolicy = Policy.Handle<Exception>()
                    .WaitAndRetry(this._options.BusRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt - 1)));
 
-            fallbackPolicy = Policy.Handle<Exception>().Fallback(()=> { });
+            fallbackPolicy = Policy.Handle<Exception>().Fallback(() => { });
 
             fallbackAsyncPolicy = Policy.Handle<Exception>().FallbackAsync(ct =>
             {
@@ -443,12 +443,12 @@
                 flag = _localCache.TrySet(cacheKey, cacheValue, expiration);
             }
 
-            if(flag)
+            if (flag)
             {
                 // Here should send message to bus due to cache was set successfully.
                 _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
             }
-                       
+
             return flag;
         }
 
@@ -490,7 +490,7 @@
                 flag = await _localCache.TrySetAsync(cacheKey, cacheValue, expiration);
             }
 
-            if(flag)
+            if (flag)
             {
                 // Here should send message to bus due to cache was set successfully.
                 await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
@@ -726,6 +726,56 @@
                     _logger.LogError(ex, message);
                 }
             }
+        }
+
+        public async Task<object> GetAsync(string cacheKey, Type type)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var cacheValue = await _localCache.GetAsync(cacheKey, type);
+
+            if (cacheValue != null)
+            {
+                return cacheValue;
+            }
+
+            LogMessage($"local cache can not get the value of {cacheKey}");
+
+            try
+            {
+                cacheValue = await _distributedCache.GetAsync(cacheKey, type);
+            }
+            catch (Exception ex)
+            {
+                LogMessage($"distributed cache get error, [{cacheKey}]", ex);
+            }
+
+            if (cacheValue != null)
+            {
+                TimeSpan ts = TimeSpan.Zero;
+
+                try
+                {
+                    ts = await _distributedCache.GetExpirationAsync(cacheKey);
+                }
+                catch
+                {
+
+                }
+
+                if (ts <= TimeSpan.Zero)
+                {
+                    ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+                }
+
+                await _localCache.SetAsync(cacheKey, cacheValue, ts);
+
+                return cacheValue;
+            }
+
+            LogMessage($"distributed cache can not get the value of {cacheKey}");
+
+            return null;
         }
     }
 }
