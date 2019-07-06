@@ -201,32 +201,19 @@
 
                 try
                 {
-                    if (context.IsAsync())
-                    {
-                        //get the result
-                        var returnValue = await context.UnwrapAsyncReturnValue();
+                    // get the result
+                    var returnValue = context.IsAsync()
+                        ? await context.UnwrapAsyncReturnValue()
+                        : context.ReturnValue;
 
-                        if (attribute.IsHybridProvider)
-                        {
-                            await HybridCachingProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-                        else
-                        {
-                            var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
-                            await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
+                    if (attribute.IsHybridProvider)
+                    {
+                        await HybridCachingProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
                     }
                     else
                     {
-                        if (attribute.IsHybridProvider)
-                        {
-                            await HybridCachingProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-                        else
-                        {
-                            var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
-                            await _cacheProvider.SetAsync(cacheKey, context.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
+                        var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
+                        await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
                     }
                 }
                 catch (Exception ex)

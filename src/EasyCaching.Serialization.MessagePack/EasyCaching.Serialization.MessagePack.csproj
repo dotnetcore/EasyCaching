@@ -33,7 +33,7 @@
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="1.7.3.4" />    
+    <PackageReference Include="MessagePack" Version="1.7.3.7" />    
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configurations\" />

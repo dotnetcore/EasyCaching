@@ -205,32 +205,18 @@
 
                 try
                 {
-                    if (serviceMethod.IsReturnTask())
-                    {
-                        //get the result
-                        var returnValue = invocation.UnwrapAsyncReturnValue().Result;
+                    var returnValue = serviceMethod.IsReturnTask()
+                           ? invocation.UnwrapAsyncReturnValue().Result
+                           : invocation.ReturnValue;
 
-                        if (attribute.IsHybridProvider)
-                        {
-                            _hybridCachingProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-                        else
-                        {
-                            var _cacheProvider = _cacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? _options.Value.CacheProviderName);
-                            _cacheProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
+                    if (attribute.IsHybridProvider)
+                    {
+                        _hybridCachingProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
                     }
                     else
                     {
-                        if (attribute.IsHybridProvider)
-                        {
-                            _hybridCachingProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
-                        else
-                        {
-                            var _cacheProvider = _cacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? _options.Value.CacheProviderName);
-                            _cacheProvider.Set(cacheKey, invocation.ReturnValue, TimeSpan.FromSeconds(attribute.Expiration));
-                        }
+                        var _cacheProvider = _cacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? _options.Value.CacheProviderName);
+                        _cacheProvider.Set(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
                     }
                 }
                 catch (Exception ex)
