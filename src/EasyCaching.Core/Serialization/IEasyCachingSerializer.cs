@@ -29,7 +29,6 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         T Deserialize<T>(byte[] bytes);
 
-
         /// <summary>
         /// Deserialize the specified bytes.
         /// </summary>
