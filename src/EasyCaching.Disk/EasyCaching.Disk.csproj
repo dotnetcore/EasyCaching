@@ -3,13 +3,13 @@
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>Catcher Wong</Owners>
-    <Authors>Catcher Wong</Authors>    
+    <Owners>ncc;Catcher Wong</Owners>
+    <Authors>ncc;Catcher Wong</Authors>    
     <Version>$(EasyCachingDiskPackageVersion)</Version>
     <Description>      
       A simple disk(file) caching provider.
     </Description>    
-    <PackageTags>In-Memory,LocalCache,Caching,Cache</PackageTags>
+    <PackageTags>Disk,File,LocalCache,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>    
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>

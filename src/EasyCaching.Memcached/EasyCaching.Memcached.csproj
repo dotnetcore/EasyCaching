@@ -3,8 +3,8 @@
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>Catcher Wong</Owners>
-    <Authors>Catcher Wong</Authors>    
+    <Owners>ncc;Catcher Wong</Owners>
+    <Authors>ncc;Catcher Wong</Authors>    
     <Version>$(EasyCachingMemcachedPackageVersion)</Version>
     <Description>      
       A simple distributed caching provider based on EnyimMemcachedCore.
