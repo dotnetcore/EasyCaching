@@ -12,9 +12,10 @@
         /// </summary>
         /// <returns>The message pack.</returns>
         /// <param name="options">Options.</param>
-        public static EasyCachingOptions WithMessagePack(this EasyCachingOptions options)
+        /// <param name="name">Name.</param>
+        public static EasyCachingOptions WithMessagePack(this EasyCachingOptions options, string name = "msgpack")
         {
-            options.RegisterExtension(new MessagePackOptionsExtension());
+            options.RegisterExtension(new MessagePackOptionsExtension(name));
 
             return options;
         }

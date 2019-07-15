@@ -1,10 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace EasyCaching.Core.Interceptor
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public static class ParameterCacheKeys
     {
         public static string GenerateCacheKey(object parameter)

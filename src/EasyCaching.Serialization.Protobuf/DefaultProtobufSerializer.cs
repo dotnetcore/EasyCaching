@@ -13,6 +13,27 @@
     public class DefaultProtobufSerializer : IEasyCachingSerializer
     {
         /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
+
+        /// <summary>
+        /// Initializes a new instance of the
+        /// <see cref="T:EasyCaching.Serialization.Protobuf.DefaultProtobufSerializer"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        public DefaultProtobufSerializer(string name)
+        {
+            _name = name;
+        }
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name => _name;
+
+        /// <summary>
         /// Deserialize the specified bytes.
         /// </summary>
         /// <returns>The deserialize.</returns>

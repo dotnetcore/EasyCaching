@@ -333,7 +333,6 @@
     'easycaching': {
         'memcached': {
             'MaxRdSecond': 600,
-            'Order': 99,
             'dbconfig': {            
                 'Servers': [
                     {
@@ -365,7 +364,7 @@
         public void Provider_Information_Should_Be_Correct()
         {
             Assert.Equal(600, _provider.MaxRdSecond);
-            Assert.Equal(99, _provider.Order);
+            //Assert.Equal(99, _provider.Order);
             Assert.Equal("mName", _provider.Name);
         }
     }

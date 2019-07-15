@@ -58,11 +58,11 @@
             Func<IServiceProvider, DefaultRedisCachingProvider> createFactory = x =>
             {
                 var dbProviders = x.GetServices<IRedisDatabaseProvider>();
-                var serializer = x.GetRequiredService<IEasyCachingSerializer>();
+                var serializers = x.GetServices<IEasyCachingSerializer>();
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
                 var factory = x.GetService<ILoggerFactory>();
-                return new DefaultRedisCachingProvider(_name, dbProviders, serializer, options, factory);
+                return new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, factory);
             };
 
             services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(createFactory);

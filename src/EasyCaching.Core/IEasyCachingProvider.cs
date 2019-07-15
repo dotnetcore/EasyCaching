@@ -113,24 +113,6 @@
         bool IsDistributedCache { get; }
 
         /// <summary>
-        /// Refresh the cached value by specified cacheKey, cacheValue and expiration.
-        /// </summary>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration);
-
-        /// <summary>
-        /// Refresh the cached value by specified cacheKey, cacheValue and expiration async.
-        /// </summary>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
-
-        /// <summary>
         /// Removes cached item by cachekey's prefix.
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>
@@ -221,12 +203,6 @@
         /// </summary>
         /// <returns>The async.</returns>
         Task FlushAsync();
-
-        /// <summary>
-        /// Gets the order.
-        /// </summary>
-        /// <value>The order.</value>
-        int Order { get; }
 
         /// <summary>
         /// Gets the max rd second.

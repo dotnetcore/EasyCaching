@@ -7,7 +7,7 @@
     {
         public SQLiteOptions()
         {
-            this.CachingProviderType = CachingProviderType.SQLite;
+
         }
 
         public SQLiteDBOptions DBConfig { get; set; } = new SQLiteDBOptions();

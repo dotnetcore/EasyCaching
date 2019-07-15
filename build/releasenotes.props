@@ -1,34 +1,44 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageNotes>                
-        1. fix typo: IsHightAvailability -> IsHighAvailability.
+		<EasyCachingCorePackageNotes>                                
+        1. Named Serializer
+        2. Add a new CachingProviderType for DiskCachingProvider
+        3. Remove Refresh/RefreshAsync methods
+        4. HybridCachingProvider add GetAsync method with type        
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Fixed zrange error.
+        1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
         1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Can be downgraded to LocalCacheProvider.
+        1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
         1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
         1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Upgrading dependencies.
+        1. Upgrading dependencies.        
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Upgrading dependencies.
+        1. Upgrading dependencies.        
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
         1. Upgrading dependencies.
@@ -38,6 +48,7 @@
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
         1. Upgrading dependencies.
+        2. Remove Refresh/RefreshAsync methods
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
         1. Upgrading dependencies.
@@ -45,5 +56,8 @@
         <EasyCachingRabbitBusPackageNotes>
         1. Upgrading dependencies.
         </EasyCachingRabbitBusPackageNotes>
+        <EasyCachingDiskPackageNotes>
+        1. init.
+        </EasyCachingDiskPackageNotes>
 	</PropertyGroup>
 </Project>

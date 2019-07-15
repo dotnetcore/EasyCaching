@@ -5,7 +5,6 @@
     using System.Text;
     using EasyCaching.Core.Internal;
     using EasyCaching.Core.Serialization;
-    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
 
     /// <summary>
@@ -19,12 +18,18 @@
         private readonly JsonSerializer jsonSerializer;
 
         /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Serialization.Json.DefaultJsonSerializer"/> class.
         /// </summary>
-        /// <param name="optionsAcc">Options.</param>
-        public DefaultJsonSerializer(IOptions<EasyCachingJsonSerializerOptions> optionsAcc)
+        /// <param name="name">Name.</param>
+        /// <param name="options">Options.</param>
+        public DefaultJsonSerializer(string name, EasyCachingJsonSerializerOptions options)
         {
-            var options = optionsAcc.Value;
+            _name = name;
             jsonSerializer = new JsonSerializer
             { 
                 ReferenceLoopHandling = options.ReferenceLoopHandling,
@@ -38,6 +43,12 @@
                 ConstructorHandling = options.ConstructorHandling
             };
         }
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name => _name;
 
         /// <summary>
         /// Deserialize the specified bytes.

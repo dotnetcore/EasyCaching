@@ -7,7 +7,7 @@
     {
         public RedisOptions()
         {
-            this.CachingProviderType = CachingProviderType.Redis;
+
         }
 
         /// <summary>

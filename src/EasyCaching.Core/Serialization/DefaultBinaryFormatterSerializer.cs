@@ -10,6 +10,12 @@
     public class DefaultBinaryFormatterSerializer : IEasyCachingSerializer
     {
         /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name => EasyCachingConstValue.DefaultSerializerName;
+
+        /// <summary>
         /// Deserialize the specified bytes.
         /// </summary>
         /// <returns>The deserialize.</returns>

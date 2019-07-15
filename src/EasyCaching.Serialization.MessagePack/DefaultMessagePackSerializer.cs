@@ -11,13 +11,26 @@
     public class DefaultMessagePackSerializer : IEasyCachingSerializer
     {
         /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
+
+        /// <summary>
         /// Initializes a new instance of the
         /// <see cref="T:EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer"/> class.
         /// </summary>
-        public DefaultMessagePackSerializer()
+        /// <param name="name">Name.</param>
+        public DefaultMessagePackSerializer(string name)
         {
+            _name = name;
             MessagePackSerializer.SetDefaultResolver(ContractlessStandardResolver.Instance);
         }
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        public string Name => _name;
 
         /// <summary>
         /// Deserialize the specified bytes.

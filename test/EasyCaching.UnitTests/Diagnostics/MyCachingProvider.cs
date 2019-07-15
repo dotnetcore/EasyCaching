@@ -13,7 +13,6 @@
             this.ProviderStats = new CacheStats();
             this.ProviderType = CachingProviderType.InMemory;
             this.ProviderMaxRdSecond = 120;
-            this.ProviderOrder = 1;
             this.IsDistributedProvider = false;
         }
 
@@ -95,16 +94,6 @@
         public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
         {
             return Task.FromResult(TimeSpan.FromSeconds(1));
-        }
-
-        public override void BaseRefresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-
-        }
-
-        public override Task BaseRefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            return Task.CompletedTask;
         }
 
         public override void BaseRemove(string cacheKey)

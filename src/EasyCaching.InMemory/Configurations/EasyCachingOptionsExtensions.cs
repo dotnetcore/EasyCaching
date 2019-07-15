@@ -22,10 +22,8 @@
 
             void configure(InMemoryOptions x)
             {
-                x.CachingProviderType = option.CachingProviderType;
                 x.EnableLogging = option.EnableLogging;
                 x.MaxRdSecond = option.MaxRdSecond;
-                x.Order = option.Order;
                 x.DBConfig = option.DBConfig;
             }
 
@@ -67,10 +65,8 @@
 
             void configure(InMemoryOptions x)
             {
-                x.CachingProviderType = memoryOptions.CachingProviderType;
                 x.EnableLogging = memoryOptions.EnableLogging;
                 x.MaxRdSecond = memoryOptions.MaxRdSecond;
-                x.Order = memoryOptions.Order;
                 x.DBConfig = memoryOptions.DBConfig;
             }
             return options.UseInMemory(configure,name);

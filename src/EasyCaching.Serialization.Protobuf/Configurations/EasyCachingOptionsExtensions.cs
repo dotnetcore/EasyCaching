@@ -12,9 +12,10 @@
         /// </summary>
         /// <returns>The protobuf.</returns>
         /// <param name="options">Options.</param>
-        public static EasyCachingOptions WithProtobuf(this EasyCachingOptions options)
+        /// <param name="name">Name.</param>
+        public static EasyCachingOptions WithProtobuf(this EasyCachingOptions options, string name = "proto")
         {
-            options.RegisterExtension(new ProtobufOptionsExtension());
+            options.RegisterExtension(new ProtobufOptionsExtension(name));
 
             return options;
         }

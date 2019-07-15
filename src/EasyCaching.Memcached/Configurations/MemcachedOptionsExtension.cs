@@ -49,17 +49,21 @@
             services.Configure(_name, configure);
 
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-            services.TryAddSingleton<ITranscoder, EasyCachingTranscoder>();
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.AddSingleton<EasyCachingTranscoder>(x =>
+            {
+                var serializers = x.GetServices<IEasyCachingSerializer>();
+                return new EasyCachingTranscoder(_name, serializers);
+            });
             services.AddSingleton<EasyCachingMemcachedClientConfiguration>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
                 var options = optionsMon.Get(_name);
                 var loggerFactory = x.GetRequiredService<ILoggerFactory>();
-                var transcoder = x.GetRequiredService<ITranscoder>();
+                var transcoders = x.GetServices<EasyCachingTranscoder>();
                 var transformer = x.GetRequiredService<IMemcachedKeyTransformer>();
-                return new EasyCachingMemcachedClientConfiguration(_name, loggerFactory, options, transcoder, transformer);
+                return new EasyCachingMemcachedClientConfiguration(_name, loggerFactory, options, transcoders, transformer);
             });
 
             services.AddSingleton<EasyCachingMemcachedClient>(x =>
@@ -96,7 +100,7 @@
                     client.GetAsync<string>("EnyimMemcached").Wait();
                 }
                 app.ApplicationServices.GetService<ILogger<IMemcachedClient>>()
-                    .LogInformation(new EventId(),  "EnyimMemcached Started.");
+                    .LogInformation(new EventId(), "EnyimMemcached Started.");
             }
             catch (Exception ex)
             {

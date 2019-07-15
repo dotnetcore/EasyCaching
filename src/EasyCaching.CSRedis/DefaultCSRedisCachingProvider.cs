@@ -48,31 +48,30 @@
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="clients">Clients.</param>
-        /// <param name="serializer">Serializer.</param>
+        /// <param name="serializers">Serializers.</param>
         /// <param name="options">Options.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultCSRedisCachingProvider(
            string name,
            IEnumerable<EasyCachingCSRedisClient> clients,
-           IEasyCachingSerializer serializer,
+           IEnumerable<IEasyCachingSerializer> serializers,
            RedisOptions options,
            ILoggerFactory loggerFactory = null)
         {
             this._name = name;
-            this._serializer = serializer;
+            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
             this._cache = clients.Single(x => x.Name.Equals(_name));
             this._cacheStats = new CacheStats();
 
             this.ProviderName = this._name;
+            this.ProviderType = CachingProviderType.Redis;
             this.ProviderStats = this._cacheStats;
-            this.ProviderType = _options.CachingProviderType;
-            this.ProviderOrder = _options.Order;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = true;
         }
-        
+
         /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>
@@ -498,42 +497,7 @@
 
             return this.SearchRedisKeys(this.HandlePrefix(prefix)).Length;
         }
-
-        /// <summary>
-        /// Refresh the specified cacheKey, cacheValue and expiration.
-        /// </summary>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override void BaseRefresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
-            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
-
-            this.Remove(cacheKey);
-            this.Set(cacheKey, cacheValue, expiration);
-        }
-
-        /// <summary>
-        /// Refreshs the async.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseRefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
-            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
-
-            await this.RemoveAsync(cacheKey);
-            await this.SetAsync(cacheKey, cacheValue, expiration);
-        }
-
+              
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>

@@ -60,9 +60,8 @@
             this._cacheStats = new CacheStats();
 
             this.ProviderName = this._name;
+            this.ProviderType = CachingProviderType.Memcached;
             this.ProviderStats = this._cacheStats;
-            this.ProviderType = _options.CachingProviderType;
-            this.ProviderOrder = _options.Order;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = true;
         }
@@ -353,42 +352,7 @@
 
             return await Task.FromResult(_memcachedClient.TryGet(this.HandleCacheKey(cacheKey), out object obj));
         }
-
-        /// <summary>
-        /// Refresh the specified cacheKey, cacheValue and expiration.
-        /// </summary>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override void BaseRefresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
-            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
-
-            this.Remove(cacheKey);
-            this.Set(cacheKey, cacheValue, expiration);
-        }
-
-        /// <summary>
-        /// Refreshs the specified cacheKey, cacheValue and expiration.
-        /// </summary>
-        /// <returns>The async.</returns>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cacheValue">Cache value.</param>
-        /// <param name="expiration">Expiration.</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseRefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
-            ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
-
-            await this.RemoveAsync(cacheKey);
-            await this.SetAsync(cacheKey, cacheValue, expiration);
-        }
-
+              
         /// <summary>
         /// Removes cached item by cachekey's prefix.
         /// </summary>

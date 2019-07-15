@@ -6,7 +6,7 @@
     {
         public ProtobufSerializerTest()
         {
-            _serializer = new DefaultProtobufSerializer();
+            _serializer = new DefaultProtobufSerializer("proto");
         }
     }
 }
