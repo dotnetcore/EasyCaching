@@ -53,6 +53,7 @@
 
         public abstract TimeSpan BaseGetExpiration(string cacheKey);
         public abstract Task<TimeSpan> BaseGetExpirationAsync(string cacheKey);
+        public abstract ProviderInfo BaseGetProviderInfo();
 
         public bool Exists(string cacheKey)
         {
@@ -718,6 +719,11 @@
         public async Task<TimeSpan> GetExpirationAsync(string cacheKey)
         {
             return await BaseGetExpirationAsync(cacheKey);
-        }        
+        }
+
+        public ProviderInfo GetProviderInfo()
+        {
+            return BaseGetProviderInfo();            
+        }
     }
 }

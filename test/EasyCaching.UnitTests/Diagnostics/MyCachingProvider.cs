@@ -96,6 +96,11 @@
             return Task.FromResult(TimeSpan.FromSeconds(1));
         }
 
+        public override ProviderInfo BaseGetProviderInfo()
+        {
+            throw new NotImplementedException();
+        }
+
         public override void BaseRemove(string cacheKey)
         {
 

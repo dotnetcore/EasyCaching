@@ -39,6 +39,8 @@
         /// The name.
         /// </summary>
         private readonly string _name;
+
+        private readonly ProviderInfo _info;
        
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
@@ -64,6 +66,19 @@
             this.ProviderStats = this._cacheStats;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = true;
+
+            _info = new ProviderInfo
+            {
+                CacheStats = _cacheStats,
+                EnableLogging = options.EnableLogging,
+                IsDistributedProvider = IsDistributedProvider,
+                LockMs = options.LockMs,
+                MaxRdSecond = options.MaxRdSecond,
+                ProviderName = ProviderName,
+                ProviderType = ProviderType,
+                SerializerName = options.SerializerName,
+                SleepMs = options.SleepMs,                
+            };
         }
 
         /// <summary>
@@ -660,6 +675,11 @@
         public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
         {
             throw new NotImplementedException();
+        }
+
+        public override ProviderInfo BaseGetProviderInfo()
+        {
+            return _info;
         }
     }
 }

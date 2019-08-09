@@ -1,19 +1,20 @@
-﻿namespace EasyCaching.Core.Configurations
+﻿namespace EasyCaching.Core
 {
-    /// <summary>
-    /// Base provider options.
-    /// </summary>
-    public class BaseProviderOptions
-    {   
-        /// <summary>
-        /// Gets or sets the max random second.
-        /// </summary>
-        /// <remarks>
-        /// If this value greater then zero, the seted cache items' expiration will add a random second
-        /// This is mainly for preventing Cache Crash
-        /// </remarks>
-        /// <value>The max random second.</value>
-        public int MaxRdSecond { get; set; } = 120;
+    using EasyCaching.Core.Serialization;
+
+    public class ProviderInfo
+    {
+        public string ProviderName { get; set; }
+
+        public CacheStats CacheStats { get; set; }
+
+        public IEasyCachingSerializer Serializer { get; set; }
+
+        public CachingProviderType ProviderType { get; set; }
+
+        public int MaxRdSecond { get; set; }
+
+        public bool IsDistributedProvider { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether enable logging.

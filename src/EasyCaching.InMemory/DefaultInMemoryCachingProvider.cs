@@ -37,6 +37,8 @@
         /// </summary>
         private readonly string _name;
 
+        private readonly ProviderInfo _info;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.DefaultInMemoryCachingProvider"/> class.
         /// </summary>
@@ -62,6 +64,19 @@
             this.ProviderStats = _cacheStats;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = false;
+
+            _info = new ProviderInfo
+            {
+                CacheStats = _cacheStats,
+                EnableLogging = options.EnableLogging,
+                IsDistributedProvider = IsDistributedProvider,
+                LockMs = options.LockMs,
+                MaxRdSecond = options.MaxRdSecond,
+                ProviderName = ProviderName,
+                ProviderType = ProviderType,
+                SerializerName = options.SerializerName,
+                SleepMs = options.SleepMs
+            };
         }
 
         /// <summary>
@@ -608,6 +623,11 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             return Task.FromResult(_cache.GetExpiration(cacheKey));
+        }
+
+        public override ProviderInfo BaseGetProviderInfo()
+        {
+            return _info;
         }
     }
 }

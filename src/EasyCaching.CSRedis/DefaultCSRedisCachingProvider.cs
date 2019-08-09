@@ -44,6 +44,11 @@
         private readonly string _name;
 
         /// <summary>
+        /// The provider information.
+        /// </summary>
+        private readonly ProviderInfo _info;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.CSRedis.DefaultCSRedisCachingProvider"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
@@ -58,18 +63,35 @@
            RedisOptions options,
            ILoggerFactory loggerFactory = null)
         {
-            this._name = name;
-            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+            this._name = name;                      
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
             this._cache = clients.Single(x => x.Name.Equals(_name));
             this._cacheStats = new CacheStats();
 
+            this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
+                ? serializers.Single(x => x.Name.Equals(options.SerializerName))
+                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+       
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;
             this.ProviderStats = this._cacheStats;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = true;
+
+            _info = new ProviderInfo
+            {
+                CacheStats = _cacheStats,
+                EnableLogging = options.EnableLogging,
+                IsDistributedProvider = IsDistributedProvider,
+                LockMs = options.LockMs,
+                MaxRdSecond = options.MaxRdSecond,
+                ProviderName = ProviderName,
+                ProviderType = ProviderType,
+                SerializerName = options.SerializerName,
+                SleepMs = options.SleepMs,
+                Serializer = _serializer
+            };
         }
 
         /// <summary>
@@ -769,6 +791,11 @@
 
             var second = await _cache.TtlAsync(cacheKey);
             return TimeSpan.FromSeconds(second);
+        }
+
+        public override ProviderInfo BaseGetProviderInfo()
+        {
+            return _info;
         }
     }
 }

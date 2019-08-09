@@ -255,5 +255,11 @@
         /// <param name="cacheKey"></param>
         /// <returns></returns>
         Task<TimeSpan> GetExpirationAsync(string cacheKey);
+
+        /// <summary>
+        /// Gets the information of provider.
+        /// </summary>
+        /// <returns></returns>
+        ProviderInfo GetProviderInfo();
     }
 }

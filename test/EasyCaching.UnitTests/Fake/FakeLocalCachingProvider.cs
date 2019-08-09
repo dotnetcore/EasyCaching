@@ -101,6 +101,11 @@
             return Task.FromResult(TimeSpan.FromSeconds(1));
         }
 
+        public ProviderInfo GetProviderInfo()
+        {
+            throw new NotImplementedException();
+        }
+
         public void Refresh<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
 

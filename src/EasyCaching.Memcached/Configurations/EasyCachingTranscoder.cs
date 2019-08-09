@@ -15,7 +15,7 @@ namespace EasyCaching.Memcached
         /// <summary>
         /// The name.
         /// </summary>
-        private readonly string _name;
+        private readonly string _name;        
 
         /// <summary>
         /// The serializer.
@@ -26,11 +26,25 @@ namespace EasyCaching.Memcached
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.EasyCachingTranscoder"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
+        /// <param name="options">Options.</param>
         /// <param name="serializers">Serializers.</param>
-        public EasyCachingTranscoder(string name, IEnumerable<IEasyCachingSerializer> serializers)
+        public EasyCachingTranscoder(string name, MemcachedOptions options, IEnumerable<IEasyCachingSerializer> serializers)
         {
-            this._name = name;
-            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+
+            if (string.IsNullOrWhiteSpace(options.SerializerName))
+            {
+                this._name = name;
+                this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+            }
+            else
+            {
+                this._name = options.SerializerName;
+                this._serializer = serializers.Single(x=>x.Name.Equals(options.SerializerName));
+            }
+
+            //this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
+            //    ? serializers.Single(x => x.Name.Equals(options.SerializerName))
+            //    : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
         }
 
         /// <summary>
