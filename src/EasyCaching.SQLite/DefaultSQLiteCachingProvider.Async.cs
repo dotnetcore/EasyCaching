@@ -3,9 +3,9 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Dapper;
     using EasyCaching.Core;
-    using Microsoft.Data.Sqlite;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -14,80 +14,15 @@
     public partial class DefaultSQLiteCachingProvider : EasyCachingAbstractProvider
     {
         /// <summary>
-        /// The cache.
+        /// Existses the specified cacheKey async.
         /// </summary>
-        private ISQLiteDatabaseProvider _dbProvider;
-
-        /// <summary>
-        /// The options.
-        /// </summary>
-        private readonly SQLiteOptions _options;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
-        /// The cache.
-        /// </summary>
-        private readonly SqliteConnection _cache;
-
-        /// <summary>
-        /// The cache stats.
-        /// </summary>
-        private readonly CacheStats _cacheStats;
-
-        /// <summary>
-        /// The name.
-        /// </summary>
-        private readonly string _name;
-
-        private readonly ProviderInfo _info;
-
-        public DefaultSQLiteCachingProvider(
-            string name,
-            IEnumerable<ISQLiteDatabaseProvider> dbProviders,
-            SQLiteOptions options,
-           ILoggerFactory loggerFactory = null)
-        {
-            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
-            this._options = options;
-            this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
-            this._cache = _dbProvider.GetConnection();
-            this._cacheStats = new CacheStats();
-            this._name = name;
-
-            this.ProviderName = this._name;
-            this.ProviderType = CachingProviderType.SQLite;
-            this.ProviderStats = this._cacheStats;
-            this.ProviderMaxRdSecond = _options.MaxRdSecond;
-            this.IsDistributedProvider = true;
-
-            _info = new ProviderInfo
-            {
-                CacheStats = _cacheStats,
-                EnableLogging = options.EnableLogging,
-                IsDistributedProvider = IsDistributedProvider,
-                LockMs = options.LockMs,
-                MaxRdSecond = options.MaxRdSecond,
-                ProviderName = ProviderName,
-                ProviderType = ProviderType,
-                SerializerName = options.SerializerName,
-                SleepMs = options.SleepMs
-            };
-        }
-
-        /// <summary>
-        /// Exists the specified cacheKey.
-        /// </summary>
-        /// <returns>The exists.</returns>
+        /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public override bool BaseExists(string cacheKey)
+        public override async Task<bool> BaseExistsAsync(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.ExecuteScalar<int>(ConstSQL.EXISTSSQL, new
+            var dbResult = await _cache.ExecuteScalarAsync<int>(ConstSQL.EXISTSSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -97,23 +32,25 @@
         }
 
         /// <summary>
-        /// Get the specified cacheKey, dataRetriever and expiration.
+        /// Gets the specified cacheKey, dataRetriever and expiration async.
         /// </summary>
-        /// <returns>The get.</returns>
+        /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var dbResult = _cache.Query<string>(ConstSQL.GETSQL, new
+            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
-            }).FirstOrDefault();
+            });
+
+            var dbResult = list.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
@@ -130,11 +67,11 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            var item = dataRetriever();
+            var item = await dataRetriever?.Invoke();
 
             if (item != null)
             {
-                Set(cacheKey, item, expiration);
+                await SetAsync(cacheKey, item, expiration);
                 return new CacheValue<T>(item, true);
             }
             else
@@ -144,20 +81,22 @@
         }
 
         /// <summary>
-        /// Get the specified cacheKey.
+        /// Gets the specified cacheKey async.
         /// </summary>
-        /// <returns>The get.</returns>
+        /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override CacheValue<T> BaseGet<T>(string cacheKey)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.Query<string>(ConstSQL.GETSQL, new
+            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
-            }).FirstOrDefault();
+            });
+
+            var dbResult = list.FirstOrDefault();
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
@@ -180,26 +119,64 @@
         }
 
         /// <summary>
-        /// Remove the specified cacheKey.
+        /// Gets the specified cacheKey async.
         /// </summary>
-        /// <returns>The remove.</returns>
+        /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public override void BaseRemove(string cacheKey)
+        /// <param name="type">Object Type.</param>
+        public override async Task<object> BaseGetAsync(string cacheKey, Type type)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name });
+            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            {
+                cachekey = cacheKey,
+                name = _name
+            });
+
+            var dbResult = list.FirstOrDefault();
+
+            if (!string.IsNullOrWhiteSpace(dbResult))
+            {
+                CacheStats.OnHit();
+
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                return Newtonsoft.Json.JsonConvert.DeserializeObject(dbResult, type);
+            }
+            else
+            {
+                CacheStats.OnMiss();
+
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+
+                return null;
+            }
         }
 
         /// <summary>
-        /// Set the specified cacheKey, cacheValue and expiration.
+        /// Removes the specified cacheKey async.
         /// </summary>
-        /// <returns>The set.</returns>
+        /// <returns>The async.</returns>
+        /// <param name="cacheKey">Cache key.</param>
+        public override async Task BaseRemoveAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            await _cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name });
+        }
+
+        /// <summary>
+        /// Sets the specified cacheKey, cacheValue and expiration async.
+        /// </summary>
+        /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -211,161 +188,131 @@
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
-            _cache.Execute(ConstSQL.SETSQL, new
+            await _cache.ExecuteAsync(ConstSQL.SETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
                 expiration = expiration.Ticks / 10000000
             });
-
-        }          
-
+        }            
+  
         /// <summary>
-        /// Removes cached item by cachekey's prefix.
+        /// Removes cached item by cachekey's prefix async.
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>
-        public override void BaseRemoveByPrefix(string prefix)
+        public override async Task BaseRemoveByPrefixAsync(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
-            _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+            await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }
-
+  
         /// <summary>
-        /// Sets all.
+        /// Sets all async.
         /// </summary>
+        /// <returns>The all async.</returns>
         /// <param name="values">Values.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration)
+        public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
             var tran = _cache.BeginTransaction();
+            var tasks = new List<Task<int>>();
 
             foreach (var item in values)
             {
-                _cache.Execute(ConstSQL.SETSQL, new
+                tasks.Add(_cache.ExecuteAsync(ConstSQL.SETSQL, new
                 {
                     cachekey = item.Key,
                     name = _name,
                     cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(item.Value),
                     expiration = expiration.Ticks / 10000000
-                }, tran);
+                }, tran));
             }
+            await Task.WhenAll(tasks);
 
             tran.Commit();
-        }   
-
+        }
+   
         /// <summary>
-        /// Gets all.
+        /// Gets all async.
         /// </summary>
-        /// <returns>The all.</returns>
+        /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var list = _cache.Query(ConstSQL.GETALLSQL, new
+            var list = (await _cache.QueryAsync(ConstSQL.GETALLSQL, new
             {
                 cachekey = cacheKeys.ToArray(),
                 name = _name
-            }).ToList();
+            })).ToList();
 
             return GetDict<T>(list);
         }
 
         /// <summary>
-        /// Gets the dict.
+        /// Gets the by prefix async.
         /// </summary>
-        /// <returns>The dict.</returns>
-        /// <param name="list">List.</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        private IDictionary<string, CacheValue<T>> GetDict<T>(List<dynamic> list)
-        {
-            var result = new Dictionary<string, CacheValue<T>>();
-            foreach (var item in list)
-            {
-                if (!string.IsNullOrWhiteSpace(item.cachekey))
-                    result.Add(item.cachekey, new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(item.cachevalue), true));
-                else
-                    result.Add(item.cachekey, CacheValue<T>.NoValue);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the by prefix.
-        /// </summary>
-        /// <returns>The by prefix.</returns>
+        /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var list = _cache.Query(ConstSQL.GETBYPREFIXSQL, new
+            var list = (await _cache.QueryAsync(ConstSQL.GETBYPREFIXSQL, new
             {
                 cachekey = string.Concat(prefix, "%"),
                 name = _name
-            }).ToList();
+            })).ToList();
 
             return GetDict<T>(list);
         }
-    
+  
         /// <summary>
-        /// Removes all.
+        /// Removes all async.
         /// </summary>
+        /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
-        public override void BaseRemoveAll(IEnumerable<string> cacheKeys)
+        public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var tran = _cache.BeginTransaction();
+            var tasks = new List<Task<int>>();
 
             foreach (var item in cacheKeys)
-                _cache.Execute(ConstSQL.REMOVESQL, new { cachekey = item, name = _name }, tran);
+                tasks.Add(_cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = item, name = _name }, tran));
 
+            await Task.WhenAll(tasks);
             tran.Commit();
         }
 
         /// <summary>
-        /// Gets the count.
+        /// Flush All Cached Item async.
         /// </summary>
-        /// <returns>The count.</returns>
-        /// <param name="prefix">Prefix.</param>
-        public override int BaseGetCount(string prefix = "")
-        {
-            if (string.IsNullOrWhiteSpace(prefix))
-            {
-                return _cache.ExecuteScalar<int>(ConstSQL.COUNTALLSQL, new { name = _name });
-            }
-            else
-            {
-                return _cache.ExecuteScalar<int>(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
-            }
-        }
+        /// <returns>The async.</returns>
+        public override async Task BaseFlushAsync() => await _cache.ExecuteAsync(ConstSQL.FLUSHSQL, new { name = _name });
 
         /// <summary>
-        /// Flush All Cached Item.
+        /// Tries the set async.
         /// </summary>
-        public override void BaseFlush() => _cache.Execute(ConstSQL.FLUSHSQL, new { name = _name });
-
-        /// <summary>
-        /// Tries the set.
-        /// </summary>
-        /// <returns><c>true</c>, if set was tryed, <c>false</c> otherwise.</returns>
+        /// <returns>The set async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override async Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
@@ -377,7 +324,7 @@
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
-            var rows = _cache.Execute(ConstSQL.TRYSETSQL, new
+            var rows = await _cache.ExecuteAsync(ConstSQL.TRYSETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name,
@@ -389,15 +336,15 @@
         }
 
         /// <summary>
-        /// Get the expiration of cache key
+        /// Get the expiration of cache key async
         /// </summary>
         /// <param name="cacheKey">cache key</param>
         /// <returns>expiration</returns>
-        public override TimeSpan BaseGetExpiration(string cacheKey)
+        public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var time = _cache.ExecuteScalar<long>(ConstSQL.GETEXPIRATIONSQL, new
+            var time = await _cache.ExecuteScalarAsync<long>(ConstSQL.GETEXPIRATIONSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
@@ -405,15 +352,6 @@
 
             if (time <= 0) return TimeSpan.Zero;
             else return TimeSpan.FromSeconds(time);
-        }
-
-        /// <summary>
-        /// Get te information of this provider.
-        /// </summary>
-        /// <returns></returns>
-        public override ProviderInfo BaseGetProviderInfo()
-        {
-            return _info;
-        }
+        }     
     }
 }
