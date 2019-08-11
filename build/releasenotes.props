@@ -1,38 +1,33 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>                                
-        1. Named Serializer
-        2. Add a new CachingProviderType for DiskCachingProvider
-        3. Remove Refresh/RefreshAsync methods
-        4. HybridCachingProvider add GetAsync method with type        
+        1. Improve named serializer.
+        2. Add GetProviderInfo method.
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
+        2. Add GetProviderInfo method.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
         1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
+        2. Add GetProviderInfo method.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
+        2. Add GetProviderInfo method.
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
         1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
+        2. Add GetProviderInfo method.
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
+        1. Upgrading dependencies.    
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
         1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Upgrading dependencies.        
@@ -48,7 +43,7 @@
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
         1. Upgrading dependencies.
-        2. Remove Refresh/RefreshAsync methods
+        2. Add GetProviderInfo method.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
         1. Upgrading dependencies.
@@ -57,7 +52,8 @@
         1. Upgrading dependencies.
         </EasyCachingRabbitBusPackageNotes>
         <EasyCachingDiskPackageNotes>
-        1. init.
+        1. Upgrading dependencies.
+        2. Add GetProviderInfo method.
         </EasyCachingDiskPackageNotes>
 	</PropertyGroup>
 </Project>
