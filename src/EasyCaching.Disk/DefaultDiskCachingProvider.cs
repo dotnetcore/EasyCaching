@@ -34,6 +34,8 @@
         /// </summary>
         private readonly string _name;
 
+        private readonly ProviderInfo _info;
+
         private readonly ConcurrentDictionary<string, string> _cacheKeysMap;
 
         private Timer _saveKeyTimer;
@@ -55,6 +57,19 @@
             this.ProviderStats = _cacheStats;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = false;
+
+            _info = new ProviderInfo
+            {
+                CacheStats = _cacheStats,
+                EnableLogging = options.EnableLogging,
+                IsDistributedProvider = IsDistributedProvider,
+                LockMs = options.LockMs,
+                MaxRdSecond = options.MaxRdSecond,
+                ProviderName = ProviderName,
+                ProviderType = ProviderType,
+                SerializerName = options.SerializerName,
+                SleepMs = options.SleepMs
+            };
 
             Init();
 
@@ -644,6 +659,11 @@
             {
 
             }
+        }
+
+        public override ProviderInfo BaseGetProviderInfo()
+        {
+            return _info;
         }
     }
 }

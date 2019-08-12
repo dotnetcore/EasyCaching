@@ -3,6 +3,8 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Redis;
+    using EasyCaching.Serialization.Json;
+    using EasyCaching.Serialization.MessagePack;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using Xunit;
@@ -126,6 +128,71 @@ namespace EasyCaching.UnitTests
             _secondProvider = factory.GetCachingProvider(SECOND_PROVIDER_NAME);
             _defaultTs = TimeSpan.FromSeconds(30);
             _nameSpace = "RedisFactory";
+        }
+    }
+
+    public class RedisCachingProviderWithNamedSerTest
+    {
+        private readonly IEasyCachingProviderFactory _providerFactory;
+
+        public RedisCachingProviderWithNamedSerTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(x =>
+            {
+
+                x.UseRedis(options =>
+                {
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 13;
+                    options.SerializerName = "cs11";
+                }, "se1");
+
+                x.UseRedis(options =>
+                {
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 14;
+                }, "se2");
+
+                x.UseRedis(options =>
+                {
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 11;
+                }, "se3");
+
+                x.WithJson("json").WithMessagePack("cs11").WithJson("se2");
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            _providerFactory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+        }
+
+        [Fact]
+        public void NamedSerializerTest()
+        {
+            var se1 = _providerFactory.GetCachingProvider("se1");
+            var se2 = _providerFactory.GetCachingProvider("se2");
+            var se3 = _providerFactory.GetCachingProvider("se3");
+
+            var info1 = se1.GetProviderInfo();
+            var info2 = se2.GetProviderInfo();
+            var info3 = se3.GetProviderInfo();
+
+            Assert.Equal("cs11", info1.Serializer.Name);
+            Assert.Equal("se2", info2.Serializer.Name);
+            Assert.Equal(EasyCachingConstValue.DefaultSerializerName, info3.Serializer.Name);
         }
     }
 }

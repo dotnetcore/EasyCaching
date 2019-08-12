@@ -18,7 +18,7 @@
         private ITranscoder _transcoder;
         private IMemcachedKeyTransformer _keyTransformer;
         private ILogger<EasyCachingMemcachedClientConfiguration> _logger;
-        private string _name;
+        private string _name;        
 
         public EasyCachingMemcachedClientConfiguration(
             string name,
@@ -109,8 +109,17 @@
 
             if (transcoders != null)
             {
-                var coder = transcoders.FirstOrDefault(x => x.Name.Equals(_name));
+                EasyCachingTranscoder coder = null;
 
+                if (string.IsNullOrWhiteSpace(optionsAccessor.SerializerName))
+                {
+                    coder = transcoders.FirstOrDefault(x => x.Name.Equals(_name));
+                }
+                else
+                {
+                    coder = transcoders.FirstOrDefault(x => x.Name.Equals(optionsAccessor.SerializerName));
+                }
+                
                 if (coder != null)
                 {
                     this._transcoder = coder;

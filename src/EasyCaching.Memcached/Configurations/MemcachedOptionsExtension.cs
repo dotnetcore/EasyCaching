@@ -53,8 +53,10 @@
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.AddSingleton<EasyCachingTranscoder>(x =>
             {
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                var options = optionsMon.Get(_name);
                 var serializers = x.GetServices<IEasyCachingSerializer>();
-                return new EasyCachingTranscoder(_name, serializers);
+                return new EasyCachingTranscoder(_name, options, serializers);
             });
             services.AddSingleton<EasyCachingMemcachedClientConfiguration>(x =>
             {
