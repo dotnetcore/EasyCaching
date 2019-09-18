@@ -1,8 +1,8 @@
-﻿using EasyCaching.Core.Interceptor;
-using System;
-
-namespace EasyCaching.UnitTests.CustomInterceptors
+﻿namespace EasyCaching.UnitTests.CustomInterceptors
 {
+    using EasyCaching.Core.Interceptor;
+    using System;
+
     [AttributeUsage(AttributeTargets.Method, Inherited = true)]
     class CustomCachingAbleAttribute: EasyCachingAbleAttribute
     {
