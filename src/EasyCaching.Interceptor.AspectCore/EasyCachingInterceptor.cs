@@ -97,19 +97,19 @@
         /// <param name="next">Next.</param>
         private async Task ProceedAbleAsync(AspectContext context, AspectDelegate next)
         {
-            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
+            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => typeof(EasyCachingAbleAttribute).IsAssignableFrom(x.GetType())) is EasyCachingAbleAttribute attribute)
             {
                 var returnType = context.IsAsync()
                         ? context.ServiceMethod.ReturnType.GetGenericArguments().First()
                         : context.ServiceMethod.ReturnType;
-                        
+
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
                 object cacheValue = null;
                 var isAvailable = true;
                 try
                 {
-                    if(attribute.IsHybridProvider)
+                    if (attribute.IsHybridProvider)
                     {
                         cacheValue = await HybridCachingProvider.GetAsync(cacheKey, returnType);
                     }
@@ -195,7 +195,7 @@
         /// <param name="context">Context.</param>
         private async Task ProcessPutAsync(AspectContext context)
         {
-            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && context.ReturnValue != null)
+            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => typeof(EasyCachingPutAttribute).IsAssignableFrom(x.GetType())) is EasyCachingPutAttribute attribute && context.ReturnValue != null)
             {
                 var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
@@ -232,7 +232,7 @@
         /// <param name="isBefore">If set to <c>true</c> is before.</param>
         private async Task ProcessEvictAsync(AspectContext context, bool isBefore)
         {
-            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
+            if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => typeof(EasyCachingEvictAttribute).IsAssignableFrom(x.GetType())) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {
                 try
                 {

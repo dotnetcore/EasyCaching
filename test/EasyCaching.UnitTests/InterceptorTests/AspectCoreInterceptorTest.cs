@@ -198,6 +198,62 @@
             Assert.Null(tick1);
             Assert.Equal(tick1, tick2);
         }
+
+        [Fact]
+        protected virtual void Interceptor_Should_Recognize_Subclass_Of_EasyCachingAble_Attribute()
+        {
+            var tick1 = _service.CustomAbleAttributeTest();
+
+            Thread.Sleep(1);
+
+            var tick2 = _service.CustomAbleAttributeTest();
+
+            Assert.Equal(tick1, tick2);
+
+            Thread.Sleep(1100);
+
+            var tick3 = _service.CustomAbleAttributeTest();
+
+            Assert.NotEqual(tick3, tick1);
+        }
+
+        [Fact]
+        protected virtual void Interceptor_Should_Recognize_Subclass_Of_EasyCachingPut_Attribute()
+        {
+            var str = _service.CustomPutAttributeTest(1);
+
+            var method = typeof(AspectCoreExampleService).GetMethod("CustomPutAttributeTest");
+
+            var key = _keyGenerator.GetCacheKey(method, new object[] { 1 }, "Custom");
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.True(value.HasValue);
+            Assert.Equal("CustomPutTest-1", value.Value);
+        }
+
+        [Fact]
+        protected virtual void Interceptor_Should_Recognize_Subclass_Of_EasyCachingEvict_Attribute()
+        {
+            var method = typeof(AspectCoreExampleService).GetMethod("CustomEvictAttributeTest");
+
+            var key = _keyGenerator.GetCacheKey(method, null, "Custom");
+
+            var cachedValue = Guid.NewGuid().ToString();
+
+            _cachingProvider.Set(key, cachedValue, TimeSpan.FromSeconds(30));
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.True(value.HasValue);
+            Assert.Equal(cachedValue, value.Value);
+
+            _service.CustomEvictAttributeTest();
+
+            var after = _cachingProvider.Get<string>(key);
+
+            Assert.False(after.HasValue);
+        }
     }
 
     public class AspectCoreInterceptorTest : BaseAspectCoreInterceptorTest
