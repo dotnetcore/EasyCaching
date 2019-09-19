@@ -63,6 +63,7 @@ for:
   #- sh: sudo apt-get install libevent libevent-deve
   - sh: redis-server /home/appveyor/projects/easycaching/tools/RedisConfigs/Basic/master-6388.conf
   - sh: redis-server /home/appveyor/projects/easycaching/tools/RedisConfigs/Basic/master-6380.conf
+  - sh: sudo apt-get update
   - sh: sudo apt-get install memcached
   - sh: sudo memcached -p 11211 -u root -m 64m -d
   - sh: sudo memcached -p 11212 -u root -m 64m -d
