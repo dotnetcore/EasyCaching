@@ -107,7 +107,7 @@
         {
             var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
-            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingAbleAttribute)) is EasyCachingAbleAttribute attribute)
+            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => typeof(EasyCachingAbleAttribute).IsAssignableFrom(x.GetType())) is EasyCachingAbleAttribute attribute)
             {
                 var returnType = serviceMethod.IsReturnTask()
                         ? serviceMethod.ReturnType.GetGenericArguments().First()
@@ -199,7 +199,7 @@
         {
             var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
-            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingPutAttribute)) is EasyCachingPutAttribute attribute && invocation.ReturnValue != null)
+            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => typeof(EasyCachingPutAttribute).IsAssignableFrom(x.GetType())) is EasyCachingPutAttribute attribute && invocation.ReturnValue != null)
             {
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
@@ -236,7 +236,7 @@
         {
             var serviceMethod = invocation.Method ?? invocation.MethodInvocationTarget;
 
-            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => x.GetType() == typeof(EasyCachingEvictAttribute)) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
+            if (GetMethodAttributes(serviceMethod).FirstOrDefault(x => typeof(EasyCachingEvictAttribute).IsAssignableFrom(x.GetType())) is EasyCachingEvictAttribute attribute && attribute.IsBefore == isBefore)
             {
                 try
                 {

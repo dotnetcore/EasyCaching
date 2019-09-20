@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.UnitTests.Infrastructure
 {
     using EasyCaching.Core.Interceptor;
+    using EasyCaching.UnitTests.CustomInterceptors;
     using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -35,6 +36,15 @@
 
         [EasyCachingAble(Expiration = 1)]
         Task<string> AbleTestWithNullValueAsync();
+
+        [CustomCachingAble]
+        string CustomAbleAttributeTest();
+
+        [CustomCachingPut]
+        string CustomPutAttributeTest(int num);
+
+        [CustomCachingEvict]
+        string CustomEvictAttributeTest();
     }
 
     public class CastleExampleService : ICastleExampleService//, IEasyCaching
@@ -48,7 +58,6 @@
         {
             return "EvictTest";
         }
-
 
         public string GetCurrentUTC()
         {
@@ -87,6 +96,21 @@
         public Task<string> AbleTestWithNullValueAsync()
         {
             return Task.FromResult<string>(null);
+        }
+
+        public string CustomAbleAttributeTest()
+        {
+            return GetCurrentUTC();
+        }
+
+        public string CustomPutAttributeTest(int num)
+        {
+            return $"CustomPutTest-{num}";
+        }
+
+        public string CustomEvictAttributeTest()
+        {
+            return "CustomEvictTest";
         }
     }
 
@@ -129,6 +153,15 @@
 
         [EasyCachingAble(Expiration = 1)]
         Task<string> AbleTestWithNullValueAsync();
+
+        [CustomCachingAble]
+        string CustomAbleAttributeTest();
+
+        [CustomCachingPut]
+        string CustomPutAttributeTest(int num);
+
+        [CustomCachingEvict]
+        string CustomEvictAttributeTest();
     }
 
     public class AspectCoreExampleService : IAspectCoreExampleService
@@ -198,6 +231,21 @@
         public Task<string> AbleTestWithNullValueAsync()
         {
             return Task.FromResult<string>(null);
+        }
+
+        public string CustomAbleAttributeTest()
+        {
+            return GetCurrentUTC();
+        }
+
+        public string CustomPutAttributeTest(int num)
+        {
+            return $"CustomPutTest-{num}";
+        }
+
+        public string CustomEvictAttributeTest()
+        {
+            return "CustomEvictTest";
         }
     }
 }

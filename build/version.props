@@ -6,8 +6,8 @@
 		<EasyCachingSQLitePackageVersion>0.6.1</EasyCachingSQLitePackageVersion>
 		<EasyCachingInMemoryPackageVersion>0.6.1</EasyCachingInMemoryPackageVersion>
 		<EasyCachingHybridPackageVersion>0.6.1</EasyCachingHybridPackageVersion>
-		<EasyCachingAspectCorePackageVersion>0.6.1</EasyCachingAspectCorePackageVersion>
-		<EasyCachingCastlePackageVersion>0.6.1</EasyCachingCastlePackageVersion>
+		<EasyCachingAspectCorePackageVersion>0.6.1.1</EasyCachingAspectCorePackageVersion>
+		<EasyCachingCastlePackageVersion>0.6.1.1</EasyCachingCastlePackageVersion>
 		<EasyCachingResponseCachingPackageVersion>0.6.1</EasyCachingResponseCachingPackageVersion>
 		<EasyCachingJsonPackageVersion>0.6.1</EasyCachingJsonPackageVersion>
 		<EasyCachingMessagePackPackageVersion>0.6.1</EasyCachingMessagePackPackageVersion>

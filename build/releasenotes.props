@@ -24,10 +24,10 @@
         1. Upgrading dependencies.
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Upgrading dependencies.    
+        1. Make caching interceptor support subclass of easycaching attributes.    
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Upgrading dependencies.
+        1. Make caching interceptor support subclass of easycaching attributes.
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
         1. Upgrading dependencies.        
