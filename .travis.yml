@@ -2,7 +2,7 @@ language: csharp
 solution: EasyCaching.sln
 dist: xenial
 sudo: required    
-dotnet: 2.2.203
+dotnet: 3.0.100
 mono: none
 
 services:
@@ -13,7 +13,7 @@ os:
   - linux
   - osx
   
-osx_image: xcode9.1
+osx_image: xcode9.4
 
 branches:
   only:
