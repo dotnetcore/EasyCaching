@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.Core.Configurations
 {
-    using Microsoft.AspNetCore.Builder;
+    //using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -14,10 +14,10 @@
         /// <param name="services">Services.</param>
         void AddServices(IServiceCollection services);
 
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="app">App.</param>
-        void WithServices(IApplicationBuilder app);
+        ///// <summary>
+        ///// Withs the services.
+        ///// </summary>
+        ///// <param name="app">App.</param>
+        //void WithServices(IApplicationBuilder app);
     }
 }

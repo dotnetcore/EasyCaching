@@ -4,7 +4,7 @@
     using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
-    using Microsoft.AspNetCore.Builder;
+    //using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
@@ -68,13 +68,13 @@
             services.AddSingleton<IEasyCachingBus, DefaultCSRedisBus>();
         }
 
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="services">Services.</param>
-        public void WithServices(IApplicationBuilder services)
-        {
-            // Method intentionally left empty.
-        }
+        ///// <summary>
+        ///// Withs the services.
+        ///// </summary>
+        ///// <param name="services">Services.</param>
+        //public void WithServices(IApplicationBuilder services)
+        //{
+        //    // Method intentionally left empty.
+        //}
     }
 }

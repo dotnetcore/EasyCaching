@@ -1,8 +1,8 @@
-﻿namespace EasyCaching.Core
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
-    using System;
+    using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using Microsoft.Extensions.DependencyInjection;
+    using System;
 
     /// <summary>
     /// EasyCaching service collection extensions.

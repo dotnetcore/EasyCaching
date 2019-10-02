@@ -1,8 +1,9 @@
-﻿namespace EasyCaching.SQLite
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.SQLite;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>

@@ -1,22 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build/version.props" />
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>    
+    <Authors>ncc;Catcher Wong</Authors>
     <Version>$(EasyCachingRabbitBusPackageVersion)</Version>
-    <Description>      
+    <Description>
       A simple caching bus(message bus) based on RabbitMQ.
-    </Description>    
+    </Description>
     <PackageTags>Bus,Hybrid,RabbitMQ,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
     <PackageReleaseNotes>
-    $(EasyCachingRabbitBusPackageNotes)
+      $(EasyCachingRabbitBusPackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 
@@ -34,10 +34,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="5.1.0" />    
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="2.2.0" />    
+    <PackageReference Include="RabbitMQ.Client" Version="5.1.1" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.0.0" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Folder Include="Configurations\" />
   </ItemGroup>

@@ -1,9 +1,10 @@
-﻿namespace EasyCaching.HybridCache
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using Microsoft.AspNetCore.Builder;
+    using EasyCaching.HybridCache;
+    //using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -33,13 +34,13 @@
             services.TryAddSingleton<IHybridCachingProvider, HybridCachingProvider>();
         }
 
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="services">Services.</param>
-        public void WithServices(IApplicationBuilder services)
-        {
-            // Method intentionally left empty.
-        }
+        ///// <summary>
+        ///// Withs the services.
+        ///// </summary>
+        ///// <param name="services">Services.</param>
+        //public void WithServices(IApplicationBuilder services)
+        //{
+        //    // Method intentionally left empty.
+        //}
     }
 }

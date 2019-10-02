@@ -1,6 +1,7 @@
-﻿namespace EasyCaching.Serialization.Protobuf
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Serialization.Protobuf;
 
     /// <summary>
     /// EasyCaching options extensions.

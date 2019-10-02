@@ -1,8 +1,9 @@
-﻿namespace EasyCaching.Disk
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Disk;
     using Microsoft.Extensions.Configuration;
 
     public static class EasyCachingOptionsExtensions 

@@ -1,7 +1,8 @@
-﻿namespace EasyCaching.Memcached
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Memcached;
     using Microsoft.Extensions.Configuration;
     using System;
 

@@ -1,7 +1,8 @@
-﻿namespace EasyCaching.InMemory
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.InMemory;
     using Microsoft.Extensions.Configuration;
     using System;
 

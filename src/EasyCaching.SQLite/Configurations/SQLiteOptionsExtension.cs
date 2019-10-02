@@ -3,7 +3,7 @@
     using Dapper;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using Microsoft.AspNetCore.Builder;
+    //using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
@@ -64,25 +64,25 @@
 
         }
 
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="app">App.</param>
-        public void WithServices(IApplicationBuilder app)
-        {
-            var dbProviders = app.ApplicationServices.GetServices<ISQLiteDatabaseProvider>();
+        ///// <summary>
+        ///// Withs the services.
+        ///// </summary>
+        ///// <param name="app">App.</param>
+        //public void WithServices(IApplicationBuilder app)
+        //{
+        //    var dbProviders = app.ApplicationServices.GetServices<ISQLiteDatabaseProvider>();
 
-            foreach (var dbProvider in dbProviders)
-            {
-                var conn = dbProvider.GetConnection();
+        //    foreach (var dbProvider in dbProviders)
+        //    {
+        //        var conn = dbProvider.GetConnection();
 
-                if (conn.State == System.Data.ConnectionState.Closed)
-                {
-                    conn.Open();
-                }
+        //        if (conn.State == System.Data.ConnectionState.Closed)
+        //        {
+        //            conn.Open();
+        //        }
 
-                conn.Execute(ConstSQL.CREATESQL);
-            }
-        }
+        //        conn.Execute(ConstSQL.CREATESQL);
+        //    }
+        //}
     }
 }

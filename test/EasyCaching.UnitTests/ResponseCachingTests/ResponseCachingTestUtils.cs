@@ -16,6 +16,8 @@
     using EasyCaching.InMemory;
     using Microsoft.AspNetCore.ResponseCaching;
     using EasyCaching.Core;
+    using System.IO;
+    using System.IO.Pipelines;
 
     public class ResponseCachingTestUtils
     {
@@ -167,9 +169,28 @@
         }
     }
 
-    internal class DummySendFileFeature : IHttpSendFileFeature
+    internal class DummySendFileFeature : IHttpResponseBodyFeature
     {
+        public Stream Stream => throw new NotImplementedException();
+
+        public PipeWriter Writer => throw new NotImplementedException();
+
+        public Task CompleteAsync()
+        {
+            return Task.CompletedTask;
+        }
+
+        public void DisableBuffering()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task SendFileAsync(string path, long offset, long? count, CancellationToken cancellation)
+        {
+            return Task.CompletedTask;
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }

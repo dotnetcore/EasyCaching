@@ -3,8 +3,8 @@
     using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using MessagePack.Resolvers;
-    using Microsoft.AspNetCore.Builder;
+    //using MessagePack.Resolvers;
+    //using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -41,9 +41,9 @@
             });
         }
 
-        public void WithServices(IApplicationBuilder app)
-        {
-            // Method intentionally left empty.
-        }
+        //public void WithServices(IApplicationBuilder app)
+        //{
+        //    // Method intentionally left empty.
+        //}
     }
 }

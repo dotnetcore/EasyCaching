@@ -2,20 +2,20 @@
   <Import Project="../../build/version.props" />
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>   
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>    
+    <Authors>ncc;Catcher Wong</Authors>
     <Version>$(EasyCachingCorePackageVersion)</Version>
-    <Description>          
+    <Description>
       EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
-    </Description>    
+    </Description>
     <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Hybrid,ResponseCaching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
-    <PackageReleaseNotes>      
+    <PackageReleaseNotes>
       $(EasyCachingCorePackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
@@ -30,20 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Internal\" />
-    <Folder Include="Configurations\" />
-    <Folder Include="Bus\" />
-    <Folder Include="Serialization\" />
-    <Folder Include="Interceptor\" />
-    <Folder Include="ProviderFactory\" />
-    <Folder Include="Stats\" />
-    <Folder Include="Diagnostics\" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.0.0" />
+    <!--<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />-->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.6.0" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.5.1" />
-  </ItemGroup>  
 </Project>

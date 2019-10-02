@@ -4,14 +4,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>      
+    <Authors>ncc;Catcher Wong</Authors>
     <Version>$(EasyCachingAspectCorePackageVersion)</Version>
-    <Description>            
+    <Description>
       A simple caching AOP extension library based on AspectCore
-    </Description>    
+    </Description>
     <PackageTags>Interceptor,AspectCore,AOP,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
@@ -33,7 +33,7 @@
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AspectCore.Core" Version="1.2.0" />
-    <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="1.2.0" />    
+    <PackageReference Include="AspectCore.Core" Version="1.3.0" />
+    <PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="1.3.0" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
-﻿namespace EasyCaching.Serialization.Json
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Serialization.Json;
     using System;
 
     /// <summary>

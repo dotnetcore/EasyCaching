@@ -1,8 +1,9 @@
-﻿namespace EasyCaching.CSRedis
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.CSRedis;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>

@@ -1,6 +1,7 @@
-﻿namespace EasyCaching.Serialization.MessagePack
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Serialization.MessagePack;
 
     /// <summary>
     /// Easy caching options extensions.

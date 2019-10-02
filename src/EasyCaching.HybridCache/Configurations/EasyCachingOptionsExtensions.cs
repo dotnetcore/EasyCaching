@@ -1,7 +1,8 @@
-﻿namespace EasyCaching.HybridCache
-{
+﻿namespace Microsoft.Extensions.DependencyInjection
+{ 
     using System;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.HybridCache;
 
     /// <summary>
     /// EasyCaching options extensions.

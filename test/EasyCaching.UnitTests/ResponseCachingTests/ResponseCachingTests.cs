@@ -482,7 +482,7 @@
             {
                 app.Use(async (context, next) =>
                 {
-                    context.Features.Set<IHttpSendFileFeature>(new DummySendFileFeature());
+                    context.Features.Set<IHttpResponseBodyFeature>(new DummySendFileFeature());
                     await next.Invoke();
                 });
             });
@@ -508,11 +508,11 @@
                 {
                     app.Use(async (context, next) =>
                     {
-                        context.Features.Set<IHttpSendFileFeature>(new DummySendFileFeature());
+                        context.Features.Set<IHttpResponseBodyFeature>(new DummySendFileFeature());
                         await next.Invoke();
                     });
                 },
-                contextAction: async context => await context.Features.Get<IHttpSendFileFeature>().SendFileAsync("dummy", 0, 0, CancellationToken.None));
+                contextAction: async context => await context.Features.Get<IHttpResponseBodyFeature>().SendFileAsync("dummy", 0, 0, CancellationToken.None));
 
             foreach (var builder in builders)
             {

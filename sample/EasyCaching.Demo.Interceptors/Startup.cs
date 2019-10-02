@@ -2,18 +2,14 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Demo.Interceptors.Services;
-    using EasyCaching.InMemory;
     using EasyCaching.Interceptor.AspectCore;
-    using EasyCaching.Serialization.Json;
-    using EasyCaching.Serialization.MessagePack;
-    using EasyCaching.Serialization.Protobuf;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using AspectCore.Injector;
+    using Microsoft.Extensions.Hosting;
 
     public class Startup
     {
@@ -43,7 +39,7 @@
                 //options.WithProtobuf();
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers();
 
             //1.1. all default
             return services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
@@ -114,14 +110,19 @@
         //    //return services.ConfigureCastleInterceptor(action, true);
         //}
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
