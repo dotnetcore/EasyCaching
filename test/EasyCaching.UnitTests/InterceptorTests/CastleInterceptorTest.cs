@@ -275,9 +275,9 @@
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
-            builder.ConfigureCastleInterceptor();
+            builder.ConfigureCastleInterceptor(true);
 
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            IServiceProvider serviceProvider = new AutofacServiceProvider(builder.Build());
 
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
             _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);

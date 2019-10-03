@@ -1,55 +1,58 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29324.140
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A0F5CC7E-155F-4726-8DEB-E966950B3FE9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EBB55F65-7D07-4281-8D5E-7B0CA88E1AD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Core", "src\EasyCaching.Core\EasyCaching.Core.csproj", "{CE61FAA2-0233-451C-991D-4222ED61C84B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Core", "src\EasyCaching.Core\EasyCaching.Core.csproj", "{CE61FAA2-0233-451C-991D-4222ED61C84B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.InMemory", "src\EasyCaching.InMemory\EasyCaching.InMemory.csproj", "{B9490432-737B-4518-B851-9D40FD29B392}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.InMemory", "src\EasyCaching.InMemory\EasyCaching.InMemory.csproj", "{B9490432-737B-4518-B851-9D40FD29B392}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.MessagePack", "src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj", "{50D8C42C-1BC0-4133-8B70-63A6649DBD74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.MessagePack", "src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj", "{50D8C42C-1BC0-4133-8B70-63A6649DBD74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Interceptor.AspectCore", "src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj", "{BED4832E-A790-42A6-978D-E0C1A215E638}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Interceptor.AspectCore", "src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj", "{BED4832E-A790-42A6-978D-E0C1A215E638}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Bus.Redis", "src\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj", "{07326A03-B144-469F-837B-31DD3E0EB1AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.Redis", "src\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj", "{07326A03-B144-469F-837B-31DD3E0EB1AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Bus.RabbitMQ", "src\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj", "{265FB0C5-2C34-438D-B671-63836954EB5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.RabbitMQ", "src\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj", "{265FB0C5-2C34-438D-B671-63836954EB5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Interceptor.Castle", "src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj", "{7B55B6D9-4221-4E82-AED6-BEC9A60C99D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Interceptor.Castle", "src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj", "{7B55B6D9-4221-4E82-AED6-BEC9A60C99D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.Json", "src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj", "{F0302BE8-188A-4EAF-8391-514CA9352DB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.Json", "src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj", "{F0302BE8-188A-4EAF-8391-514CA9352DB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.Protobuf", "src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj", "{3AAEDDBA-5037-4061-84E5-667F89C11F8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.Protobuf", "src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj", "{3AAEDDBA-5037-4061-84E5-667F89C11F8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.ResponseCaching", "src\EasyCaching.ResponseCaching\EasyCaching.ResponseCaching.csproj", "{261EE728-4965-4C0E-B99B-3B188442263A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.ResponseCaching", "src\EasyCaching.ResponseCaching\EasyCaching.ResponseCaching.csproj", "{261EE728-4965-4C0E-B99B-3B188442263A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.Providers", "sample\EasyCaching.Demo.Providers\EasyCaching.Demo.Providers.csproj", "{4193DF5A-E034-4917-83F4-380E8D7DCF83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Demo.Providers", "sample\EasyCaching.Demo.Providers\EasyCaching.Demo.Providers.csproj", "{4193DF5A-E034-4917-83F4-380E8D7DCF83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.Interceptors", "sample\EasyCaching.Demo.Interceptors\EasyCaching.Demo.Interceptors.csproj", "{F7DD4826-1375-42B3-97BA-37685460282E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Demo.Interceptors", "sample\EasyCaching.Demo.Interceptors\EasyCaching.Demo.Interceptors.csproj", "{F7DD4826-1375-42B3-97BA-37685460282E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.SQLite", "src\EasyCaching.SQLite\EasyCaching.SQLite.csproj", "{50089D69-50CF-49B7-8939-59C309A22336}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.SQLite", "src\EasyCaching.SQLite\EasyCaching.SQLite.csproj", "{50089D69-50CF-49B7-8939-59C309A22336}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Redis", "src\EasyCaching.Redis\EasyCaching.Redis.csproj", "{F58E5C6F-407F-4E80-9282-2028E9810F55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Redis", "src\EasyCaching.Redis\EasyCaching.Redis.csproj", "{F58E5C6F-407F-4E80-9282-2028E9810F55}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Memcached", "src\EasyCaching.Memcached\EasyCaching.Memcached.csproj", "{709D2333-42A7-45E6-B175-E630DCC1D807}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Memcached", "src\EasyCaching.Memcached\EasyCaching.Memcached.csproj", "{709D2333-42A7-45E6-B175-E630DCC1D807}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.HybridCache", "src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj", "{18DB08CD-B8CC-4409-9C7C-2906BCAA8827}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.HybridCache", "src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj", "{18DB08CD-B8CC-4409-9C7C-2906BCAA8827}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.ResponseCaching", "sample\EasyCaching.Demo.ResponseCaching\EasyCaching.Demo.ResponseCaching.csproj", "{76A5C2E3-6525-45A0-9CE7-649F3235A443}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Demo.ResponseCaching", "sample\EasyCaching.Demo.ResponseCaching\EasyCaching.Demo.ResponseCaching.csproj", "{76A5C2E3-6525-45A0-9CE7-649F3235A443}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.UnitTests", "test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj", "{2A8D7103-DF64-47B6-A406-8F8559AF7E7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.UnitTests", "test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj", "{2A8D7103-DF64-47B6-A406-8F8559AF7E7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.PerformanceTests", "test\EasyCaching.PerformanceTests\EasyCaching.PerformanceTests.csproj", "{6EBE36A2-F128-4C63-B90A-B700D8C2F2E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.PerformanceTests", "test\EasyCaching.PerformanceTests\EasyCaching.PerformanceTests.csproj", "{6EBE36A2-F128-4C63-B90A-B700D8C2F2E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.CSRedis", "src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj", "{6584761E-E51C-408F-BE51-CA0F6269589B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.CSRedis", "src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj", "{6584761E-E51C-408F-BE51-CA0F6269589B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Bus.CSRedis", "src\EasyCaching.Bus.CSRedis\EasyCaching.Bus.CSRedis.csproj", "{861E5373-BEF6-4AA2-92C7-8F4941A079E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.CSRedis", "src\EasyCaching.Bus.CSRedis\EasyCaching.Bus.CSRedis.csproj", "{861E5373-BEF6-4AA2-92C7-8F4941A079E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Disk", "src\EasyCaching.Disk\EasyCaching.Disk.csproj", "{3D48FD75-01D6-44F9-B7C3-CB6DE784F476}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Disk", "src\EasyCaching.Disk\EasyCaching.Disk.csproj", "{3D48FD75-01D6-44F9-B7C3-CB6DE784F476}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.ConsoleApp", "sample\EasyCaching.Demo.ConsoleApp\EasyCaching.Demo.ConsoleApp.csproj", "{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,6 +148,13 @@ Global
 		{3D48FD75-01D6-44F9-B7C3-CB6DE784F476}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D48FD75-01D6-44F9-B7C3-CB6DE784F476}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D48FD75-01D6-44F9-B7C3-CB6DE784F476}.Release|Any CPU.Build.0 = Release|Any CPU
+		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
@@ -169,5 +179,9 @@ Global
 		{6584761E-E51C-408F-BE51-CA0F6269589B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{861E5373-BEF6-4AA2-92C7-8F4941A079E7} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{3D48FD75-01D6-44F9-B7C3-CB6DE784F476} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63A57886-054B-476C-AAE1-8D7C8917682E}
 	EndGlobalSection
 EndGlobal

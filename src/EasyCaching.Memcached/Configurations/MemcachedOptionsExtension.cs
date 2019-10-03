@@ -3,9 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
-    using Enyim.Caching;
     using Enyim.Caching.Memcached;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
@@ -84,31 +82,6 @@
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultMemcachedCachingProvider(_name, clients, options, factory);
             });
-
-        }
-
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="app">App.</param>
-        public void WithServices(IApplicationBuilder app)
-        {
-            try
-            {
-                var clients = app.ApplicationServices.GetServices<IMemcachedClient>();
-
-                foreach (var client in clients)
-                {
-                    client.GetAsync<string>("EnyimMemcached").Wait();
-                }
-                app.ApplicationServices.GetService<ILogger<IMemcachedClient>>()
-                    .LogInformation(new EventId(), "EnyimMemcached Started.");
-            }
-            catch (Exception ex)
-            {
-                app.ApplicationServices.GetService<ILogger<IMemcachedClient>>()
-                    .LogError(new EventId(), ex, "EnyimMemcached Failed.");
-            }
         }
     }
 }

@@ -3,7 +3,6 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
-    //using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
@@ -85,14 +84,5 @@
             services.AddSingleton<IEasyCachingProvider, DefaultCSRedisCachingProvider>(createFactory);
             services.AddSingleton<IRedisCachingProvider, DefaultCSRedisCachingProvider>(createFactory);
         }
-
-        ///// <summary>
-        ///// Withs the services.
-        ///// </summary>
-        ///// <param name="services">Services.</param>
-        //public void WithServices(IApplicationBuilder services)
-        //{
-        //    // Method intentionally left empty.
-        //}
     }
 }

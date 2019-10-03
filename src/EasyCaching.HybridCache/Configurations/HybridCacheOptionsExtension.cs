@@ -4,8 +4,6 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using EasyCaching.HybridCache;
-    //using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
@@ -33,14 +31,5 @@
             services.Configure(_configure);
             services.TryAddSingleton<IHybridCachingProvider, HybridCachingProvider>();
         }
-
-        ///// <summary>
-        ///// Withs the services.
-        ///// </summary>
-        ///// <param name="services">Services.</param>
-        //public void WithServices(IApplicationBuilder services)
-        //{
-        //    // Method intentionally left empty.
-        //}
     }
 }

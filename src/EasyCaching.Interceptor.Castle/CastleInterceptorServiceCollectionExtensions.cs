@@ -31,9 +31,11 @@
         /// Configures the castle interceptor.
         /// </summary>
         /// <param name="builder">Container Builder.</param>
-        public static void ConfigureCastleInterceptor(this ContainerBuilder builder)
+        /// <param name="isCalling">Is Calling Assembly or Executing Assembly.</param>
+        public static void ConfigureCastleInterceptor(this ContainerBuilder builder, bool isCalling = true)
         {                          
-            var assembly = Assembly.GetCallingAssembly();
+            var assembly = isCalling ? Assembly.GetCallingAssembly() : Assembly.GetExecutingAssembly();
+
             builder.RegisterType<EasyCachingInterceptor>();
 
             builder.RegisterAssemblyTypes(assembly)

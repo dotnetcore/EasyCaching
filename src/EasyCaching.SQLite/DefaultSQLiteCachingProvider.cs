@@ -76,6 +76,24 @@
                 SerializerName = options.SerializerName,
                 SleepMs = options.SleepMs
             };
+
+            InitDb(_dbProvider);
+        }
+
+        /// <summary>
+        /// init database
+        /// </summary>
+        /// <param name="dbProvider"></param>
+        private void InitDb(ISQLiteDatabaseProvider dbProvider)
+        {            
+            var conn = dbProvider.GetConnection();
+
+            if (conn.State == System.Data.ConnectionState.Closed)
+            {
+                conn.Open();
+            }
+
+            conn.Execute(ConstSQL.CREATESQL);            
         }
 
         /// <summary>
