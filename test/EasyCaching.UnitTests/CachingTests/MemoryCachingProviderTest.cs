@@ -160,18 +160,8 @@ namespace EasyCaching.UnitTests
         public MemoryCachingProviderUseEasyCachingWithConfigTest()
         {
             IServiceCollection services = new ServiceCollection();
-
-            var appsettings = @"
-{
-    'easycaching': {
-        'inmemory': {
-            'MaxRdSecond': 600,
-            'dbconfig': {      
-                'SizeLimit' :  50
-            }
-        }
-    }
-}";
+            
+            var appsettings = "{ \"easycaching\": { \"inmemory\": { \"MaxRdSecond\": 600, \"dbconfig\": {       \"SizeLimit\" :  50 } } } }";
             var path = TestHelpers.CreateTempFile(appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);

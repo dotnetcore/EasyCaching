@@ -14,28 +14,7 @@
         [Fact]
         public void AddCacheExtensions_Should_Get_Configuration_Succeed()
         {
-            var appsettings = @"
-{
-    'easycaching': {
-        'inmemory': {
-            'CachingProviderType': 1,
-            'MaxRdSecond': 600,
-            'Order': 99,
-            'DBConfig':{
-                'ExpirationScanFrequency': 120,
-                'SizeLimit' : 100
-            }
-        },
-         'sqlite': {
-            'CachingProviderType': 3,
-            'MaxRdSecond': 120,
-            'Order': 2,
-            'dbconfig': {
-                'FileName': 'my.db'
-            }
-        }
-    }
-}";
+            var appsettings = " { \"easycaching\": { \"inmemory\": { \"CachingProviderType\": 1, \"MaxRdSecond\": 600, \"Order\": 99, \"DBConfig\":{ \"ExpirationScanFrequency\": 120, \"SizeLimit\" : 100 } }, \"sqlite\": { \"CachingProviderType\": 3, \"MaxRdSecond\": 120, \"Order\": 2, \"dbconfig\": { \"FileName\": \"my.db\" } } } }";
             var path = TestHelpers.CreateTempFile(appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);

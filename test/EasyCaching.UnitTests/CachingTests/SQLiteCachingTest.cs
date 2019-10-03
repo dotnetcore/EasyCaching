@@ -186,17 +186,7 @@
         {
             IServiceCollection services = new ServiceCollection();
 
-            var appsettings = @"
-{
-    'easycaching': {
-        'sqlite': {
-            'MaxRdSecond': 600,
-            'dbconfig': {            
-                'FileName': 'my.db'
-            }
-        }
-    }
-}";
+            var appsettings = " { \"easycaching\": { \"sqlite\": { \"MaxRdSecond\": 600, \"dbconfig\": { \"FileName\": \"my.db\" } } } }";
             var path = TestHelpers.CreateTempFile(appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
