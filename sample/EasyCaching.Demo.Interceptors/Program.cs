@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.Demo.Interceptors
 {
-    using Microsoft.AspNetCore;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
 
@@ -11,17 +10,16 @@
             CreateHostBuilder(args).Build().Run();
         }
 
-        //public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-        //    WebHost.CreateDefaultBuilder(args)
-        //        .UseStartup<Startup>();
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
                 })
-            //.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                // for aspcectcore
+                .UseServiceProviderFactory(new EasyCachingAspectCoreServiceProviderFactory())
+                // for castle
+                //.UseServiceProviderFactory(new AutofacServiceProviderFactory())
             ;
     }
 }

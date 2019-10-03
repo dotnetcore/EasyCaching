@@ -4,6 +4,7 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AspectCore.Extensions.DependencyInjection;
     using EasyCaching.Core;
     using EasyCaching.Core.Interceptor;
     using EasyCaching.InMemory;
@@ -270,7 +271,12 @@
                 x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
             });
             services.AddLogging();
-            IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor(options=>options.CacheProviderName= firstCacheProviderName);
+            services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = firstCacheProviderName);
+
+            var container = services.ToServiceContainer();
+            container.ConfigureAspectCoreInterceptor();
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();            
 
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
             _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);

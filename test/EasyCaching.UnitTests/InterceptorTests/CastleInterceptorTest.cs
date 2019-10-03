@@ -1,17 +1,13 @@
 ﻿namespace EasyCaching.UnitTests
 {
     using Autofac;
-    using Autofac.Extras.DynamicProxy;
+    using Autofac.Extensions.DependencyInjection;
     using EasyCaching.Core;
     using EasyCaching.Core.Interceptor;
-    using EasyCaching.InMemory;
     using EasyCaching.Interceptor.Castle;
     using EasyCaching.UnitTests.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
@@ -274,133 +270,20 @@
                 x.UseInMemory(options => options.MaxRdSecond = 0, firstCacheProviderName);
                 x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
             });
-            //services.AddLogging();
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(options => options.CacheProviderName = firstCacheProviderName);
-
-            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
-            _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
-            _secondCachingProvider = factory.GetCachingProvider(secondCacheProviderName);
-            _service = serviceProvider.GetService<ICastleExampleService>();
-            _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
-        }
-    }
-
-    public class CastleInterceptorWithActionTest : BaseCastleInterceptorTest
-    {
-        private ITestInterface _interface;
-
-        public CastleInterceptorWithActionTest()
-        {
-            const string firstCacheProviderName = "first";
-            const string secondCacheProviderName = "second";
-            IServiceCollection services = new ServiceCollection();
-            services.AddTransient<ICastleExampleService, CastleExampleService>();
-            services.AddEasyCaching(x =>
-            {
-                x.UseInMemory(options => options.MaxRdSecond = 0, firstCacheProviderName);
-                x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
-            });
-
             services.AddLogging();
-            Action<ContainerBuilder> action = x =>
-            {
-                x.RegisterType<TestInterface>().As<ITestInterface>();
-            };
+            services.ConfigureCastleInterceptor(options => options.CacheProviderName = firstCacheProviderName);
 
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor( action, options => options.CacheProviderName = firstCacheProviderName);
+            var builder = new ContainerBuilder();
+            builder.Populate(services);
+            builder.ConfigureCastleInterceptor();
 
-            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
-            _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
-            _secondCachingProvider = factory.GetCachingProvider(secondCacheProviderName);
-            _service = serviceProvider.GetService<ICastleExampleService>();
-            _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
-
-            _interface = serviceProvider.GetService<ITestInterface>();
-        }
-
-        [Fact]
-        public void Add_Other_Types_Should_Succeed()
-        {
-            Assert.IsType<TestInterface>(_interface);
-        }
-    }
-
-    public class CastleInterceptorWithActionAndIsRemoveDefaultTest : BaseCastleInterceptorTest
-    {
-        private ITestInterface _interface;
-
-        public CastleInterceptorWithActionAndIsRemoveDefaultTest()
-        {
-            const string firstCacheProviderName = "first";
-            const string secondCacheProviderName = "second";
-            IServiceCollection services = new ServiceCollection();
-            services.AddTransient<ICastleExampleService, CastleExampleService>();
-            services.AddEasyCaching(x =>
-            {
-                x.UseInMemory(options => options.MaxRdSecond = 0, firstCacheProviderName);
-                x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
-            });
-
-            services.AddLogging();
-            Action<ContainerBuilder> action = x =>
-            {
-                x.RegisterType<TestInterface>().As<ITestInterface>();
-
-                var assembly = Assembly.GetExecutingAssembly();
-                x.RegisterType<EasyCachingInterceptor>();
-
-                //neet to improve
-                var iTypes = assembly.GetTypes().Where(t => t.IsInterface && t.GetMethods().Any
-                            (y => y.CustomAttributes.Any(data =>
-                               typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                             || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                             || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                              ))).ToList();
-
-                var implTypes = new List<Type>();
-                foreach (var item in iTypes)
-                {
-                    implTypes.AddRange(assembly.GetTypes().Where(t => item.GetTypeInfo().IsAssignableFrom(t) && t.IsClass));
-                }
-
-                foreach (var item in implTypes)
-                {
-                    x.RegisterType(item)
-                        .As(item.GetInterfaces())
-                        .InstancePerLifetimeScope()
-                        .EnableInterfaceInterceptors()
-                        .InterceptedBy(typeof(EasyCachingInterceptor));
-                }
-
-                //x.RegisterAssemblyTypes(assembly)
-                //.Where(type => type.GetMethods().Any(y => y.CustomAttributes.Any
-                //      (data =>
-                //        typeof(EasyCachingAbleAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                //      || typeof(EasyCachingPutAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                //      || typeof(EasyCachingEvictAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
-                //      )))
-                //.AsImplementedInterfaces()
-                //.InstancePerLifetimeScope()
-                //.EnableInterfaceInterceptors()
-                //.InterceptedBy(typeof(EasyCachingInterceptor));
-            };
-
-            IServiceProvider serviceProvider = services.ConfigureCastleInterceptor(action, true, options => options.CacheProviderName = firstCacheProviderName);
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
 
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
             _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
             _secondCachingProvider = factory.GetCachingProvider(secondCacheProviderName);
             _service = serviceProvider.GetService<ICastleExampleService>();
             _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
-
-            _interface = serviceProvider.GetService<ITestInterface>();
-        }
-
-        [Fact]
-        public void Add_Other_Types_Should_Succeed()
-        {
-            Assert.IsType<TestInterface>(_interface);
         }
     }
-
 }
