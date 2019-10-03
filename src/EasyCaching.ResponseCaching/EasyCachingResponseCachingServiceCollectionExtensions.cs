@@ -1,11 +1,9 @@
-﻿using EasyCaching.Core;
-
-namespace EasyCaching.ResponseCaching
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
-    using Microsoft.AspNetCore.ResponseCaching;
-    using Microsoft.AspNetCore.ResponseCaching.Internal;
-    using Microsoft.Extensions.DependencyInjection;
+    using EasyCaching.Core;
+    using EasyCaching.ResponseCaching;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.ObjectPool;
     using System;
 
     /// <summary>
@@ -34,15 +32,13 @@ namespace EasyCaching.ResponseCaching
         public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services,
             Action<ResponseCachingOptions> action, string name)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+            ArgumentCheck.NotNull(services, nameof(services));
 
             services.Configure(action);
 
             services.TryAddSingleton<IResponseCachingPolicyProvider, ResponseCachingPolicyProvider>();
             services.TryAddSingleton<IResponseCachingKeyProvider, ResponseCachingKeyProvider>();
+            services.TryAddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
             services.AddSingleton<IResponseCache, EasyCachingResponseCache>(x =>
             {
                 var factory = x.GetRequiredService<IEasyCachingProviderFactory>();
