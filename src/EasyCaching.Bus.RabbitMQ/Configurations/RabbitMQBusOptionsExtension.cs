@@ -37,8 +37,8 @@
             services.AddOptions();
             services.Configure(configure);
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-            services.AddSingleton<IPooledObjectPolicy<IConnection>, ConnectionPooledObjectPolicy>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();            
+            services.AddSingleton<IPooledObjectPolicy<IModel>, ModelPooledObjectPolicy>();
             services.AddSingleton<IEasyCachingBus, DefaultRabbitMQBus>();
         }
     }
