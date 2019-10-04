@@ -81,6 +81,24 @@ namespace EasyCaching.UnitTests
             Assert.Equal(1, first.Value.Count);
         }
 
+        [Fact]
+        public void Issues150_DeepClone_Object_Test()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var cacheValue = new MySettingForCaching { Name = "catcherwong" } ;
+
+            _provider.Set(cacheKey, cacheValue, _defaultTs);
+
+            var res = _provider.Get<MySettingForCaching>(cacheKey);
+
+            res.Value.Name = "kobe";
+
+            var res2 = _provider.Get<MySettingForCaching>(cacheKey);
+
+            Assert.Equal("catcherwong", res2.Value.Name);
+        }
+              
         [Serializable]
         public class MySettingForCaching
         {

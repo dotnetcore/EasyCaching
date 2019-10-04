@@ -311,6 +311,7 @@
             public T GetValue<T>()
             {
                 object val = Value;
+              
                 var t = typeof(T);
 
                 if (t == TypeHelper.BoolType || t == TypeHelper.StringType || t == TypeHelper.CharType || t == TypeHelper.DateTimeType || t.IsNumeric())
@@ -318,8 +319,9 @@
 
                 if (t == TypeHelper.NullableBoolType || t == TypeHelper.NullableCharType || t == TypeHelper.NullableDateTimeType || t.IsNullableNumeric())
                     return val == null ? default(T) : (T)Convert.ChangeType(val, Nullable.GetUnderlyingType(t));
-
-                return (T)val;
+                
+                //return (T)val;
+                return DeepClonerGenerator.CloneObject<T>((T)val);
             }
         }
     }

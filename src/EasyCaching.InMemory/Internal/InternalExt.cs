@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace EasyCaching.InMemory
+﻿namespace EasyCaching.InMemory
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+
     public static class ObjectExtensions
     {
         public static DateTimeOffset SafeAdd(this DateTimeOffset date, TimeSpan value)
@@ -124,6 +125,31 @@ namespace EasyCaching.InMemory
 
             var t = Nullable.GetUnderlyingType(type);
             return t != null && t.IsNumeric();
+        }
+    }
+
+    internal static class ReflectionHelper
+    {
+        public static MethodInfo GetPrivateMethod(this Type t, string methodName)
+        {
+            return t.GetTypeInfo().GetDeclaredMethod(methodName);
+        }
+
+        public static MethodInfo GetPrivateStaticMethod(this Type t, string methodName)
+        {
+            return t.GetTypeInfo().GetDeclaredMethod(methodName);
+        }
+
+        public static bool IsSubclassOfTypeByName(this Type t, string typeName)
+        {
+            while (t != null)
+            {
+                if (t.Name == typeName)
+                    return true;
+                t = t.GetTypeInfo().BaseType;
+            }
+
+            return false;
         }
     }
 }

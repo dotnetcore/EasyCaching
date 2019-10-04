@@ -35,6 +35,5 @@
 
   <ItemGroup>
     <Folder Include="Configurations\" />
-    <Folder Include="Internal\" />
   </ItemGroup>
 </Project>
