@@ -78,7 +78,7 @@
             fakeDisProvider = A.Fake<FakeDistributedCachingProvider>();
             var myOptions = Options.Create(options);
             FakeCreatProvider();
-            fakeHybrid = new HybridCachingProvider(myOptions, fakeFactory, fakeBus);
+            fakeHybrid = new HybridCachingProvider("h1", myOptions.Value, fakeFactory, fakeBus);
         }
 
         [Fact]

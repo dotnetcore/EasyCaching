@@ -41,6 +41,11 @@
         public const string DiskSection = "easycaching:disk";
 
         /// <summary>
+        /// The hybrid section.
+        /// </summary>
+        public const string HybridSection = "easycaching:hybrid";
+
+        /// <summary>
         /// The redis bus section.
         /// </summary>
         public const string RedisBusSection = "easycaching:redisbus";
@@ -79,6 +84,11 @@
         /// The default name of the disk.
         /// </summary>
         public const string DefaultDiskName = "DefaultDisk";
+
+        /// <summary>
+        /// The default name of the hybrid.
+        /// </summary>
+        public const string DefaultHybridName = "DefaultHybrid";
 
         /// <summary>
         /// The default name of the serializer.
