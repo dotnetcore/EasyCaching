@@ -51,6 +51,7 @@
         }
 
         #region ConfigureContainer should be only one
+        // for aspectcore
         public void ConfigureContainer(IServiceContainer builder)
         {
             builder.ConfigureAspectCoreInterceptor();
@@ -60,9 +61,10 @@
         //// with Autofac. This runs after ConfigureServices so the things
         //// here will override registrations made in ConfigureServices.
         //// Don't build the container; that gets done for you by the factory.
+        // for castle
         //public void ConfigureContainer(ContainerBuilder builder)
         //{
-        //    builder.ConfigureDefaultInterception();
+        //    builder.ConfigureCastleInterceptor();
         //} 
         #endregion
 
