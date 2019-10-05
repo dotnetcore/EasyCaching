@@ -18,12 +18,5 @@
         /// <returns>The redis provider.</returns>
         /// <param name="name">Name.</param>
         IRedisCachingProvider GetRedisProvider(string name);
-
-        /// <summary>
-        /// Gets the hybrid provider.
-        /// </summary>
-        /// <returns>The hybrid provider.</returns>
-        /// <param name="name">Name.</param>        
-        IHybridCachingProvider GetHybridCachingProvider(string name);
     }
 }

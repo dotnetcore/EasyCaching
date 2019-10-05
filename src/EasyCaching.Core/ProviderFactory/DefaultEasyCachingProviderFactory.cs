@@ -13,17 +13,13 @@
 
         private readonly IEnumerable<IRedisCachingProvider> _redisProviders;
 
-        private readonly IEnumerable<IHybridCachingProvider> _hybridProviders;
-
         public DefaultEasyCachingProviderFactory(
             IEnumerable<IEasyCachingProvider> cachingProviders
             , IEnumerable<IRedisCachingProvider> redisProviders
-            , IEnumerable<IHybridCachingProvider> hybridProviders
             )
         {
             this._cachingProviders = cachingProviders;
             this._redisProviders = redisProviders;
-            this._hybridProviders = hybridProviders;
         }
 
         public IEasyCachingProvider GetCachingProvider(string name)
@@ -33,17 +29,6 @@
             var provider = _cachingProviders.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
             if (provider == null) throw new ArgumentException("can not find a match caching provider!");
-
-            return provider;
-        }
-
-        public IHybridCachingProvider GetHybridCachingProvider(string name)
-        {
-            ArgumentCheck.NotNullOrWhiteSpace(name, nameof(name));
-
-            var provider = _hybridProviders.FirstOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-            if (provider == null) throw new ArgumentException("can not find a match hybrid provider!");
 
             return provider;
         }

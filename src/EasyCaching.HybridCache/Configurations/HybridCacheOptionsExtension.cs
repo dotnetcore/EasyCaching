@@ -36,18 +36,16 @@
         {
             services.AddOptions();
             services.Configure(_name, _configure);
-
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             
             services.AddSingleton<IHybridCachingProvider, HybridCachingProvider>(x =>
-            {
+            {                
                 var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<HybridCachingOptions>>();
                 var options = optionsMon.Get(_name);
 
-                var providerFactory = x.GetRequiredService<IEasyCachingProviderFactory>();
+                var providerFactory = x.GetService<IEasyCachingProviderFactory>();
                 var bus = x.GetService<IEasyCachingBus>();                
                 var loggerFactory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
-                
+
                 return new HybridCachingProvider(_name, options, providerFactory, bus, loggerFactory);
             });
         }
