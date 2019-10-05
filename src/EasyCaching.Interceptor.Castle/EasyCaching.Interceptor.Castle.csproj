@@ -14,7 +14,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
+    <PackageIcon>nuget-icon.png</PackageIcon>
     <PackageReleaseNotes>
       $(EasyCachingCastlePackageNotes)
     </PackageReleaseNotes>
@@ -26,7 +26,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,59 +1,132 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>                                
-        1. Improve named serializer.
-        2. Add GetProviderInfo method.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Upgrading dependencies.
-        2. Add GetProviderInfo method.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Upgrading dependencies.
-        2. Add GetProviderInfo method.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Upgrading dependencies.
-        2. Add GetProviderInfo method.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Upgrading dependencies.
-        2. Add GetProviderInfo method.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. Upgrading dependencies.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Make caching interceptor support subclass of easycaching attributes.    
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Make caching interceptor support subclass of easycaching attributes.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Upgrading dependencies.        
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.        
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Upgrading dependencies.        
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.        
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Upgrading dependencies.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Upgrading dependencies.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Upgrading dependencies.
-        2. Add GetProviderInfo method.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingRedisBusPackageNotes>
-        1. Upgrading dependencies.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Upgrading dependencies.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingRabbitBusPackageNotes>
         <EasyCachingDiskPackageNotes>
-        1. Upgrading dependencies.
-        2. Add GetProviderInfo method.
+        1. Support netcore3.0.
+        2. Remove WithServices.
+        3. Improve rabbitmq bus.
+        4. Fixed deep clone of memorycache provider.
+        5. Support multi instace of hybrid provider.    
+        6. Upgrading dependencies.    
         </EasyCachingDiskPackageNotes>
 	</PropertyGroup>
 </Project>
