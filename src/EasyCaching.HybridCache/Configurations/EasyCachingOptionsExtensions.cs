@@ -17,9 +17,11 @@
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure.</param>
         /// <param name="name">The name of this hybrid provider instance.</param>
-        public static EasyCachingOptions UseHybrid(this EasyCachingOptions options
+        public static EasyCachingOptions UseHybrid(
+            this EasyCachingOptions options
             , Action<HybridCachingOptions> configure
-            , string name = EasyCachingConstValue.DefaultHybridName)
+            , string name = EasyCachingConstValue.DefaultHybridName
+            )
         {
             options.RegisterExtension(new HybridCacheOptionsExtension(name, configure));
 
@@ -32,11 +34,13 @@
         /// <param name="options">Options.</param>
         /// <param name="configuration">The Configuraion</param>
         /// <param name="name">The name of this hybrid provider instance.</param>
-        /// <param name="sectionName">The section name in the configuration file</param>
-        public static EasyCachingOptions UseHybrid(this EasyCachingOptions options
+        /// <param name="sectionName">The section name in the configuration file.</param>
+        public static EasyCachingOptions UseHybrid(
+            this EasyCachingOptions options
             , IConfiguration configuration
             , string name = EasyCachingConstValue.DefaultHybridName
-            , string sectionName = EasyCachingConstValue.HybridSection)
+            , string sectionName = EasyCachingConstValue.HybridSection
+            )
         {
             var config = configuration.GetSection(sectionName);
             var hybridOptions = new HybridCachingOptions();

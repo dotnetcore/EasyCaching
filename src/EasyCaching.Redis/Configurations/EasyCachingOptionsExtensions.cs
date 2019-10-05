@@ -12,32 +12,36 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Uses the redis.
-        /// </summary>
-        /// <returns>The redis.</returns>
+        /// Uses the SERedis provider (specify the config via hard code).
+        /// </summary>        
         /// <param name="options">Options.</param>
-        /// <param name="configure">Configure.</param>
-        /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, Action<RedisOptions> configure, string name = EasyCachingConstValue.DefaultRedisName)
+        /// <param name="configure">Configure provider settings.</param>
+        /// <param name="name">The name of this provider instance.</param>
+        public static EasyCachingOptions UseRedis(
+            this EasyCachingOptions options
+            , Action<RedisOptions> configure
+            , string name = EasyCachingConstValue.DefaultRedisName
+            )
         {
-            if (configure == null)
-            {
-                throw new ArgumentNullException(nameof(configure));
-            }
+            ArgumentCheck.NotNull(configure, nameof(configure));
 
             options.RegisterExtension(new RedisOptionsExtension(name, configure));
             return options;
         }
 
         /// <summary>
-        /// Uses the redis.
-        /// </summary>
-        /// <returns>The redis.</returns>
+        /// Uses the SERedis provider (read config from configuration file).
+        /// </summary>        
         /// <param name="options">Options.</param>
-        /// <param name="configuration">Configuration.</param>
-        /// <param name="name">Name.</param>
-        /// <param name="sectionName">SectionName.</param>
-        public static EasyCachingOptions UseRedis(this EasyCachingOptions options, IConfiguration configuration, string name = EasyCachingConstValue.DefaultRedisName, string sectionName = EasyCachingConstValue.RedisSection)
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="name">The name of this provider instance.</param>
+        /// <param name="sectionName">The section name in the configuration file.</param>
+        public static EasyCachingOptions UseRedis(
+            this EasyCachingOptions options
+            , IConfiguration configuration
+            , string name = EasyCachingConstValue.DefaultRedisName
+            , string sectionName = EasyCachingConstValue.RedisSection
+            )
         {
             var dbConfig = configuration.GetSection(sectionName);
             var redisOptions = new RedisOptions();

@@ -9,11 +9,10 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Withs the message pack.
+        /// Withs the message pack serializer.
         /// </summary>
-        /// <returns>The message pack.</returns>
         /// <param name="options">Options.</param>
-        /// <param name="name">Name.</param>
+        /// <param name="name">The name of this serializer instance.</param>        
         public static EasyCachingOptions WithMessagePack(this EasyCachingOptions options, string name = "msgpack")
         {
             options.RegisterExtension(new MessagePackOptionsExtension(name));

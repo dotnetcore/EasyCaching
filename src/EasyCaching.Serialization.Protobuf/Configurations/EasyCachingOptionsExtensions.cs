@@ -9,11 +9,10 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Withs the protobuf.
-        /// </summary>
-        /// <returns>The protobuf.</returns>
+        /// Withs the protobuf serializer.
+        /// </summary>        
         /// <param name="options">Options.</param>
-        /// <param name="name">Name.</param>
+        /// <param name="name">The name of this serializer instance.</param>   
         public static EasyCachingOptions WithProtobuf(this EasyCachingOptions options, string name = "proto")
         {
             options.RegisterExtension(new ProtobufOptionsExtension(name));
