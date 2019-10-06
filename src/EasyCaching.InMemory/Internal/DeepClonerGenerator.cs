@@ -491,7 +491,26 @@
         {
             return GenerateProcessMethod(realType, asObject && realType.IsValueType);
         }
-      
+
+        // slow, but hardcore method to set readonly field
+        internal static void ForceSetField(FieldInfo field, object obj, object value)
+        {
+            var fieldInfo = field.GetType().GetTypeInfo().GetDeclaredField("m_fieldAttributes");
+
+            // TODO: think about it
+            // nothing to do :( we should a throw an exception, but it is no good for user
+            if (fieldInfo == null)
+                return;
+            var ov = fieldInfo.GetValue(field);
+            if (!(ov is FieldAttributes))
+                return;
+            var v = (FieldAttributes)ov;
+
+            fieldInfo.SetValue(field, v & ~FieldAttributes.InitOnly);
+            field.SetValue(obj, value);
+            fieldInfo.SetValue(field, v);
+        }
+
         private static object GenerateProcessMethod(Type type, bool unboxStruct)
         {
             if (type.IsArray)

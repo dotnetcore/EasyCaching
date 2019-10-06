@@ -71,8 +71,9 @@
                 var value = cacheEntry.GetValue<T>();
                 return new CacheValue<T>(value, true);
             }
-            catch
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"some error herer, message = {ex.Message}");
                 return CacheValue<T>.NoValue;
             }
         }

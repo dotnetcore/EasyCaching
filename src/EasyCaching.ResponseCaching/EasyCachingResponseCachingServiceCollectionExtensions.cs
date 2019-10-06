@@ -13,10 +13,9 @@
     {
         /// <summary>
         /// Adds the EasyCaching response caching.
-        /// </summary>
-        /// <returns>The easy caching response caching.</returns>
+        /// </summary>        
         /// <param name="services">Services.</param>
-        /// <param name="name">Provider name.</param>
+        /// <param name="name">The provider name that will use to store the response.</param>
         public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services, string name) =>
             services.AddEasyCachingResponseCaching(
                 x => { }, name
@@ -24,13 +23,15 @@
 
         /// <summary>
         /// Adds the EasyCaching response caching.
-        /// </summary>
-        /// <returns>The easy caching response caching.</returns>
+        /// </summary>        
         /// <param name="services">Services.</param>
-        /// <param name="action">Action.</param>
-        /// <param name="name">Provider name.</param>
-        public static IServiceCollection AddEasyCachingResponseCaching(this IServiceCollection services,
-            Action<ResponseCachingOptions> action, string name)
+        /// <param name="action">Configure response caching settings.</param>
+        /// <param name="name">The provider name that will use to store the response.</param>
+        public static IServiceCollection AddEasyCachingResponseCaching(
+            this IServiceCollection services
+            , Action<ResponseCachingOptions> action
+            , string name
+            )
         {
             ArgumentCheck.NotNull(services, nameof(services));
 
