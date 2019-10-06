@@ -36,7 +36,9 @@
         {
             services.AddOptions();
             services.Configure(_name, _configure);
-            
+
+            services.TryAddSingleton<IHybridProviderFactory, DefaultHybridProviderFactory>();
+
             services.AddSingleton<IHybridCachingProvider, HybridCachingProvider>(x =>
             {                
                 var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<HybridCachingOptions>>();

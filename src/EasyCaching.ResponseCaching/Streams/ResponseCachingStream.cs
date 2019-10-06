@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EasyCaching.ResponseCaching
+﻿namespace EasyCaching.ResponseCaching
 {
     using System;
     using System.IO;

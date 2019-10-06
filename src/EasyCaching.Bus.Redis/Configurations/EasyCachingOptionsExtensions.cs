@@ -11,30 +11,32 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Withs the redis bus.
+        /// Withs the SERedis bus (specify the config via hard code).
         /// </summary>
-        /// <returns>The redis bus.</returns>
         /// <param name="options">Options.</param>
-        /// <param name="configure">Configure.</param>
-        public static EasyCachingOptions WithRedisBus(this EasyCachingOptions options, Action<RedisBusOptions> configure)
+        /// <param name="configure">Configure bus settings.</param>
+        public static EasyCachingOptions WithRedisBus(
+            this EasyCachingOptions options
+            , Action<RedisBusOptions> configure
+            )
         {
-            if (configure == null)
-            {
-                throw new ArgumentNullException(nameof(configure));
-            }
+            ArgumentCheck.NotNull(configure, nameof(configure));
 
             options.RegisterExtension(new RedisBusOptionsExtension(configure));
             return options;
         }
 
         /// <summary>
-        /// Withs the redis bus.
+        /// Withs the SERedis bus (read config from configuration file).
         /// </summary>
-        /// <returns>The redis bus.</returns>
         /// <param name="options">Options.</param>
-        /// <param name="configuration">Configuration.</param>
-        /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions WithRedisBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = EasyCachingConstValue.RedisBusSection)
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="sectionName">The section name in the configuration file.</param>
+        public static EasyCachingOptions WithRedisBus(
+            this EasyCachingOptions options
+            , IConfiguration configuration
+            , string sectionName = EasyCachingConstValue.RedisBusSection
+            )
         {
             var dbConfig = configuration.GetSection(sectionName);
             var redisOptions = new RedisBusOptions();

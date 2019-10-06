@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Primitives;
-
-namespace EasyCaching.ResponseCaching
+﻿namespace EasyCaching.ResponseCaching
 {
+    using Microsoft.Extensions.Primitives;
+
     internal static class CacheEntryHelpers
     {
         internal static long EstimateCachedResponseSize(CachedResponse cachedResponse)
