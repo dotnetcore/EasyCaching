@@ -1,6 +1,7 @@
-﻿namespace EasyCaching.Bus.RabbitMQ
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
+    using EasyCaching.Bus.RabbitMQ;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;

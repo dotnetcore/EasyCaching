@@ -1,6 +1,7 @@
-﻿namespace EasyCaching.Bus.Redis
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
+    using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
