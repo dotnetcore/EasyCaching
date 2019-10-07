@@ -11,5 +11,6 @@
         }
 
         public RedisDBOptions DBConfig { get; set; } = new RedisDBOptions();
+        public bool UseDistinctRegistration { get; set; }
     }
 }

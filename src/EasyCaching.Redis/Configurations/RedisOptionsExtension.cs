@@ -62,6 +62,13 @@
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
                 var factory = x.GetService<ILoggerFactory>();
+
+                if (options.UseDistinctRegistration)
+                {
+                    dbProviders = dbProviders.DistinctBy(_ => _.DBProviderName);
+                    serializers = serializers.DistinctBy(_ => _.Name);
+                }
+
                 return new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, factory);
             };
 
