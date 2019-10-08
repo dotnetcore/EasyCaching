@@ -1,7 +1,8 @@
-﻿namespace EasyCaching.Memcached
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Memcached;
     using Microsoft.Extensions.Configuration;
     using System;
 
@@ -11,32 +12,36 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Uses the memcached.
-        /// </summary>
-        /// <returns>The memcached.</returns>
+        /// Uses the memcached provider (specify the config via hard code).
+        /// </summary>        
         /// <param name="options">Options.</param>
-        /// <param name="configure">Configure.</param>
-        /// <param name="name">Name.</param>
-        public static EasyCachingOptions UseMemcached(this EasyCachingOptions options, Action<MemcachedOptions> configure, string name = "")
+        /// <param name="configure">Configure provider settings.</param>
+        /// <param name="name">The name of this provider instance.</param>
+        public static EasyCachingOptions UseMemcached(
+            this EasyCachingOptions options
+            , Action<MemcachedOptions> configure
+            , string name = EasyCachingConstValue.DefaultMemcachedName
+            )
         {
-            if (configure == null)
-            {
-                throw new ArgumentNullException(nameof(configure));
-            }
+            ArgumentCheck.NotNull(configure, nameof(configure));
 
             options.RegisterExtension(new MemcachedOptionsExtension(name, configure));
             return options;
         }
 
         /// <summary>
-        /// Uses the memcached.
+        /// Uses the memcached provider (read config from configuration file).
         /// </summary>
-        /// <returns>The memcached.</returns>
         /// <param name="options">Options.</param>
-        /// <param name="configuration">Configuration.</param>
-        /// <param name="name">Name.</param>
-        /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions UseMemcached(this EasyCachingOptions options, IConfiguration configuration, string name = "", string sectionName = EasyCachingConstValue.MemcachedSection)
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="name">The name of this provider instance.</param>
+        /// <param name="sectionName">The section name in the configuration file.</param>
+        public static EasyCachingOptions UseMemcached(
+            this EasyCachingOptions options
+            , IConfiguration configuration
+            , string name = EasyCachingConstValue.DefaultMemcachedName
+            , string sectionName = EasyCachingConstValue.MemcachedSection
+            )
         {
             var dbConfig = configuration.GetSection(sectionName);
             var mOptions = new MemcachedOptions();

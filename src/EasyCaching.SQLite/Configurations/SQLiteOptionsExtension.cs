@@ -1,9 +1,7 @@
 ﻿namespace EasyCaching.SQLite
 {
-    using Dapper;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
@@ -19,6 +17,7 @@
         /// The name.
         /// </summary>
         private readonly string _name;
+
         /// <summary>
         /// The configure.
         /// </summary>
@@ -61,28 +60,6 @@
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultSQLiteCachingProvider(_name, dbProviders, options, factory);
             });
-
-        }
-
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="app">App.</param>
-        public void WithServices(IApplicationBuilder app)
-        {
-            var dbProviders = app.ApplicationServices.GetServices<ISQLiteDatabaseProvider>();
-
-            foreach (var dbProvider in dbProviders)
-            {
-                var conn = dbProvider.GetConnection();
-
-                if (conn.State == System.Data.ConnectionState.Closed)
-                {
-                    conn.Open();
-                }
-
-                conn.Execute(ConstSQL.CREATESQL);
-            }
         }
     }
 }

@@ -5,7 +5,6 @@
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
     using global::RabbitMQ.Client;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.ObjectPool;
@@ -38,18 +37,9 @@
             services.AddOptions();
             services.Configure(configure);
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-            services.AddSingleton<IPooledObjectPolicy<IConnection>, ConnectionPooledObjectPolicy>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();            
+            services.AddSingleton<IPooledObjectPolicy<IModel>, ModelPooledObjectPolicy>();
             services.AddSingleton<IEasyCachingBus, DefaultRabbitMQBus>();
-        }
-
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="services">Services.</param>
-        public void WithServices(IApplicationBuilder services)
-        {
-            // Method intentionally left empty.
         }
     }
 }

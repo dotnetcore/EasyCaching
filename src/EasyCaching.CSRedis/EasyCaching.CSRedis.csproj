@@ -1,20 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build/version.props" />
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>    
+    <Authors>ncc;Catcher Wong</Authors>
     <Version>$(EasyCachingCSRedisPackageVersion)</Version>
     <Description>
       A simple distributed caching provider based on csredis.
-    </Description>    
+    </Description>
     <PackageTags>Redis,DistributedCache,Caching,Cache</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
+    <PackageIcon>nuget-icon.png</PackageIcon>
     <PackageReleaseNotes>
       $(EasyCachingCSRedisPackageVersion)
     </PackageReleaseNotes>
@@ -26,13 +26,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSRedisCore" Version="3.0.62" />    
+    <PackageReference Include="CSRedisCore" Version="3.1.8" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
-  </ItemGroup>  
+  </ItemGroup>
 </Project>

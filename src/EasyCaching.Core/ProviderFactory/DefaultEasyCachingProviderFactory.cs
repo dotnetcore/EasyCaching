@@ -13,7 +13,10 @@
 
         private readonly IEnumerable<IRedisCachingProvider> _redisProviders;
 
-        public DefaultEasyCachingProviderFactory(IEnumerable<IEasyCachingProvider> cachingProviders, IEnumerable<IRedisCachingProvider> redisProviders)
+        public DefaultEasyCachingProviderFactory(
+            IEnumerable<IEasyCachingProvider> cachingProviders
+            , IEnumerable<IRedisCachingProvider> redisProviders
+            )
         {
             this._cachingProviders = cachingProviders;
             this._redisProviders = redisProviders;

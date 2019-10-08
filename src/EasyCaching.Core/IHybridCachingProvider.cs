@@ -10,6 +10,12 @@
     public interface IHybridCachingProvider
     {
         /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        string Name { get; }
+
+        /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
         /// <param name="cacheKey">Cache key.</param>

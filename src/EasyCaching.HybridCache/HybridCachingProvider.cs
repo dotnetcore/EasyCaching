@@ -7,7 +7,6 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
     using Polly;
     using Polly.Fallback;
     using Polly.Retry;
@@ -42,6 +41,10 @@
         /// The cache identifier.
         /// </summary>
         private readonly string _cacheId;
+        /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
 
         private readonly AsyncPolicyWrap _busAsyncWrap;
         private readonly PolicyWrap _busSyncWrap;
@@ -50,15 +53,19 @@
         private readonly FallbackPolicy fallbackPolicy;
         private readonly AsyncFallbackPolicy fallbackAsyncPolicy;
 
+        public string Name => _name;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
         /// </summary>
+        /// <param name="name">Name.</param>
         /// <param name="optionsAccs">Options accs.</param>
         /// <param name="factory">Providers factory</param>
         /// <param name="bus">Bus.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public HybridCachingProvider(
-            IOptions<HybridCachingOptions> optionsAccs
+            string name
+            , HybridCachingOptions optionsAccs
             , IEasyCachingProviderFactory factory
             , IEasyCachingBus bus = null
             , ILoggerFactory loggerFactory = null
@@ -66,7 +73,8 @@
         {
             ArgumentCheck.NotNull(factory, nameof(factory));
 
-            this._options = optionsAccs.Value;
+            this._name = name;
+            this._options = optionsAccs;
 
             ArgumentCheck.NotNullOrWhiteSpace(_options.TopicName, nameof(_options.TopicName));
 

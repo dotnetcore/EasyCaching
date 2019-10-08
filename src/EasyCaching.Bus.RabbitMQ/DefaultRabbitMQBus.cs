@@ -22,9 +22,9 @@
         private readonly IConnection _subConnection;
 
         /// <summary>
-        /// The publish connection pool.
+        /// The publish channel pool.
         /// </summary>
-        private readonly ObjectPool<IConnection> _pubConnectionPool;
+        private readonly ObjectPool<IModel> _pubChannelPool;
 
         /// <summary>
         /// The rabbitMQ Bus options.
@@ -48,7 +48,7 @@
         /// <param name="rabbitMQOptions">RabbitMQ Options.</param>
         /// <param name="serializer">Serializer.</param>
         public DefaultRabbitMQBus(
-            IPooledObjectPolicy<IConnection> _objectPolicy
+            IPooledObjectPolicy<IModel> _objectPolicy
             , IOptions<RabbitMQBusOptions> rabbitMQOptions
             , IEasyCachingSerializer serializer)
         {
@@ -69,7 +69,7 @@
 
             _subConnection = factory.CreateConnection();
 
-            _pubConnectionPool = new DefaultObjectPool<IConnection>(_objectPolicy);
+            _pubChannelPool = new DefaultObjectPool<IModel>(_objectPolicy);
 
             _busId = Guid.NewGuid().ToString("N");
         }
@@ -81,15 +81,14 @@
         /// <param name="message">Message.</param>
         public override void BasePublish(string topic, EasyCachingMessage message)
         {
-            var conn = _pubConnectionPool.Get();
+            var channel = _pubChannelPool.Get();
 
             try
             {
                 var body = _serializer.Serialize(message);
-                var model = conn.CreateModel();
 
-                model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
-                model.BasicPublish(_options.TopicExchangeName, topic, false, null, body);
+                channel.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
+                channel.BasicPublish(_options.TopicExchangeName, topic, false, null, body);
             }
             catch (Exception ex)
             {
@@ -97,7 +96,7 @@
             }
             finally
             {
-                _pubConnectionPool.Return(conn);
+                _pubChannelPool.Return(channel);
             }
         }
 
@@ -110,14 +109,13 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         public override Task BasePublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var conn = _pubConnectionPool.Get();
+            var channel = _pubChannelPool.Get();
             try
             {
                 var body = _serializer.Serialize(message);
-                var model = conn.CreateModel();
 
-                model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
-                model.BasicPublish(_options.TopicExchangeName, topic, false, null, body);
+                channel.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
+                channel.BasicPublish(_options.TopicExchangeName, topic, false, null, body);
             }
             catch (Exception ex)
             {
@@ -125,7 +123,7 @@
             }
             finally
             {
-                _pubConnectionPool.Return(conn);
+                _pubChannelPool.Return(channel);
             }
             return Task.CompletedTask;
         }

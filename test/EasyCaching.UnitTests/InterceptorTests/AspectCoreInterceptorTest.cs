@@ -4,6 +4,8 @@
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
+    using AspectCore.Extensions.DependencyInjection;    
+    using AspectCore.Injector;
     using EasyCaching.Core;
     using EasyCaching.Core.Interceptor;
     using EasyCaching.InMemory;
@@ -270,7 +272,12 @@
                 x.UseInMemory(options => options.MaxRdSecond = 0, secondCacheProviderName);
             });
             services.AddLogging();
-            IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor(options=>options.CacheProviderName= firstCacheProviderName);
+            services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = firstCacheProviderName);
+
+            var container = services.ToServiceContainer();
+            container.ConfigureAspectCoreInterceptor();
+
+            IServiceProvider serviceProvider = container.Build();          
 
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
             _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
@@ -278,71 +285,5 @@
             _service = serviceProvider.GetService<IAspectCoreExampleService>();
             _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
         }
-    }
-
-    //public class AspectCoreInterceptorWithActionTest : BaseAspectCoreInterceptorTest
-    //{
-    //    private ITestInterface _interface;
-
-    //    public AspectCoreInterceptorWithActionTest()
-    //    {
-    //        IServiceCollection services = new ServiceCollection();
-    //        services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-    //        services.AddDefaultInMemoryCache();
-
-    //        Action<IServiceContainer> action = x =>
-    //        {
-    //            x.AddType<ITestInterface, TestInterface>();
-    //        };
-
-    //        IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor(action);
-
-    //        _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
-    //        _service = serviceProvider.GetService<IAspectCoreExampleService>();
-    //        _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
-
-    //        _interface = serviceProvider.GetService<ITestInterface>();
-    //    }
-
-    //    [Fact]
-    //    public void Add_Other_Types_Should_Succeed()
-    //    {
-    //        Assert.IsType<TestInterface>(_interface);
-    //    }
-    //}
-
-    //public class AspectCoreInterceptorWithActionAndIsRemoveDefaultTest : BaseAspectCoreInterceptorTest
-    //{
-    //    private ITestInterface _interface;
-
-    //    public AspectCoreInterceptorWithActionAndIsRemoveDefaultTest()
-    //    {
-    //        IServiceCollection services = new ServiceCollection();
-    //        services.AddTransient<IAspectCoreExampleService, AspectCoreExampleService>();
-    //        services.AddDefaultInMemoryCache();
-
-    //        Action<IServiceContainer> action = x =>
-    //        {
-    //            x.AddType<ITestInterface, TestInterface>();
-    //            x.Configure(config =>
-    //            {
-    //                config.Interceptors.AddTyped<EasyCachingInterceptor>(method => typeof(Core.Internal.IEasyCaching).IsAssignableFrom(method.DeclaringType));
-    //            });
-    //        };
-
-    //        IServiceProvider serviceProvider = services.ConfigureAspectCoreInterceptor(action, true);
-
-    //        _cachingProvider = serviceProvider.GetService<IEasyCachingProvider>();
-    //        _service = serviceProvider.GetService<IAspectCoreExampleService>();
-    //        _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
-
-    //        _interface = serviceProvider.GetService<ITestInterface>();
-    //    }
-
-    //    [Fact]
-    //    public void Add_Other_Types_Should_Succeed()
-    //    {
-    //        Assert.IsType<TestInterface>(_interface);
-    //    }
-    //}
+    }    
 }

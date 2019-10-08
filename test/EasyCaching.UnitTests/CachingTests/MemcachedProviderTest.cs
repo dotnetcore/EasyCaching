@@ -328,22 +328,7 @@
         {
             IServiceCollection services = new ServiceCollection();
 
-            var appsettings = @"
-{
-    'easycaching': {
-        'memcached': {
-            'MaxRdSecond': 600,
-            'dbconfig': {            
-                'Servers': [
-                    {
-                        'Address': '127.0.0.1',
-                        'Port': 11211
-                    }
-                ]
-            } 
-        }
-    }
-}";
+            var appsettings = " { \"easycaching\": { \"memcached\": { \"MaxRdSecond\": 600, \"dbconfig\": { \"Servers\": [ { \"Address\": \"127.0.0.1\", \"Port\": 11211 } ] }  } }}";
             var path = TestHelpers.CreateTempFile(appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);

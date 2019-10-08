@@ -1,10 +1,10 @@
-﻿namespace EasyCaching.HybridCache
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using System;
     using EasyCaching.Core;
+    using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.Extensions.DependencyInjection;
+    using EasyCaching.HybridCache;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
     /// <summary>
@@ -13,12 +13,18 @@
     internal sealed class HybridCacheOptionsExtension : IEasyCachingOptionsExtension
     {
         /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
+
+        /// <summary>
         /// The configure.
         /// </summary>
         private readonly Action<HybridCachingOptions> _configure;
 
-        public HybridCacheOptionsExtension( Action<HybridCachingOptions> configure)
+        public HybridCacheOptionsExtension(string name, Action<HybridCachingOptions> configure)
         {
+            this._name = name;
             this._configure = configure;
         }
 
@@ -29,17 +35,21 @@
         public void AddServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.Configure(_configure);
-            services.TryAddSingleton<IHybridCachingProvider, HybridCachingProvider>();
-        }
+            services.Configure(_name, _configure);
 
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="services">Services.</param>
-        public void WithServices(IApplicationBuilder services)
-        {
-            // Method intentionally left empty.
+            services.TryAddSingleton<IHybridProviderFactory, DefaultHybridProviderFactory>();
+
+            services.AddSingleton<IHybridCachingProvider, HybridCachingProvider>(x =>
+            {                
+                var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<HybridCachingOptions>>();
+                var options = optionsMon.Get(_name);
+
+                var providerFactory = x.GetService<IEasyCachingProviderFactory>();
+                var bus = x.GetService<IEasyCachingBus>();                
+                var loggerFactory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
+
+                return new HybridCachingProvider(_name, options, providerFactory, bus, loggerFactory);
+            });
         }
     }
 }

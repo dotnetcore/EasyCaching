@@ -1,19 +1,16 @@
 ﻿namespace EasyCaching.Demo.Interceptors
 {
+    using AspectCore.Injector;
+    using Autofac;
     using EasyCaching.Core;
     using EasyCaching.Demo.Interceptors.Services;
-    using EasyCaching.InMemory;
     using EasyCaching.Interceptor.AspectCore;
-    using EasyCaching.Serialization.Json;
-    using EasyCaching.Serialization.MessagePack;
-    using EasyCaching.Serialization.Protobuf;
+    using EasyCaching.Interceptor.Castle;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using System;
-    using AspectCore.Injector;
+    using Microsoft.Extensions.Hosting;
 
     public class Startup
     {
@@ -24,8 +21,7 @@
 
         public IConfiguration Configuration { get; }
 
-        //1.AspectCore
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IAspectCoreService, AspectCoreService>();
 
@@ -43,85 +39,48 @@
                 //options.WithProtobuf();
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers();
 
-            //1.1. all default
-            return services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
+            //1 AspectCore
+            services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
 
-            //1.2. default and customize
-            //Action<IServiceContainer> action = x => { x.AddType<IAspectCoreService, AspectCoreService>(); };
+            services.AddTransient<ICastleService, CastleService>();
 
-            //return services.ConfigureAspectCoreInterceptor(action,
-            //    options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
-
-            //1.3. all customize
-            //Action<IServiceContainer> action = x =>
-            //{
-            //    x.AddType<IDateTimeService, DateTimeService>();
-            //    x.Configure(config =>
-            //    {
-            //        config.Interceptors.AddTyped<EasyCachingInterceptor>(method => typeof(Core.Internal.IEasyCaching).IsAssignableFrom(method.DeclaringType));
-            //    });
-            //};
-
-            //return services.ConfigureAspectCoreInterceptor(action, true);
+            //2 Castle  
+            services.ConfigureCastleInterceptor(options => options.CacheProviderName = EasyCachingConstValue.DefaultInMemoryName);
         }
 
-        ////2. Castle
-        //public IServiceProvider ConfigureServices(IServiceCollection services)
+        #region ConfigureContainer should be only one
+        // for aspectcore
+        public void ConfigureContainer(IServiceContainer builder)
+        {
+            builder.ConfigureAspectCoreInterceptor();
+        }
+
+        //// ConfigureContainer is where you can register things directly
+        //// with Autofac. This runs after ConfigureServices so the things
+        //// here will override registrations made in ConfigureServices.
+        //// Don't build the container; that gets done for you by the factory.
+        // for castle
+        //public void ConfigureContainer(ContainerBuilder builder)
         //{
-        //    services.AddTransient<ICastleService, CastleService>();
+        //    builder.ConfigureCastleInterceptor();
+        //} 
+        #endregion
 
-        //    services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-        //    services.AddEasyCaching(options =>
-        //    {
-        //        options.UseInMemory();
-
-        //        //options.UseRedis(config =>
-        //        //{
-        //        //    config.DBConfig = new RedisDBOptions { Configuration = "localhost" };
-        //        //});
-        //    });
-
-        //    //2.1. all default
-        //    return services.ConfigureCastleInterceptor();
-
-        //    //2.2. default and customize
-        //    //Action<ContainerBuilder> action = x =>
-        //    //{
-        //    //    x.RegisterType<CastleService>().As<ICastleService>();
-        //    //};
-
-        //    //return services.ConfigureCastleInterceptor(action);
-
-        //    //2.3. all customize
-        //    //Action<ContainerBuilder> action = x =>
-        //    //{
-        //    //    x.RegisterType<DateTimeService>().As<IDateTimeService>();
-
-        //    //    var assembly = Assembly.GetExecutingAssembly();
-        //    //    x.RegisterType<EasyCachingInterceptor>();
-
-        //    //    x.RegisterAssemblyTypes(assembly)
-        //    //        .Where(type => typeof(Core.Internal.IEasyCaching).IsAssignableFrom(type) && !type.GetTypeInfo().IsAbstract)
-        //    //        .AsImplementedInterfaces()
-        //    //        .InstancePerLifetimeScope()
-        //    //        .EnableInterfaceInterceptors()
-        //    //        .InterceptedBy(typeof(EasyCachingInterceptor));
-        //    //};
-
-        //    //return services.ConfigureCastleInterceptor(action, true);
-        //}
-
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseMvc();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

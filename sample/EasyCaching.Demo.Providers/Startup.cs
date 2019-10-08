@@ -1,21 +1,13 @@
 ﻿namespace EasyCaching.Demo.Providers
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
-    using EasyCaching.InMemory;
-    using EasyCaching.HybridCache;
-    using EasyCaching.Memcached;
-    using EasyCaching.Redis;
+    using EasyCaching.Core.Configurations;
     using EasyCaching.SQLite;
-    using EasyCaching.Serialization.MessagePack;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
-    using System;
-    using EasyCaching.Core.Configurations;
 
     public class Startup
     {
@@ -28,10 +20,10 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddControllers();
 
             //new configuration
-            services.AddEasyCaching(option=> 
+            services.AddEasyCaching(option =>
             {
                 //use memory cache
                 option.UseInMemory("default");
@@ -40,7 +32,7 @@
                 option.UseInMemory("cus");
 
                 //use redis cache
-                option.UseRedis(config => 
+                option.UseRedis(config =>
                 {
                     config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
                     config.SerializerName = "mymsgpack";
@@ -49,29 +41,29 @@
                 ;
 
                 //use redis cache
-                option.UseRedis(config => 
+                option.UseRedis(config =>
                 {
                     config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                 }, "redis2");
 
-                ////use sqlite cache
-                //option.UseSQLite(config =>
-                //{
-                //    config.DBConfig = new SQLiteDBOptions { FileName = "my.db" };
-                //});
+                //use sqlite cache
+                option.UseSQLite(config =>
+                {
+                    config.DBConfig = new SQLiteDBOptions { FileName = "my.db" };
+                });
 
-                ////use memcached cached
-                //option.UseMemcached(config => 
-                //{
-                //    config.DBConfig.AddServer("127.0.0.1", 11211);
-                //});
+                //use memcached cached
+                option.UseMemcached(config =>
+                {
+                    config.DBConfig.AddServer("127.0.0.1", 11211);
+                });
 
-                //option.UseMemcached(Configuration);
+                option.UseMemcached(Configuration);
 
-            });                      
+            });
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -81,9 +73,14 @@
             //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 
             // Important step for using Memcached Cache or SQLite Cache
-            app.UseEasyCaching();
+            //app.UseEasyCaching();
 
-            app.UseMvc();
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

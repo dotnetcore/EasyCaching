@@ -2,7 +2,6 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
@@ -17,6 +16,7 @@
         /// The name.
         /// </summary>
         private readonly string _name;
+
         /// <summary>
         /// The configure.
         /// </summary>
@@ -54,20 +54,10 @@
                 var mCache = x.GetServices<IInMemoryCaching>();
                 var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
                 var options = optionsMon.Get(_name);
-                //ILoggerFactory can be null
+                // ILoggerFactory can be null
                 var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
                 return new DefaultInMemoryCachingProvider(_name, mCache, options, factory);
             });
-
-        }
-
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="services">Services.</param>
-        public void WithServices(IApplicationBuilder services)
-        {
-            // Method intentionally left empty.
         }
     }
 }

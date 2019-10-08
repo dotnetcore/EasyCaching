@@ -3,7 +3,6 @@
     using System;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.Extensions.DependencyInjection;
 
     /// <summary>
@@ -50,15 +49,6 @@
                 var options = optionsMon.Get(_name);
                 return new DefaultJsonSerializer(_name, options);
             });
-        }
-
-        /// <summary>
-        /// Withs the services.
-        /// </summary>
-        /// <param name="services">Services.</param>
-        public void WithServices(IApplicationBuilder services)
-        {
-            // Method intentionally left empty.
         }
     }
 }

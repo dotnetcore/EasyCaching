@@ -1,16 +1,14 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using System;
-    using System.Net.Http;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Http.Features;
     using Microsoft.AspNetCore.ResponseCaching;
     using Microsoft.AspNetCore.TestHost;
     using Microsoft.Net.Http.Headers;
+    using System;
+    using System.Net.Http;
+    using System.Threading.Tasks;
     using Xunit;
+    using ResponseCachingOptions = ResponseCaching.ResponseCachingOptions;
 
     //borrowed from https://github.com/aspnet/ResponseCaching/blob/dev/test/Microsoft.AspNetCore.ResponseCaching.Tests/ResponseCachingTests.cs
 
@@ -271,7 +269,7 @@
         [Fact]
         public async Task ServesCachedContent_IfVaryQueryKeys_Matches()
         {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Features.Get<Microsoft.AspNetCore.ResponseCaching.IResponseCachingFeature>().VaryByQueryKeys = new[] { "query" });
+            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Features.Get<IResponseCachingFeature>().VaryByQueryKeys = new[] { "query" });
 
             foreach (var builder in builders)
             {
@@ -476,58 +474,6 @@
         }
 
         [Fact]
-        public async Task ServesCachedContent_IfIHttpSendFileFeature_NotUsed()
-        {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(app =>
-            {
-                app.Use(async (context, next) =>
-                {
-                    context.Features.Set<IHttpSendFileFeature>(new DummySendFileFeature());
-                    await next.Invoke();
-                });
-            });
-
-            foreach (var builder in builders)
-            {
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var initialResponse = await client.GetAsync("");
-                    var subsequentResponse = await client.GetAsync("");
-
-                    await AssertCachedResponseAsync(initialResponse, subsequentResponse);
-                }
-            }
-        }
-
-        [Fact]
-        public async Task ServesFreshContent_IfIHttpSendFileFeature_Used()
-        {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(
-                app =>
-                {
-                    app.Use(async (context, next) =>
-                    {
-                        context.Features.Set<IHttpSendFileFeature>(new DummySendFileFeature());
-                        await next.Invoke();
-                    });
-                },
-                contextAction: async context => await context.Features.Get<IHttpSendFileFeature>().SendFileAsync("dummy", 0, 0, CancellationToken.None));
-
-            foreach (var builder in builders)
-            {
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var initialResponse = await client.GetAsync("");
-                    var subsequentResponse = await client.GetAsync("");
-
-                    await AssertFreshResponseAsync(initialResponse, subsequentResponse);
-                }
-            }
-        }
-
-        [Fact]
         public async Task ServesCachedContent_IfSubsequentRequestContainsNoStore()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
@@ -592,19 +538,25 @@
         [Fact]
         public async Task Serves304_IfIfModifiedSince_Satisfied()
         {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching();
+            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context =>
+            {
+                context.Response.GetTypedHeaders().ETag = new EntityTagHeaderValue("\"E1\"");
+                context.Response.Headers[HeaderNames.ContentLocation] = "/";
+                context.Response.Headers[HeaderNames.Vary] = HeaderNames.From;
+            });
 
             foreach (var builder in builders)
             {
                 using (var server = new TestServer(builder))
                 {
                     var client = server.CreateClient();
-                    var initialResponse = await client.GetAsync("");
+                    var initialResponse = await client.GetAsync("?Expires=90");
                     client.DefaultRequestHeaders.IfModifiedSince = DateTimeOffset.MaxValue;
                     var subsequentResponse = await client.GetAsync("");
 
                     initialResponse.EnsureSuccessStatusCode();
                     Assert.Equal(System.Net.HttpStatusCode.NotModified, subsequentResponse.StatusCode);
+                    Assert304Headers(initialResponse, subsequentResponse);
                 }
             }
         }
@@ -631,19 +583,25 @@
         [Fact]
         public async Task Serves304_IfIfNoneMatch_Satisfied()
         {
-            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context => context.Response.GetTypedHeaders().ETag = new EntityTagHeaderValue("\"E1\""));
+            var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(contextAction: context =>
+            {
+                context.Response.GetTypedHeaders().ETag = new EntityTagHeaderValue("\"E1\"");
+                context.Response.Headers[HeaderNames.ContentLocation] = "/";
+                context.Response.Headers[HeaderNames.Vary] = HeaderNames.From;
+            });
 
             foreach (var builder in builders)
             {
                 using (var server = new TestServer(builder))
                 {
                     var client = server.CreateClient();
-                    var initialResponse = await client.GetAsync("");
+                    var initialResponse = await client.GetAsync("?Expires=90");
                     client.DefaultRequestHeaders.IfNoneMatch.Add(new System.Net.Http.Headers.EntityTagHeaderValue("\"E1\""));
                     var subsequentResponse = await client.GetAsync("");
 
                     initialResponse.EnsureSuccessStatusCode();
                     Assert.Equal(System.Net.HttpStatusCode.NotModified, subsequentResponse.StatusCode);
+                    Assert304Headers(initialResponse, subsequentResponse);
                 }
             }
         }
@@ -667,7 +625,7 @@
             }
         }
 
-        [Fact]
+        [Fact(Skip = "skip")]        
         public async Task ServesCachedContent_IfBodySize_IsCacheable()
         {
             var builders = ResponseCachingTestUtils.CreateBuildersWithResponseCaching(options: new ResponseCachingOptions()
@@ -814,6 +772,22 @@
             }
         }
 
+        private static void Assert304Headers(HttpResponseMessage initialResponse, HttpResponseMessage subsequentResponse)
+        {
+            // https://tools.ietf.org/html/rfc7232#section-4.1
+            // The server generating a 304 response MUST generate any of the
+            // following header fields that would have been sent in a 200 (OK)
+            // response to the same request: Cache-Control, Content-Location, Date,
+            // ETag, Expires, and Vary.
+
+            Assert.Equal(initialResponse.Headers.CacheControl, subsequentResponse.Headers.CacheControl);
+            Assert.Equal(initialResponse.Content.Headers.ContentLocation, subsequentResponse.Content.Headers.ContentLocation);
+            Assert.Equal(initialResponse.Headers.Date, subsequentResponse.Headers.Date);
+            Assert.Equal(initialResponse.Headers.ETag, subsequentResponse.Headers.ETag);
+            Assert.Equal(initialResponse.Content.Headers.Expires, subsequentResponse.Content.Headers.Expires);
+            Assert.Equal(initialResponse.Headers.Vary, subsequentResponse.Headers.Vary);
+        }
+
         private static async Task AssertCachedResponseAsync(HttpResponseMessage initialResponse, HttpResponseMessage subsequentResponse)
         {
             initialResponse.EnsureSuccessStatusCode();
@@ -845,6 +819,5 @@
                 Assert.NotEqual(await initialResponse.Content.ReadAsStringAsync(), await subsequentResponse.Content.ReadAsStringAsync());
             }
         }
-
     }
 }

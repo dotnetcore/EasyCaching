@@ -1,21 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build/version.props" />
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>    
+    <Authors>ncc;Catcher Wong</Authors>
     <Version>$(EasyCachingHybridPackageVersion)</Version>
-    <Description>    
-      A simple hybrid caching provider combines local caching and distributed caching.         
-    </Description>    
+    <Description>
+      A simple hybrid caching provider combines local caching and distributed caching.
+    </Description>
     <PackageTags>Hybrid,Synchronization,LocalCache,DistributedCache,Caching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/dotnetcore/EasyCaching/master/media/nuget-icon.png</PackageIconUrl>
-    <PackageReleaseNotes> 
+    <PackageIcon>nuget-icon.png</PackageIcon>
+    <PackageReleaseNotes>
       $(EasyCachingHybridPackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
@@ -26,17 +26,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" PackagePath="" />
+    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Folder Include="Configurations\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Polly" Version="7.1.0" />
+    <PackageReference Include="Polly" Version="7.1.1" />
   </ItemGroup>
 </Project>

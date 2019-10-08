@@ -1,9 +1,10 @@
-﻿namespace EasyCaching.Bus.CSRedis
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
-    using System;
+    using EasyCaching.Bus.CSRedis;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
+    using System;
 
     /// <summary>
     /// EasyCaching options extensions.
@@ -11,30 +12,32 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Withs the redis bus.
+        /// Withs the CSRedis bus (specify the config via hard code).
         /// </summary>
-        /// <returns>The redis bus.</returns>
         /// <param name="options">Options.</param>
-        /// <param name="configure">Configure.</param>
-        public static EasyCachingOptions WithCSRedisBus(this EasyCachingOptions options, Action<CSRedisBusOptions> configure)
+        /// <param name="configure">Configure bus settings.</param>
+        public static EasyCachingOptions WithCSRedisBus(
+            this EasyCachingOptions options
+            , Action<CSRedisBusOptions> configure
+            )
         {
-            if (configure == null)
-            {
-                throw new ArgumentNullException(nameof(configure));
-            }
+            ArgumentCheck.NotNull(configure, nameof(configure));
 
             options.RegisterExtension(new CSRedisOptionsExtension(configure));
             return options;
         }
 
         /// <summary>
-        /// Withs the redis bus.
+        /// Withs the CSRedis bus (read config from configuration file).
         /// </summary>
-        /// <returns>The redis bus.</returns>
         /// <param name="options">Options.</param>
-        /// <param name="configuration">Configuration.</param>
-        /// <param name="sectionName">Section name.</param>
-        public static EasyCachingOptions WithCSRedisBus(this EasyCachingOptions options, IConfiguration configuration, string sectionName = EasyCachingConstValue.RedisBusSection)
+        /// <param name="configuration">The configuration.</param>
+        /// <param name="sectionName">The section name in the configuration file.</param>
+        public static EasyCachingOptions WithCSRedisBus(
+            this EasyCachingOptions options
+            , IConfiguration configuration
+            , string sectionName = EasyCachingConstValue.RedisBusSection
+            )
         {
             var dbConfig = configuration.GetSection(sectionName);
             var redisOptions = new CSRedisBusOptions();
