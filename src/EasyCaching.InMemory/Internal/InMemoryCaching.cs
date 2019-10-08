@@ -68,7 +68,7 @@
 
             try
             {
-                var value = cacheEntry.GetValue<T>();
+                var value = cacheEntry.GetValue<T>(_options.EnableReadDeepClone);
                 return new CacheValue<T>(value, true);
             }
             catch (Exception ex)
@@ -140,19 +140,36 @@
                 RemoveAll(oldestList);
             }
 
-            if (addOnly)
+            CacheEntry deep = null;
+            if (_options.EnableWriteDeepClone)
             {
-                if (!_memory.TryAdd(entry.Key, entry))
+                try
                 {
-                    if (!_memory.TryGetValue(entry.Key, out var existingEntry) || existingEntry.ExpiresAt >= SystemClock.UtcNow)
-                        return false;
-
-                    _memory.AddOrUpdate(entry.Key, entry, (k, cacheEntry) => entry);
+                    deep = DeepClonerGenerator.CloneObject(entry);
+                }
+                catch (Exception)
+                {
+                    deep = entry;
                 }
             }
             else
             {
-                _memory.AddOrUpdate(entry.Key, entry, (k, cacheEntry) => entry);
+                deep = entry;
+            }
+
+            if (addOnly)
+            {
+                if (!_memory.TryAdd(deep.Key, deep))
+                {
+                    if (!_memory.TryGetValue(deep.Key, out var existingEntry) || existingEntry.ExpiresAt >= SystemClock.UtcNow)
+                        return false;
+
+                    _memory.AddOrUpdate(deep.Key, deep, (k, cacheEntry) => deep);
+                }
+            }
+            else
+            {
+                _memory.AddOrUpdate(deep.Key, deep, (k, cacheEntry) => deep);
             }
 
             StartScanForExpiredItems();
@@ -252,7 +269,7 @@
         public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string key)
         {
             var values = _memory.Values.Where(x => x.Key.StartsWith(key, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow);
-            return values.ToDictionary(k => k.Key, v => new CacheValue<T>(v.GetValue<T>(), true));
+            return values.ToDictionary(k => k.Key, v => new CacheValue<T>(v.GetValue<T>(_options.EnableReadDeepClone), true));
         }
 
         public TimeSpan GetExpiration(string key)
@@ -309,7 +326,7 @@
             /// </summary>
             /// <typeparam name="T"></typeparam>
             /// <returns></returns>
-            public T GetValue<T>()
+            public T GetValue<T>(bool isDeepClone = true)
             {
                 object val = Value;
               
@@ -320,9 +337,10 @@
 
                 if (t == TypeHelper.NullableBoolType || t == TypeHelper.NullableCharType || t == TypeHelper.NullableDateTimeType || t.IsNullableNumeric())
                     return val == null ? default(T) : (T)Convert.ChangeType(val, Nullable.GetUnderlyingType(t));
-                
-                //return (T)val;
-                return DeepClonerGenerator.CloneObject<T>((T)val);
+
+                return isDeepClone 
+                    ? DeepClonerGenerator.CloneObject<T>((T)val)
+                    : (T)val;
             }
         }
     }

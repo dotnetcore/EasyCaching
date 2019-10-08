@@ -97,13 +97,7 @@ namespace EasyCaching.UnitTests
             var res2 = _provider.Get<MySettingForCaching>(cacheKey);
 
             Assert.Equal("catcherwong", res2.Value.Name);
-        }
-              
-        [Serializable]
-        public class MySettingForCaching
-        {
-            public string Name { get; set; }
-        }
+        }      
     }
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {
@@ -203,5 +197,127 @@ namespace EasyCaching.UnitTests
             //Assert.Equal(99, _provider.Order);
             Assert.Equal("mName", _provider.Name);
         }
+    }
+
+    public class MemoryCachingProviderDeepCloneTest
+    {
+        private readonly TimeSpan _defaultTs;
+
+        private readonly IEasyCachingProvider _m1;
+        private readonly IEasyCachingProvider _m2;
+        private readonly IEasyCachingProvider _m3;
+
+        public MemoryCachingProviderDeepCloneTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(x => 
+            {
+                x.UseInMemory(options => 
+                {
+                    options.MaxRdSecond = 0;
+                    //options.DBConfig = new InMemoryCachingOptions
+                    //{
+                    //    EnableWriteDeepClone = false,
+                    //    EnableReadDeepClone = true,                       
+                    //};
+                }, "m1");
+
+                x.UseInMemory(options =>
+                {
+                    options.MaxRdSecond = 0;
+                    options.DBConfig = new InMemoryCachingOptions
+                    {
+                        EnableWriteDeepClone = true,
+                        EnableReadDeepClone = true,
+                    };
+                }, "m2");
+
+                x.UseInMemory(options =>
+                {
+                    options.MaxRdSecond = 0;
+                    options.DBConfig = new InMemoryCachingOptions
+                    {
+                        EnableWriteDeepClone = false,
+                        EnableReadDeepClone = false,
+                    };
+                }, "m3");
+            });
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+
+            _m1 = factory.GetCachingProvider("m1");
+            _m2 = factory.GetCachingProvider("m2");
+            _m3 = factory.GetCachingProvider("m3");
+
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        [Fact]
+        public void Enable_Read_Write_DeepClone_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var cacheValue = new MySettingForCaching { Name = "catcherwong" };
+
+            _m2.Set(cacheKey, cacheValue, _defaultTs);
+
+            cacheValue.Name = "afterset";
+
+            var res = _m2.Get<MySettingForCaching>(cacheKey);
+
+            res.Value.Name = "kobe";
+
+            var res2 = _m2.Get<MySettingForCaching>(cacheKey);
+
+            Assert.Equal("catcherwong", res2.Value.Name);
+        }
+
+
+        [Fact]
+        public void Enable_Read_And_Disable_Write_DeepClone_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var cacheValue = new MySettingForCaching { Name = "catcherwong" };
+
+            _m1.Set(cacheKey, cacheValue, _defaultTs);
+
+            cacheValue.Name = "afterset";
+
+            var res = _m1.Get<MySettingForCaching>(cacheKey);
+
+            res.Value.Name = "kobe";
+
+            var res2 = _m1.Get<MySettingForCaching>(cacheKey);
+
+            Assert.Equal("afterset", res2.Value.Name);
+        }
+
+
+        [Fact]
+        public void Disable_Read_And_Disable_Write_DeepClone_Should_Succeed()
+        {
+            var cacheKey = Guid.NewGuid().ToString();
+
+            var cacheValue = new MySettingForCaching { Name = "catcherwong" };
+
+            _m3.Set(cacheKey, cacheValue, _defaultTs);
+
+            cacheValue.Name = "afterset";
+
+            var res = _m3.Get<MySettingForCaching>(cacheKey);
+
+            res.Value.Name = "kobe";
+
+            var res2 = _m3.Get<MySettingForCaching>(cacheKey);
+
+            Assert.Equal("kobe", res2.Value.Name);
+        }        
+    }
+
+    [Serializable]
+    public class MySettingForCaching
+    {
+        public string Name { get; set; }
     }
 }

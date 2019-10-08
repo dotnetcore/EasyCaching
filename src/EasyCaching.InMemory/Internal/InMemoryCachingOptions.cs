@@ -16,6 +16,15 @@
         /// <value>The size limit.</value>
         public int SizeLimit { get; set; } = 10000;
 
+        /// <summary>
+        /// Gets or sets whether to enable deep clone when reading object from cache.
+        /// </summary>
+        public bool EnableReadDeepClone { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets whether to enable deep clone when writing object to cache.
+        /// </summary>
+        public bool EnableWriteDeepClone { get; set; } = false;
 
         InMemoryCachingOptions IOptions<InMemoryCachingOptions>.Value
         {
