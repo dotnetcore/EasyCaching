@@ -1,13 +1,12 @@
 language: csharp
 solution: EasyCaching.sln
-dist: xenial
+dist: bionic
 sudo: required    
 dotnet: 3.0.100
 mono: none
 
 services:
-  - memcached
-  - redis-server
+  - docker
 
 os:
   - linux
@@ -21,7 +20,15 @@ branches:
     - dev
  
 script:
+  # osx do not support docker 
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then docker pull redis; fi
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then docker pull memcached; fi
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 6379:6379 --name redis6379 -d redis:latest redis-server; fi
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 6380:6379 --name redis6380 -d redis:latest redis-server; fi  
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 6388:6379 --name redis6388 -d redis:latest redis-server; fi  
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 11211:11211 --name memcached1 -d memcached:latest memcached -m 64 -c 2048; fi  
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 11212:11211 --name memcached2 -d memcached:latest memcached -m 64 -c 2048; fi  
   - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet restore; fi
-  - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi
+  - if test "$TRAVIS_OS_NAME" == "osx"; then dotnet restore --disable-parallel; fi  
   - dotnet build -c Release
-  #- if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj; fi
+  # - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release --no-build ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj; fi
