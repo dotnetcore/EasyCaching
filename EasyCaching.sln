@@ -52,7 +52,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.CSRedis", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Disk", "src\EasyCaching.Disk\EasyCaching.Disk.csproj", "{3D48FD75-01D6-44F9-B7C3-CB6DE784F476}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Demo.ConsoleApp", "sample\EasyCaching.Demo.ConsoleApp\EasyCaching.Demo.ConsoleApp.csproj", "{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Demo.ConsoleApp", "sample\EasyCaching.Demo.ConsoleApp\EasyCaching.Demo.ConsoleApp.csproj", "{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "Build.csproj", "{DB255091-E64C-43F0-8A49-245A2EE5F6C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -152,6 +154,10 @@ Global
 		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB255091-E64C-43F0-8A49-245A2EE5F6C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB255091-E64C-43F0-8A49-245A2EE5F6C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB255091-E64C-43F0-8A49-245A2EE5F6C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB255091-E64C-43F0-8A49-245A2EE5F6C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -180,6 +186,7 @@ Global
 		{861E5373-BEF6-4AA2-92C7-8F4941A079E7} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{3D48FD75-01D6-44F9-B7C3-CB6DE784F476} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
+		{DB255091-E64C-43F0-8A49-245A2EE5F6C6} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63A57886-054B-476C-AAE1-8D7C8917682E}

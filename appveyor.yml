@@ -41,13 +41,10 @@ for:
   - ps: cd c:\projects\easycaching
                 
   before_build:
-  - ps: dotnet restore
+  - ps: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.7
 
   build_script:
-  - ps: dotnet build -c Release
-
-  test_script:
-  - ps: dotnet test -c Release --no-build .\test\EasyCaching.UnitTests\EasyCaching.UnitTests.csproj
+  - ps: flubu Rebuild.Server
 
 -
   matrix:
@@ -69,12 +66,8 @@ for:
   - sh: sudo memcached -p 11212 -u root -m 64m -d
     
   before_build:
-  - sh: dotnet restore
+  - sh: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.7
   
   build_script:
-  - sh: dotnet build -c Release
-  
-  test_script:
-   - sh: dotnet test -c Release --no-build ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
-  
+  - sh: flubu Rebuild 
    
