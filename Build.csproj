@@ -48,9 +48,11 @@
   <ItemGroup>
     <PackageReference Include="FlubuCore" Version="4.2.8" />
   </ItemGroup>
+  
   <ItemGroup>
     <DotNetCliToolReference Include="dotnet-flubu" Version="4.2.8" />
   </ItemGroup>
+  
   <ItemGroup>
     <Folder Include="output\" />
   </ItemGroup>
