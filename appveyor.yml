@@ -38,8 +38,6 @@ for:
   - ps: docker run -p 11211:11211 --name memcached1 -d bitnami/memcached:latest
   - ps: docker run -p 11212:11211 --name memcached2 -d bitnami/memcached:latest
   - ps: docker ps -a
-                 
-  before_build:
   - ps: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
 
   build_script:
