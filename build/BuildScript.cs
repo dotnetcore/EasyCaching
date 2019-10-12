@@ -33,6 +33,8 @@ namespace Build
 
             var runTests = context.CreateTarget("Run.Tests")
                 .SetDescription("Run's all Easy caching tests.")
+                .AddTask(X => X.RunProgramTask("docker")
+                    .WithArguments("ps", "-a"))
                 .AddCoreTask(x => x.Test().Project("test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj").NoBuild());              
 
            var nugetPublish = context.CreateTarget("Nuget.Publish")

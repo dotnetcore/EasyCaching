@@ -43,7 +43,6 @@ for:
   build_script:
   - ps: flubu Rebuild.Server
 
--
   matrix:
     only:
       - image: Ubuntu1804
@@ -62,10 +61,8 @@ for:
   - sh: docker run -p 11211:11211 --name memcached1 -d memcached memcached -m 64 -c 2048
   - sh: docker run -p 11212:11211 --name memcached2 -d memcached memcached -m 64 -c 2048
   - sh: docker ps -a
-  - sh: dotnet restore
   - sh: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
   
-  build_script:
-  - ps: docker ps -a
+  build_script: 
   - sh: flubu Rebuild   
    
