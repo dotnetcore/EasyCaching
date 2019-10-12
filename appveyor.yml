@@ -63,8 +63,6 @@ for:
   - sh: docker run -p 11212:11211 --name memcached2 -d memcached memcached -m 64 -c 2048
   - sh: docker ps -a
   - sh: dotnet restore
-  
- before_build:
   - sh: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
   
   build_script:
