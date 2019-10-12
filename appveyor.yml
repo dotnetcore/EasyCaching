@@ -41,8 +41,9 @@ for:
   - ps: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
 
   build_script:
-  - ps: flubu Rebuild.Server
-
+   - ps: flubu Rebuild.Server
+ 
+-
   matrix:
     only:
       - image: Ubuntu1804
@@ -63,6 +64,6 @@ for:
   - sh: docker ps -a
   - sh: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
   
-  build_script: 
-  - sh: flubu Rebuild   
-   
+  build_script:
+  - sh: flubu Rebuild 
+    
