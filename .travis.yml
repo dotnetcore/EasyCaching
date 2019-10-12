@@ -21,5 +21,6 @@ branches:
     - dev
  
 script:
-  - dotnet tool install --global FlubuCore.GlobalTool --version 4.2.7
+  - export PATH="$PATH:$HOME/.dotnet/tools"
+  - dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
   - flubu build
