@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="article\**" />
+    <Compile Remove="Build\bin\**" />
+    <Compile Remove="Build\obj\**" />
+    <Compile Remove="docs\**" />
+    <Compile Remove="Image\**" />
+    <Compile Remove="lang\**" />
+    <Compile Remove="media\**" />
+    <Compile Remove="samples\**" />
+    <Compile Remove="sample\**" />
+    <Compile Remove="src\**" />
+    <Compile Remove="test\**" />
+    <EmbeddedResource Remove="article\**" />
+    <EmbeddedResource Remove="Build\bin\**" />
+    <EmbeddedResource Remove="Build\obj\**" />
+    <EmbeddedResource Remove="docs\**" />
+    <EmbeddedResource Remove="Image\**" />
+    <EmbeddedResource Remove="lang\**" />
+    <EmbeddedResource Remove="media\**" />
+    <EmbeddedResource Remove="samples\**" />
+    <EmbeddedResource Remove="sample\**" />
+    <EmbeddedResource Remove="src\**" />
+    <EmbeddedResource Remove="test\**" />
+    <None Remove="article\**" />
+    <None Remove="Build\bin\**" />
+    <None Remove="Build\obj\**" />
+    <None Remove="docs\**" />
+    <None Remove="Image\**" />
+    <None Remove="lang\**" />
+    <None Remove="media\**" />
+    <None Remove="samples\**" />
+    <None Remove="sample\**" />
+    <None Remove="src\**" />
+    <None Remove="test\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".gitattributes" />
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FlubuCore" Version="4.2.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-flubu" Version="4.2.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="output\" />
+  </ItemGroup>
+</Project>
