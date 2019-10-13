@@ -32,9 +32,10 @@ namespace Build
                 .SetDescription("Run's all Easy caching tests.")
                 .AddTask(X => X.RunProgramTask("docker")
                     .WithArguments("ps", "-a"))
-                .AddCoreTask(x => x.Test().Project("test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj").NoBuild());              
+                .AddCoreTask(x => x.Test().Project("test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj")
+                    .NoBuild());
 
-           var nugetPublish = context.CreateTarget("Nuget.Publish")
+            var nugetPublish = context.CreateTarget("Nuget.Publish")
                 .SetDescription("Packs and publishes nuget package.")
                 .ForEach(_easyCachingProjectsToPack, (project, target) =>
                 {
@@ -46,7 +47,7 @@ namespace Build
                 })
                 .Do(PublishNuGetPackage);
 
-           var rebuild = context.CreateTarget("Rebuild")
+            var rebuild = context.CreateTarget("Rebuild")
                 .SetAsDefault()
                 .DependsOn(build);
 
@@ -58,7 +59,6 @@ namespace Build
 
         private void PublishNuGetPackage(ITaskContext context)
         {
-
             var packageFiles = Directory.GetFiles(@"./output", "*.nupkg");
 
             foreach (var packageFile in packageFiles)
