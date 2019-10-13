@@ -43,14 +43,14 @@ namespace Build
                         .AddCoreTask(x => x.Pack()
                             .Project(project)
                             .IncludeSymbols()
-                            .OutputDirectory("output"));
+                            .OutputDirectory(context.Properties.GetOutputDir()));
                 })
                 .Do(PublishNuGetPackage);
 
             var rebuild = context.CreateTarget("Rebuild")
                 .SetAsDefault()
-                .DependsOn(build);
-
+                .DependsOn(build, runTests);
+            
             context.CreateTarget("Rebuild.Server")
                 .SetAsDefault()
                 .DependsOn(rebuild)
@@ -59,7 +59,7 @@ namespace Build
 
         private void PublishNuGetPackage(ITaskContext context)
         {
-            var packageFiles = Directory.GetFiles(@"./output", "*.nupkg");
+            var packageFiles = Directory.GetFiles(context.Properties.GetOutputDir(), "*.nupkg");
 
             foreach (var packageFile in packageFiles)
             {
