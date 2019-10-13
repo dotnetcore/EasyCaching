@@ -29,7 +29,7 @@ namespace Build
                 .AddCoreTask(x => x.Build());
 
             var runTests = context.CreateTarget("Run.Tests")
-                .SetDescription("Run's all Easy caching tests.")
+                .SetDescription("Run's all EasyCaching tests.")
                 .AddTask(X => X.RunProgramTask("docker")
                     .WithArguments("ps", "-a"))
                 .AddCoreTask(x => x.Test().Project("test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj")
