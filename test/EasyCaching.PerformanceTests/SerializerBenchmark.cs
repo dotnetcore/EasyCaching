@@ -7,6 +7,7 @@
     using EasyCaching.Serialization.MessagePack;
     using EasyCaching.Serialization.Protobuf;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
 
@@ -14,7 +15,7 @@
     [AllStatisticsColumn]
     public abstract class SerializerBenchmark
     {
-        private DefaultJsonSerializer _json = new DefaultJsonSerializer("json", new EasyCachingJsonSerializerOptions());
+        private DefaultJsonSerializer _json = new DefaultJsonSerializer("json", new JsonSerializerSettings());
         private DefaultMessagePackSerializer _messagepack = new DefaultMessagePackSerializer("msgpack");
         private DefaultProtobufSerializer _protobuf = new DefaultProtobufSerializer("proto");
         private DefaultBinaryFormatterSerializer _binary = new DefaultBinaryFormatterSerializer();

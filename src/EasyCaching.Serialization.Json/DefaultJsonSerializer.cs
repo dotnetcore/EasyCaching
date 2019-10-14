@@ -26,22 +26,11 @@
         /// Initializes a new instance of the <see cref="T:EasyCaching.Serialization.Json.DefaultJsonSerializer"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
-        /// <param name="options">Options.</param>
-        public DefaultJsonSerializer(string name, EasyCachingJsonSerializerOptions options)
+        /// <param name="serializerSettings">serializerSettings.</param>
+        public DefaultJsonSerializer(string name, JsonSerializerSettings serializerSettings)
         {
             _name = name;
-            jsonSerializer = new JsonSerializer
-            { 
-                ReferenceLoopHandling = options.ReferenceLoopHandling,
-                TypeNameHandling = options.TypeNameHandling,
-                MetadataPropertyHandling = options.MetadataPropertyHandling,
-                MissingMemberHandling = options.MissingMemberHandling,
-                NullValueHandling = options.NullValueHandling,
-                DefaultValueHandling = options.DefaultValueHandling,
-                ObjectCreationHandling = options.ObjectCreationHandling,
-                PreserveReferencesHandling = options.PreserveReferencesHandling,
-                ConstructorHandling = options.ConstructorHandling
-            };
+            jsonSerializer = JsonSerializer.Create(serializerSettings); 
         }
 
         /// <summary>
