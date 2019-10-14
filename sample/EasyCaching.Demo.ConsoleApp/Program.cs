@@ -16,7 +16,14 @@
             {
                 option.UseInMemory("m1");
 
-                option.UseSQLite(c => 
+                //option.UseRedis(config =>
+                //{
+                //    config.DBConfig = new Redis.RedisDBOptions { Configuration = "localhost" };
+                //    config.SerializerName = "json";
+                //}, "r1");
+
+
+                option.UseSQLite(c =>
                 {
                     c.DBConfig = new SQLiteDBOptions
                     {
@@ -24,13 +31,32 @@
                         CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default,
                         OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory,
                     };
-                }, "s1");               
+                }, "s1");
+
+                //option.WithJson(jsonSerializerSettingsConfigure: x =>
+                //{
+                //    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                //}, "json");
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
 
+            //var reidsCache = factory.GetCachingProvider("r1");
+
+            //reidsCache.Set<Product>("rkey", new Product() { Name = "test" }, TimeSpan.FromSeconds(20));
+
+            //var reidsVal = reidsCache.Get<Product>("rkey");
+
+            //Console.WriteLine($"redis cache get value, {reidsVal.HasValue} {reidsVal.IsNull} {reidsVal.Value} ");
+
+
             var mCache = factory.GetCachingProvider("m1");
+
+            mCache.Set<Product>("mkey1", new Product() { Name = "test" }, TimeSpan.FromSeconds(20));
+
+            var mVal1 = mCache.Get<Product>("mkey1");
+
 
             mCache.Set<string>("mkey", "mvalue", TimeSpan.FromSeconds(20));
 
@@ -48,5 +74,11 @@
 
             Console.ReadKey();
         }
+    }
+
+    public class Product
+    {
+
+        public string Name { get; set; }
     }
 }
