@@ -10,7 +10,7 @@
     {
         public JsonSerializerTest()
         {
-            _serializer = new DefaultJsonSerializer("json", new EasyCachingJsonSerializerOptions());
+            _serializer = new DefaultJsonSerializer("json", new JsonSerializerSettings());
         }
 
         [Fact]
@@ -27,7 +27,7 @@
         [Fact]
         public void ReferenceLoopHandling_Test_Should_Succeed()
         {
-            var  serializer = new DefaultJsonSerializer("json", new EasyCachingJsonSerializerOptions()
+            var serializer = new DefaultJsonSerializer("json", new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             });
@@ -54,12 +54,12 @@
         [Fact]
         public void NullValueHandling_Test_Should_Succeed()
         {
-            var  serializer = new DefaultJsonSerializer("json", new EasyCachingJsonSerializerOptions()
+            var serializer = new DefaultJsonSerializer("json", new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
 
-            Employee joe = new Employee { Name = "Joe User" };           
+            Employee joe = new Employee { Name = "Joe User" };
 
             var joe_byte = serializer.Serialize(joe);
             var joe_obj = serializer.Deserialize<Employee>(joe_byte);
