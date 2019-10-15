@@ -5,6 +5,10 @@ image:
 configuration: Release
 clone_depth: 50
 
+environment:
+  api_key:
+    secure: EjcBgIRpoy3pxVyKUnQFNg==
+
 pull_requests:
   do_not_increment_build_number: true
 
