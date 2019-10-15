@@ -51,10 +51,12 @@ namespace Build
                 .SetAsDefault()
                 .DependsOn(build, runTests);
             
+            var branch = Environment.GetEnvironmentVariable("APPVEYOR_REPO_BRANCH");
             context.CreateTarget("Rebuild.Server")
                 .SetAsDefault()
                 .DependsOn(rebuild)
-                .DependsOn(nugetPublish);
+                .DependsOn(nugetPublish)
+                   .When((c) => c.BuildSystems().RunningOn == BuildSystemType.AppVeyor && branch != null && branch.Equals("master", StringComparison.OrdinalIgnoreCase));
         }
 
         private void PublishNuGetPackage(ITaskContext context)
