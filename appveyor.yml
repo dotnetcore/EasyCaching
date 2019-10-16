@@ -5,6 +5,10 @@ image:
 configuration: Release
 clone_depth: 50
 
+environment:
+  api_key:
+    secure: uLmHVukKUWd0jiGGi3V1V9eomr8hCLB75dYvr1BkO0piqqIkuIF+fB/gwVWJ0zYQ
+
 pull_requests:
   do_not_increment_build_number: true
 
@@ -41,7 +45,7 @@ for:
   - ps: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
 
   build_script:
-   - ps: flubu Rebuild.Server
+   - ps: flubu Rebuild.Server -apiKey=$env:api_key
  
 -
   matrix:

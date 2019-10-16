@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using FlubuCore.Context;
+using FlubuCore.Context.FluentInterface;
 using FlubuCore.Context.FluentInterface.Interfaces;
 using FlubuCore.Scripting;
+using FlubuCore.Targeting;
 
 namespace Build
 {
@@ -49,12 +51,16 @@ namespace Build
 
             var rebuild = context.CreateTarget("Rebuild")
                 .SetAsDefault()
+                .SetDescription("Build's the solution and run's all tests.")
                 .DependsOn(build, runTests);
             
+            var branch = Environment.GetEnvironmentVariable("APPVEYOR_REPO_BRANCH");
+
             context.CreateTarget("Rebuild.Server")
-                .SetAsDefault()
+                .SetDescription("Build's the solution, run's all tests and publishes nuget package when running on Appveyor.")
                 .DependsOn(rebuild)
-                .DependsOn(nugetPublish);
+                .DependsOn(nugetPublish)
+                   .When((c) => c.BuildSystems().RunningOn == BuildSystemType.AppVeyor && branch != null && branch.Equals("master", StringComparison.OrdinalIgnoreCase));
         }
 
         private void PublishNuGetPackage(ITaskContext context)
