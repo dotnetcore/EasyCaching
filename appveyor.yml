@@ -7,7 +7,7 @@ clone_depth: 50
 
 environment:
   api_key:
-    secure: EjcBgIRpoy3pxVyKUnQFNg==
+    secure: uLmHVukKUWd0jiGGi3V1V9eomr8hCLB75dYvr1BkO0piqqIkuIF+fB/gwVWJ0zYQ
 
 pull_requests:
   do_not_increment_build_number: true
