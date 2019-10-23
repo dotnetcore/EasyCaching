@@ -20,5 +20,11 @@
         {
             this._name = name;
         }
+
+        public EasyCachingCSRedisClient(string name, string connectionString, string[] sentinels, bool readOnly)
+          : base(connectionString, sentinels, readOnly)
+        {
+            this._name = name;
+        }
     }        
 }

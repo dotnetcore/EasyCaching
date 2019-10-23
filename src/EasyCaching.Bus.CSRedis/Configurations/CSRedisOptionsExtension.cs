@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Bus.CSRedis
 {
     using System;
+    using System.Linq;
     using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
@@ -51,6 +52,14 @@
 
                 var conns = options.ConnectionStrings;
                 var rule = options.NodeRule;
+                var sentinels = options.Sentinels;
+                var readOnly = options.ReadOnly;
+
+                if (sentinels != null && sentinels.Any())
+                {
+                    var redisClient = new EasyCachingCSRedisClient(_name, conns[0], sentinels.ToArray(), readOnly);
+                    return redisClient;
+                }
 
                 if (conns.Count == 1)
                 {

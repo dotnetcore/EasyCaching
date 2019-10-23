@@ -12,9 +12,9 @@
 		<EasyCachingJsonPackageVersion>0.8.1</EasyCachingJsonPackageVersion>
 		<EasyCachingMessagePackPackageVersion>0.8.0</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>0.8.0</EasyCachingProtobufPackageVersion>
-		<EasyCachingCSRedisPackageVersion>0.8.0</EasyCachingCSRedisPackageVersion>
+		<EasyCachingCSRedisPackageVersion>0.8.1</EasyCachingCSRedisPackageVersion>
 		<EasyCachingRedisBusPackageVersion>0.8.0</EasyCachingRedisBusPackageVersion>
-		<EasyCachingCSRedisBusPackageVersion>0.8.0</EasyCachingCSRedisBusPackageVersion>
+		<EasyCachingCSRedisBusPackageVersion>0.8.1</EasyCachingCSRedisBusPackageVersion>
 		<EasyCachingRabbitBusPackageVersion>0.8.0</EasyCachingRabbitBusPackageVersion>
 		<EasyCachingDiskPackageVersion>0.8.0</EasyCachingDiskPackageVersion>
 	</PropertyGroup>

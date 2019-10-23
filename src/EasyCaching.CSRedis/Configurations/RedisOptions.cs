@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.CSRedis
 {
-    using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
 
     public class RedisOptions : BaseProviderOptions

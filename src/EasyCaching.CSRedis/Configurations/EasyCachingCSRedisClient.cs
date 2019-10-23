@@ -15,8 +15,14 @@
             this._name = name;
         }
 
-        public EasyCachingCSRedisClient(string name, Func<string, string> NodeRule, params string[] connectionStrings) 
-            : base(NodeRule, connectionStrings)
+        public EasyCachingCSRedisClient(string name, Func<string, string> nodeRule, params string[] connectionStrings) 
+            : base(nodeRule, connectionStrings)
+        {
+            this._name = name;
+        }
+
+        public EasyCachingCSRedisClient(string name, string connectionString, string[] sentinels, bool readOnly)
+           : base(connectionString, sentinels, readOnly)
         {
             this._name = name;
         }

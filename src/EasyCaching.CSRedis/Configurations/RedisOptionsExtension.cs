@@ -8,6 +8,7 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using System;
+    using System.Linq;
 
     /// <summary>
     /// Redis options extension.
@@ -58,6 +59,14 @@
 
                 var conns = options.DBConfig.ConnectionStrings;
                 var rule = options.DBConfig.NodeRule;
+                var sentinels = options.DBConfig.Sentinels;
+                var readOnly = options.DBConfig.ReadOnly;
+
+                if (sentinels != null && sentinels.Any())
+                {
+                    var redisClient = new EasyCachingCSRedisClient(_name, conns[0], sentinels.ToArray(), readOnly);
+                    return redisClient;
+                }
 
                 if (conns.Count == 1)
                 {
