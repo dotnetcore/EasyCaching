@@ -15,6 +15,19 @@
         /// Gets or sets the connection strings.
         /// </summary>
         /// <value>The connection strings.</value>
-        public List<string> ConnectionStrings { get; set; }        
+        public List<string> ConnectionStrings { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the sentinels settings.
+        /// </summary>
+        /// <value>The sentinels settings.</value>
+        public List<string> Sentinels { get; set; }
+
+        /// <summary>
+        /// Gets or sets the read write setting for sentinel mode.
+        /// </summary>
+        /// <value>The read write setting.</value>
+        public bool ReadOnly { get; set; }
     }
 }
