@@ -5,7 +5,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingRedisBusPackageVersion)</Version>
+    <Version>$(EasyCachingCSRedisBusPackageVersion)</Version>
     <Description>
       A simple caching bus(message bus) based on CSRedis.
     </Description>
@@ -16,7 +16,7 @@
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
     <PackageReleaseNotes>
-      $(EasyCachingRedisBusPackageNotes)
+      $(EasyCachingCSRedisBusPackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 
