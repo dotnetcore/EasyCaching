@@ -36,7 +36,4 @@
   <ItemGroup>
     <PackageReference Include="MessagePack" Version="1.7.3.7" />    
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configurations\" />
-  </ItemGroup>
 </Project>
