@@ -20,10 +20,16 @@
         /// <see cref="T:EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
-        public DefaultMessagePackSerializer(string name)
+        /// <param name="options">Options.</param>
+        public DefaultMessagePackSerializer(string name, EasyCachingMsgPackSerializerOptions options)
         {
             _name = name;
-            MessagePackSerializer.SetDefaultResolver(ContractlessStandardResolver.Instance);
+
+            if (!options.EnableCustomResolver)
+            {
+                MessagePackSerializer.SetDefaultResolver(ContractlessStandardResolver.Instance);
+            }
+
         }
 
         /// <summary>
@@ -84,6 +90,5 @@
         {
             return MessagePackSerializer.Deserialize<object>(value, TypelessContractlessStandardResolver.Instance);
         }
-
     }
 }

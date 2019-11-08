@@ -5,12 +5,12 @@
 		<EasyCachingRedisPackageVersion>0.8.0</EasyCachingRedisPackageVersion>
 		<EasyCachingSQLitePackageVersion>0.8.0</EasyCachingSQLitePackageVersion>
 		<EasyCachingInMemoryPackageVersion>0.8.0</EasyCachingInMemoryPackageVersion>
-		<EasyCachingHybridPackageVersion>0.8.0</EasyCachingHybridPackageVersion>
+		<EasyCachingHybridPackageVersion>0.8.1</EasyCachingHybridPackageVersion>
 		<EasyCachingAspectCorePackageVersion>0.8.0</EasyCachingAspectCorePackageVersion>
 		<EasyCachingCastlePackageVersion>0.8.0</EasyCachingCastlePackageVersion>
 		<EasyCachingResponseCachingPackageVersion>0.8.0</EasyCachingResponseCachingPackageVersion>
 		<EasyCachingJsonPackageVersion>0.8.1</EasyCachingJsonPackageVersion>
-		<EasyCachingMessagePackPackageVersion>0.8.0</EasyCachingMessagePackPackageVersion>
+		<EasyCachingMessagePackPackageVersion>0.8.1</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>0.8.0</EasyCachingProtobufPackageVersion>
 		<EasyCachingCSRedisPackageVersion>0.8.1</EasyCachingCSRedisPackageVersion>
 		<EasyCachingRedisBusPackageVersion>0.8.0</EasyCachingRedisBusPackageVersion>

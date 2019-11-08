@@ -229,22 +229,8 @@
 
             if (cacheValue.HasValue)
             {
-                TimeSpan ts = TimeSpan.Zero;
-
-                try
-                {
-                    ts = _distributedCache.GetExpiration(cacheKey);
-                }
-                catch
-                {
-
-                }
-
-                if (ts <= TimeSpan.Zero)
-                {
-                    ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
-                }
-
+                TimeSpan ts = GetExpiration(cacheKey);
+               
                 _localCache.Set(cacheKey, cacheValue.Value, ts);
 
                 return cacheValue;
@@ -285,21 +271,7 @@
 
             if (cacheValue.HasValue)
             {
-                TimeSpan ts = TimeSpan.Zero;
-
-                try
-                {
-                    ts = await _distributedCache.GetExpirationAsync(cacheKey);
-                }
-                catch
-                {
-
-                }
-
-                if (ts <= TimeSpan.Zero)
-                {
-                    ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
-                }
+                TimeSpan ts = await GetExpirationAsync(cacheKey);
 
                 await _localCache.SetAsync(cacheKey, cacheValue.Value, ts);
 
@@ -630,9 +602,16 @@
                 LogMessage($"get with data retriever from distributed provider error [{cacheKey}]", ex);
             }
 
-            return result.HasValue
-               ? result
-               : CacheValue<T>.NoValue;
+            if (result.HasValue)
+            {
+                TimeSpan ts = GetExpiration(cacheKey);
+
+                _localCache.Set(cacheKey, result.Value, ts);
+
+                return result;
+            }
+
+            return CacheValue<T>.NoValue;
         }
 
         /// <summary>
@@ -664,9 +643,16 @@
                 LogMessage($"get async with data retriever from distributed provider error [{cacheKey}]", ex);
             }
 
-            return result.HasValue
-                ? result
-                : CacheValue<T>.NoValue;
+            if (result.HasValue)
+            {
+                TimeSpan ts = await GetExpirationAsync(cacheKey);
+
+                _localCache.Set(cacheKey, result.Value, ts);
+
+                return result;
+            }
+
+            return CacheValue<T>.NoValue;
         }
 
         /// <summary>
@@ -736,6 +722,48 @@
             }
         }
 
+        private async Task<TimeSpan> GetExpirationAsync(string cacheKey)
+        {
+            TimeSpan ts = TimeSpan.Zero;
+
+            try
+            {
+                ts = await _distributedCache.GetExpirationAsync(cacheKey);
+            }
+            catch
+            {
+
+            }
+
+            if (ts <= TimeSpan.Zero)
+            {
+                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+            }
+
+            return ts;
+        }
+
+        private TimeSpan GetExpiration(string cacheKey)
+        {
+            TimeSpan ts = TimeSpan.Zero;
+
+            try
+            {
+                ts = _distributedCache.GetExpiration(cacheKey);
+            }
+            catch
+            {
+
+            }
+
+            if (ts <= TimeSpan.Zero)
+            {
+                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+            }
+
+            return ts;
+        }
+
         public async Task<object> GetAsync(string cacheKey, Type type)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -760,22 +788,8 @@
 
             if (cacheValue != null)
             {
-                TimeSpan ts = TimeSpan.Zero;
-
-                try
-                {
-                    ts = await _distributedCache.GetExpirationAsync(cacheKey);
-                }
-                catch
-                {
-
-                }
-
-                if (ts <= TimeSpan.Zero)
-                {
-                    ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
-                }
-
+                TimeSpan ts = await GetExpirationAsync(cacheKey);
+              
                 await _localCache.SetAsync(cacheKey, cacheValue, ts);
 
                 return cacheValue;
