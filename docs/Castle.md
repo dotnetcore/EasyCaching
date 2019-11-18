@@ -18,29 +18,6 @@ Install-Package EasyCaching.InMemory
 
 ## 2. Define services
 
-### 2.1 Define the interface
-
-We need to add `EasyCachingAble`,`EasyCachingPut` or `EasyCachingEvict` on the methods where we want to simplify the caching operation.
-
-The following list shows you which attributes you can use for caching:
-
-- EasyCachingAble , Read from cached items
-- EasyCachingPut , Update the cached item
-- EasyCachingEvict , Remove one cached item or multi cached items
-
-These properties can be applied on attributes
-
-Property | Description | Apply
----|---|---
-CacheKeyPrefix | To specify the prefix of your cache key | All
-CacheProviderName | To specify which provider you want to use | All
-IsHighAvailability | Whether caching opreation will break your method | All
-Expiration | To specify the expiration of your cache item，the unit is second | EasyCachingAble and EasyCachingPut
-IsAll | Whether remove all the cached items start with the CacheKeyPrefix | EasyCachingEvict only
-IsBefore | Remove the cached item before method excute or after method excute | EasyCachingEvict only
-
-how to use example:
-
 Define interface first.
 
 ```csharp
@@ -81,7 +58,90 @@ public class DemoService : IDemoService
 
 ## 3. Config in Startup class
 
-```csharp
+There are some difference between .NET Core 2.x and .NET Core 3.0.
+
+### .NET Core 3.0
+
+Need to use EasyCaching above version 0.8.0
+
+First, add the use of UseServiceProviderFactory to the Program.
+
+```cs
+// for castle
+using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            })
+            // for castle
+            .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+        ;
+}
+```
+
+Second, you need to add the ConfigureContainer method to the Startup.
+
+```cs
+public class Startup
+{
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IAspectCoreService, AspectCoreService>();
+
+        services.AddEasyCaching(options =>
+        {
+            options.UseInMemory("m1");
+        });
+
+        services.AddControllers();
+
+        services.AddTransient<IDemoService, DemoService>();
+        // for Castle  
+        services.ConfigureCastleInterceptor(options => options.CacheProviderName = "m1");
+    }
+
+     // for castle
+     public void ConfigureContainer(ContainerBuilder builder)
+     {
+        builder.ConfigureCastleInterceptor();
+     } 
+
+     public void Configure(IApplicationBuilder app)
+     {           
+         app.UseRouting();
+         app.UseEndpoints(endpoints =>
+         {
+            endpoints.MapControllers();
+         });
+     }
+}
+```
+
+### .NET Core 2.x
+
+EasyCaching above version 0.8.0 no longer supports .NET Core 2.x
+
+
+```cs
 public class Startup
 {
    //others...

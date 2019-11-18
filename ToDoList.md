@@ -8,7 +8,7 @@
 - [x] SQLite
 - [x] Memcached
 - [x] Hybrid(Combine local caching and distributed caching)
-- [ ] Disk
+- [x] Disk
 - [ ] Others...
 
 ## Basic Caching API
