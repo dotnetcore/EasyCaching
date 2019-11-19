@@ -5,7 +5,7 @@
     2. Get/GetAsync(without data retriever)
     3. Set/SetAsync
     4. Remove/RemoveAsync
-    5. Refresh/RefreshAsync
+    5. ~~Refresh/RefreshAsync (was removed)~~
     6. RemoveByPrefix/RemoveByPrefixAsync
     7. SetAll/SetAllAsync
     8. GetAll/GetAllAsync
@@ -22,6 +22,7 @@
     4. Redis(Based on csredis)
     5. SQLite
     6. Hybrid
+    7. Disk
 - Caching Interceptors
     1. AspectCore
     2. Castle

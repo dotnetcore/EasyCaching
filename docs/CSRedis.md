@@ -39,7 +39,14 @@ public class Startup
                     ConnectionStrings = new System.Collections.Generic.List<string>
                     {
                         "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
-                    }
+                    },
+                    // the sentinels settings
+                    Sentinels = new System.Collections.Generic.List<string>
+                    {
+                        "192.169.1.10:26379", "192.169.1.11:26379", "192.169.1.12:26379"
+                    },
+                    // the read write setting for sentinel mode
+                    ReadOnly = false
                 };
             });
         });
@@ -79,7 +86,11 @@ public class Startup
         "dbconfig": {
             "ConnectionStrings":[
                 "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
-            ]
+            ],
+            "Sentinels":[
+                "192.169.1.10:26379", "192.169.1.11:26379", "192.169.1.12:26379"
+            ],
+            "ReadOnly": false
         }
     }
 }

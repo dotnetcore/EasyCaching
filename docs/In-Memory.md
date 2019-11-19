@@ -28,29 +28,35 @@ public class Startup
         //other services.
 
         //Important step for In-Memory Caching
-        services.AddEasyCaching(option =>
+        services.AddEasyCaching(options =>
         {
             // use memory cache with a simple way
-            option.UseInMemory("default");
+            options.UseInMemory("default");
             
             // use memory cache with your own configuration
-            config.UseInMemory(options => 
+            options.UseInMemory(config => 
             {
-                options.DBConfig = new InMemoryCachingOptions
+                config.DBConfig = new InMemoryCachingOptions
                 {
                     // scan time, default value is 60s
                     ExpirationScanFrequency = 60, 
                     // total count of cache items, default value is 10000
-                    SizeLimit = 100 
+                    SizeLimit = 100,       
+
+                    // below two settings are added in v0.8.0
+                    // enable deep clone when reading object from cache or not, default value is true.
+                    EnableReadDeepClone = true,
+                    // enable deep clone when writing object to cache or not, default valuee is false.
+                    EnableWriteDeepClone = false,
                 };
                 // the max random second will be added to cache's expiration, default value is 120
-                options.MaxRdSecond = 120;
+                config.MaxRdSecond = 120;
                 // whether enable logging, default is false
-                options.EnableLogging = false;
+                config.EnableLogging = false;
                 // mutex key's alive time(ms), default is 5000
-                options.LockMs = 5000;
+                config.LockMs = 5000;
                 // when mutex key alive, it will sleep some time, default is 300
-                options.SleepMs = 300;
+                config.SleepMs = 300;
             }, "default1");
         });
     }
@@ -69,10 +75,10 @@ public class Startup
         //other services.
 
         //Important step for In-Memory Caching
-        services.AddEasyCaching(option =>
+        services.AddEasyCaching(options =>
         {
             //use memory cache
-            option.UseInMemory(Configuration, "default", "easycahing:inmemory");
+            options.UseInMemory(Configuration, "default", "easycahing:inmemory");
         });
     }
 }
@@ -89,7 +95,9 @@ public class Startup
         "SleepMs": 300,
         "DBConfig":{
             "SizeLimit": 10000,
-            "ExpirationScanFrequency": 60
+            "ExpirationScanFrequency": 60,
+            "EnableReadDeepClone": true,
+            "EnableWriteDeepClone": false
         }
     }
 }
@@ -139,3 +147,9 @@ public class ValuesController : Controller
     }
 }
 ```
+
+## Precautions
+
+If you need to modify the data after you read from cache, don't forget the enable deep clone, otherwise, the cached data will be modified.
+
+By the way, deep clone will hurt the performance, so if you don't need it, you should disable.

@@ -41,12 +41,6 @@ public class Startup
             });
         });
     }
-    
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-    {
-        //Important step for SQLite Cache
-        app.UseEasyCaching();
-    }
 }
 ```
 
@@ -91,12 +85,6 @@ public class ValuesController : Controller
         
         //Get without data retriever Async
         var res = await _provider.GetAsync<string>("demo");
-
-        //Refresh
-        _provider.Refresh("key", "123", TimeSpan.FromMinutes(1));
-
-        //Refresh Async
-        await _provider.RefreshAsync("key", "123", TimeSpan.FromMinutes(1));
         
         //RemoveByPrefix
         _provider.RemoveByPrefix("prefix");
