@@ -19,13 +19,7 @@
         7. Modify some extension methods' namespace.
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Support Hyperloglog.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Make Interceptors and response caching Support .netcore3.0.
@@ -91,7 +85,7 @@
         7. Modify some extension methods' namespace.
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Support sentinel mode.
+        1. Support Hyperloglog.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingCSRedisBusPackageNotes>
         1. Support sentinel mode.
