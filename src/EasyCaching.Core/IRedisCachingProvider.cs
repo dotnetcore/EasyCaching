@@ -791,5 +791,51 @@
         /// <returns></returns>
         Task<double?> ZScoreAsync<T>(string cacheKey, T cacheValue);
         #endregion
+
+
+        #region Hyperloglog
+        /// <summary>
+        /// https://redis.io/commands/pfadd
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheKey"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        bool PfAdd<T>(string cacheKey, List<T> values);
+        /// <summary>
+        /// https://redis.io/commands/pfadd
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheKey"></param>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        Task<bool> PfAddAsync<T>(string cacheKey, List<T> values);
+        /// <summary>
+        /// https://redis.io/commands/pfcount
+        /// </summary>
+        /// <param name="cacheKeys"></param>
+        /// <returns></returns>
+        long PfCount(List<string> cacheKeys);
+        /// <summary>
+        /// https://redis.io/commands/pfcount
+        /// </summary>
+        /// <param name="cacheKeys"></param>
+        /// <returns></returns>
+        Task<long> PfCountAsync(List<string> cacheKeys);
+        /// <summary>
+        /// https://redis.io/commands/pfmerge
+        /// </summary>
+        /// <param name="destKey"></param>
+        /// <param name="sourceKeys"></param>
+        /// <returns></returns>
+        bool PfMerge(string destKey, List<string> sourceKeys);
+        /// <summary>
+        /// https://redis.io/commands/pfmerge
+        /// </summary>
+        /// <param name="destKey"></param>
+        /// <param name="sourceKeys"></param>
+        /// <returns></returns>
+        Task<bool> PfMergeAsync(string destKey, List<string> sourceKeys);
+        #endregion
     }
 }

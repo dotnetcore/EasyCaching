@@ -1550,5 +1550,90 @@
             await _baseProvider.RemoveAsync(cacheKey);
         }
         #endregion
+
+        #region Hyperloglog             
+        [Fact]
+        protected virtual void PfAdd_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-pfadd-{Guid.NewGuid().ToString()}";
+
+            var res1 = _provider.PfAdd<string>(cacheKey, new List<string> { "foo", "bar", "zap" });
+            var res2 = _provider.PfAdd<string>(cacheKey, new List<string> { "zap", "zap", "zap" });
+            Assert.True(res1);
+            Assert.False(res2);
+
+            var count = _provider.PfCount(new List<string> { cacheKey });
+
+            Assert.Equal(3, count);
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task PfAddAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-pfaddasync-{Guid.NewGuid().ToString()}";
+
+            var res1 = await _provider.PfAddAsync<string>(cacheKey, new List<string> { "foo", "bar", "zap" });
+            var res2 = await _provider.PfAddAsync<string>(cacheKey, new List<string> { "zap", "zap", "zap" });
+            Assert.True(res1);
+            Assert.False(res2);
+
+            var count = await _provider.PfCountAsync(new List<string> { cacheKey });
+
+            Assert.Equal(3, count);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void PfMerge_Should_Succeed()
+        {
+            var cacheKey0 = $"{_nameSpace}-pfmerge-{Guid.NewGuid().ToString()}";
+            var cacheKey1 = $"{_nameSpace}-pfmerge-{Guid.NewGuid().ToString()}";
+            var cacheKey2 = $"{_nameSpace}-pfmerge-{Guid.NewGuid().ToString()}";
+
+            var res1 = _provider.PfAdd<string>(cacheKey1, new List<string> { "foo", "bar", "zap", "a" });
+            var res2 = _provider.PfAdd<string>(cacheKey2, new List<string> { "a", "b", "c", "foo" });
+            Assert.True(res1);
+            Assert.True(res2);
+
+
+            var flag = _provider.PfMerge(cacheKey0, new List<string> { cacheKey1, cacheKey2 });
+            Assert.True(flag);
+
+            var count = _provider.PfCount(new List<string> { cacheKey0 });
+
+            Assert.Equal(6, count);
+
+            _provider.KeyDel(cacheKey0);
+            _provider.KeyDel(cacheKey1);
+            _provider.KeyDel(cacheKey2);
+        }
+
+        [Fact]
+        protected virtual async Task PfMergeAsync_Should_Succeed()
+        {
+            var cacheKey0 = $"{_nameSpace}-pfmergeasync-{Guid.NewGuid().ToString()}";
+            var cacheKey1 = $"{_nameSpace}-pfmergeasync-{Guid.NewGuid().ToString()}";
+            var cacheKey2 = $"{_nameSpace}-pfmergeasync-{Guid.NewGuid().ToString()}";
+
+            var res1 = await _provider.PfAddAsync<string>(cacheKey1, new List<string> { "foo", "bar", "zap", "a" });
+            var res2 = await _provider.PfAddAsync<string>(cacheKey2, new List<string> { "a", "b", "c", "foo" });
+            Assert.True(res1);
+            Assert.True(res2);
+
+
+            var flag = await _provider.PfMergeAsync(cacheKey0, new List<string> { cacheKey1, cacheKey2 });
+            Assert.True(flag);
+
+            var count = await _provider.PfCountAsync(new List<string> { cacheKey0 });
+
+            Assert.Equal(6, count);
+
+            await _provider.KeyDelAsync(cacheKey0);
+            await _provider.KeyDelAsync(cacheKey1);
+            await _provider.KeyDelAsync(cacheKey2);
+        }
+        #endregion
     }
 }
