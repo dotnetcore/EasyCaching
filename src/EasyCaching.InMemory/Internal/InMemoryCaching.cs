@@ -107,7 +107,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(key, nameof(key));
 
-            var expiresAt = expiresIn.HasValue ? SystemClock.UtcNow.SafeAdd(expiresIn.Value) : DateTime.MaxValue;
+            var expiresAt = expiresIn.HasValue ? SystemClock.UtcNow.SafeAdd(expiresIn.Value) : DateTimeOffset.MaxValue;
             return SetInternal(new CacheEntry(key, value, expiresAt), true);
         }
 
@@ -115,7 +115,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(key, nameof(key));
 
-            var expiresAt = expiresIn.HasValue ? SystemClock.UtcNow.SafeAdd(expiresIn.Value) : DateTime.MaxValue;
+            var expiresAt = expiresIn.HasValue ? SystemClock.UtcNow.SafeAdd(expiresIn.Value) : DateTimeOffset.MaxValue;
             return SetInternal(new CacheEntry(key, value, expiresAt));
         }
 
