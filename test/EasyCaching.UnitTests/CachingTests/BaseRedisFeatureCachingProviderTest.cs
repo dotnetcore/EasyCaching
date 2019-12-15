@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -1633,6 +1634,115 @@
             await _provider.KeyDelAsync(cacheKey0);
             await _provider.KeyDelAsync(cacheKey1);
             await _provider.KeyDelAsync(cacheKey2);
+        }
+        #endregion
+
+        #region Geo
+        [Fact]
+        protected virtual void GeoAdd_And_GeoDist_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geoadd-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.GeoAdd(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var dist = _provider.GeoDist(cacheKey, "Palermo", "Catania");
+
+            // precision？
+            Assert.Equal(166274.1516, dist);
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task GeoAddAsync_And_GeoDistAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geoaddasync-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.GeoAddAsync(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var dist = await _provider.GeoDistAsync(cacheKey, "Palermo", "Catania");
+
+            // precision？
+            Assert.Equal(166274.1516, dist);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void GeoAdd_And_GeoHash_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geohash-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.GeoAdd(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var hash = _provider.GeoHash(cacheKey, new List<string> { "Palermo", "Catania" });
+
+            Assert.Equal(2, hash.Count);
+            Assert.Contains("sqc8b49rny0", hash);
+            Assert.Contains("sqdtr74hyu0", hash);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task GeoAddAsync_And_GeoHashAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geohashasync-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.GeoAddAsync(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var hash = await _provider.GeoHashAsync(cacheKey, new List<string> { "Palermo", "Catania" });
+
+            Assert.Equal(2, hash.Count);
+            Assert.Contains("sqc8b49rny0", hash);
+            Assert.Contains("sqdtr74hyu0", hash);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void GeoAdd_And_GeoPos_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geohash-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.GeoAdd(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var pos = _provider.GeoPos(cacheKey, new List<string> { "Palermo", "Catania", "NonExisting" });
+
+            Assert.Equal(3, pos.Count);
+            Assert.Contains(13.361389338970184, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(15.087267458438873, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(null, pos);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task GeoAddAsync_And_GeoPosAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geohashasync-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.GeoAddAsync(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var pos = await _provider.GeoPosAsync(cacheKey, new List<string> { "Palermo", "Catania", "NonExisting" });
+
+            Assert.Equal(3, pos.Count);
+            Assert.Contains(13.361389338970184, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(15.087267458438873, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(null, pos);
+
+            await _provider.KeyDelAsync(cacheKey);
         }
         #endregion
     }

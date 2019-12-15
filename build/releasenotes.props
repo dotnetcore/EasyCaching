@@ -1,121 +1,56 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>                                
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Redis provider support some geo methods.        
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Support Hyperloglog.
+        1. Support some geo methods.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Fix datetime exception.
+        2. Upgrading dependencies.    
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
-        1. improve hybrid get with data retriever.
+        1. Upgrading dependencies.    
         </EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingAspectCorePackageNotes>
 		<EasyCachingCastlePackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingCastlePackageNotes>
 		<EasyCachingResponseCachingPackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.        
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingResponseCachingPackageNotes>
 		<EasyCachingJsonPackageNotes>
-        1. Support JsonSerializerSettings.
+        1. Upgrading dependencies.    
         </EasyCachingJsonPackageNotes>
 		<EasyCachingMessagePackPackageNotes>
-        1. Support custom resolver.      
+        1. Upgrading dependencies.    
         </EasyCachingMessagePackPackageNotes>
 		<EasyCachingProtobufPackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Support Hyperloglog.
+        1. Support some geo methods.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingCSRedisBusPackageNotes>
-        1. Support sentinel mode.
+        1. Upgrading dependencies.    
         </EasyCachingCSRedisBusPackageNotes>        
         <EasyCachingRedisBusPackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingRedisBusPackageNotes>
         <EasyCachingRabbitBusPackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingRabbitBusPackageNotes>
         <EasyCachingDiskPackageNotes>
-        1. Make Interceptors and response caching Support .netcore3.0.
-        2. Remove WithServices method to support console apps.
-        3. Improve RabbitMQ bus.
-        4. Add deep clone for memory cache provider.
-        5. Support multi instances of hybrid provider.    
-        6. Upgrading dependencies.    
-        7. Modify some extension methods' namespace.
+        1. Upgrading dependencies.    
         </EasyCachingDiskPackageNotes>
 	</PropertyGroup>
 </Project>
