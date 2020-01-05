@@ -38,7 +38,7 @@
         1. Upgrading dependencies.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Support some geo methods.
+        1. Fixed #186.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingCSRedisBusPackageNotes>
         1. Upgrading dependencies.    

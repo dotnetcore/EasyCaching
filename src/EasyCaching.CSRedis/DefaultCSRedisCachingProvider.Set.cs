@@ -25,7 +25,7 @@
 
             if (expiration.HasValue)
             {
-                _cache.Expire(cacheKey, expiration.Value.Seconds);
+                _cache.Expire(cacheKey, (int)expiration.Value.TotalSeconds);
             }
 
             return len;
@@ -131,7 +131,7 @@
 
             if (expiration.HasValue)
             {
-                await _cache.ExpireAsync(cacheKey, expiration.Value.Seconds);
+                await _cache.ExpireAsync(cacheKey, (int)expiration.Value.TotalSeconds);
             }
 
             return len;
