@@ -69,7 +69,7 @@
 
             if (cacheEntry.ExpiresAt < SystemClock.UtcNow)
             {
-                _memory.TryRemove(key, out _);
+                RemoveExpiredKey(key);
                 return CacheValue<T>.NoValue;
             }
 
@@ -96,7 +96,7 @@
 
             if (cacheEntry.ExpiresAt < SystemClock.UtcNow)
             {
-                _memory.TryRemove(key, out _);
+                RemoveExpiredKey(key);
                 return null;
             }
 
@@ -141,11 +141,11 @@
                 {
                     var shouldRemoveCount = 5;
 
-                    if (_options.SizeLimit >= 10000)
+                    if (_options.SizeLimit.Value >= 10000)
                     {
                         shouldRemoveCount = (int)(_options.SizeLimit * 0.005d);
                     }
-                    else if (_options.SizeLimit >= 1000)
+                    else if (_options.SizeLimit.Value >= 1000 && _options.SizeLimit.Value < 10000)
                     {
                         shouldRemoveCount = (int)(_options.SizeLimit * 0.01d);
                     }
@@ -158,8 +158,8 @@
 
                     RemoveAll(oldestList);
 
-                    // remove the up to limit key from the cache.
-                    _memory.TryRemove(_UPTOLIMIT_KEY, out _);
+                    //// this key will be remove by ScanForExpiredItems.
+                    //_memory.TryRemove(_UPTOLIMIT_KEY, out _);
                 }
             }
 
@@ -253,7 +253,7 @@
         {
             bool flag = _memory.TryRemove(key, out _);
 
-            if (_options.SizeLimit.HasValue && flag)
+            if (_options.SizeLimit.HasValue && !key.Equals(_UPTOLIMIT_KEY) && flag)
             { 
                 Interlocked.Decrement(ref _cacheSize);
             }
