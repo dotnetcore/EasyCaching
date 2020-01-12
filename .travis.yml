@@ -2,7 +2,7 @@ language: csharp
 solution: EasyCaching.sln
 dist: bionic
 sudo: required    
-dotnet: 3.0.100
+dotnet: 3.1.100
 mono: none
 
 services:
