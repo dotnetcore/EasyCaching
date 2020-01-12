@@ -13,8 +13,7 @@
         1. Upgrading dependencies.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Fix datetime exception.
-        2. Upgrading dependencies.    
+        1. Fixed slow performance when the cached items count reaches cache size limit.  
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. Upgrading dependencies.    
