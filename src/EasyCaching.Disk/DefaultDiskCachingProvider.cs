@@ -304,7 +304,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                         if (!dict.ContainsKey(item))
                         {
@@ -351,7 +351,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                         if (!dict.ContainsKey(item))
                         {
@@ -597,7 +597,7 @@
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var cached = MessagePackSerializer.Deserialize<DiskCacheValue>(stream);
+                var cached = MessagePackSerializer.Deserialize<DiskCacheValue>(stream, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                 return cached;
             }
@@ -614,7 +614,7 @@
 
             var cached = new DiskCacheValue(value, DateTimeOffset.UtcNow.AddSeconds((int)ts.TotalSeconds));
 
-            var bytes = MessagePackSerializer.Serialize(cached);
+            var bytes = MessagePackSerializer.Serialize(cached, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
             return bytes;
         }

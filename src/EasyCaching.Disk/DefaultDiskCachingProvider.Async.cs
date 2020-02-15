@@ -92,8 +92,7 @@
 
             if (File.Exists(path))
             {
-                //var cached = await GetDiskCacheValueAsync(path);
-                var cached = GetDiskCacheValue(path);
+                var cached = await GetDiskCacheValueAsync(path);
 
                 if (cached.Expiration > DateTimeOffset.UtcNow)
                 {
@@ -162,7 +161,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize(type, cached.Value);
+                var t = MessagePackSerializer.Deserialize(type, cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
                 return t;
             }
             else
@@ -420,7 +419,7 @@
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var cached = await MessagePackSerializer.DeserializeAsync<DiskCacheValue>(stream);
+                var cached = await MessagePackSerializer.DeserializeAsync<DiskCacheValue>(stream, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                 return cached;
             }
