@@ -16,6 +16,11 @@
         private readonly string _name;
 
         /// <summary>
+        /// The options.
+        /// </summary>
+        private readonly EasyCachingMsgPackSerializerOptions _options;
+
+        /// <summary>
         /// Initializes a new instance of the
         /// <see cref="T:EasyCaching.Serialization.MessagePack.DefaultMessagePackSerializer"/> class.
         /// </summary>
@@ -24,12 +29,12 @@
         public DefaultMessagePackSerializer(string name, EasyCachingMsgPackSerializerOptions options)
         {
             _name = name;
+            _options = options;
 
             if (!options.EnableCustomResolver)
             {
-                MessagePackSerializer.SetDefaultResolver(ContractlessStandardResolver.Instance);
+                MessagePackSerializer.DefaultOptions = MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance);
             }
-
         }
 
         /// <summary>
@@ -46,7 +51,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public T Deserialize<T>(byte[] bytes)
         {
-            return MessagePackSerializer.Deserialize<T>(bytes);
+            return _options.EnableCustomResolver
+                ? MessagePackSerializer.Deserialize<T>(bytes, MessagePackSerializerOptions.Standard.WithResolver(_options.CustomResolvers))
+                : MessagePackSerializer.Deserialize<T>(bytes);
         }
 
         /// <summary>
@@ -57,7 +64,9 @@
         /// <param name="type">Type.</param>
         public object Deserialize(byte[] bytes, Type type)
         {
-            return MessagePackSerializer.NonGeneric.Deserialize(type, bytes);
+            return _options.EnableCustomResolver
+                ? MessagePackSerializer.Deserialize(type, bytes, MessagePackSerializerOptions.Standard.WithResolver(_options.CustomResolvers))
+                : MessagePackSerializer.Deserialize(type, bytes);
         }
 
         /// <summary>
@@ -68,7 +77,9 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public byte[] Serialize<T>(T value)
         {
-            return MessagePackSerializer.Serialize(value);
+            return _options.EnableCustomResolver
+                ? MessagePackSerializer.Serialize(value, MessagePackSerializerOptions.Standard.WithResolver(_options.CustomResolvers))
+                : MessagePackSerializer.Serialize(value);
         }
 
         /// <summary>
@@ -78,7 +89,8 @@
         /// <param name="value">Value.</param>
         public ArraySegment<byte> SerializeObject(object value)
         {
-            return MessagePackSerializer.SerializeUnsafe<object>(value, TypelessContractlessStandardResolver.Instance);
+            byte[] bytes = MessagePackSerializer.Serialize<object>(value, TypelessContractlessStandardResolver.Options);
+            return new ArraySegment<byte>(bytes);
         }
 
         /// <summary>
@@ -88,7 +100,7 @@
         /// <param name="value">Value.</param>
         public object DeserializeObject(ArraySegment<byte> value)
         {
-            return MessagePackSerializer.Deserialize<object>(value, TypelessContractlessStandardResolver.Instance);
+            return MessagePackSerializer.Deserialize<object>(value, TypelessContractlessStandardResolver.Options);
         }
     }
 }

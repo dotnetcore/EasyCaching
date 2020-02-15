@@ -1,19 +1,19 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>                                
-        1. Redis provider support some geo methods.        
+        1. Upgrading dependencies.        
         </EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
         1. Upgrading dependencies.    
         </EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>        
-        1. Support some geo methods.
+        1. Upgrading dependencies.
         </EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
         1. Upgrading dependencies.    
         </EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
-        1. Fixed slow performance when the cached items count reaches cache size limit.  
+        1. Upgrading dependencies.  
         </EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
         1. Upgrading dependencies.    
@@ -37,7 +37,7 @@
         1. Upgrading dependencies.    
         </EasyCachingProtobufPackageNotes>
         <EasyCachingCSRedisPackageNotes>
-        1. Fixed #186.
+        1. Upgrading dependencies.
         </EasyCachingCSRedisPackageNotes>
         <EasyCachingCSRedisBusPackageNotes>
         1. Upgrading dependencies.    

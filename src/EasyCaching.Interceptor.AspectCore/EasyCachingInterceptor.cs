@@ -3,8 +3,8 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Interceptor;
+    using global::AspectCore.DependencyInjection;
     using global::AspectCore.DynamicProxy;
-    using global::AspectCore.Injector;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using System;
@@ -22,33 +22,33 @@
         /// Gets or sets the cache provider factory.
         /// </summary>
         /// <value>The cache provider.</value>
-        [FromContainer]
+        [FromServiceContext]
         public IEasyCachingProviderFactory CacheProviderFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the hybrid caching provider.
         /// </summary>
         /// <value>The hybrid caching provider.</value>
-        [FromContainer]
+        [FromServiceContext]
         public IHybridCachingProvider HybridCachingProvider { get; set; }
 
         /// <summary>
         /// Gets or sets the key generator.
         /// </summary>
         /// <value>The key generator.</value>
-        [FromContainer]
+        [FromServiceContext]
         public IEasyCachingKeyGenerator KeyGenerator { get; set; }
 
         /// <summary>
         /// Get or set the options
         /// </summary>
-        [FromContainer]
+        [FromServiceContext]
         public IOptions<EasyCachingInterceptorOptions> Options { get; set; }
 
         /// <summary>
         /// logger
         /// </summary>
-        [FromContainer]
+        [FromServiceContext]
         public ILogger<EasyCachingInterceptor> Logger { get; set; }
 
         /// <summary>

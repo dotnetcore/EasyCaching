@@ -63,7 +63,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                         if (!dict.ContainsKey(item))
                         {
@@ -97,7 +97,7 @@
 
                 if (cached.Expiration > DateTimeOffset.UtcNow)
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -162,7 +162,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.NonGeneric.Deserialize(type, cached.Value);
+                var t = MessagePackSerializer.Deserialize(type, cached.Value);
                 return t;
             }
             else
@@ -201,7 +201,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
                 return new CacheValue<T>(t, true);
             }
             else
@@ -242,7 +242,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                         if (!dict.ContainsKey(item))
                         {

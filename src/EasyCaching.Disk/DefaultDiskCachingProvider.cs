@@ -201,7 +201,7 @@
 
                 if (cached.Expiration > DateTimeOffset.UtcNow)
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -267,7 +267,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
                 return new CacheValue<T>(t, true);
             }
             else
@@ -610,7 +610,7 @@
 
         private byte[] BuildDiskCacheValue<T>(T t, TimeSpan ts)
         {
-            var value = MessagePackSerializer.Serialize(t, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+            var value = MessagePackSerializer.Serialize(t, MessagePackSerializerOptions.Standard.WithResolver(MessagePack.Resolvers.ContractlessStandardResolver.Instance));
 
             var cached = new DiskCacheValue(value, DateTimeOffset.UtcNow.AddSeconds((int)ts.TotalSeconds));
 

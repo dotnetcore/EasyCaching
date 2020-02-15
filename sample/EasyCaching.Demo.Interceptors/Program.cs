@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Demo.Interceptors
 {
     using AspectCore.Extensions.DependencyInjection;
+    using AspectCore.Extensions.Hosting;
     using Autofac.Extensions.DependencyInjection;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
@@ -18,10 +19,10 @@
                 {
                     webBuilder.UseStartup<Startup>();
                 })
-                // for aspcectcore
-                .UseServiceProviderFactory(new AspectCoreServiceProviderFactory())
-                //// for castle
-                //.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                 // for aspcectcore
+                 .UseServiceContext()
+            //// for castle
+            //.UseServiceProviderFactory(new AutofacServiceProviderFactory())
             ;
     }
 }
