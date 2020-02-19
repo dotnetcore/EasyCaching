@@ -14,7 +14,7 @@
         /// Gets or sets the size limit.
         /// </summary>
         /// <value>The size limit.</value>
-        public int SizeLimit { get; set; } = 10000;
+        public int? SizeLimit { get; set; }// = 10000;
 
         /// <summary>
         /// Gets or sets whether to enable deep clone when reading object from cache.

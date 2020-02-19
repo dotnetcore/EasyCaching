@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using MessagePack;
+    using MessagePack.Resolvers;
     using Microsoft.Extensions.Logging;
 
     public partial class DefaultDiskCachingProvider : EasyCachingAbstractProvider
@@ -63,7 +64,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
                         if (!dict.ContainsKey(item))
                         {
@@ -92,12 +93,19 @@
 
             if (File.Exists(path))
             {
-                //var cached = await GetDiskCacheValueAsync(path);
-                var cached = GetDiskCacheValue(path);
+                /*
+                 GetAsync_Parallel_Should_Succeed always failed in CI due to this reason, but succeed in local PC
+
+                 MessagePack.MessagePackSerializationException : Failed to deserialize EasyCaching.Disk.DiskCacheValue value.
+                    ---- System.IO.EndOfStreamException : Attempted to read past the end of the stream.
+                 */
+                var cached = await GetDiskCacheValueAsync(path);
+                //var cached = GetDiskCacheValueAsync(path).ConfigureAwait(false).GetAwaiter().GetResult();
+                //var cached = GetDiskCacheValue(path);
 
                 if (cached.Expiration > DateTimeOffset.UtcNow)
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -162,7 +170,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.NonGeneric.Deserialize(type, cached.Value);
+                var t = MessagePackSerializer.Deserialize(type, cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
                 return t;
             }
             else
@@ -201,7 +209,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
                 return new CacheValue<T>(t, true);
             }
             else
@@ -242,7 +250,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow)
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePack.Resolvers.ContractlessStandardResolver.Instance);
+                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
                         if (!dict.ContainsKey(item))
                         {
@@ -420,7 +428,7 @@
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var cached = await MessagePackSerializer.DeserializeAsync<DiskCacheValue>(stream);
+                var cached = await MessagePackSerializer.DeserializeAsync<DiskCacheValue>(stream, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
                 return cached;
             }

@@ -19,13 +19,16 @@ namespace EasyCaching.UnitTests
 
         public MessagePackSerializerTest2()
         {
-            CompositeResolver.RegisterAndSetAsDefault(
-               // This can solve DateTime time zone problem
-               NativeDateTimeResolver.Instance,
-               ContractlessStandardResolver.Instance
-           );
+           // CompositeResolver.RegisterAndSetAsDefault(
+           //    // This can solve DateTime time zone problem
+           //    NativeDateTimeResolver.Instance,
+           //    ContractlessStandardResolver.Instance
+           //);
 
-            _serializer = new DefaultMessagePackSerializer("msgpack", new EasyCachingMsgPackSerializerOptions { EnableCustomResolver = true });
+            // due to messagepack api change
+            var reslover = CompositeResolver.Create(new MessagePack.IFormatterResolver[] { ContractlessStandardResolver.Instance });
+
+            _serializer = new DefaultMessagePackSerializer("msgpack", new EasyCachingMsgPackSerializerOptions { EnableCustomResolver = true, CustomResolvers = reslover });
         }
 
         [Fact]

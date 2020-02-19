@@ -11,7 +11,7 @@
             //BenchmarkRunner.Run<SerializerSingleObject2ArraySegmentBenchmark>();
             //BenchmarkRunner.Run<SerializerMultiObject2ArraySegmentBenchmark>();
             BenchmarkRunner.Run<SetBenchmark>();
-            BenchmarkRunner.Run<GetBenchmark>();
+            //BenchmarkRunner.Run<GetBenchmark>();
         }
     }
 }

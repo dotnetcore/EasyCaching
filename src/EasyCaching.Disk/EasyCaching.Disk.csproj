@@ -39,6 +39,6 @@
     <Folder Include="Internal\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MessagePack" Version="1.8.80" />
+    <PackageReference Include="MessagePack" Version="2.1.90" />
   </ItemGroup>
 </Project>

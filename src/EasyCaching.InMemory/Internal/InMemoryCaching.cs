@@ -14,6 +14,8 @@
         private DateTimeOffset _lastExpirationScan;
         private readonly InMemoryCachingOptions _options;
         private readonly string _name;
+        private long _cacheSize = 0L;
+        private const string _UPTOLIMIT_KEY = "inter_up_to_limit_key";
 
         public InMemoryCaching(string name, InMemoryCachingOptions optionsAccessor)
         {
@@ -30,8 +32,11 @@
         public void Clear(string prefix = "")
         {
             if (string.IsNullOrWhiteSpace(prefix))
-            {
+            {                
                 _memory.Clear();
+
+                if (_options.SizeLimit.HasValue)
+                    Interlocked.Exchange(ref _cacheSize, 0);
             }
             else
             {
@@ -48,7 +53,9 @@
 
         internal void RemoveExpiredKey(string key)
         {
-            _memory.TryRemove(key, out _);
+           bool flag = _memory.TryRemove(key, out _);
+            if (_options.SizeLimit.HasValue && flag)
+                Interlocked.Decrement(ref _cacheSize);
         }
 
         public CacheValue<T> Get<T>(string key)
@@ -62,7 +69,7 @@
 
             if (cacheEntry.ExpiresAt < SystemClock.UtcNow)
             {
-                _memory.TryRemove(key, out _);
+                RemoveExpiredKey(key);
                 return CacheValue<T>.NoValue;
             }
 
@@ -89,7 +96,7 @@
 
             if (cacheEntry.ExpiresAt < SystemClock.UtcNow)
             {
-                _memory.TryRemove(key, out _);
+                RemoveExpiredKey(key);
                 return null;
             }
 
@@ -127,17 +134,33 @@
                 return false;
             }
 
-            if (_memory.Count >= _options.SizeLimit)
+            if (_options.SizeLimit.HasValue && Interlocked.Read(ref _cacheSize) >= _options.SizeLimit)
             {
-                // order by last access ticks 
-                // up to size limit, should remove 
-                var oldestList = _memory.ToArray()
-                                   .OrderBy(kvp => kvp.Value.LastAccessTicks)
-                                   .ThenBy(kvp => kvp.Value.InstanceNumber)
-                                   .Take(5)
-                                   .Select(kvp => kvp.Key);
+                // prevent alaways access the following logic after up to limit
+                if (_memory.TryAdd(_UPTOLIMIT_KEY, new CacheEntry(_UPTOLIMIT_KEY, 1, DateTimeOffset.UtcNow.AddSeconds(5))))
+                {
+                    var shouldRemoveCount = 5;
 
-                RemoveAll(oldestList);
+                    if (_options.SizeLimit.Value >= 10000)
+                    {
+                        shouldRemoveCount = (int)(_options.SizeLimit * 0.005d);
+                    }
+                    else if (_options.SizeLimit.Value >= 1000 && _options.SizeLimit.Value < 10000)
+                    {
+                        shouldRemoveCount = (int)(_options.SizeLimit * 0.01d);
+                    }
+
+                    var oldestList = _memory.ToArray()
+                                    .OrderBy(kvp => kvp.Value.LastAccessTicks)
+                                    .ThenBy(kvp => kvp.Value.InstanceNumber)
+                                    .Take(shouldRemoveCount)
+                                    .Select(kvp => kvp.Key);
+
+                    RemoveAll(oldestList);
+
+                    //// this key will be remove by ScanForExpiredItems.
+                    //_memory.TryRemove(_UPTOLIMIT_KEY, out _);
+                }
             }
 
             CacheEntry deep = null;
@@ -165,11 +188,17 @@
                         return false;
 
                     _memory.AddOrUpdate(deep.Key, deep, (k, cacheEntry) => deep);
+
+                    if(_options.SizeLimit.HasValue)
+                        Interlocked.Increment(ref _cacheSize);
                 }
             }
             else
             {
                 _memory.AddOrUpdate(deep.Key, deep, (k, cacheEntry) => deep);
+
+                if (_options.SizeLimit.HasValue)
+                    Interlocked.Increment(ref _cacheSize);
             }
 
             StartScanForExpiredItems();
@@ -188,19 +217,33 @@
         {
             if (keys == null)
             {
-                int count = _memory.Count;
-                _memory.Clear();
-                return count;
+                if (_options.SizeLimit.HasValue)
+                {
+                    int count = (int)Interlocked.Read(ref _cacheSize);
+                    Interlocked.Exchange(ref _cacheSize, 0);
+                    _memory.Clear();
+                    return count;
+                }
+                else
+                {
+                    int count = _memory.Count;
+                    _memory.Clear();
+                    return count;
+                }
             }
 
             int removed = 0;
             foreach (string key in keys)
             {
-                if (String.IsNullOrEmpty(key))
+                if (string.IsNullOrEmpty(key))
                     continue;
 
                 if (_memory.TryRemove(key, out _))
+                { 
                     removed++;
+                    if (_options.SizeLimit.HasValue)
+                        Interlocked.Decrement(ref _cacheSize);
+                }
             }
 
             return removed;
@@ -208,7 +251,14 @@
 
         public bool Remove(string key)
         {
-            return _memory.TryRemove(key, out _);
+            bool flag = _memory.TryRemove(key, out _);
+
+            if (_options.SizeLimit.HasValue && !key.Equals(_UPTOLIMIT_KEY) && flag)
+            { 
+                Interlocked.Decrement(ref _cacheSize);
+            }
+
+            return flag;
         }
 
         public int RemoveByPrefix(string prefix)

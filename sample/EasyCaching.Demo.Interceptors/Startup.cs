@@ -1,6 +1,6 @@
 ﻿namespace EasyCaching.Demo.Interceptors
 {
-    using AspectCore.Injector;
+    using AspectCore.Extensions.DependencyInjection;
     using Autofac;
     using EasyCaching.Core;
     using EasyCaching.Demo.Interceptors.Services;
@@ -51,11 +51,11 @@
         }
 
         #region ConfigureContainer should be only one
-        // for aspectcore
-        public void ConfigureContainer(IServiceContainer builder)
-        {
-            builder.ConfigureAspectCoreInterceptor();
-        }
+        //// for aspectcore
+        //public void ConfigureContainer(IServiceContainer builder)
+        //{
+        //    builder.ConfigureAspectCoreInterceptor();
+        //}
 
         //// ConfigureContainer is where you can register things directly
         //// with Autofac. This runs after ConfigureServices so the things

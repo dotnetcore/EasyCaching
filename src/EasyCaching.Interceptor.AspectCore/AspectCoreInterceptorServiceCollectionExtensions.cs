@@ -3,7 +3,7 @@
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Interceptor;
     using global::AspectCore.Configuration;
-    using global::AspectCore.Injector;
+    using global::AspectCore.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
@@ -25,16 +25,8 @@
         {
             services.TryAddSingleton<IEasyCachingKeyGenerator, DefaultEasyCachingKeyGenerator>();
             services.Configure(options);
-        }
 
-        /// <summary>
-        /// Configures the AspectCore interceptor.
-        /// </summary>
-        /// <returns>The aspect core interceptor.</returns>
-        /// <param name="builder">Builder.</param>
-        public static void ConfigureAspectCoreInterceptor(this IServiceContainer builder)
-        {
-            builder.Configure(config =>
+            services.ConfigureDynamicProxy(config =>
             {
                 bool all(MethodInfo x) => x.CustomAttributes.Any(data => typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType));
 
