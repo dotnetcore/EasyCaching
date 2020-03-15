@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.CSRedis
 {
     using EasyCaching.Core;
+    using global::CSRedis;
     using System.Threading.Tasks;
 
     public partial class DefaultCSRedisCachingProvider : IRedisCachingProvider
@@ -37,47 +38,69 @@
             return res;
         }
 
-        public bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration)
+        public bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration, string when)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             bool flag = false;
 
+            RedisExistence? exists = null;
+
+            if (when.Equals("nx", System.StringComparison.OrdinalIgnoreCase))
+            {
+                exists = RedisExistence.Nx;
+            }
+            else if (when.Equals("xx", System.StringComparison.OrdinalIgnoreCase))
+            {
+                exists = RedisExistence.Xx;
+            }
+
             if (expiration.HasValue)
             {
-                flag = _cache.Set(cacheKey, cacheValue, (int)expiration.Value.TotalSeconds);
+                flag = _cache.Set(cacheKey, cacheValue, (int)expiration.Value.TotalSeconds, exists: exists);
             }
             else
             {
-                flag = _cache.Set(cacheKey, cacheValue);
+                flag = _cache.Set(cacheKey, cacheValue, exists: exists);
             }
 
             return flag;
         }
 
-        public async Task<bool> StringSetAsync(string cacheKey, string cacheValue, System.TimeSpan? expiration)
+        public async Task<bool> StringSetAsync(string cacheKey, string cacheValue, System.TimeSpan? expiration, string when)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             bool flag = false;
 
+            RedisExistence? exists = null;
+
+            if (when.Equals("nx", System.StringComparison.OrdinalIgnoreCase))
+            {
+                exists = RedisExistence.Nx;
+            }
+            else if (when.Equals("xx", System.StringComparison.OrdinalIgnoreCase))
+            {
+                exists = RedisExistence.Xx;
+            }
+
             if (expiration.HasValue)
             {
-                flag = await _cache.SetAsync(cacheKey, cacheValue, (int)expiration.Value.TotalSeconds);
+                flag = await _cache.SetAsync(cacheKey, cacheValue, (int)expiration.Value.TotalSeconds, exists: exists);
             }
             else
             {
-                flag = await _cache.SetAsync(cacheKey, cacheValue);
+                flag = await _cache.SetAsync(cacheKey, cacheValue, exists: exists);
             }
 
-            return flag;            
+            return flag;
         }
 
         public string StringGet(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-    
-            var val = _cache.Get(cacheKey);          
+
+            var val = _cache.Get(cacheKey);
             return val;
         }
 

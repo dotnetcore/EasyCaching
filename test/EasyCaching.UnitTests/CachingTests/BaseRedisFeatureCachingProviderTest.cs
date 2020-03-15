@@ -86,6 +86,70 @@
         #region String
 
         [Fact]
+        protected virtual void StringSet_With_Nx_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = Guid.NewGuid().ToString();
+
+            var res = _provider.StringSet(cacheKey, cacheValue, when: "nx");
+            Assert.True(res);
+
+            var res2 = _provider.StringSet(cacheKey, cacheValue, when: "nx");
+            Assert.False(res2);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task StringSetAsync_With_Nx_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = Guid.NewGuid().ToString();
+
+            var res = await _provider.StringSetAsync(cacheKey, cacheValue, when: "nx");
+            Assert.True(res);
+
+            var res2 = await _provider.StringSetAsync(cacheKey, cacheValue, when: "nx");
+            Assert.False(res2);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void StringSet_With_Xx_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = Guid.NewGuid().ToString();
+
+            var res = _provider.StringSet(cacheKey, cacheValue, when: "xx");
+            Assert.False(res);
+
+            var res2 = _provider.StringSet(cacheKey, cacheValue);
+            Assert.True(res2);
+            var res3 = _provider.StringSet(cacheKey, cacheValue, when: "xx");
+            Assert.True(res3);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async Task StringSetAsync_With_Xx_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+            var cacheValue = Guid.NewGuid().ToString();
+
+            var res = await _provider.StringSetAsync(cacheKey, cacheValue, when: "xx");
+            Assert.False(res);
+
+            var res2 = await _provider.StringSetAsync(cacheKey, cacheValue);
+            Assert.True(res2);
+            var res3 = await _provider.StringSetAsync(cacheKey, cacheValue, when: "xx");
+            Assert.True(res3);
+
+            _provider.KeyDel(cacheKey);
+        }
+
+        [Fact]
         protected virtual void StringSet_And_StringGet_Should_Succeed()
         {
             var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";

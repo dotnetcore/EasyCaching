@@ -102,16 +102,18 @@
         /// <param name="cacheKey"></param>
         /// <param name="cacheValue"></param>
         /// <param name="expiration"></param>
+        /// <param name="when">nx,xx,</param>
         /// <returns></returns>
-        bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration = null);
+        bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration = null, string when = "");
         /// <summary>
         /// https://redis.io/commands/set
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <param name="cacheValue"></param>
         /// <param name="expiration"></param>
+        /// <param name="when">nx,xx,</param>
         /// <returns></returns>
-        Task<bool> StringSetAsync(string cacheKey, string cacheValue, System.TimeSpan? expiration = null);
+        Task<bool> StringSetAsync(string cacheKey, string cacheValue, System.TimeSpan? expiration = null, string when = "");
         /// <summary>
         /// https://redis.io/commands/get
         /// </summary>
