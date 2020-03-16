@@ -1,55 +1,55 @@
 <Project>
-	<PropertyGroup>
-		<EasyCachingCorePackageNotes>                                
-        1. Upgrading dependencies.        
-        </EasyCachingCorePackageNotes>
-		<EasyCachingMemcachedPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingMemcachedPackageNotes>
-		<EasyCachingRedisPackageNotes>        
-        1. Upgrading dependencies.
-        </EasyCachingRedisPackageNotes>
-		<EasyCachingSQLitePackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingSQLitePackageNotes>
-		<EasyCachingInMemoryPackageNotes>
-        1. Upgrading dependencies.  
-        </EasyCachingInMemoryPackageNotes>
-		<EasyCachingHybridPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingHybridPackageNotes>
-		<EasyCachingAspectCorePackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingAspectCorePackageNotes>
-		<EasyCachingCastlePackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingCastlePackageNotes>
-		<EasyCachingResponseCachingPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingResponseCachingPackageNotes>
-		<EasyCachingJsonPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingJsonPackageNotes>
-		<EasyCachingMessagePackPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingMessagePackPackageNotes>
-		<EasyCachingProtobufPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingProtobufPackageNotes>
-        <EasyCachingCSRedisPackageNotes>
-        1. Upgrading dependencies.
-        </EasyCachingCSRedisPackageNotes>
-        <EasyCachingCSRedisBusPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingCSRedisBusPackageNotes>        
-        <EasyCachingRedisBusPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingRedisBusPackageNotes>
-        <EasyCachingRabbitBusPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingRabbitBusPackageNotes>
-        <EasyCachingDiskPackageNotes>
-        1. Upgrading dependencies.    
-        </EasyCachingDiskPackageNotes>
-	</PropertyGroup>
+  <PropertyGroup>
+    <EasyCachingCorePackageNotes>
+      1. Redis provider string support nx and xx.
+    </EasyCachingCorePackageNotes>
+    <EasyCachingMemcachedPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingMemcachedPackageNotes>
+    <EasyCachingRedisPackageNotes>
+      1. Redis provider string support nx and xx.
+    </EasyCachingRedisPackageNotes>
+    <EasyCachingSQLitePackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingSQLitePackageNotes>
+    <EasyCachingInMemoryPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingInMemoryPackageNotes>
+    <EasyCachingHybridPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingHybridPackageNotes>
+    <EasyCachingAspectCorePackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingAspectCorePackageNotes>
+    <EasyCachingCastlePackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingCastlePackageNotes>
+    <EasyCachingResponseCachingPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingResponseCachingPackageNotes>
+    <EasyCachingJsonPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingJsonPackageNotes>
+    <EasyCachingMessagePackPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingMessagePackPackageNotes>
+    <EasyCachingProtobufPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingProtobufPackageNotes>
+    <EasyCachingCSRedisPackageNotes>
+      1. Redis provider string support nx and xx.
+    </EasyCachingCSRedisPackageNotes>
+    <EasyCachingCSRedisBusPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingCSRedisBusPackageNotes>
+    <EasyCachingRedisBusPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingRedisBusPackageNotes>
+    <EasyCachingRabbitBusPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingRabbitBusPackageNotes>
+    <EasyCachingDiskPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingDiskPackageNotes>
+  </PropertyGroup>
 </Project>

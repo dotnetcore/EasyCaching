@@ -45,19 +45,41 @@
             return res;
         }
 
-        public bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration)
+        public bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration, string when)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            bool flag = _cache.StringSet(cacheKey, cacheValue, expiration);
+            When w = When.Always;
+
+            if (when.Equals("nx", StringComparison.OrdinalIgnoreCase))
+            {
+                w = When.NotExists;
+            }
+            else if (when.Equals("xx", StringComparison.OrdinalIgnoreCase))
+            {
+                w = When.Exists;
+            }
+
+            bool flag = _cache.StringSet(cacheKey, cacheValue, expiration, w);
             return flag;
         }
 
-        public async Task<bool> StringSetAsync(string cacheKey, string cacheValue, System.TimeSpan? expiration)
+        public async Task<bool> StringSetAsync(string cacheKey, string cacheValue, System.TimeSpan? expiration, string when)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            bool flag = await _cache.StringSetAsync(cacheKey, cacheValue, expiration);
+            When w = When.Always;
+
+            if (when.Equals("nx", StringComparison.OrdinalIgnoreCase))
+            {
+                w = When.NotExists;
+            }
+            else if (when.Equals("xx", StringComparison.OrdinalIgnoreCase))
+            {
+                w = When.Exists;
+            }
+
+            bool flag = await _cache.StringSetAsync(cacheKey, cacheValue, expiration, w);
             return flag;
         }
 
