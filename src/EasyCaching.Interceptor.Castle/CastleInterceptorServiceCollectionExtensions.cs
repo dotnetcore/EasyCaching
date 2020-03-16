@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.Interceptor.Castle
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("EasyCaching.UnitTests")]
+
+namespace EasyCaching.Interceptor.Castle
 {
     using Autofac;
     using Autofac.Extras.DynamicProxy;
@@ -31,8 +33,7 @@
         /// Configures the castle interceptor.
         /// </summary>
         /// <param name="builder">Container Builder.</param>
-        /// <param name="isCalling">Is Calling Assembly or Executing Assembly.</param>
-        public static void ConfigureCastleInterceptor(this ContainerBuilder builder, bool isCalling = true)
+        public static void ConfigureCastleInterceptor(this ContainerBuilder builder)
         {
             //var assembly = isCalling ? Assembly.GetCallingAssembly() : Assembly.GetExecutingAssembly();
 
@@ -41,6 +42,23 @@
             builder.RegisterType<EasyCachingInterceptor>();
 
             builder.RegisterAssemblyTypes(assemblies)
+                .Where(t => !t.IsAbstract && t.GetInterfaces().SelectMany(x => x.GetMethods()).Any(
+                    y => y.CustomAttributes.Any(data =>
+                                    typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
+                                )))
+                .AsImplementedInterfaces()
+                .InstancePerLifetimeScope()
+                .EnableInterfaceInterceptors()
+                .InterceptedBy(typeof(EasyCachingInterceptor));
+        }
+
+        internal static void ConfigureCastleInterceptorForTest(this ContainerBuilder builder)
+        {
+            var assembly = Assembly.GetCallingAssembly();
+
+            builder.RegisterType<EasyCachingInterceptor>();
+
+            builder.RegisterAssemblyTypes(assembly)
                 .Where(t => !t.IsAbstract && t.GetInterfaces().SelectMany(x => x.GetMethods()).Any(
                     y => y.CustomAttributes.Any(data =>
                                     typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
