@@ -24,7 +24,7 @@
         public static void ConfigureCastleInterceptor(this IServiceCollection services, Action<EasyCachingInterceptorOptions> options)
         {
             services.TryAddSingleton<IEasyCachingKeyGenerator, DefaultEasyCachingKeyGenerator>();
-            services.Configure(options);          
+            services.Configure(options);
         }
 
         /// <summary>
@@ -33,12 +33,14 @@
         /// <param name="builder">Container Builder.</param>
         /// <param name="isCalling">Is Calling Assembly or Executing Assembly.</param>
         public static void ConfigureCastleInterceptor(this ContainerBuilder builder, bool isCalling = true)
-        {                          
-            var assembly = isCalling ? Assembly.GetCallingAssembly() : Assembly.GetExecutingAssembly();
+        {
+            //var assembly = isCalling ? Assembly.GetCallingAssembly() : Assembly.GetExecutingAssembly();
+
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             builder.RegisterType<EasyCachingInterceptor>();
 
-            builder.RegisterAssemblyTypes(assembly)
+            builder.RegisterAssemblyTypes(assemblies)
                 .Where(t => !t.IsAbstract && t.GetInterfaces().SelectMany(x => x.GetMethods()).Any(
                     y => y.CustomAttributes.Any(data =>
                                     typeof(EasyCachingInterceptorAttribute).GetTypeInfo().IsAssignableFrom(data.AttributeType)
@@ -46,7 +48,7 @@
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope()
                 .EnableInterfaceInterceptors()
-                .InterceptedBy(typeof(EasyCachingInterceptor));            
+                .InterceptedBy(typeof(EasyCachingInterceptor));
         }
     }
 }
