@@ -7,7 +7,7 @@
 		<EasyCachingInMemoryPackageVersion>0.8.6</EasyCachingInMemoryPackageVersion>
 		<EasyCachingHybridPackageVersion>0.8.6</EasyCachingHybridPackageVersion>
 		<EasyCachingAspectCorePackageVersion>0.8.6</EasyCachingAspectCorePackageVersion>
-		<EasyCachingCastlePackageVersion>0.8.6</EasyCachingCastlePackageVersion>
+		<EasyCachingCastlePackageVersion>0.8.6.1</EasyCachingCastlePackageVersion>
 		<EasyCachingResponseCachingPackageVersion>0.8.6</EasyCachingResponseCachingPackageVersion>
 		<EasyCachingJsonPackageVersion>0.8.6</EasyCachingJsonPackageVersion>
 		<EasyCachingMessagePackPackageVersion>0.8.6</EasyCachingMessagePackPackageVersion>

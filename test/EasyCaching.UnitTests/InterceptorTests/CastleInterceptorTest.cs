@@ -275,7 +275,7 @@
 
             var builder = new ContainerBuilder();
             builder.Populate(services);
-            builder.ConfigureCastleInterceptor(true);
+            builder.ConfigureCastleInterceptorForTest();
 
             IServiceProvider serviceProvider = new AutofacServiceProvider(builder.Build());
 
