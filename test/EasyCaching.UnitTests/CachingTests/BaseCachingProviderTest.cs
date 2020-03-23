@@ -998,6 +998,38 @@
 
             Assert.Equal(4, _provider.GetCount($"{rd}:getcount:withprefix:"));
         }
+
+        [Fact]
+        protected virtual async Task Get_Count_Async_Without_Prefix_Should_Succeed()
+        {
+            _provider.Flush();
+            var rd = Guid.NewGuid().ToString();
+
+            for (var i = 0; i < 5; i++)
+                _provider.Set($"{rd}:getcountaync:{i}", $"value{i}", _defaultTs);
+
+            Assert.Equal(5, await _provider.GetCountAsync());
+
+            _provider.Remove($"{rd}:getcountaync:4");
+
+            Assert.Equal(4, await _provider.GetCountAsync());
+        }
+
+        [Fact]
+        protected virtual async Task Get_Count_Async_With_Prefix_Should_Succeed()
+        {
+            _provider.Flush();
+            var rd = Guid.NewGuid().ToString();
+
+            for (var i = 0; i < 5; i++)
+                _provider.Set($"{rd}:getcountaync:withprefix:{i}", $"value{i}", _defaultTs);
+
+            Assert.Equal(5, await _provider.GetCountAsync($"{rd}:getcountaync:withprefix:"));
+
+            _provider.Remove($"{rd}:getcountaync:withprefix:1");
+
+            Assert.Equal(4, await _provider.GetCountAsync($"{rd}:getcountaync:withprefix:"));
+        }
         #endregion
 
         #region TrySet

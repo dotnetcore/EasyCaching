@@ -91,6 +91,11 @@
             return 1;
         }
 
+        public Task<int> GetCountAsync(string prefix = "")
+        {
+            return Task.FromResult(1);
+        }
+
         public virtual TimeSpan GetExpiration(string cacheKey)
         {
             return TimeSpan.FromSeconds(1);

@@ -86,6 +86,11 @@
             return 1;
         }
 
+        public override Task<int> BaseGetCountAsync(string prefix = "")
+        {
+            return Task.FromResult(1);
+        }
+
         public override TimeSpan BaseGetExpiration(string cacheKey)
         {
             return TimeSpan.FromSeconds(1);

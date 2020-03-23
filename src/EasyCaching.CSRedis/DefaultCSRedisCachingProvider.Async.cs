@@ -179,6 +179,30 @@
         }
 
         /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public override Task<int> BaseGetCountAsync(string prefix = "")
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                var allCount = 0L;
+
+                var servers = _cache.NodesServerManager.DbSize();
+
+                foreach (var item in servers)
+                {
+                    allCount += item.value;
+                }
+
+                return Task.FromResult((int)allCount);
+            }
+
+            return Task.FromResult(SearchRedisKeys(HandlePrefix(prefix)).Length);
+        }
+
+        /// <summary>
         /// Gets the by prefix async.
         /// </summary>
         /// <returns>The by prefix async.</returns>

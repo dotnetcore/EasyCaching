@@ -99,7 +99,7 @@
                 return CacheValue<T>.NoValue;
             }
         }
-   
+
         /// <summary>
         /// Gets the specified cacheKey async.
         /// </summary>
@@ -131,7 +131,27 @@
                 return CacheValue<T>.NoValue;
             }
         }
-   
+
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public override Task<int> BaseGetCountAsync(string prefix = "")
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                var allCount = 0;
+
+                foreach (var server in _servers)
+                    allCount += (int)server.DatabaseSize(_cache.Database);
+
+                return Task.FromResult(allCount);
+            }
+
+            return Task.FromResult(this.SearchRedisKeys(this.HandlePrefix(prefix)).Length);
+        }
+
         /// <summary>
         /// Removes the specified cacheKey async.
         /// </summary>
@@ -143,7 +163,7 @@
 
             await _cache.KeyDeleteAsync(cacheKey);
         }
-      
+
         /// <summary>
         /// Sets the specified cacheKey, cacheValue and expiration async.
         /// </summary>
@@ -169,7 +189,7 @@
                     _serializer.Serialize(cacheValue),
                     expiration);
         }
-  
+
         /// <summary>
         /// Existses the specified cacheKey async.
         /// </summary>
@@ -219,7 +239,7 @@
 
             await Task.WhenAll(tasks);
         }
-   
+
         /// <summary>
         /// Gets all async.
         /// </summary>
@@ -245,7 +265,7 @@
 
             return result;
         }
-    
+
         /// <summary>
         /// Gets the by prefix async.
         /// </summary>
@@ -274,7 +294,7 @@
 
             return result;
         }
- 
+
         /// <summary>
         /// Removes all async.
         /// </summary>
@@ -288,7 +308,7 @@
             if (redisKeys.Length > 0)
                 await _cache.KeyDeleteAsync(redisKeys);
         }
-     
+
         /// <summary>
         /// Flush All Cached Item async.
         /// </summary>
@@ -307,7 +327,7 @@
 
             await Task.WhenAll(tasks);
         }
-    
+
         /// <summary>
         /// Tries the set async.
         /// </summary>

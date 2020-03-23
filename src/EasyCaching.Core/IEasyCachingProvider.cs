@@ -194,6 +194,13 @@
         int GetCount(string prefix = "");
 
         /// <summary>
+        /// Gets the count async.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        Task<int> GetCountAsync(string prefix = "");
+
+        /// <summary>
         /// Flush All Cached Item.
         /// </summary>
         void Flush();

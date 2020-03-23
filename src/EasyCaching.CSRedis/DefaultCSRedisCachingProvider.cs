@@ -60,7 +60,7 @@
            RedisOptions options,
            ILoggerFactory loggerFactory = null)
         {
-            this._name = name;                      
+            this._name = name;
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
             this._cache = clients.Single(x => x.Name.Equals(_name));
@@ -69,7 +69,7 @@
             this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
                 ? serializers.Single(x => x.Name.Equals(options.SerializerName))
                 : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
-       
+
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;
             this.ProviderStats = this._cacheStats;
@@ -102,7 +102,7 @@
 
             return _cache.Exists(cacheKey);
         }
-     
+
         /// <summary>
         /// Flush this instance.
         /// </summary>
@@ -224,7 +224,7 @@
 
             return result;
         }
- 
+
         /// <summary>
         /// Handles the prefix of CacheKey.
         /// </summary>
@@ -319,7 +319,7 @@
 
             return this.SearchRedisKeys(this.HandlePrefix(prefix)).Length;
         }
-              
+
         /// <summary>
         /// Remove the specified cacheKey.
         /// </summary>
