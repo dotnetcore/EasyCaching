@@ -140,7 +140,7 @@
             await Task.FromResult(1);
         }
 
-        protected override async Task GetAll_Async_With_Value_Type_Should_Succeed()
+        protected override async Task Get_Count_Async_With_Prefix_Should_Succeed()
         {
             await Task.FromResult(1);
         }
