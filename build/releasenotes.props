@@ -1,19 +1,19 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Redis provider string support nx and xx.
+      1. easycaching provider support getcountasync.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Upgrading dependencies.
+      1. support getcountasync.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Redis provider string support nx and xx.
+      1. support getcountasync.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. Upgrading dependencies.
+      1. support getcountasync.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. Upgrading dependencies.
+      1. support getcountasync.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
       1. Upgrading dependencies.
@@ -37,7 +37,7 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. Redis provider string support nx and xx.
+      1. support getcountasync.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
@@ -49,7 +49,7 @@
       1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. Upgrading dependencies.
+      1. support getcountasync.
     </EasyCachingDiskPackageNotes>
   </PropertyGroup>
 </Project>
