@@ -99,6 +99,16 @@
         }
 
         /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public override Task<int> BaseGetCountAsync(string prefix = "")
+        {
+            return Task.FromResult(_cache.GetCount(prefix));
+        }
+
+        /// <summary>
         /// Gets the specified cacheKey async.
         /// </summary>
         /// <returns>The async.</returns>

@@ -95,6 +95,24 @@
         }
 
         /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public override Task<int> BaseGetCountAsync(string prefix = "")
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                //Inaccurate, sometimes, memcached just causes items to expire but not free up or flush memory at once.
+                return Task.FromResult(int.Parse(_memcachedClient.Stats().GetRaw("curr_items").FirstOrDefault().Value));
+            }
+            else
+            {
+                return Task.FromResult(0);
+            }
+        }
+
+        /// <summary>
         /// Gets the specified cacheKey async.
         /// </summary>
         /// <returns>The async.</returns>

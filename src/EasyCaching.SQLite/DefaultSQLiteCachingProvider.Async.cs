@@ -119,6 +119,23 @@
         }
 
         /// <summary>
+        /// Gets the count.
+        /// </summary>
+        /// <returns>The count.</returns>
+        /// <param name="prefix">Prefix.</param>
+        public override async Task<int> BaseGetCountAsync(string prefix = "")
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return await _cache.ExecuteScalarAsync<int>(ConstSQL.COUNTALLSQL, new { name = _name });
+            }
+            else
+            {
+                return await _cache.ExecuteScalarAsync<int>(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+            }
+        }
+
+        /// <summary>
         /// Gets the specified cacheKey async.
         /// </summary>
         /// <returns>The async.</returns>

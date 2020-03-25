@@ -38,6 +38,7 @@
         public abstract IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix);
         public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix);
         public abstract int BaseGetCount(string prefix = "");
+        public abstract Task<int> BaseGetCountAsync(string prefix = "");
         public abstract void BaseRemove(string cacheKey);
         public abstract void BaseRemoveAll(IEnumerable<string> cacheKeys);
         public abstract Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys);
@@ -397,6 +398,11 @@
         public int GetCount(string prefix = "")
         {
             return BaseGetCount(prefix);
+        }
+
+        public async Task<int> GetCountAsync(string prefix = "")
+        {
+            return await BaseGetCountAsync(prefix);
         }
 
         public void Remove(string cacheKey)

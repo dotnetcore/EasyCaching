@@ -145,6 +145,18 @@
             }
         }
 
+        public override Task<int> BaseGetCountAsync(string prefix = "")
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return Task.FromResult(_cacheKeysMap.Count);
+            }
+            else
+            {
+                return Task.FromResult(_cacheKeysMap.Count(x => x.Key.StartsWith(prefix, StringComparison.Ordinal)));
+            }
+        }
+
         public override async Task<object> BaseGetAsync(string cacheKey, Type type)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
