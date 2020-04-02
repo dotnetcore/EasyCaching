@@ -29,6 +29,6 @@ script:
   # - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 11211:11211 --name memcached1 -d memcached:latest memcached -m 64 -c 2048; fi  
   # - if test "$TRAVIS_OS_NAME" == "linux"; then docker run -p 11212:11211 --name memcached2 -d memcached:latest memcached -m 64 -c 2048; fi  
   - export PATH="$PATH:$HOME/.dotnet/tools"
-  - dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
+  - dotnet tool install --global FlubuCore.GlobalTool --version 5.0.2
   - flubu build -s=build/BuildScript.cs
   # - if test "$TRAVIS_OS_NAME" == "linux"; then dotnet test -c Release --no-build ./test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj; fi
