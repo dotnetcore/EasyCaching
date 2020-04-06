@@ -16,9 +16,9 @@ Install-Package EasyCaching.CSRedis
 
 ### 2. Config in Startup class
 
-There are two options you can choose when you config the caching provider.
+There are two way's how you can configure caching provider.
 
-First of all, we can config by C# code.
+By C# code:
 
 ```csharp
 public class Startup
@@ -39,7 +39,14 @@ public class Startup
                     ConnectionStrings = new System.Collections.Generic.List<string>
                     {
                         "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
-                    }
+                    },
+                    // the sentinels settings
+                    Sentinels = new System.Collections.Generic.List<string>
+                    {
+                        "192.169.1.10:26379", "192.169.1.11:26379", "192.169.1.12:26379"
+                    },
+                    // the read write setting for sentinel mode
+                    ReadOnly = false
                 };
             });
         });
@@ -47,7 +54,7 @@ public class Startup
 }
 ```
 
-What's more, we also can read the configuration from `appsettings.json`.
+Alternatively you can store configuration in the `appsettings.json`.
 
 ```cs
 public class Startup
@@ -67,7 +74,7 @@ public class Startup
 }
 ```
 
-And what we add in `appsettings.json` are as following:
+`appsettings.json` example:
 
 ```JSON
 "easycaching": {
@@ -79,7 +86,11 @@ And what we add in `appsettings.json` are as following:
         "dbconfig": {
             "ConnectionStrings":[
                 "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
-            ]
+            ],
+            "Sentinels":[
+                "192.169.1.10:26379", "192.169.1.11:26379", "192.169.1.12:26379"
+            ],
+            "ReadOnly": false
         }
     }
 }
@@ -87,7 +98,7 @@ And what we add in `appsettings.json` are as following:
 
 ### 3. Call the IEasyCachingProvider
 
-The following code show how to use EasyCachingProvider in ASP.NET Core Web API.
+Following code shows how to use EasyCachingProvider in ASP.NET Core Web API.
 
 ```csharp
 [Route("api/[controller]")]

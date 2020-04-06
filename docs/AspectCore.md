@@ -1,12 +1,12 @@
 # Caching Intercept via AspectCore
 
-EasyCaching.Interceptor.AspectCore is a caching intercept library which is based on **EasyCaching.Core** and **AspectCore**.
+EasyCaching.Interceptor.AspectCore is a caching interceptor library which is based on **EasyCaching.Core** and **AspectCore**.
 
-When using this library, it can help us to separate the operation between business logic and caching logic.
+When using this library, it can help us to separate operations between business logic and caching logic.
 
 # How to use ?
 
-Before using **EasyCaching.Interceptor.AspectCore**, we should specify which type of caching you want to use!! In this document, we will use EasyCaching.InMemory for example.
+Before using **EasyCaching.Interceptor.AspectCore**, you should specify which type of caching you want to use!! In following example, we will use EasyCaching.InMemory.
 
 ## 1. Install the package via Nuget
 
@@ -18,30 +18,7 @@ Install-Package EasyCaching.InMemory
 
 ## 2. Define services
 
-### 2.1 Define the interface
-
-We need to add `EasyCachingAble`,`EasyCachingPut` or `EasyCachingEvict` on the methods that we want to simplify the caching operation.
-
-The following unordered list shows you what the attribute will affect the caching.  
-
-- EasyCachingAble , Read from cached items
-- EasyCachingPut , Update the cached item
-- EasyCachingEvict , Remove one cached item or multi cached items
-
-There are some properties that we should know
-
-Property | Description | Apply
----|---|---
-CacheKeyPrefix | To specify the prefix of your cache key | All
-CacheProviderName | To specify which provider you want to use | All
-IsHighAvailability | Whether caching opreation will break your method | All
-Expiration | To specify the expiration of your cache item，the unit is second | EasyCachingAble and EasyCachingPut
-IsAll | Whether remove all the cached items start with the CacheKeyPrefix | EasyCachingEvict only
-IsBefore | Remove the cached item before method excute or after method excute | EasyCachingEvict only
-
-Here is a easy sample to show you how to use.
-
-Defining a regular interface at first.
+Define interface first.
 
 ```csharp
 public interface IDemoService
@@ -81,6 +58,90 @@ public class DemoService : IDemoService
 
 ## 3. Config in Startup class
 
+There are some difference between .NET Core 2.x and .NET Core 3.0.
+
+### .NET Core 3.0
+
+Need to use EasyCaching above version 0.8.0
+
+First, add the use of UseServiceProviderFactory to the Program.
+
+```cs
+// for aspcectcore
+using AspectCore.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        CreateHostBuilder(args).Build().Run();
+    }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            })
+            // for aspcectcore
+            .UseServiceProviderFactory(new AspectCoreServiceProviderFactory())
+        ;
+}
+```
+
+Second, you need to add the ConfigureContainer method to the Startup.
+
+```cs
+public class Startup
+{
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddScoped<IAspectCoreService, AspectCoreService>();
+
+        services.AddEasyCaching(options =>
+        {
+            options.UseInMemory("m1");
+        });
+
+        services.AddControllers();
+
+        services.AddTransient<IDemoService, DemoService>();
+        // AspectCore
+        services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = "m1");
+       
+    }
+
+    // for aspectcore
+    public void ConfigureContainer(IServiceContainer builder)
+    {
+        builder.ConfigureAspectCoreInterceptor();
+    }
+
+     public void Configure(IApplicationBuilder app)
+     {           
+         app.UseRouting();
+         app.UseEndpoints(endpoints =>
+         {
+            endpoints.MapControllers();
+         });
+     }
+}
+```
+
+### .NET Core 2.x
+
+EasyCaching above version 0.8.0 no longer supports .NET Core 2.x
+
+
 ```csharp
 public class Startup
 {
@@ -107,7 +168,7 @@ public class Startup
 }
 ```
 
-### 3. Call the service
+### 4. Call the service
 
 The following code shows how to use in ASP.NET Core Web API.
 

@@ -2,7 +2,7 @@
 
 EasyCaching.Memcached is a memcached caching lib which is based on **EasyCaching.Core** and **[EnyimMemcachedCore](https://github.com/cnblogs/EnyimMemcachedCore)**.
 
-When you use this lib , it means that you will handle the data of your memcached servers . As usual , we will use it as distributed caching .
+When you use this lib, it means that you will handle the data of your memcached servers. As usual, we will use it as distributed caching.
 
 # How to use ?
 
@@ -34,12 +34,6 @@ public class Startup
                 config.DBConfig.AddServer("127.0.0.1", 11211);
             });
         });
-    }
-
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-    {
-        // Important step for Memcache Cache
-        app.UseEasyCaching();
     }
 }
 ```
@@ -85,12 +79,6 @@ public class ValuesController : Controller
         
         //Get without data retriever Async
         var res = await _provider.GetAsync<string>("demo");
-
-        //Refresh
-        _provider.Refresh("key", "123", TimeSpan.FromMinutes(1));
-
-        //Refresh Async
-        await _provider.RefreshAsync("key", "123", TimeSpan.FromMinutes(1));
     }
 }
 ```

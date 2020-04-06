@@ -2,9 +2,9 @@
 
 HybridCachingProvider will combine local caching and distributed caching together.
 
-And the most important problem is to keep the newest local cached value.
+The most important problem that this caching provider solves is that it keeps the newest local cached value.
 
-When we modify a cached value, the provider will send a message to `EasyCaching Bus` so that we can notify other Apps to remove the old value.
+When we modify a cached value, the provider will send a message to `EasyCaching Bus` so that it can notify other Apps to remove the old value.
 
 The following image shows how it runs.
 
@@ -66,7 +66,7 @@ public class Startup
 
 ### 3. Call `IHybridCachingProvider`
 
-The following code show how to use EasyCachingProvider in ASP.NET Core Web API.
+Following code shows how to use EasyCachingProvider in ASP.NET Core Web API.
 
 ```csharp
 [Route("api/[controller]")]

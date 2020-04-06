@@ -2,7 +2,7 @@
 
 SQLite is another choice of local caching. 
 
-There are two scenarios are good for us to use SQLite as our local caching!
+There are two scenarios where SQLite is recommended to use as our local caching!
 
 1. Persisted caching item.
 2. Rebuild caching item.
@@ -40,12 +40,6 @@ public class Startup
                 config.DBConfig = new SQLiteDBOptions { FileName = "my.db" };
             });
         });
-    }
-    
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-    {
-        //Important step for SQLite Cache
-        app.UseEasyCaching();
     }
 }
 ```
@@ -91,12 +85,6 @@ public class ValuesController : Controller
         
         //Get without data retriever Async
         var res = await _provider.GetAsync<string>("demo");
-
-        //Refresh
-        _provider.Refresh("key", "123", TimeSpan.FromMinutes(1));
-
-        //Refresh Async
-        await _provider.RefreshAsync("key", "123", TimeSpan.FromMinutes(1));
         
         //RemoveByPrefix
         _provider.RemoveByPrefix("prefix");

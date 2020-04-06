@@ -21,10 +21,29 @@ public class Startup
     {
         services.AddMvc();
 
-        services.AddEasyCaching(option =>
+        services.AddEasyCaching(options => 
         {
-            //specify to use json serializer
-            option.WithJson();
+            // with a default name [json]
+            options.WithJson();
+
+            // with a custom name [myname]
+            options.WithJson("myname");               
+
+            // add some serialization settings
+            Action<EasyCaching.Serialization.Json.EasyCachingJsonSerializerOptions> easycaching = x => 
+            {
+                x.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            };
+            options.WithJson(easycaching, "easycaching_setting");
+
+            // add some serialization settings
+            // after version 0.8.1, full control of JsonSerializerSettings
+            Action<Newtonsoft.Json.JsonSerializerSettings> jsonNET = x =>
+            {
+                x.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                x.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+            };
+            options.WithJson(jsonNET, "json.net_setting");
         });
     }
 }

@@ -21,10 +21,13 @@ public class Startup
     {
         services.AddMvc();
 
-        services.AddEasyCaching(option =>
+        services.AddEasyCaching(options => 
         {
-            //specify to use protobuf serializer
-            option.WithProtobuf();
+            // with a default name [proto]
+            options.WithProtobuf();
+
+            // with a custom name [myname]
+            options.WithProtobuf("myname");
         });
     }
 }
