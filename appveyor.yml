@@ -42,7 +42,7 @@ for:
   - ps: docker run -p 11211:11211 --name memcached1 -d bitnami/memcached:latest
   - ps: docker run -p 11212:11211 --name memcached2 -d bitnami/memcached:latest
   - ps: docker ps -a
-  - ps: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
+  - ps: dotnet tool install --global FlubuCore.GlobalTool --version 5.0.3
 
   build_script:
    - ps: flubu Rebuild.Server -apiKey=$env:api_key
@@ -66,7 +66,7 @@ for:
   - sh: docker run -p 11211:11211 --name memcached1 -d memcached memcached -m 64 -c 2048
   - sh: docker run -p 11212:11211 --name memcached2 -d memcached memcached -m 64 -c 2048
   - sh: docker ps -a
-  - sh: dotnet tool install --global FlubuCore.GlobalTool --version 4.2.8
+  - sh: dotnet tool install --global FlubuCore.GlobalTool --version 5.0.3
   
   build_script:
   - sh: flubu Rebuild -s=build/BuildScript.cs

@@ -46,11 +46,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FlubuCore" Version="4.2.8" />
+    <PackageReference Include="FlubuCore" Version="5.0.3" />
   </ItemGroup>
   
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-flubu" Version="4.2.8" />
+    <DotNetCliToolReference Include="dotnet-flubu" Version="5.0.3" />
   </ItemGroup>
   
   <ItemGroup>
