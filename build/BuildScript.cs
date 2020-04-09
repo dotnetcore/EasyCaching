@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
 using FlubuCore.Context;
+using FlubuCore.Context.Attributes.BuildProperties;
 using FlubuCore.Context.FluentInterface;
 using FlubuCore.Context.FluentInterface.Interfaces;
+using FlubuCore.IO;
 using FlubuCore.Scripting;
 using FlubuCore.Targeting;
 
@@ -13,13 +15,17 @@ namespace Build
         [FromArg("apiKey", "Nuget api key for publishing nuget package.")]
         public string NugetApiKey { get; set; }
 
-        protected override void ConfigureBuildProperties(IBuildPropertiesContext context)
-        {
-            context.Properties.Set(BuildProps.ProductId, "EasyCaching");
-            context.Properties.Set(BuildProps.SolutionFileName, "EasyCaching.sln");
-            context.Properties.Set(BuildProps.OutputDir, "output");
-            context.Properties.Set(BuildProps.BuildConfiguration, "Release");
-        }
+        [ProductId] public string ProductId { get; set; } = "ProductId";
+
+        [SolutionFileName] public string SolutionFileName { get; set; } = "EasyCaching.sln";
+
+        [BuildConfiguration] public string BuildConfiguration { get; set; } = "Release";
+
+        public FullPath OutputDir => RootDirectory.CombineWith("output");
+
+        public FullPath SourceDir => RootDirectory.CombineWith("src");
+
+        public FullPath TestDir => RootDirectory.CombineWith("test");
 
         protected override void ConfigureTargets(ITaskContext context)
         {
@@ -34,18 +40,20 @@ namespace Build
                 .SetDescription("Run's all EasyCaching tests.")
                 .AddTask(X => X.RunProgramTask("docker")
                     .WithArguments("ps", "-a"))
-                .AddCoreTask(x => x.Test().Project("test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj")
+                .AddCoreTask(x => x.Test().Project(TestDir.CombineWith("EasyCaching.UnitTests/EasyCaching.UnitTests.csproj"))
                     .NoBuild());
 
+            var projectsToPack = context.GetFiles(SourceDir, "*/*.csproj");
             var nugetPublish = context.CreateTarget("Nuget.Publish")
                 .SetDescription("Packs and publishes nuget package.")
-                .ForEach(_easyCachingProjectsToPack, (project, target) =>
+                .Requires(() => NugetApiKey)
+                .ForEach(projectsToPack, (project, target) =>
                 {
                     target
                         .AddCoreTask(x => x.Pack()
                             .Project(project)
                             .IncludeSymbols()
-                            .OutputDirectory(context.Properties.GetOutputDir()));
+                            .OutputDirectory(OutputDir));
                 })
                 .Do(PublishNuGetPackage);
 
@@ -53,8 +61,8 @@ namespace Build
                 .SetAsDefault()
                 .SetDescription("Build's the solution and run's all tests.")
                 .DependsOn(build, runTests);
-            
-            var branch = Environment.GetEnvironmentVariable("APPVEYOR_REPO_BRANCH");
+
+            var branch = context.BuildSystems().AppVeyor().BranchName;
 
             context.CreateTarget("Rebuild.Server")
                 .SetDescription("Build's the solution, run's all tests and publishes nuget package when running on Appveyor.")
@@ -81,26 +89,5 @@ namespace Build
                     .Execute(context);
             }
         }
-
-        private string[] _easyCachingProjectsToPack = new string[]
-        {
-            "src/EasyCaching.Core/EasyCaching.Core.csproj",
-            "src/EasyCaching.Bus.CSRedis/EasyCaching.Bus.CSRedis.csproj",
-            "src/EasyCaching.Bus.RabbitMQ/EasyCaching.Bus.RabbitMQ.csproj",
-            "src/EasyCaching.Bus.Redis/EasyCaching.Bus.Redis.csproj",
-            "src/EasyCaching.CSRedis/EasyCaching.CSRedis.csproj",
-            "src/EasyCaching.Disk/EasyCaching.Disk.csproj",
-            "src/EasyCaching.HybridCache/EasyCaching.HybridCache.csproj",
-            "src/EasyCaching.InMemory/EasyCaching.InMemory.csproj",
-            "src/EasyCaching.Interceptor.AspectCore/EasyCaching.Interceptor.AspectCore.csproj",
-            "src/EasyCaching.Interceptor.Castle/EasyCaching.Interceptor.Castle.csproj",
-            "src/EasyCaching.Memcached/EasyCaching.Memcached.csproj",
-            "src/EasyCaching.Redis/EasyCaching.Redis.csproj",
-            "src/EasyCaching.ResponseCaching/EasyCaching.ResponseCaching.csproj",
-            "src/EasyCaching.Serialization.Json/EasyCaching.Serialization.Json.csproj",
-            "src/EasyCaching.Serialization.MessagePack/EasyCaching.Serialization.MessagePack.csproj",
-            "src/EasyCaching.Serialization.Protobuf/EasyCaching.Serialization.Protobuf.csproj",
-            "src/EasyCaching.SQLite/EasyCaching.SQLite.csproj",
-        };
     }
 }
