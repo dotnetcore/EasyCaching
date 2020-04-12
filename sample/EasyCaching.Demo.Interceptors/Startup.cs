@@ -51,12 +51,6 @@
         }
 
         #region ConfigureContainer should be only one
-        //// for aspectcore
-        //public void ConfigureContainer(IServiceContainer builder)
-        //{
-        //    builder.ConfigureAspectCoreInterceptor();
-        //}
-
         //// ConfigureContainer is where you can register things directly
         //// with Autofac. This runs after ConfigureServices so the things
         //// here will override registrations made in ConfigureServices.
