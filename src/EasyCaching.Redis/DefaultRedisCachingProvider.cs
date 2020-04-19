@@ -274,7 +274,10 @@
             var keys = new List<RedisKey>();
 
             foreach (var server in _servers)
-                keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database));
+                // the default pageSize is 10, if there are too many keys here, it will hurt performance
+                // see https://github.com/dotnetcore/EasyCaching/pull/199 for more information
+                // from this redis dev specification, https://yq.aliyun.com/articles/531067 , maybe the appropriate scope is 100~500, using 200 here.
+                keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database, pageSize: 200));
 
             return keys.Distinct().ToArray();
 
