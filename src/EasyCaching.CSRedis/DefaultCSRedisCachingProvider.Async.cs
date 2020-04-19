@@ -90,7 +90,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            var flag = await _cache.SetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs).Seconds, RedisExistence.Nx);
+            var flag = await _cache.SetAsync($"{cacheKey}_Lock", 1, (int)TimeSpan.FromMilliseconds(_options.LockMs).TotalSeconds, RedisExistence.Nx);
 
             if (!flag)
             {

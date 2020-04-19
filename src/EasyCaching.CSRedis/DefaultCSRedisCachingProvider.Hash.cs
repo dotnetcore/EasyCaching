@@ -12,35 +12,20 @@
         public bool HMSet(string cacheKey, Dictionary<string, string> vals, TimeSpan? expiration = null)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(vals, nameof(vals));
 
+            var list = new List<object>(vals.Count * 2);
+            foreach (var item in vals)
+            {
+                list.Add(item.Key);
+                list.Add(item.Value);
+            }
+            var flag = _cache.HMSet(cacheKey, list.ToArray());
             if (expiration.HasValue)
             {
-                var list = new List<object>();
-
-                foreach (var item in vals)
-                {
-                    list.Add(item.Key);
-                    list.Add(item.Value);
-                }
-
-                var flag = _cache.HMSet(cacheKey, list.ToArray());
-
-                if (flag) flag = _cache.Expire(cacheKey, expiration.Value.Seconds);
-
-                return flag;
+                flag = flag && _cache.Expire(cacheKey, expiration.Value);
             }
-            else
-            {
-                var list = new List<object>();
-
-                foreach (var item in vals)
-                {
-                    list.Add(item.Key);
-                    list.Add(item.Value);
-                }
-
-                return _cache.HMSet(cacheKey, list.ToArray());
-            }
+            return flag;
         }
 
         public bool HSet(string cacheKey, string field, string cacheValue)
@@ -63,7 +48,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            if(fields != null  && fields.Any())
+            if (fields != null && fields.Any())
             {
                 return _cache.HDel(cacheKey, fields.ToArray());
             }
@@ -142,34 +127,21 @@
 
         public async Task<bool> HMSetAsync(string cacheKey, Dictionary<string, string> vals, TimeSpan? expiration = null)
         {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNull(vals, nameof(vals));
+
+            var list = new List<object>(vals.Count * 2);
+            foreach (var item in vals)
+            {
+                list.Add(item.Key);
+                list.Add(item.Value);
+            }
+            var flag = await _cache.HMSetAsync(cacheKey, list.ToArray());
             if (expiration.HasValue)
             {
-                var list = new List<object>();
-
-                foreach (var item in vals)
-                {
-                    list.Add(item.Key);
-                    list.Add(item.Value);
-                }
-
-                var flag = await _cache.HMSetAsync(cacheKey, list.ToArray());
-
-                if (flag) flag = await _cache.ExpireAsync(cacheKey, expiration.Value.Seconds);
-
-                return flag;
+                flag = flag && await _cache.ExpireAsync(cacheKey, expiration.Value);
             }
-            else
-            {
-                var list = new List<object>();
-
-                foreach (var item in vals)
-                {
-                    list.Add(item.Key);
-                    list.Add(item.Value);
-                }
-
-                return await _cache.HMSetAsync(cacheKey, list.ToArray());
-            }
+            return flag;
         }
 
         public async Task<bool> HSetAsync(string cacheKey, string field, string cacheValue)
