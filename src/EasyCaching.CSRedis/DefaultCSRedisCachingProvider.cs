@@ -144,7 +144,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!_cache.Set($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs).Seconds, RedisExistence.Nx))
+            if (!_cache.Set($"{cacheKey}_Lock", 1, (int)TimeSpan.FromMilliseconds(_options.LockMs).TotalSeconds, RedisExistence.Nx))
             {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);

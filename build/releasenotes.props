@@ -1,19 +1,20 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. easycaching provider support getcountasync.
+      1. Upgrading dependencies.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. support getcountasync.
+      1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. support getcountasync.
+      1. Upgrading dependencies.
+      2. SearchRedisKeys change the default pageSize 200
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. support getcountasync.
+      1. Upgrading dependencies.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. support getcountasync.
+      1. Upgrading dependencies.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
       1. Upgrading dependencies.
@@ -22,7 +23,7 @@
       1. Upgrading dependencies.
     </EasyCachingAspectCorePackageNotes>
     <EasyCachingCastlePackageNotes>
-      1. different project can not effect.
+      1. Upgrading dependencies.
     </EasyCachingCastlePackageNotes>
     <EasyCachingResponseCachingPackageNotes>
       1. Upgrading dependencies.
@@ -37,7 +38,8 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. support getcountasync.
+      1. Upgrading dependencies.
+      2. Fixed bugs of expiration.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
@@ -49,7 +51,7 @@
       1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. support getcountasync.
+      1. Upgrading dependencies.
     </EasyCachingDiskPackageNotes>
   </PropertyGroup>
 </Project>
