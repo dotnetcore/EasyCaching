@@ -1,57 +1,56 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Upgrading dependencies.
-      2. SearchRedisKeys change the default pageSize 200
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingHybridPackageNotes>
     <EasyCachingAspectCorePackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingAspectCorePackageNotes>
     <EasyCachingCastlePackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingCastlePackageNotes>
     <EasyCachingResponseCachingPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingResponseCachingPackageNotes>
     <EasyCachingJsonPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingJsonPackageNotes>
     <EasyCachingMessagePackPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingMessagePackPackageNotes>
     <EasyCachingProtobufPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
       2. Fixed bugs of expiration.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingCSRedisBusPackageNotes>
     <EasyCachingRedisBusPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingRedisBusPackageNotes>
     <EasyCachingRabbitBusPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. Upgrading dependencies.
+      1. Microsoft.* keep in 3.1.0.
     </EasyCachingDiskPackageNotes>
   </PropertyGroup>
 </Project>
