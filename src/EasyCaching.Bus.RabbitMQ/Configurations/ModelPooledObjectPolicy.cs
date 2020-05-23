@@ -26,9 +26,9 @@
                 Port = _options.Port,
                 Password = _options.Password,
                 VirtualHost = _options.VirtualHost,
-                RequestedConnectionTimeout = _options.RequestedConnectionTimeout,
-                SocketReadTimeout = _options.SocketReadTimeout,
-                SocketWriteTimeout = _options.SocketWriteTimeout
+                RequestedConnectionTimeout = System.TimeSpan.FromMilliseconds(_options.RequestedConnectionTimeout),
+                SocketReadTimeout = System.TimeSpan.FromMilliseconds(_options.SocketReadTimeout),
+                SocketWriteTimeout = System.TimeSpan.FromMilliseconds(_options.SocketWriteTimeout)
             };
 
             return factory.CreateConnection();
