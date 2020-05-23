@@ -15,7 +15,7 @@
 		<EasyCachingCSRedisPackageVersion>0.8.9</EasyCachingCSRedisPackageVersion>
 		<EasyCachingRedisBusPackageVersion>0.8.9</EasyCachingRedisBusPackageVersion>
 		<EasyCachingCSRedisBusPackageVersion>0.8.9</EasyCachingCSRedisBusPackageVersion>
-		<EasyCachingRabbitBusPackageVersion>0.8.9</EasyCachingRabbitBusPackageVersion>
+		<EasyCachingRabbitBusPackageVersion>0.8.9.1</EasyCachingRabbitBusPackageVersion>
 		<EasyCachingDiskPackageVersion>0.8.9</EasyCachingDiskPackageVersion>
 	</PropertyGroup>
 </Project>

@@ -47,7 +47,7 @@
       1. Microsoft.* keep in 3.1.0.
     </EasyCachingRedisBusPackageNotes>
     <EasyCachingRabbitBusPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrade RabbitMQ.Client to 6.0.0.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
       1. Microsoft.* keep in 3.1.0.

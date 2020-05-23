@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
+    <PackageReference Include="RabbitMQ.Client" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.0" />
   </ItemGroup>
 </Project>
