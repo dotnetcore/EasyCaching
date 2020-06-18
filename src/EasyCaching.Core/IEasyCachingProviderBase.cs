@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace EasyCaching.Core
 {
-    public interface IRedisCachingProviderBase
+    public interface IEasyCachingProviderBase
     {
         /// <summary>
         /// Gets the name.
