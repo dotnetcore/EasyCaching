@@ -7,7 +7,7 @@
     /// <summary>
     /// Hybrid caching provider.
     /// </summary>
-    public interface IHybridCachingProvider : IRedisCachingProviderBase
+    public interface IHybridCachingProvider : IEasyCachingProviderBase
     {
     }
 }

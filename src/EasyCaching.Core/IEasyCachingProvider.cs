@@ -7,7 +7,7 @@
     /// <summary>
     /// EasyCaching provider.
     /// </summary>
-    public interface IEasyCachingProvider : IRedisCachingProviderBase
+    public interface IEasyCachingProvider : IEasyCachingProviderBase
     {
         /// <summary>
         /// Gets a value indicating whether this <see cref="T:EasyCaching.Core.IEasyCachingProvider"/> is distributed cache.
