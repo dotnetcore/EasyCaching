@@ -74,7 +74,8 @@
                 ProviderName = ProviderName,
                 ProviderType = ProviderType,
                 SerializerName = options.SerializerName,
-                SleepMs = options.SleepMs
+                SleepMs = options.SleepMs,
+                CacheNulls = options.CacheNulls
             };
 
             InitDb(_dbProvider);
@@ -150,7 +151,7 @@
 
             var item = dataRetriever();
 
-            if (item != null)
+            if (item != null || _options.CacheNulls)
             {
                 Set(cacheKey, item, expiration);
                 return new CacheValue<T>(item, true);
@@ -220,7 +221,7 @@
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
@@ -386,7 +387,7 @@
         public override bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)

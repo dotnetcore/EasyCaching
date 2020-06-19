@@ -75,7 +75,8 @@
                 ProviderName = ProviderName,
                 ProviderType = ProviderType,
                 SerializerName = options.SerializerName,
-                SleepMs = options.SleepMs,                
+                SleepMs = options.SleepMs,
+                CacheNulls = options.CacheNulls,
             };
         }
 
@@ -116,7 +117,7 @@
             }
 
             var item = dataRetriever();
-            if (item != null)
+            if (item != null || _options.CacheNulls)
             {
                 this.Set(cacheKey, item, expiration);
                 _memcachedClient.Remove(this.HandleCacheKey($"{cacheKey}_Lock"));
@@ -182,7 +183,7 @@
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
@@ -359,7 +360,7 @@
         public override bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)

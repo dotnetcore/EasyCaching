@@ -11,9 +11,10 @@
     public abstract class BaseCachingProviderTest
     {
         protected IEasyCachingProvider _provider;
+        protected IEasyCachingProvider _providerWithNullsCached;
         protected TimeSpan _defaultTs;
         protected string _nameSpace = string.Empty;
-
+        
         #region Parameter Check Test
         [Theory]
         [InlineData("")]
@@ -283,6 +284,21 @@
 
             _provider.Remove(cacheKey);
         }
+        
+        [Fact]
+        public void Set_Value_And_Get_Cached_Value_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
+            string cacheValue = null;
+
+            _providerWithNullsCached.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _providerWithNullsCached.Get<string>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Null(val.Value);
+
+            _providerWithNullsCached.Remove(cacheKey);
+        }
 
         [Fact]
         public async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed()
@@ -297,6 +313,21 @@
             Assert.Equal(cacheValue, val.Value);
 
             await _provider.RemoveAsync(cacheKey);
+        }
+        
+        [Fact]
+        public async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
+            string cacheValue = null;
+
+            await _providerWithNullsCached.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var val = await _providerWithNullsCached.GetAsync<string>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Null(val.Value);
+
+            await _providerWithNullsCached.RemoveAsync(cacheKey);
         }
 
         [Fact]
@@ -316,6 +347,21 @@
         }
 
         [Fact]
+        protected virtual void Set_Object_Value_And_Get_Cached_Value_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}-sog-{Guid.NewGuid().ToString()}";
+            Product cacheValue = null;
+
+            _providerWithNullsCached.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _providerWithNullsCached.Get<Product>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Null(val.Value);
+
+            _providerWithNullsCached.Remove(cacheKey);
+        }
+
+        [Fact]
         protected virtual async Task Set_Object_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
             var cacheKey = $"{_nameSpace}-sogasync-{Guid.NewGuid().ToString()}";
@@ -332,6 +378,21 @@
         }
 
         [Fact]
+        protected virtual async Task Set_Object_Value_And_Get_Cached_Value_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}-sogasync-{Guid.NewGuid().ToString()}";
+            Product cacheValue = null;
+
+            await _providerWithNullsCached.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var val = await _providerWithNullsCached.GetAsync<Product>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Null(val.Value);
+
+            await _providerWithNullsCached.RemoveAsync(cacheKey);
+        }
+
+        [Fact]
         protected virtual void Set_And_Get_Value_Type_Should_Succeed()
         {
             var cacheKey = $"{_nameSpace}-svg-{Guid.NewGuid().ToString()}";
@@ -344,6 +405,21 @@
             Assert.Equal(cacheValue, val.Value);
 
             _provider.Remove(cacheKey);
+        }
+
+        [Fact]
+        protected virtual void Set_And_Get_Value_Type_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}-svg-{Guid.NewGuid().ToString()}";
+            int? cacheValue = null;
+
+            _providerWithNullsCached.Set(cacheKey, cacheValue, _defaultTs);
+
+            var val = _providerWithNullsCached.Get<int?>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Null(val.Value);
+
+            _providerWithNullsCached.Remove(cacheKey);
         }
          
         [Fact]
@@ -359,6 +435,21 @@
             Assert.Equal(cacheValue, val.Value);
 
             await _provider.RemoveAsync(cacheKey);
+        }
+         
+        [Fact]
+        protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}-svgasync-{Guid.NewGuid().ToString()}";
+            int? cacheValue = null;
+
+            await _providerWithNullsCached.SetAsync(cacheKey, cacheValue, _defaultTs);
+
+            var val = await _providerWithNullsCached.GetAsync<int?>(cacheKey);
+            Assert.True(val.HasValue);
+            Assert.Null(val.Value);
+
+            await _providerWithNullsCached.RemoveAsync(cacheKey);
         }
         #endregion
 
@@ -388,7 +479,7 @@
         }
 
         [Fact]
-        public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null()
+        public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null_Without_Caching()
         {
             var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
             var func = Create_Fake_Retriever_Return_NULL();
@@ -396,6 +487,9 @@
             var res = _provider.Get(cacheKey, func, _defaultTs);
 
             Assert.Equal(default(string),res.Value);
+            var cachedValue = _provider.Get<string>(cacheKey);
+            Assert.False(cachedValue.HasValue);
+            Assert.Null(cachedValue.Value);
         }
 
         [Fact]
@@ -407,6 +501,20 @@
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
 
             Assert.Equal(default(string), res.Value);
+        }
+
+        [Fact]
+        public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null_With_Caching_When_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var func = Create_Fake_Retriever_Return_NULL();
+
+            var res = _providerWithNullsCached.Get(cacheKey, func, _defaultTs);
+
+            Assert.Equal(default(string),res.Value);
+            var cachedValue = _providerWithNullsCached.Get<string>(cacheKey);
+            Assert.True(cachedValue.HasValue);
+            Assert.Null(cachedValue.Value);
         }
 
         [Fact]
