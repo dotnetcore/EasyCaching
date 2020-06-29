@@ -689,6 +689,14 @@
         /// <returns></returns>
         long ZCount(string cacheKey, double min, double max);
         /// <summary>
+        /// https://redis.io/commands/zincrby
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="field"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        double ZIncrBy(string cacheKey, string field, double val = 1);
+        /// <summary>
         /// https://redis.io/commands/zlexcount
         /// </summary>
         /// <param name="cacheKey"></param>
@@ -751,6 +759,14 @@
         /// <param name="max"></param>
         /// <returns></returns>
         Task<long> ZCountAsync(string cacheKey, double min, double max);
+        /// <summary>
+        /// https://redis.io/commands/zincrby
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="field"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        Task<double> ZIncrByAsync(string cacheKey, string field, double val = 1);
         /// <summary>
         /// https://redis.io/commands/zlexcount
         /// </summary>
