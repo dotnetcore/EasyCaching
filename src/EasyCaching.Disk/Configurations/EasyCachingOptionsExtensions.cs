@@ -49,6 +49,9 @@
             {
                 x.EnableLogging = diskOptions.EnableLogging;
                 x.MaxRdSecond = diskOptions.MaxRdSecond;
+                x.LockMs = diskOptions.LockMs;
+                x.SleepMs = diskOptions.SleepMs;
+                x.SerializerName = diskOptions.SerializerName;
                 x.DBConfig = diskOptions.DBConfig;
             }
             return options.UseDisk(configure, name);
