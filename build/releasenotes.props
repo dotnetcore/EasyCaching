@@ -3,6 +3,7 @@
     <EasyCachingCorePackageNotes>
       1. Add base interface of IHybridProvider and IEasyCachingProvider.
       2. Redis provider support zincrby.
+      3. Redis acl support
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
       1. Upgrading dependencies.
@@ -11,6 +12,7 @@
     <EasyCachingRedisPackageNotes>
       1. Upgrading dependencies.
       2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
+      3. Redis acl support
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
       1. Upgrading dependencies.
@@ -50,6 +52,7 @@
     </EasyCachingCSRedisBusPackageNotes>
     <EasyCachingRedisBusPackageNotes>
       1. Upgrading dependencies.
+      2. Redis acl support
     </EasyCachingRedisBusPackageNotes>
     <EasyCachingRabbitBusPackageNotes>
       1. Upgrading dependencies.
