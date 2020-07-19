@@ -54,12 +54,6 @@ Time issues can be solved using a combination of NativeDateTimeResolver+Contract
 ```cs
 public void ConfigureServices(IServiceCollection services)
 {
-    CompositeResolver.RegisterAndSetAsDefault(
-        // This can solve DateTime time zone problem
-        NativeDateTimeResolver.Instance,
-        ContractlessStandardResolver.Instance
-    );
-
     services.AddControllers();
 
     services.AddEasyCaching(option =>
@@ -77,6 +71,11 @@ public void ConfigureServices(IServiceCollection services)
         option.WithMessagePack( x => 
         {
             x.EnableCustomResolver = true; 
+            x.CustomResolvers = CompositeResolver.Create(
+                // This can solve DateTime time zone problem
+                NativeDateTimeResolver.Instance,
+                ContractlessStandardResolver.Instance
+            );
         },"mymsgpack");
     });
 }

@@ -51,6 +51,9 @@
             {
                 x.EnableLogging = sqliteOptions.EnableLogging;
                 x.MaxRdSecond = sqliteOptions.MaxRdSecond;             
+                x.LockMs = sqliteOptions.LockMs;
+                x.SleepMs = sqliteOptions.SleepMs;
+                x.SerializerName = sqliteOptions.SerializerName;
                 x.DBConfig = sqliteOptions.DBConfig;
             }
 

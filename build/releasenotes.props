@@ -1,56 +1,65 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Add base interface of IHybridProvider and IEasyCachingProvider.
+      2. Redis provider support zincrby.
+      3. Redis acl support
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
+      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
+      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
+      3. Redis acl support
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
+      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
+      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingHybridPackageNotes>
     <EasyCachingAspectCorePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingAspectCorePackageNotes>
     <EasyCachingCastlePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingCastlePackageNotes>
     <EasyCachingResponseCachingPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingResponseCachingPackageNotes>
     <EasyCachingJsonPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingJsonPackageNotes>
     <EasyCachingMessagePackPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingMessagePackPackageNotes>
     <EasyCachingProtobufPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
-      2. Fixed bugs of expiration.
+      1. Upgrading dependencies.
+      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingCSRedisBusPackageNotes>
     <EasyCachingRedisBusPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
+      2. Redis acl support
     </EasyCachingRedisBusPackageNotes>
     <EasyCachingRabbitBusPackageNotes>
-      1. Upgrade RabbitMQ.Client to 6.0.0.
+      1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
+      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingDiskPackageNotes>
   </PropertyGroup>
 </Project>
