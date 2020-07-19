@@ -51,6 +51,7 @@
                 x.ConnectionTimeout = redisOptions.ConnectionTimeout;
                 x.Database = redisOptions.Database;
                 x.IsSsl = redisOptions.IsSsl;
+                x.Username = redisOptions.Username;
                 x.Password = redisOptions.Password;
                 x.SslHost = redisOptions.SslHost;
 

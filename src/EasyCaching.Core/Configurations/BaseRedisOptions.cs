@@ -8,6 +8,14 @@
     public class BaseRedisOptions
     {
         /// <summary>
+        /// Gets or sets the username to be used to connect to the Redis server.
+        /// </summary>
+        /// <value>
+        /// The username.
+        /// </value>
+        public string Username { get; set; } = null;
+
+        /// <summary>
         /// Gets or sets the password to be used to connect to the Redis server.
         /// </summary>
         /// <value>
