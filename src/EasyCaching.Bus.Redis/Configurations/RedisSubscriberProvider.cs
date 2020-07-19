@@ -48,6 +48,7 @@
                 var configurationOptions = new ConfigurationOptions
                 {
                     ConnectTimeout = _options.ConnectionTimeout,
+                    User = _options.Username,
                     Password = _options.Password,
                     Ssl = _options.IsSsl,
                     SslHost = _options.SslHost,
