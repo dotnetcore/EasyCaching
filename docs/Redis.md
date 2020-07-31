@@ -16,7 +16,7 @@ Install-Package EasyCaching.Redis
 
 ### 2. Config in Startup class
 
-There are two way's how you can configure caching provider.
+There are two ways how you can configure caching provider.
 
 By C# code:
 
