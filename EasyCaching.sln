@@ -12,19 +12,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Core", "src\Eas
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.InMemory", "src\EasyCaching.InMemory\EasyCaching.InMemory.csproj", "{B9490432-737B-4518-B851-9D40FD29B392}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.MessagePack", "src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj", "{50D8C42C-1BC0-4133-8B70-63A6649DBD74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.MessagePack", "serialization\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj", "{50D8C42C-1BC0-4133-8B70-63A6649DBD74}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Interceptor.AspectCore", "src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj", "{BED4832E-A790-42A6-978D-E0C1A215E638}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Interceptor.AspectCore", "interceptor\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj", "{BED4832E-A790-42A6-978D-E0C1A215E638}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.Redis", "src\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj", "{07326A03-B144-469F-837B-31DD3E0EB1AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.Redis", "bus\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj", "{07326A03-B144-469F-837B-31DD3E0EB1AC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.RabbitMQ", "src\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj", "{265FB0C5-2C34-438D-B671-63836954EB5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.RabbitMQ", "bus\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj", "{265FB0C5-2C34-438D-B671-63836954EB5A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Interceptor.Castle", "src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj", "{7B55B6D9-4221-4E82-AED6-BEC9A60C99D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Interceptor.Castle", "interceptor\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj", "{7B55B6D9-4221-4E82-AED6-BEC9A60C99D2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.Json", "src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj", "{F0302BE8-188A-4EAF-8391-514CA9352DB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.Json", "serialization\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj", "{F0302BE8-188A-4EAF-8391-514CA9352DB3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.Protobuf", "src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj", "{3AAEDDBA-5037-4061-84E5-667F89C11F8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.Protobuf", "serialization\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj", "{3AAEDDBA-5037-4061-84E5-667F89C11F8E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.ResponseCaching", "src\EasyCaching.ResponseCaching\EasyCaching.ResponseCaching.csproj", "{261EE728-4965-4C0E-B99B-3B188442263A}"
 EndProject
@@ -48,13 +48,23 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.PerformanceTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.CSRedis", "src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj", "{6584761E-E51C-408F-BE51-CA0F6269589B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.CSRedis", "src\EasyCaching.Bus.CSRedis\EasyCaching.Bus.CSRedis.csproj", "{861E5373-BEF6-4AA2-92C7-8F4941A079E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.CSRedis", "bus\EasyCaching.Bus.CSRedis\EasyCaching.Bus.CSRedis.csproj", "{861E5373-BEF6-4AA2-92C7-8F4941A079E7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Disk", "src\EasyCaching.Disk\EasyCaching.Disk.csproj", "{3D48FD75-01D6-44F9-B7C3-CB6DE784F476}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Demo.ConsoleApp", "sample\EasyCaching.Demo.ConsoleApp\EasyCaching.Demo.ConsoleApp.csproj", "{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Build", "Build.csproj", "{43AD80E9-696B-4042-9D50-B26F48BE1928}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", "{B4241D34-A973-4A13-BD89-9BAE3F2BDDF6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Extensions.Caching.EasyCachingLib", "extensions\Microsoft.Extensions.Caching.EasyCachingLib\Microsoft.Extensions.Caching.EasyCachingLib.csproj", "{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "interceptor", "interceptor", "{38BD141B-2A15-40F2-942D-2E6A08199D1F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "serialization", "serialization", "{15070C49-A507-4844-BCFE-D319CFBC9A63}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bus", "bus", "{B337509B-75F9-4851-821F-9BBE87C4E4BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +168,10 @@ Global
 		{43AD80E9-696B-4042-9D50-B26F48BE1928}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{43AD80E9-696B-4042-9D50-B26F48BE1928}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{43AD80E9-696B-4042-9D50-B26F48BE1928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -165,13 +179,13 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CE61FAA2-0233-451C-991D-4222ED61C84B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{B9490432-737B-4518-B851-9D40FD29B392} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{50D8C42C-1BC0-4133-8B70-63A6649DBD74} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{BED4832E-A790-42A6-978D-E0C1A215E638} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{07326A03-B144-469F-837B-31DD3E0EB1AC} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{265FB0C5-2C34-438D-B671-63836954EB5A} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{7B55B6D9-4221-4E82-AED6-BEC9A60C99D2} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{F0302BE8-188A-4EAF-8391-514CA9352DB3} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{3AAEDDBA-5037-4061-84E5-667F89C11F8E} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{50D8C42C-1BC0-4133-8B70-63A6649DBD74} = {15070C49-A507-4844-BCFE-D319CFBC9A63}
+		{BED4832E-A790-42A6-978D-E0C1A215E638} = {38BD141B-2A15-40F2-942D-2E6A08199D1F}
+		{07326A03-B144-469F-837B-31DD3E0EB1AC} = {B337509B-75F9-4851-821F-9BBE87C4E4BC}
+		{265FB0C5-2C34-438D-B671-63836954EB5A} = {B337509B-75F9-4851-821F-9BBE87C4E4BC}
+		{7B55B6D9-4221-4E82-AED6-BEC9A60C99D2} = {38BD141B-2A15-40F2-942D-2E6A08199D1F}
+		{F0302BE8-188A-4EAF-8391-514CA9352DB3} = {15070C49-A507-4844-BCFE-D319CFBC9A63}
+		{3AAEDDBA-5037-4061-84E5-667F89C11F8E} = {15070C49-A507-4844-BCFE-D319CFBC9A63}
 		{261EE728-4965-4C0E-B99B-3B188442263A} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{4193DF5A-E034-4917-83F4-380E8D7DCF83} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 		{F7DD4826-1375-42B3-97BA-37685460282E} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
@@ -183,10 +197,11 @@ Global
 		{2A8D7103-DF64-47B6-A406-8F8559AF7E7F} = {EBB55F65-7D07-4281-8D5E-7B0CA88E1AD0}
 		{6EBE36A2-F128-4C63-B90A-B700D8C2F2E8} = {EBB55F65-7D07-4281-8D5E-7B0CA88E1AD0}
 		{6584761E-E51C-408F-BE51-CA0F6269589B} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
-		{861E5373-BEF6-4AA2-92C7-8F4941A079E7} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{861E5373-BEF6-4AA2-92C7-8F4941A079E7} = {B337509B-75F9-4851-821F-9BBE87C4E4BC}
 		{3D48FD75-01D6-44F9-B7C3-CB6DE784F476} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 		{43AD80E9-696B-4042-9D50-B26F48BE1928} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
+		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F} = {B4241D34-A973-4A13-BD89-9BAE3F2BDDF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63A57886-054B-476C-AAE1-8D7C8917682E}
