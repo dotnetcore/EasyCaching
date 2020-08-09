@@ -5,18 +5,17 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingCorePackageVersion)</Version>
+    <Version>$(EasyCachingMsExtPackageVersion)</Version>
     <Description>
       EasyCaching is a open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
     </Description>
-    <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Hybrid,ResponseCaching</PackageTags>
+    <PackageTags>Caching,Cache,Distributed</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
     <PackageReleaseNotes>
-      $(EasyCachingCorePackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 

@@ -4,11 +4,10 @@
     using Microsoft.Extensions.Caching.Distributed;
     using System;
     using System.Collections.Generic;
-    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
 
-    public class EasyCachingCache : IDistributedCache
+    public class EasyCachingRedisCache : IDistributedCache
     {
         // KEYS[1] = = key
         // ARGV[1] = absolute-expiration - ticks as long (-1 for none)
@@ -29,27 +28,21 @@
 
         private readonly IRedisCachingProvider _provider;
 
-        public EasyCachingCache(IRedisCachingProvider provider)
+        public EasyCachingRedisCache(IRedisCachingProvider provider)
         {
             _provider = provider;
         }
 
         public byte[] Get(string key)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             return GetAndRefresh(key, getData: true);
         }
 
         public async Task<byte[]> GetAsync(string key, CancellationToken token = default)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             token.ThrowIfCancellationRequested();
 
@@ -58,20 +51,14 @@
 
         public void Refresh(string key)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             GetAndRefresh(key, getData: false);
         }
 
         public async Task RefreshAsync(string key, CancellationToken token = default)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             token.ThrowIfCancellationRequested();
 
@@ -80,66 +67,63 @@
 
         public void Remove(string key)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             _provider.KeyDel(key);
         }
 
         public async Task RemoveAsync(string key, CancellationToken token = default)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             await _provider.KeyDelAsync(key);
         }
 
         public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
+            ArgumentCheck.NotNull(value, nameof(value));
+            ArgumentCheck.NotNull(options, nameof(options));
 
             var creationTime = DateTimeOffset.UtcNow;
 
             var absoluteExpiration = GetAbsoluteExpiration(creationTime, options);
 
-            //var result = _provider.Eval(SetScript, key,
-            //    new object[]
-            //    {
-            //            absoluteExpiration?.Ticks ?? NotPresent,
-            //            options.SlidingExpiration?.Ticks ?? NotPresent,
-            //            GetExpirationInSeconds(creationTime, absoluteExpiration, options) ?? NotPresent,
-            //            value
-            //    });
+            var list = new List<object>
+            {
+                absoluteExpiration?.Ticks ?? NotPresent,
+                options.SlidingExpiration?.Ticks ?? NotPresent,
+                GetExpirationInSeconds(creationTime, absoluteExpiration, options) ?? NotPresent,
+                value
+            };
+
+            var result = _provider.Eval(SetScript, key, list);
         }
 
-        public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
+        public async Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
         {
-            throw new System.NotImplementedException();
+            ArgumentCheck.NotNull(key, nameof(key));
+            ArgumentCheck.NotNull(value, nameof(value));
+            ArgumentCheck.NotNull(options, nameof(options));
+
+            var creationTime = DateTimeOffset.UtcNow;
+
+            var absoluteExpiration = GetAbsoluteExpiration(creationTime, options);
+
+            var list = new List<object>
+            {
+                absoluteExpiration?.Ticks ?? NotPresent,
+                options.SlidingExpiration?.Ticks ?? NotPresent,
+                GetExpirationInSeconds(creationTime, absoluteExpiration, options) ?? NotPresent,
+                value
+            };
+
+            var result = await _provider.EvalAsync(SetScript, key, list);
         }
 
         private byte[] GetAndRefresh(string key, bool getData)
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             object[] results;
             byte[] value = null;
@@ -148,9 +132,9 @@
             {
                 var dict = _provider.HMGet(key, new List<string> { AbsoluteExpirationKey, SlidingExpirationKey, DataKey });
 
-                var first = string.IsNullOrWhiteSpace(dict[AbsoluteExpirationKey]) ? null : dict[AbsoluteExpirationKey];
-                var second = string.IsNullOrWhiteSpace(dict[SlidingExpirationKey]) ? null : dict[SlidingExpirationKey];
-                value = Encoding.UTF8.GetBytes(dict[DataKey]);
+                var first = dict[AbsoluteExpirationKey]?.ToString();
+                var second = dict[SlidingExpirationKey]?.ToString();
+                value = System.Text.Encoding.UTF8.GetBytes(dict[DataKey]);
 
                 results = new object[] { first, second, value };
             }
@@ -158,8 +142,8 @@
             {
                 var dict = _provider.HMGet(key, new List<string> { AbsoluteExpirationKey, SlidingExpirationKey });
 
-                var first = string.IsNullOrWhiteSpace(dict[AbsoluteExpirationKey]) ? null : dict[AbsoluteExpirationKey];
-                var second = string.IsNullOrWhiteSpace(dict[SlidingExpirationKey]) ? null : dict[SlidingExpirationKey];
+                var first = dict[AbsoluteExpirationKey]?.ToString();
+                var second = dict[SlidingExpirationKey]?.ToString();
 
                 results = new object[] { first, second };
             }
@@ -180,10 +164,7 @@
 
         private async Task<byte[]> GetAndRefreshAsync(string key, bool getData, CancellationToken token = default(CancellationToken))
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             token.ThrowIfCancellationRequested();
 
@@ -193,9 +174,9 @@
             {
                 var dict = await _provider.HMGetAsync(key, new List<string> { AbsoluteExpirationKey, SlidingExpirationKey, DataKey });
 
-                var first = string.IsNullOrWhiteSpace(dict[AbsoluteExpirationKey]) ? null : dict[AbsoluteExpirationKey];
-                var second = string.IsNullOrWhiteSpace(dict[SlidingExpirationKey]) ? null : dict[SlidingExpirationKey];
-                value = Encoding.UTF8.GetBytes(dict[DataKey]);
+                var first = dict[AbsoluteExpirationKey]?.ToString();
+                var second = dict[SlidingExpirationKey]?.ToString();
+                value = System.Text.Encoding.UTF8.GetBytes(dict[DataKey]);
 
                 results = new object[] { first, second, value };
             }
@@ -203,8 +184,8 @@
             {
                 var dict = await _provider.HMGetAsync(key, new List<string> { AbsoluteExpirationKey, SlidingExpirationKey });
 
-                var first = string.IsNullOrWhiteSpace(dict[AbsoluteExpirationKey]) ? null : dict[AbsoluteExpirationKey];
-                var second = string.IsNullOrWhiteSpace(dict[SlidingExpirationKey]) ? null : dict[SlidingExpirationKey];
+                var first = dict[AbsoluteExpirationKey]?.ToString();
+                var second = dict[SlidingExpirationKey]?.ToString();
 
                 results = new object[] { first, second };
             }
@@ -263,10 +244,7 @@
 
         private async Task RefreshAsync(string key, DateTimeOffset? absExpr, TimeSpan? sldExpr, CancellationToken token = default(CancellationToken))
         {
-            if (key == null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
+            ArgumentCheck.NotNull(key, nameof(key));
 
             token.ThrowIfCancellationRequested();
 
@@ -285,6 +263,25 @@
 
                 await _provider.KeyExpireAsync(key, (int)(expr ?? TimeSpan.Zero).TotalSeconds);
             }
+        }
+
+        private static long? GetExpirationInSeconds(DateTimeOffset creationTime, DateTimeOffset? absoluteExpiration, DistributedCacheEntryOptions options)
+        {
+            if (absoluteExpiration.HasValue && options.SlidingExpiration.HasValue)
+            {
+                return (long)Math.Min(
+                    (absoluteExpiration.Value - creationTime).TotalSeconds,
+                    options.SlidingExpiration.Value.TotalSeconds);
+            }
+            else if (absoluteExpiration.HasValue)
+            {
+                return (long)(absoluteExpiration.Value - creationTime).TotalSeconds;
+            }
+            else if (options.SlidingExpiration.HasValue)
+            {
+                return (long)options.SlidingExpiration.Value.TotalSeconds;
+            }
+            return null;
         }
 
         private static DateTimeOffset? GetAbsoluteExpiration(DateTimeOffset creationTime, DistributedCacheEntryOptions options)

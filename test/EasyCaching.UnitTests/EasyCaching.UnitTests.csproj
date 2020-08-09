@@ -43,8 +43,6 @@
     <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.SQLite\EasyCaching.SQLite.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.ResponseCaching\EasyCaching.ResponseCaching.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj" />
