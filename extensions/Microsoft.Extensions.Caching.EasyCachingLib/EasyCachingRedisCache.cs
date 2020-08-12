@@ -94,7 +94,9 @@
                 absoluteExpiration?.Ticks ?? NotPresent,
                 options.SlidingExpiration?.Ticks ?? NotPresent,
                 GetExpirationInSeconds(creationTime, absoluteExpiration, options) ?? NotPresent,
-                value
+
+                // Hash in RedisProvider use string, not a good idea here.
+                System.Text.Encoding.UTF8.GetString(value)
             };
 
             var result = _provider.Eval(SetScript, key, list);
@@ -115,7 +117,9 @@
                 absoluteExpiration?.Ticks ?? NotPresent,
                 options.SlidingExpiration?.Ticks ?? NotPresent,
                 GetExpirationInSeconds(creationTime, absoluteExpiration, options) ?? NotPresent,
-                value
+                
+                // Hash in RedisProvider use string, not a good idea here.
+                System.Text.Encoding.UTF8.GetString(value)
             };
 
             var result = await _provider.EvalAsync(SetScript, key, list);
