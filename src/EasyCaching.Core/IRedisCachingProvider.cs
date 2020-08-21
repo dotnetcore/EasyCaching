@@ -554,6 +554,14 @@
         /// <param name="cacheKey"></param>
         /// <returns></returns>
         Task<T> RPopAsync<T>(string cacheKey);
+
+        /// <summary>
+        /// Searchs the keys.
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        List<string> SearchKeys(string cacheKey, int? count=null);
         #endregion
 
         #region Set

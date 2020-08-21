@@ -278,5 +278,22 @@
             var bytes = await _cache.RPopAsync<byte[]>(cacheKey);
             return _serializer.Deserialize<T>(bytes);
         }
+
+        public List<string> SearchKeys(string cacheKey, int? count)
+        {
+            var keys = new List<string>();
+
+            long nextCursor = 0;
+            do
+            {
+                var scanResult = _cache.Scan(nextCursor, cacheKey, count);
+                nextCursor = scanResult.Cursor;
+                var items = scanResult.Items;
+                keys.AddRange(items);
+            }
+            while (nextCursor != 0);
+
+            return keys;
+        }
     }
 }
