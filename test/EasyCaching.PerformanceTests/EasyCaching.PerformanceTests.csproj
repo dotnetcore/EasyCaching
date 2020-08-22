@@ -12,16 +12,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\interceptor\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />
+    <ProjectReference Include="..\..\interceptor\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj" />
+    <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj" />
+    <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Memcached\EasyCaching.Memcached.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.SQLite\EasyCaching.SQLite.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.Castle\EasyCaching.Interceptor.Castle.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
-    <ProjectReference Include="..\..\src\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj" />
   </ItemGroup>
 </Project>

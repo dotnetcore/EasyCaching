@@ -917,5 +917,9 @@
         /// <returns></returns>
         Task<List<(double longitude, double latitude)?>> GeoPosAsync(string cacheKey, List<string> members);
         #endregion
+
+        object Eval(string script, string cacheKey, List<object> args);
+
+        Task<object> EvalAsync(string script, string cacheKey, List<object> args);
     }
 }
