@@ -72,7 +72,7 @@
             return second;
         }
 
-        public object Eval(string script,string cacheKey, List<object> args)
+        public object Eval(string script, string cacheKey, List<object> args)
         {
             ArgumentCheck.NotNullOrWhiteSpace(script, nameof(script));
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -88,6 +88,23 @@
 
             var res = await _cache.EvalAsync(script, cacheKey, args.ToArray());
             return res;
+        }
+
+        public List<string> SearchKeys(string cacheKey, int? count)
+        {
+            var keys = new List<string>();
+
+            long nextCursor = 0;
+            do
+            {
+                var scanResult = _cache.Scan(nextCursor, cacheKey, count);
+                nextCursor = scanResult.Cursor;
+                var items = scanResult.Items;
+                keys.AddRange(items);
+            }
+            while (nextCursor != 0);
+
+            return keys;
         }
     }
 }
