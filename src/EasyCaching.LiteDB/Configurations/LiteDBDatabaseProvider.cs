@@ -5,7 +5,7 @@
     using Microsoft.Extensions.Options;
 
     /// <summary>
-    /// SQLite database provider.
+    /// LiteDB database provider.
     /// </summary>
     public class LiteDBDatabaseProvider : ILiteDBDatabaseProvider
     {

@@ -3,7 +3,7 @@
     using global::LiteDB;
 
     /// <summary>
-    /// SQLite database provider.
+    /// LiteDB database provider.
     /// </summary>
     public interface ILiteDBDatabaseProvider
     {

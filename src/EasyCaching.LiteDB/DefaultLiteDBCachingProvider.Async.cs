@@ -7,7 +7,7 @@
     using System.Threading.Tasks;
 
     /// <summary>
-    /// SQLiteCaching provider.
+    /// LiteDBCaching provider.
     /// </summary>
     public partial class DefaultLiteDBCachingProvider : EasyCachingAbstractProvider
     {

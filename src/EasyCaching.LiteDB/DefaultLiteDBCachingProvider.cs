@@ -8,7 +8,7 @@
     using System.Linq;
 
     /// <summary>
-    /// SQLiteCaching provider.
+    /// LiteDBCaching provider.
     /// </summary>
     public partial class DefaultLiteDBCachingProvider : EasyCachingAbstractProvider
     {

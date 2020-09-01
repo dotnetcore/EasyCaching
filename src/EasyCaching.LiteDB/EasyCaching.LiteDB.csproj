@@ -3,11 +3,10 @@
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
+    <Owners>maikebing</Owners>
     <Authors>maikebing</Authors>
-    <Version>$(EasyCachingSQLitePackageVersion)</Version>
-    <Description>
-      A simple local caching provider based on LiteDB
+    <Version>1.0.1</Version>
+    <Description>A simple local caching provider based on LiteDB
 </Description>
     <PackageTags>LiteDB,LocalCache,Caching,Cache,InMemory,Persisted</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>

@@ -4,7 +4,7 @@
     using EasyCaching.Core;
 
     /// <summary>
-    /// SQLite cache option.
+    /// LiteDB cache option.
     /// </summary>
     public class LiteDBDBOptions
     {

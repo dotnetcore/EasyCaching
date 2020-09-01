@@ -12,7 +12,7 @@
     public static class EasyCachingOptionsExtensions
     {
         /// <summary>
-        /// Uses the SQLite provider (specify the config via hard code).
+        /// Uses the LiteDB provider (specify the config via hard code).
         /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure provider settings.</param>
@@ -30,7 +30,7 @@
         }
 
         /// <summary>
-        /// Uses the SQLite provider (read config from configuration file).
+        /// Uses the LiteDB provider (read config from configuration file).
         /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configuration">The configuration.</param>
@@ -44,17 +44,17 @@
             )
         {
             var dbConfig = configuration.GetSection(sectionName);
-            var sqliteOptions = new LiteDBOptions();
-            dbConfig.Bind(sqliteOptions);
+            var LiteDBOptions = new LiteDBOptions();
+            dbConfig.Bind(LiteDBOptions);
 
             void configure(LiteDBOptions x)
             {
-                x.EnableLogging = sqliteOptions.EnableLogging;
-                x.MaxRdSecond = sqliteOptions.MaxRdSecond;             
-                x.LockMs = sqliteOptions.LockMs;
-                x.SleepMs = sqliteOptions.SleepMs;
-                x.SerializerName = sqliteOptions.SerializerName;
-                x.DBConfig = sqliteOptions.DBConfig;
+                x.EnableLogging = LiteDBOptions.EnableLogging;
+                x.MaxRdSecond = LiteDBOptions.MaxRdSecond;             
+                x.LockMs = LiteDBOptions.LockMs;
+                x.SleepMs = LiteDBOptions.SleepMs;
+                x.SerializerName = LiteDBOptions.SerializerName;
+                x.DBConfig = LiteDBOptions.DBConfig;
             }
 
             options.RegisterExtension(new LiteDBOptionsExtension(name, configure));

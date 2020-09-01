@@ -9,7 +9,7 @@
     using System;
 
     /// <summary>
-    /// SQLite options extension.
+    /// LiteDB options extension.
     /// </summary>
     internal sealed class LiteDBOptionsExtension : IEasyCachingOptionsExtension
     {
@@ -24,7 +24,7 @@
         private readonly Action<LiteDBOptions> configure;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.SQLite.SQLiteOptionsExtension"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.LiteDB.LiteDBOptionsExtension"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="configure">Configure.</param>
