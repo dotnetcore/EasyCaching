@@ -48,7 +48,7 @@
         }
 
         public long InitialSize { get; set; } = 1024 * 1024;
-        public string Password { get; set; } = "";
-        public global::LiteDB.ConnectionType ConnectionType { get; set; } = global::LiteDB.ConnectionType.Shared;
+        public string Password { get; set; } = null;
+        public global::LiteDB.ConnectionType ConnectionType { get; set; } = global::LiteDB.ConnectionType.Direct;
     }
 }
