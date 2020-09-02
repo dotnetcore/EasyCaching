@@ -23,7 +23,7 @@
                 {
                     options.DBConfig = new  LiteDBDBOptions
                     {
-                        FileName = "s1.db"
+                        FileName = "s1.ldb"
                     };
                 })
             );
@@ -62,14 +62,14 @@
                 {
                     options.DBConfig = new  LiteDBDBOptions
                     {
-                        FileName = "f0.db",
+                        FileName = "f0.ldb",
         
                     };
                 }).UseLiteDB(options =>
                 {
                     options.DBConfig = new  LiteDBDBOptions
                     {
-                        FileName = "f1.db",
+                        FileName = "f1.ldb",
                      
                     };
                 }, SECOND_PROVIDER_NAME);
@@ -104,14 +104,14 @@
                 {
                     config.DBConfig = new  LiteDBDBOptions
                     {
-                        FileName = "use_0.db",
+                        FileName = "use_0.ldb",
                     };
                 }, EasyCachingConstValue.DefaultLiteDBName);
                 option.UseLiteDB(config =>
                 {
                     config.DBConfig = new  LiteDBDBOptions
                     {
-                        FileName = "use_1.db",
+                        FileName = "use_1.ldb",
                     };
                 }, SECOND_PROVIDER_NAME);
             });
@@ -164,7 +164,7 @@
         {
             IServiceCollection services = new ServiceCollection();
 
-            var appsettings = " { \"easycaching\": { \"litedb\": { \"MaxRdSecond\": 600, \"dbconfig\": { \"FileName\": \"my.db\" } } } }";
+            var appsettings = " { \"easycaching\": { \"litedb\": { \"MaxRdSecond\": 600, \"dbconfig\": { \"FileName\": \"my.ldb\" } } } }";
             var path = TestHelpers.CreateTempFile(appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);

@@ -87,9 +87,16 @@
         /// </summary>
         private void InitDb()
         {
-            _litedb.Checkpoint();
-            _litedb.Rebuild();
-            _cache.EnsureIndex(c => c.cachekey);
+            lock (_litedb)
+            {
+                _litedb.Checkpoint();
+                _litedb.Rebuild();
+                lock (_cache)
+                {
+                    _cache.EnsureIndex(c => c.cachekey);
+                }
+            }
+
         }
 
         /// <summary>
