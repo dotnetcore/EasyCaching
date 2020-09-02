@@ -5,16 +5,17 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>maikebing</Owners>
     <Authors>maikebing</Authors>
-    <Version>1.0.1</Version>
-    <Description>A simple local caching provider based on LiteDB
-</Description>
+	<Version>$(EasyCachingLiteDBPackageVersion)</Version>
+    <Description>A simple local caching provider based on LiteDB</Description>
     <PackageTags>LiteDB,LocalCache,Caching,Cache,InMemory,Persisted</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
-    <PackageReleaseNotes></PackageReleaseNotes>
+    <PackageReleaseNotes>
+      $(EasyCachingLiteDBPackageNotes)
+    </PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup>

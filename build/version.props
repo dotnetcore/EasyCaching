@@ -17,6 +17,7 @@
 		<EasyCachingCSRedisBusPackageVersion>0.8.11-alpha</EasyCachingCSRedisBusPackageVersion>
 		<EasyCachingRabbitBusPackageVersion>0.8.11-alpha</EasyCachingRabbitBusPackageVersion>
 		<EasyCachingDiskPackageVersion>0.8.11-alpha</EasyCachingDiskPackageVersion>
-    <EasyCachingMsExtPackageVersion>0.8.11-alpha</EasyCachingMsExtPackageVersion>
+		<EasyCachingMsExtPackageVersion>0.8.11-alpha</EasyCachingMsExtPackageVersion>
+		<EasyCachingLiteDBPackageVersion>0.8.11-alpha</EasyCachingLiteDBPackageVersion>
 	</PropertyGroup>
 </Project>

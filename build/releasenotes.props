@@ -61,5 +61,8 @@
       1. Upgrading dependencies.
       2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingDiskPackageNotes>
+    <EasyCachingLiteDBPackageNotes>
+      1. LiteDB joined for the first time.
+    </EasyCachingLiteDBPackageNotes>
   </PropertyGroup>
 </Project>
