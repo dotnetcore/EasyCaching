@@ -65,6 +65,14 @@
         /// <param name="cacheKey"></param>
         /// <returns></returns>
         Task<long> TTLAsync(string cacheKey);
+
+        /// <summary>
+        /// Searchs the keys.
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        List<string> SearchKeys(string cacheKey, int? count = null);
         #endregion
 
         #region String
