@@ -18,5 +18,6 @@
 		<EasyCachingRabbitBusPackageVersion>0.8.11</EasyCachingRabbitBusPackageVersion>
 		<EasyCachingDiskPackageVersion>0.8.11</EasyCachingDiskPackageVersion>
     <EasyCachingMsExtPackageVersion>0.8.11</EasyCachingMsExtPackageVersion>
+    <EasyCachingLiteDBPackageVersion>0.8.11</EasyCachingLiteDBPackageVersion>
 	</PropertyGroup>
 </Project>

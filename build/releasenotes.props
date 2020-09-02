@@ -52,5 +52,8 @@
     <EasyCachingDiskPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingDiskPackageNotes>
+    <EasyCachingLiteDBPackageNotes>
+      1. LiteDB joined for the first time.
+    </EasyCachingLiteDBPackageNotes>
   </PropertyGroup>
 </Project>
