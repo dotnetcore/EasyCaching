@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>maikebing</Owners>
     <Authors>maikebing</Authors>
-	<Version>$(EasyCachingLiteDBPackageVersion)</Version>
+    <VersionPrefix>$(EasyCachingLiteDBPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>A simple local caching provider based on LiteDB</Description>
     <PackageTags>LiteDB,LocalCache,Caching,Cache,InMemory,Persisted</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>

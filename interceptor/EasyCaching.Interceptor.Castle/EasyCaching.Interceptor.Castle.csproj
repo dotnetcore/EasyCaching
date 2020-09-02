@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingCastlePackageVersion)</Version>
+    <VersionPrefix>$(EasyCachingCastlePackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>
       A simple caching AOP extension library based on Castle
     </Description>

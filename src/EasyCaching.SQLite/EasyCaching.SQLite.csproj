@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingSQLitePackageVersion)</Version>
+    <VersionPrefix>$(EasyCachingSQLitePackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>
       A simple local caching provider based on Microsoft.Data.SQLite
     </Description>

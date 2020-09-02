@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingAspectCorePackageVersion)</Version>
+    <VersionPrefix>$(EasyCachingAspectCorePackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>
       A simple caching AOP extension library based on AspectCore
     </Description>
