@@ -1,22 +1,23 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageVersion>0.8.11-alpha</EasyCachingCorePackageVersion>
-		<EasyCachingMemcachedPackageVersion>0.8.11-alpha</EasyCachingMemcachedPackageVersion>
-		<EasyCachingRedisPackageVersion>0.8.11-alpha</EasyCachingRedisPackageVersion>
-		<EasyCachingSQLitePackageVersion>0.8.11-alpha</EasyCachingSQLitePackageVersion>
-		<EasyCachingInMemoryPackageVersion>0.8.11-alpha</EasyCachingInMemoryPackageVersion>
-		<EasyCachingHybridPackageVersion>0.8.11-alpha</EasyCachingHybridPackageVersion>
-		<EasyCachingAspectCorePackageVersion>0.8.11-alpha</EasyCachingAspectCorePackageVersion>
-		<EasyCachingCastlePackageVersion>0.8.11-alpha</EasyCachingCastlePackageVersion>
-		<EasyCachingResponseCachingPackageVersion>0.8.11-alpha</EasyCachingResponseCachingPackageVersion>
-		<EasyCachingJsonPackageVersion>0.8.11-alpha</EasyCachingJsonPackageVersion>
-		<EasyCachingMessagePackPackageVersion>0.8.11-alpha</EasyCachingMessagePackPackageVersion>
-		<EasyCachingProtobufPackageVersion>0.8.11-alpha</EasyCachingProtobufPackageVersion>
-		<EasyCachingCSRedisPackageVersion>0.8.11-alpha</EasyCachingCSRedisPackageVersion>
-		<EasyCachingRedisBusPackageVersion>0.8.11-alpha</EasyCachingRedisBusPackageVersion>
-		<EasyCachingCSRedisBusPackageVersion>0.8.11-alpha</EasyCachingCSRedisBusPackageVersion>
-		<EasyCachingRabbitBusPackageVersion>0.8.11-alpha</EasyCachingRabbitBusPackageVersion>
-		<EasyCachingDiskPackageVersion>0.8.11-alpha</EasyCachingDiskPackageVersion>
-    <EasyCachingMsExtPackageVersion>0.8.11-alpha</EasyCachingMsExtPackageVersion>
+		<EasyCachingCorePackageVersion>0.9.0</EasyCachingCorePackageVersion>
+		<EasyCachingMemcachedPackageVersion>0.9.0</EasyCachingMemcachedPackageVersion>
+		<EasyCachingRedisPackageVersion>0.9.0</EasyCachingRedisPackageVersion>
+		<EasyCachingSQLitePackageVersion>0.9.0</EasyCachingSQLitePackageVersion>
+		<EasyCachingInMemoryPackageVersion>0.9.0</EasyCachingInMemoryPackageVersion>
+		<EasyCachingHybridPackageVersion>0.9.0</EasyCachingHybridPackageVersion>
+		<EasyCachingAspectCorePackageVersion>0.9.0</EasyCachingAspectCorePackageVersion>
+		<EasyCachingCastlePackageVersion>0.9.0</EasyCachingCastlePackageVersion>
+		<EasyCachingResponseCachingPackageVersion>0.9.0</EasyCachingResponseCachingPackageVersion>
+		<EasyCachingJsonPackageVersion>0.9.0</EasyCachingJsonPackageVersion>
+		<EasyCachingMessagePackPackageVersion>0.9.0</EasyCachingMessagePackPackageVersion>
+		<EasyCachingProtobufPackageVersion>0.9.0</EasyCachingProtobufPackageVersion>
+		<EasyCachingCSRedisPackageVersion>0.9.0</EasyCachingCSRedisPackageVersion>
+		<EasyCachingRedisBusPackageVersion>0.9.0</EasyCachingRedisBusPackageVersion>
+		<EasyCachingCSRedisBusPackageVersion>0.9.0</EasyCachingCSRedisBusPackageVersion>
+		<EasyCachingRabbitBusPackageVersion>0.9.0</EasyCachingRabbitBusPackageVersion>
+		<EasyCachingDiskPackageVersion>0.9.0</EasyCachingDiskPackageVersion>
+		<EasyCachingMsExtPackageVersion>0.9.0</EasyCachingMsExtPackageVersion>
+		<EasyCachingLiteDBPackageVersion>0.9.0</EasyCachingLiteDBPackageVersion>
 	</PropertyGroup>
 </Project>

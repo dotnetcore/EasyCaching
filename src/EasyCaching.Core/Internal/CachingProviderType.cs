@@ -11,6 +11,7 @@
         SQLite,
         Disk,
         Ext1,
-        Ext2
+        Ext2,
+        LiteDB,
     }
 }

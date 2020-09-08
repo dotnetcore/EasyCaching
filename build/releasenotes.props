@@ -1,26 +1,20 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Add base interface of IHybridProvider and IEasyCachingProvider.
-      2. Redis provider support zincrby.
-      3. Redis acl support
+      1. IRedisProvider support search keys.
+      2. DefaultEasyCachingKeyGenerator support GenerateCacheKeyForModel.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
       1. Upgrading dependencies.
-      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Upgrading dependencies.
-      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
-      3. Redis acl support
+      1. IRedisProvider support search keys.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
       1. Upgrading dependencies.
-      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
       1. Upgrading dependencies.
-      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
       1. Upgrading dependencies.
@@ -44,22 +38,22 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. Upgrading dependencies.
-      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
+      1. IRedisProvider support search keys.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingCSRedisBusPackageNotes>
     <EasyCachingRedisBusPackageNotes>
       1. Upgrading dependencies.
-      2. Redis acl support
     </EasyCachingRedisBusPackageNotes>
     <EasyCachingRabbitBusPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
       1. Upgrading dependencies.
-      2. Fixed configuration file can not read LockMs, SleepMs and SerializerName.
     </EasyCachingDiskPackageNotes>
+    <EasyCachingLiteDBPackageNotes>
+      1. LiteDB joined for the first time.
+    </EasyCachingLiteDBPackageNotes>
   </PropertyGroup>
 </Project>

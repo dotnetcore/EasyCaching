@@ -66,6 +66,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "serialization", "serializat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bus", "bus", "{B337509B-75F9-4851-821F-9BBE87C4E4BC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.LiteDB", "src\EasyCaching.LiteDB\EasyCaching.LiteDB.csproj", "{BA850294-3103-4540-8A27-FC768E1DC8FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -172,6 +174,10 @@ Global
 		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA850294-3103-4540-8A27-FC768E1DC8FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA850294-3103-4540-8A27-FC768E1DC8FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA850294-3103-4540-8A27-FC768E1DC8FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA850294-3103-4540-8A27-FC768E1DC8FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -202,6 +208,7 @@ Global
 		{359AE3CD-B8EE-49B1-95A1-685FD4D5EBE8} = {F88D727A-9F9C-43D9-90B1-D4A02BF8BC98}
 		{43AD80E9-696B-4042-9D50-B26F48BE1928} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F} = {B4241D34-A973-4A13-BD89-9BAE3F2BDDF6}
+		{BA850294-3103-4540-8A27-FC768E1DC8FC} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63A57886-054B-476C-AAE1-8D7C8917682E}

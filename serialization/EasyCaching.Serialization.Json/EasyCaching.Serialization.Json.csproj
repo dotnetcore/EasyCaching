@@ -4,8 +4,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>    
-    <Version>$(EasyCachingJsonPackageVersion)</Version>
+    <Authors>ncc;Catcher Wong</Authors>
+    <VersionPrefix>$(EasyCachingJsonPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>      
       A serialize library based on Newtonsoft.Json
     </Description>    

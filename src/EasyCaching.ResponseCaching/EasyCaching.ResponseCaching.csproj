@@ -2,21 +2,22 @@
   <Import Project="../../build/version.props" />
   <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>    
-    <Version>$(EasyCachingResponseCachingPackageVersion)</Version>
-    <Description>      
+    <Authors>ncc;Catcher Wong</Authors>
+    <VersionPrefix>$(EasyCachingResponseCachingPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <Description>
       EasyCaching.ResponseCaching is the extension of ResponseCaching
-    </Description>    
+    </Description>
     <PackageTags>Caching,Cache,ResponseCaching</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
     <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
     <PackageIcon>nuget-icon.png</PackageIcon>
-    <PackageReleaseNotes>      
-     $(EasyCachingResponseCachingPackageNotes)
+    <PackageReleaseNotes>
+      $(EasyCachingResponseCachingPackageNotes)
     </PackageReleaseNotes>
   </PropertyGroup>
 

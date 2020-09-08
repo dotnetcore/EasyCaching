@@ -129,5 +129,23 @@
 
             return res;
         }
+
+        public List<string> SearchKeys(string cacheKey, int? count)
+        {
+            var keys = new List<RedisKey>();
+            var server = _servers.ToArray()[0];
+
+            keys = server.Keys(_cache.Database, pattern: cacheKey, count.HasValue?250: count.Value).ToList();
+
+            var data = new List<string>();
+            if (keys.Count <= 0)
+                return data;
+
+            foreach (var item in keys)
+            {
+                data.Add(item.ToString());
+            }
+            return data;
+        }
     }
 }
