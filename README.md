@@ -143,6 +143,8 @@ Detailed EasyCaching documentation can be found [here](http://easycaching.readth
 
 - [EasyCaching.Extensions](https://github.com/yrinleung/EasyCaching.Extensions)
 
+- [EasyCaching.Extensions.EasyCompressor](https://github.com/mjebrahimi/EasyCompressor/blob/master/src/EasyCaching.Extensions.EasyCompressor/README.md)
+
 ## Examples
 
 See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
