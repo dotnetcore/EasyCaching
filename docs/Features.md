@@ -23,6 +23,7 @@
     5. SQLite
     6. Hybrid
     7. Disk
+    8. LiteDb
 - Caching Interceptors
     1. AspectCore
     2. Castle
