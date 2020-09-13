@@ -58,9 +58,9 @@ public class DemoService : IDemoService
 
 ## 3. Config in Startup class
 
-There are some difference between .NET Core 2.x and .NET Core 3.0.
+There are some difference between .NET Core 2.x and .NET Core 3.1.
 
-### .NET Core 3.0
+### .NET Core 3.1
 
 Need to use EasyCaching above version 0.8.0
 
