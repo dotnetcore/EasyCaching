@@ -1,10 +1,10 @@
-# DefaultLiteDBCachingProvider
+# DefaultDiskCachingProvider
 
-LiteDB is another choice of local caching, the same as Disk and SQLite. 
+Disk is another choice of local caching, the same as LiteDB and SQLite. 
 
-EasyCaching.LiteDB contains most of caching operations that we can use easily.
+EasyCaching.Disk contains most of caching operations that we can use easily.
 
-EasyCaching.LiteDB is a lib that is based on **EasyCaching.Core** and **LiteDB**.
+EasyCaching.Disk is a lib that is based on **EasyCaching.Core**.
 
 
 # How to use ?
@@ -12,7 +12,7 @@ EasyCaching.LiteDB is a lib that is based on **EasyCaching.Core** and **LiteDB**
 ## 1. Install the package via Nuget
 
 ```
-Install-Package EasyCaching.LiteDB
+Install-Package EasyCaching.Disk
 ```
 
 ## 2. Config in Startup class
@@ -29,10 +29,10 @@ public class Startup
         //Important step for SQLite Cache
         services.AddEasyCaching(option => 
         {
-            //use litedb cache
-            option.UseLiteDB(config =>
+            //use disk cache
+            option.UseDisk(config =>
             {
-                config.DBConfig = new LiteDBDBOptions { FileName = "s1.ldb" };
+                config.DBConfig = new DiskDbOptions { BasePath = Path.GetTempPath() };
             });
         });
     }
