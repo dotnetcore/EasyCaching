@@ -93,6 +93,15 @@
         /// <summary>
         /// The default name of the serializer.
         /// </summary>
-        public const string DefaultSerializerName = "binary"; 
+        public const string DefaultSerializerName = "binary";
+
+        /// <summary>
+        /// The default name of the LiteDB.
+        /// </summary>
+        public const string DefaultLiteDBName = "DefaultLiteDB";
+        /// <summary>
+        /// The LiteDB Bus section.
+        /// </summary>
+        public const string LiteDBSection= "easycaching:litedb";
     }
 }

@@ -58,9 +58,9 @@ public class DemoService : IDemoService
 
 ## 3. Config in Startup class
 
-There are some difference between .NET Core 2.x and .NET Core 3.0.
+There are some difference between .NET Core 2.x and .NET Core 3.1.
 
-### .NET Core 3.0
+### .NET Core 3.1
 
 Need to use EasyCaching above version 0.8.0
 
@@ -68,7 +68,7 @@ First, add the use of UseServiceProviderFactory to the Program.
 
 ```cs
 // for aspcectcore
-using AspectCore.Extensions.DependencyInjection;
+using AspectCore.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -86,7 +86,7 @@ public class Program
                 webBuilder.UseStartup<Startup>();
             })
             // for aspcectcore
-            .UseServiceProviderFactory(new AspectCoreServiceProviderFactory())
+            .UseServiceContext()
         ;
 }
 ```
@@ -118,12 +118,6 @@ public class Startup
         // AspectCore
         services.ConfigureAspectCoreInterceptor(options => options.CacheProviderName = "m1");
        
-    }
-
-    // for aspectcore
-    public void ConfigureContainer(IServiceContainer builder)
-    {
-        builder.ConfigureAspectCoreInterceptor();
     }
 
      public void Configure(IApplicationBuilder app)

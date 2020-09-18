@@ -43,6 +43,15 @@
             return len;
         }
 
+        public double ZIncrBy(string cacheKey, string field, double val = 1)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            var value = _cache.SortedSetIncrement(cacheKey, field, val);
+            return value;
+        }
+
         public long ZLexCount(string cacheKey, string min, string max)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -137,6 +146,15 @@
 
             var len = await _cache.SortedSetLengthByValueAsync(cacheKey, min, max);
             return len;
+        }
+
+        public async Task<double> ZIncrByAsync(string cacheKey, string field, double val = 1)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
+
+            var value = await _cache.SortedSetIncrementAsync(cacheKey, field, val);
+            return value;
         }
 
         public async Task<long> ZLexCountAsync(string cacheKey, string min, string max)

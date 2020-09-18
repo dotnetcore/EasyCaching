@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../build/version.props" />
+  <Import Project="../../build/releasenotes.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Owners>ncc;Catcher Wong</Owners>
+    <Authors>ncc;Catcher Wong</Authors>
+    <VersionPrefix>$(EasyCachingMessagePackPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <Description>      
+      A serialize library based on MessagePack
+    </Description>    
+    <PackageTags>Caching,Serialization,MessagePack</PackageTags>
+    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+    <PackageIcon>nuget-icon.png</PackageIcon>
+    <PackageReleaseNotes>
+      $(EasyCachingMessagePackPackageNotes)
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.1.90" />    
+  </ItemGroup>
+</Project>
