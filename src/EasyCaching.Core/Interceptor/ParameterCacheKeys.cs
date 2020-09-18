@@ -15,6 +15,7 @@ namespace EasyCaching.Core.Interceptor
             if (parameter is DateTime dateTime) return dateTime.ToString("O");
             if (parameter is DateTimeOffset dateTimeOffset) return dateTimeOffset.ToString("O");
             if (parameter is IEnumerable enumerable) return GenerateCacheKey(enumerable.Cast<object>());
+            if (parameter.GetType().IsClass) return GenerateCacheKeyForModel(parameter);
             return parameter.ToString();
         }
 
@@ -22,6 +23,25 @@ namespace EasyCaching.Core.Interceptor
         {
             if (parameter == null) return string.Empty;
             return "[" + string.Join(",", parameter) + "]";
+        }
+
+        private static string GenerateCacheKeyForModel(object parameter)
+        {
+            if (parameter == null) return string.Empty;
+
+            Type t = parameter.GetType();
+
+            string key = $"{ t.Name}_";
+
+            if (t.IsClass)
+            {
+                foreach (var p in t.GetProperties())
+                {
+                    key += $"{ p.Name}_{p.GetValue(parameter)}_";
+                }
+            }
+
+            return key.ToLower();
         }
     }
 }

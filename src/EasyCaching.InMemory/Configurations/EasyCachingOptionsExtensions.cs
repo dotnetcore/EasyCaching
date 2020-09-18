@@ -77,6 +77,9 @@
             {
                 x.EnableLogging = memoryOptions.EnableLogging;
                 x.MaxRdSecond = memoryOptions.MaxRdSecond;
+                x.LockMs = memoryOptions.LockMs;
+                x.SleepMs = memoryOptions.SleepMs;
+                x.SerializerName = memoryOptions.SerializerName;
                 x.DBConfig = memoryOptions.DBConfig;
             }
             return options.UseInMemory(configure,name);

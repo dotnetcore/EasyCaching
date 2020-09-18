@@ -51,6 +51,9 @@
             {
                 x.EnableLogging = mOptions.EnableLogging;
                 x.MaxRdSecond = mOptions.MaxRdSecond;
+                x.LockMs = mOptions.LockMs;
+                x.SleepMs = mOptions.SleepMs;
+                x.SerializerName = mOptions.SerializerName;
                 x.DBConfig = mOptions.DBConfig;
             }
 
