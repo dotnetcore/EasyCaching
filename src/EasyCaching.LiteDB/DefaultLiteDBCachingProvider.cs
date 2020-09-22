@@ -129,15 +129,17 @@
 
             var result = BaseGet<T>(cacheKey);
 
-            if (!result.HasValue)
+            if (result.HasValue)
             {
-                var item = dataRetriever();
+                return result;
+            }
+            
+            var item = dataRetriever();
 
-                if (item != null || _options.CacheNulls)
-                {
-                    Set(cacheKey, item, expiration);
-                    result = new CacheValue<T>(item, true);
-                }
+            if (item != null || _options.CacheNulls)
+            {
+                Set(cacheKey, item, expiration);
+                result = new CacheValue<T>(item, true);
             }
 
             return result;

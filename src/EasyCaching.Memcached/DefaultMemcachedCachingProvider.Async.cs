@@ -25,23 +25,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _memcachedClient.GetAsync<T>(this.HandleCacheKey(cacheKey));
-            if (result.Success)
+            var result = await BaseGetAsync<T>(cacheKey);
+
+            if (result.HasValue)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                return new CacheValue<T>(result.Value, true);
+                return result;
             }
-
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
-            var flag = await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
+            
+            var flag = await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add,
+                this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
 
             if (!flag)
             {
@@ -73,23 +65,18 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await _memcachedClient.GetAsync<T>(this.HandleCacheKey(cacheKey));
+            var result = await _memcachedClient.GetAsync<object>(this.HandleCacheKey(cacheKey));
+            
             if (result.Success)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                return new CacheValue<T>(result.Value, true);
+                OnCacheHit(cacheKey);
+                return result.Value is NullValue
+                    ? CacheValue<T>.Null 
+                    : new CacheValue<T>((T)result.Value, true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+                OnCacheMiss(cacheKey);
                 return CacheValue<T>.NoValue;
             }
         }
@@ -125,20 +112,12 @@
             var result = await Task.FromResult(_memcachedClient.Get(this.HandleCacheKey(cacheKey)));
             if (result != null)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
+                OnCacheHit(cacheKey);
                 return result;
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+                OnCacheMiss(cacheKey);
                 return null;
             }
         }

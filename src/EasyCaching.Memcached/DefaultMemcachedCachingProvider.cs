@@ -93,21 +93,13 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
+            var result = BaseGet<T>(cacheKey);
+
+            if (result.HasValue)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                return new CacheValue<T>(result, true);
+                return result;
             }
-
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+            
             var flag = _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
 
             if (!flag)
@@ -140,23 +132,25 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            if (_memcachedClient.Get(this.HandleCacheKey(cacheKey)) is T result)
+            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey));
+            
+            switch (result)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                return new CacheValue<T>(result, true);
-            }
-            else
-            {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
-                return CacheValue<T>.NoValue;
+                case NullValue _:
+                {
+                    OnCacheHit(cacheKey);
+                    return CacheValue<T>.Null;
+                }
+                case T typedResult:
+                {
+                    OnCacheHit(cacheKey);
+                    return new CacheValue<T>(typedResult, true);
+                }
+                default:
+                {
+                    OnCacheMiss(cacheKey);
+                    return CacheValue<T>.NoValue;
+                }
             }
         }
 
@@ -191,8 +185,12 @@
                 var addSec = new Random().Next(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
-
-            _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
+            
+            _memcachedClient.Store(
+                Enyim.Caching.Memcached.StoreMode.Set, 
+                this.HandleCacheKey(cacheKey), 
+                cacheValue == null ? (object) NullValue.Instance : cacheValue, 
+                expiration);
         }
       
         /// <summary>
@@ -384,6 +382,27 @@
         public override ProviderInfo BaseGetProviderInfo()
         {
             return _info;
+        }
+
+        private void OnCacheHit(string cacheKey)
+        {
+            CacheStats.OnHit();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+        }
+        
+        private void OnCacheMiss(string cacheKey)
+        {
+            CacheStats.OnMiss();
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+        }
+        
+        private class NullValue
+        {
+            public static NullValue Instance { get; } = new NullValue();
         }
     }
 }
