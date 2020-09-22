@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
     using EasyCaching.Memcached;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -13,15 +14,22 @@
     {
         public MemcachedProviderTest()
         {
+            _defaultTs = TimeSpan.FromSeconds(50);
+        }
+
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
-                x.UseMemcached(
-                    options => { options.DBConfig.AddServer("127.0.0.1", 11211); })
+                x.UseMemcached(options =>
+                {
+                    options.DBConfig.AddServer("127.0.0.1", 11211);
+                    additionalSetup(options);
+                })
             );
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _provider = serviceProvider.GetService<IEasyCachingProvider>();
-            _defaultTs = TimeSpan.FromSeconds(50);
+            return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
         [Fact]

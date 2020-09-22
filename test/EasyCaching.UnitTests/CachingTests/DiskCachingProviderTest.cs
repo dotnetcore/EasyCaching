@@ -1,3 +1,5 @@
+using EasyCaching.Core.Configurations;
+
 namespace EasyCaching.UnitTests
 {
     using System;
@@ -12,19 +14,25 @@ namespace EasyCaching.UnitTests
     {
         public DiskCachingProviderTest()
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => x.UseDisk(options => 
-            {
-                options.MaxRdSecond = 0;
-                options.DBConfig = new DiskDbOptions
-                {
-                    BasePath = Path.GetTempPath()
-                };
-
-             }));
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(x => 
+                x.UseDisk(options => 
+                {
+                    options.MaxRdSecond = 0;
+                    options.DBConfig = new DiskDbOptions
+                    {
+                        BasePath = Path.GetTempPath()
+                    };
+                    additionalSetup(options);
+                })
+            );
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
         [Fact(Skip = "fail in windows ci")]

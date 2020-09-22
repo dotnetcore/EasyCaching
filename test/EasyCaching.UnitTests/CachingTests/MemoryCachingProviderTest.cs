@@ -18,19 +18,19 @@ namespace EasyCaching.UnitTests
     {
         public MemoryCachingProviderTest()
         {
-            _provider = CreateCachingProvider(options => options.MaxRdSecond = 0);
-            _providerWithNullsCached = CreateCachingProvider(options =>
-            {
-                options.MaxRdSecond = 0;
-                options.CacheNulls = true;
-            });
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> setupAction)
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => x.UseInMemory(setupAction));
+            services.AddEasyCaching(x => x
+                .UseInMemory(options =>
+                {
+                    options.MaxRdSecond = 0;
+                    additionalSetup(options);
+                })
+            );
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();;
         }

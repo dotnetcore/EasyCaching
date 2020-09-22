@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.UnitTests
+﻿using EasyCaching.Core.Configurations;
+
+namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
     using FakeItEasy;
@@ -12,9 +14,18 @@
     {
         protected IEasyCachingProvider _provider;
         protected IEasyCachingProvider _providerWithNullsCached;
+
         protected TimeSpan _defaultTs;
         protected string _nameSpace = string.Empty;
-        
+
+        protected BaseCachingProviderTest()
+        {
+            _provider = CreateCachingProvider(options => { });
+            _providerWithNullsCached = CreateCachingProvider(options => options.CacheNulls = true);
+        }
+
+        protected abstract IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup);
+
         #region Parameter Check Test
         [Theory]
         [InlineData("")]

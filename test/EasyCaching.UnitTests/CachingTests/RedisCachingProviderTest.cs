@@ -15,6 +15,12 @@ namespace EasyCaching.UnitTests
 
         public RedisCachingProviderTest()
         {
+            _defaultTs = TimeSpan.FromSeconds(30);
+            _nameSpace = "RedisBasic";
+        }
+
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
                 x.UseRedis(options =>
@@ -25,12 +31,12 @@ namespace EasyCaching.UnitTests
                     };
                     options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 5;
-                }, ProviderName)
+                    additionalSetup(options);
+                }, 
+                ProviderName)
             );
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _provider = serviceProvider.GetService<IEasyCachingProvider>();
-            _defaultTs = TimeSpan.FromSeconds(30);
-            _nameSpace = "RedisBasic";
+            return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
         [Fact]

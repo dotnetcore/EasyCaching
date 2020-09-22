@@ -76,7 +76,8 @@
                 ProviderName = ProviderName,
                 ProviderType = ProviderType,
                 SerializerName = options.SerializerName,
-                SleepMs = options.SleepMs
+                SleepMs = options.SleepMs,
+                CacheNulls = options.CacheNulls
             };
 
             InitDb();
@@ -126,34 +127,20 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var dbResult = _cache.FindOne(c => c.cachekey == cacheKey)?.cachevalue;
+            var result = BaseGet<T>(cacheKey);
 
-            if (!string.IsNullOrWhiteSpace(dbResult))
+            if (!result.HasValue)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                var item = dataRetriever();
 
-                CacheStats.OnHit();
-
-                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
+                if (item != null || _options.CacheNulls)
+                {
+                    Set(cacheKey, item, expiration);
+                    result = new CacheValue<T>(item, true);
+                }
             }
 
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
-            var item = dataRetriever();
-
-            if (item != null)
-            {
-                Set(cacheKey, item, expiration);
-                return new CacheValue<T>(item, true);
-            }
-            else
-            {
-                return CacheValue<T>.NoValue;
-            }
+            return result;
         }
 
         /// <summary>
@@ -166,16 +153,18 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.FindOne(c => c.cachekey == cacheKey)?.cachevalue;
+            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey);
 
-            if (!string.IsNullOrWhiteSpace(dbResult))
+            if (cacheItem != null || _options.CacheNulls)
             {
-                CacheStats.OnHit();
-
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
-                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
+                CacheStats.OnHit();
+
+                return string.IsNullOrWhiteSpace(cacheItem?.cachevalue) 
+                    ? CacheValue<T>.Null 
+                    : new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cacheItem.cachevalue), true);
             }
             else
             {
@@ -210,7 +199,7 @@
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
@@ -365,7 +354,7 @@
         public override bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
