@@ -13,6 +13,8 @@
     /// </summary>
     public partial class DefaultMemcachedCachingProvider : EasyCachingAbstractProvider
     {
+        public const string NullValue = "{NULL}";
+        
         /// <summary>
         /// The memcached client.
         /// </summary>
@@ -136,7 +138,7 @@
             
             switch (result)
             {
-                case NullValue _:
+                case NullValue:
                 {
                     OnCacheHit(cacheKey);
                     return CacheValue<T>.Null;
@@ -189,7 +191,7 @@
             _memcachedClient.Store(
                 Enyim.Caching.Memcached.StoreMode.Set, 
                 this.HandleCacheKey(cacheKey), 
-                cacheValue == null ? (object) NullValue.Instance : cacheValue, 
+                cacheValue == null ? (object) NullValue : cacheValue, 
                 expiration);
         }
       
@@ -398,11 +400,6 @@
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-        }
-        
-        private class NullValue
-        {
-            public static NullValue Instance { get; } = new NullValue();
         }
     }
 }

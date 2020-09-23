@@ -70,7 +70,8 @@
             if (result.Success)
             {
                 OnCacheHit(cacheKey);
-                return result.Value is NullValue
+
+                return NullValue.Equals(result.Value) 
                     ? CacheValue<T>.Null 
                     : new CacheValue<T>((T)result.Value, true);
             }
