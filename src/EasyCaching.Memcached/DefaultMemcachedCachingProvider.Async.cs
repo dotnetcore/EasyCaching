@@ -155,8 +155,12 @@
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
-        }  
+            await _memcachedClient.StoreAsync(
+                Enyim.Caching.Memcached.StoreMode.Set, 
+                this.HandleCacheKey(cacheKey), 
+                cacheValue == null ? (object) NullValue : cacheValue, 
+                expiration);
+        }
 
         /// <summary>
         /// Existses the specified cacheKey async.
@@ -301,7 +305,11 @@
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            return _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey(cacheKey), cacheValue, expiration);
+            return _memcachedClient.StoreAsync(
+                Enyim.Caching.Memcached.StoreMode.Add, 
+                this.HandleCacheKey(cacheKey), 
+                cacheValue == null ? (object) NullValue : cacheValue, 
+                expiration);
         }
 
         public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
