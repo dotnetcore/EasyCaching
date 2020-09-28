@@ -191,7 +191,7 @@
             _memcachedClient.Store(
                 Enyim.Caching.Memcached.StoreMode.Set, 
                 this.HandleCacheKey(cacheKey), 
-                cacheValue == null ? (object) NullValue : cacheValue, 
+                this.ConvertToStoredValue(cacheValue), 
                 expiration);
         }
       
@@ -231,7 +231,11 @@
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
-            _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(prefix), newValue, new TimeSpan(0, 0, 0));
+            _memcachedClient.Store(
+                Enyim.Caching.Memcached.StoreMode.Set, 
+                this.HandleCacheKey(prefix), 
+                newValue, 
+                new TimeSpan(0, 0, 0));
         }
       
         /// <summary>
@@ -254,6 +258,8 @@
 
             return cacheKey;
         }
+        
+        private object ConvertToStoredValue(object cacheValue) => cacheValue ?? NullValue;
 
         /// <summary>
         /// Sets all.
@@ -282,15 +288,23 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var values = _memcachedClient.Get<T>(cacheKeys);
+            var values = _memcachedClient.Get<object>(cacheKeys);
             var result = new Dictionary<string, CacheValue<T>>();
 
             foreach (var item in values)
             {
-                if (item.Value != null)
-                    result.Add(item.Key, new CacheValue<T>(item.Value, true));
-                else
-                    result.Add(item.Key, CacheValue<T>.NoValue);
+                switch (item.Value)
+                {
+                    case NullValue:
+                        result.Add(item.Key, CacheValue<T>.Null);
+                        break;
+                    case T typedResult:
+                        result.Add(item.Key, new CacheValue<T>(typedResult, true));
+                        break;
+                    default:
+                        result.Add(item.Key, CacheValue<T>.NoValue);
+                        break;
+                }
             }
 
             return result;
@@ -369,7 +383,11 @@
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            return _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey(cacheKey), cacheValue, expiration);
+            return _memcachedClient.Store(
+                Enyim.Caching.Memcached.StoreMode.Add, 
+                this.HandleCacheKey(cacheKey), 
+                cacheValue, 
+                expiration);
         }
 
         public override TimeSpan BaseGetExpiration(string cacheKey)

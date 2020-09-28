@@ -158,7 +158,7 @@
             await _memcachedClient.StoreAsync(
                 Enyim.Caching.Memcached.StoreMode.Set, 
                 this.HandleCacheKey(cacheKey), 
-                cacheValue == null ? (object) NullValue : cacheValue, 
+                this.ConvertToStoredValue(cacheValue), 
                 expiration);
         }
 
@@ -199,7 +199,11 @@
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
-            await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(prefix), newValue, new TimeSpan(0, 0, 0));
+            await _memcachedClient.StoreAsync(
+                Enyim.Caching.Memcached.StoreMode.Set, 
+                this.HandleCacheKey(prefix), 
+                newValue, 
+                new TimeSpan(0, 0, 0));
         }
 
         /// <summary>
