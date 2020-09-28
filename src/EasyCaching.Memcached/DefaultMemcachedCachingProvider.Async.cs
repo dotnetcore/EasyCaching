@@ -236,18 +236,12 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var values = await _memcachedClient.GetAsync<T>(cacheKeys);
-            var result = new Dictionary<string, CacheValue<T>>();
+            var values = await _memcachedClient.GetAsync<object>(cacheKeys);
 
-            foreach (var item in values)
-            {
-                if (item.Value != null)
-                    result.Add(item.Key, new CacheValue<T>(item.Value, true));
-                else
-                    result.Add(item.Key, CacheValue<T>.NoValue);
-            }
-
-            return result;
+            return values
+                .ToDictionary(
+                    pair => pair.Key,
+                    pair => ConvertFromStoredValue<T>(pair.Value));
         }
       
         /// <summary>
@@ -311,8 +305,8 @@
 
             return _memcachedClient.StoreAsync(
                 Enyim.Caching.Memcached.StoreMode.Add, 
-                this.HandleCacheKey(cacheKey), 
-                cacheValue == null ? (object) NullValue : cacheValue, 
+                this.HandleCacheKey(cacheKey),
+                ConvertToStoredValue(cacheValue),
                 expiration);
         }
 

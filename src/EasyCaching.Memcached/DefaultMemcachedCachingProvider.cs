@@ -134,26 +134,18 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _memcachedClient.Get(this.HandleCacheKey(cacheKey));
-            
-            switch (result)
+            var result = ConvertFromStoredValue<T>(_memcachedClient.Get(this.HandleCacheKey(cacheKey)));
+
+            if (result.HasValue)
             {
-                case NullValue:
-                {
-                    OnCacheHit(cacheKey);
-                    return CacheValue<T>.Null;
-                }
-                case T typedResult:
-                {
-                    OnCacheHit(cacheKey);
-                    return new CacheValue<T>(typedResult, true);
-                }
-                default:
-                {
-                    OnCacheMiss(cacheKey);
-                    return CacheValue<T>.NoValue;
-                }
+                OnCacheHit(cacheKey);
             }
+            else
+            {
+                OnCacheMiss(cacheKey);
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -261,6 +253,16 @@
         
         private object ConvertToStoredValue(object cacheValue) => cacheValue ?? NullValue;
 
+        private CacheValue<T> ConvertFromStoredValue<T>(object cacheValue)
+        {
+            switch (cacheValue)
+            {
+                case NullValue: return CacheValue<T>.Null;
+                case T typedResult: return new CacheValue<T>(typedResult, true);
+                default: return CacheValue<T>.NoValue;
+            }
+        }
+
         /// <summary>
         /// Sets all.
         /// </summary>
@@ -288,26 +290,11 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var values = _memcachedClient.Get<object>(cacheKeys);
-            var result = new Dictionary<string, CacheValue<T>>();
-
-            foreach (var item in values)
-            {
-                switch (item.Value)
-                {
-                    case NullValue:
-                        result.Add(item.Key, CacheValue<T>.Null);
-                        break;
-                    case T typedResult:
-                        result.Add(item.Key, new CacheValue<T>(typedResult, true));
-                        break;
-                    default:
-                        result.Add(item.Key, CacheValue<T>.NoValue);
-                        break;
-                }
-            }
-
-            return result;
+            return _memcachedClient
+                .Get<object>(cacheKeys)
+                .ToDictionary(
+                    pair => pair.Key,
+                    pair => ConvertFromStoredValue<T>(pair.Value));
         }
      
         /// <summary>
@@ -386,7 +373,7 @@
             return _memcachedClient.Store(
                 Enyim.Caching.Memcached.StoreMode.Add, 
                 this.HandleCacheKey(cacheKey), 
-                cacheValue, 
+                ConvertToStoredValue(cacheValue), 
                 expiration);
         }
 
