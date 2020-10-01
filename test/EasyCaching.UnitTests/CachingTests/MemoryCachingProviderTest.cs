@@ -1,3 +1,5 @@
+using EasyCaching.Core.Configurations;
+
 namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
@@ -16,15 +18,25 @@ namespace EasyCaching.UnitTests
     {
         public MemoryCachingProviderTest()
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => x.UseInMemory(options => options.MaxRdSecond = 0));
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _provider = serviceProvider.GetService<IEasyCachingProvider>();
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(x => x
+                .UseInMemory(options =>
+                {
+                    options.MaxRdSecond = 0;
+                    additionalSetup(options);
+                })
+            );
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            return serviceProvider.GetService<IEasyCachingProvider>();;
+        }
+
         [Fact]
-        public void Deault_MaxRdSecond_Should_Be_0()
+        public void Default_MaxRdSecond_Should_Be_0()
         {
             Assert.Equal(0, _provider.MaxRdSecond);
         }

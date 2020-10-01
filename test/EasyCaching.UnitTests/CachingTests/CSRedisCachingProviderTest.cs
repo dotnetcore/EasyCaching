@@ -2,6 +2,7 @@ namespace EasyCaching.UnitTests
 {
     using System;
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
     using EasyCaching.CSRedis;
     using EasyCaching.Serialization.Json;
     using EasyCaching.Serialization.MessagePack;
@@ -12,25 +13,30 @@ namespace EasyCaching.UnitTests
     {
         public CSRedisCachingProviderTest()
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(option =>
-            {
-                option.UseCSRedis(config =>
+            
+            _defaultTs = TimeSpan.FromSeconds(30);
+            _nameSpace = "CSRedisBase";
+        }
+
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        {
+            var services = new ServiceCollection();
+            services.AddEasyCaching(x =>
+                x.UseCSRedis(options =>
                 {
-                    config.DBConfig = new CSRedisDBOptions
+                    options.DBConfig = new CSRedisDBOptions
                     {
                         ConnectionStrings = new System.Collections.Generic.List<string>
                         {
                             "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
                         }
                     };
-                });
-            });
+                    additionalSetup(options);
+                })
+            );
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _provider = serviceProvider.GetService<IEasyCachingProvider>();
-            _defaultTs = TimeSpan.FromSeconds(30);
-            _nameSpace = "CSRedisBase";
+            return serviceProvider.GetService<IEasyCachingProvider>();
         }
     }
 

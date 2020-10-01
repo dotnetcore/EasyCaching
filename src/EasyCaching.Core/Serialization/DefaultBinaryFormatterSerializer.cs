@@ -23,6 +23,11 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public T Deserialize<T>(byte[] bytes)
         {
+            if (bytes.Length == 0)
+            {
+                return (T)(object) null;
+            }
+            
             using (var ms = new MemoryStream(bytes))
             {
                 return (T)(new BinaryFormatter().Deserialize(ms));
@@ -37,6 +42,11 @@
         /// <param name="type">Type.</param>
         public object Deserialize(byte[] bytes, Type type)
         {
+            if (bytes.Length == 0)
+            {
+                return null;
+            }
+            
             using (var ms = new MemoryStream(bytes))
             {
                 return (new BinaryFormatter().Deserialize(ms));
@@ -64,6 +74,11 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public byte[] Serialize<T>(T value)
         {
+            if (value == null)
+            {
+                return Array.Empty<byte>();
+            }
+            
             using (var ms = new MemoryStream())
             {
                 new BinaryFormatter().Serialize(ms, value);
@@ -78,6 +93,11 @@
         /// <param name="obj">Object.</param>
         public ArraySegment<byte> SerializeObject(object obj)
         {
+            if (obj == null)
+            {
+                return new ArraySegment<byte>(Array.Empty<byte>());
+            }
+            
             using (var ms = new MemoryStream())
             {
                 new BinaryFormatter().Serialize(ms, obj);
