@@ -1,56 +1,59 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Allow to cache null value.
+      2. Ready for 1.x version.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingHybridPackageNotes>
     <EasyCachingAspectCorePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingAspectCorePackageNotes>
     <EasyCachingCastlePackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingCastlePackageNotes>
     <EasyCachingResponseCachingPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingResponseCachingPackageNotes>
     <EasyCachingJsonPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingJsonPackageNotes>
     <EasyCachingMessagePackPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingMessagePackPackageNotes>
     <EasyCachingProtobufPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
-      2. Fixed bugs of expiration.
+      1. Upgrading dependencies.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingCSRedisBusPackageNotes>
     <EasyCachingRedisBusPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingRedisBusPackageNotes>
     <EasyCachingRabbitBusPackageNotes>
-      1. Upgrade RabbitMQ.Client to 6.0.0.
+      1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. Microsoft.* keep in 3.1.0.
+      1. Upgrading dependencies.
     </EasyCachingDiskPackageNotes>
+    <EasyCachingLiteDBPackageNotes>
+      1. Upgrading dependencies.
+    </EasyCachingLiteDBPackageNotes>
   </PropertyGroup>
 </Project>

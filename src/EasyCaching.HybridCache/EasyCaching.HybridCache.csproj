@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingHybridPackageVersion)</Version>
+    <VersionPrefix>$(EasyCachingHybridPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>
       A simple hybrid caching provider combines local caching and distributed caching.
     </Description>

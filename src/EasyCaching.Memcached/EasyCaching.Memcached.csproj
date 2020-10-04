@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingMemcachedPackageVersion)</Version>
+    <VersionPrefix>$(EasyCachingMemcachedPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>
       A simple distributed caching provider based on EnyimMemcachedCore.
     </Description>

@@ -9,6 +9,7 @@
 - [x] Memcached
 - [x] Hybrid(Combine local caching and distributed caching)
 - [x] Disk
+- [x] LiteDB
 - [ ] Others...
 
 ## Basic Caching API

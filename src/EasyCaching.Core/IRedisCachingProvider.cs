@@ -65,6 +65,14 @@
         /// <param name="cacheKey"></param>
         /// <returns></returns>
         Task<long> TTLAsync(string cacheKey);
+
+        /// <summary>
+        /// Searchs the keys.
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        List<string> SearchKeys(string cacheKey, int? count = null);
         #endregion
 
         #region String
@@ -689,6 +697,14 @@
         /// <returns></returns>
         long ZCount(string cacheKey, double min, double max);
         /// <summary>
+        /// https://redis.io/commands/zincrby
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="field"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        double ZIncrBy(string cacheKey, string field, double val = 1);
+        /// <summary>
         /// https://redis.io/commands/zlexcount
         /// </summary>
         /// <param name="cacheKey"></param>
@@ -751,6 +767,14 @@
         /// <param name="max"></param>
         /// <returns></returns>
         Task<long> ZCountAsync(string cacheKey, double min, double max);
+        /// <summary>
+        /// https://redis.io/commands/zincrby
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="field"></param>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        Task<double> ZIncrByAsync(string cacheKey, string field, double val = 1);
         /// <summary>
         /// https://redis.io/commands/zlexcount
         /// </summary>
@@ -901,5 +925,9 @@
         /// <returns></returns>
         Task<List<(double longitude, double latitude)?>> GeoPosAsync(string cacheKey, List<string> members);
         #endregion
+
+        object Eval(string script, string cacheKey, List<object> args);
+
+        Task<object> EvalAsync(string script, string cacheKey, List<object> args);
     }
 }

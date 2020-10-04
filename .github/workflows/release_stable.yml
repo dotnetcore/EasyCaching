@@ -1,0 +1,46 @@
+name: Release_Stable
+
+on:
+    push:
+      tags:
+          - '**'
+          
+jobs:
+  build_artifact:    
+    name: Build and upload artifact
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.200
+    - name: Build with dotnet
+      run: dotnet build --configuration Release /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln
+    - name: Pack with dotnet
+      run: dotnet pack /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln -o /home/runner/work/nugetpkgs -c Release --no-build
+    - name: Upload artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: nugetpkgs
+        path: /home/runner/work/nugetpkgs  
+
+  release_nuget:
+      name: Release to Nuget
+      needs: build_artifact
+      runs-on: ubuntu-latest
+  
+      steps:
+        - name: Download build artifacts
+          uses: actions/download-artifact@v1
+          with:
+            name: nugetpkgs
+        - name: list nugetpkgs
+          run: ls nugetpkgs
+        - name: Release
+          run: |
+            for file in nugetpkgs/*.nupkg
+            do
+              dotnet nuget push $file -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://www.nuget.org/api/v2/package
+            done

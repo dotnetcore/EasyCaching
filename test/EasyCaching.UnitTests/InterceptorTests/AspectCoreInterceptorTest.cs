@@ -7,7 +7,7 @@
     using AspectCore.Extensions.DependencyInjection;
     using EasyCaching.Core;
     using EasyCaching.Core.Interceptor;
-    using EasyCaching.InMemory;
+    using EasyCaching.LiteDB;
     using EasyCaching.Interceptor.AspectCore;
     using EasyCaching.UnitTests.Infrastructure;
     using Microsoft.Extensions.DependencyInjection;
