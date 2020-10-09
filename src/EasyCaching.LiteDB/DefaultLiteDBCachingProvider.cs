@@ -96,7 +96,6 @@
                     _cache.EnsureIndex(c => c.cachekey);
                 }
             }
-
         }
 
         /// <summary>
@@ -126,7 +125,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var dbResult = _cache.FindOne(c => c.cachekey == cacheKey)?.cachevalue;
+            var dbResult = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds())?.cachevalue;
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
@@ -166,7 +165,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.FindOne(c => c.cachekey == cacheKey)?.cachevalue;
+            var dbResult = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds())?.cachevalue;
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
@@ -218,7 +217,6 @@
                 var addSec = new Random().Next(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
-            var exp = expiration.Ticks / 10000000;
             _cache.Upsert(new CacheItem
             {
                 cachekey = cacheKey,
@@ -283,7 +281,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
             var lst = cacheKeys.ToList();
-            var list = _cache.Find(c => lst.Contains(c.cachekey)).ToList();
+            var list = _cache.Find(c => lst.Contains(c.cachekey) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds()).ToList();
             return GetDict<T>(list);
         }
 
@@ -315,7 +313,7 @@
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-            var list = _cache.Find(c => c.cachekey.StartsWith(prefix)).ToList();
+            var list = _cache.Find(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds()).ToList();
             return GetDict<T>(list);
         }
 
@@ -327,9 +325,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
             var lst = cacheKeys.ToList();
-            // _litedb.BeginTrans();
             _cache.DeleteMany(c => lst.Contains(c.cachekey));
-            // _litedb.Commit();
         }
 
         /// <summary>
@@ -345,7 +341,7 @@
             }
             else
             {
-                return _cache.Count(c => c.cachekey.StartsWith(prefix));
+                return _cache.Count(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
             }
         }
 
@@ -399,7 +395,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var time = _cache.FindOne(c => c.cachekey == cacheKey)?.expiration;
+            var time = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds())?.expiration;
             if (time == null) return TimeSpan.Zero;
             else return TimeSpan.FromSeconds((double)time);
         }
