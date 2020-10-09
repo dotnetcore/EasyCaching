@@ -222,7 +222,7 @@
                 cachekey = cacheKey,
                 name = _name,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
-                expiration = expiration.Ticks / 10000000
+                expiration = DateTimeOffset.UtcNow.Add(expiration).ToUnixTimeSeconds()  
             });
         }
 
@@ -260,7 +260,7 @@
                         cachekey = item.Key,
                         name = _name,
                         cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(item.Value),
-                        expiration = expiration.Ticks / 10000000
+                        expiration = DateTimeOffset.UtcNow.Add(expiration).ToUnixTimeSeconds()
                     });
                 }
                 _litedb.Commit();
@@ -396,8 +396,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             var time = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds())?.expiration;
-            if (time == null) return TimeSpan.Zero;
-            else return TimeSpan.FromSeconds((double)time);
+            return time == null ? TimeSpan.Zero : DateTimeOffset.FromUnixTimeSeconds((long)time).Subtract(DateTimeOffset.UtcNow);
         }
 
         /// <summary>
