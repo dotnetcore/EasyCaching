@@ -109,7 +109,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.Count(fc => fc.cachekey == cacheKey);
+            var dbResult = _cache.Count(fc => fc.cachekey == cacheKey && fc.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
 
             return dbResult > 0;
         }
@@ -155,7 +155,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey);
+            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
 
             if (cacheItem != null || _options.CacheNulls)
             {
@@ -209,13 +209,12 @@
                 var addSec = new Random().Next(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
-            var exp = expiration.Ticks / 10000000;
             _cache.Upsert(new CacheItem
             {
                 cachekey = cacheKey,
                 name = _name,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
-                expiration = expiration.Ticks / 10000000
+                expiration = DateTimeOffset.UtcNow.Add(expiration).ToUnixTimeSeconds()
             });
         }
 
@@ -253,7 +252,7 @@
                         cachekey = item.Key,
                         name = _name,
                         cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(item.Value),
-                        expiration = expiration.Ticks / 10000000
+                        expiration = DateTimeOffset.UtcNow.Add(expiration).ToUnixTimeSeconds()
                     });
                 }
                 _litedb.Commit();
@@ -274,7 +273,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
             var lst = cacheKeys.ToList();
-            var list = _cache.Find(c => lst.Contains(c.cachekey)).ToList();
+            var list = _cache.Find(c => lst.Contains(c.cachekey) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds()).ToList();
             return GetDict<T>(list);
         }
 
@@ -306,7 +305,7 @@
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-            var list = _cache.Find(c => c.cachekey.StartsWith(prefix)).ToList();
+            var list = _cache.Find(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds()).ToList();
             return GetDict<T>(list);
         }
 
@@ -332,11 +331,11 @@
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                return _cache.Count();
+                return _cache.Count(c =>  c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
             }
             else
             {
-                return _cache.Count(c => c.cachekey.StartsWith(prefix));
+                return _cache.Count(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
             }
         }
 
@@ -364,8 +363,8 @@
                 var addSec = new Random().Next(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
-            var exp = expiration.Ticks / 10000000;
-            var r = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration == exp);
+         
+            var r = _cache.FindOne(c => c.cachekey == cacheKey &&   c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
             bool result = false;
             if (r == null)
             {
@@ -374,7 +373,7 @@
                     cachekey = cacheKey,
                     name = _name,
                     cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
-                    expiration = expiration.Ticks / 10000000
+                    expiration = DateTimeOffset.UtcNow.Add(expiration).ToUnixTimeSeconds()
                 });
                 result = rows != null;
             }
@@ -390,9 +389,8 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var time = _cache.FindOne(c => c.cachekey == cacheKey)?.expiration;
-            if (time == null) return TimeSpan.Zero;
-            else return TimeSpan.FromSeconds((double)time);
+            var time = _cache.FindOne(c => c.cachekey == cacheKey )?.expiration;
+            return time == null ? TimeSpan.Zero : DateTimeOffset.FromUnixTimeSeconds((long)time).Subtract(DateTimeOffset.UtcNow);
         }
 
         /// <summary>
