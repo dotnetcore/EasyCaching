@@ -25,23 +25,15 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _memcachedClient.GetAsync<T>(this.HandleCacheKey(cacheKey));
-            if (result.Success)
+            var result = await BaseGetAsync<T>(cacheKey);
+
+            if (result.HasValue)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                return new CacheValue<T>(result.Value, true);
+                return result;
             }
-
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
-            var flag = await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
+            
+            var flag = await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add,
+                this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
 
             if (!flag)
             {
@@ -50,7 +42,7 @@
             }
 
             var item = await dataRetriever();
-            if (item != null)
+            if (item != null || _options.CacheNulls)
             {
                 await this.SetAsync(cacheKey, item, expiration);
                 await _memcachedClient.RemoveAsync(this.HandleCacheKey($"{cacheKey}_Lock"));
@@ -73,23 +65,19 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await _memcachedClient.GetAsync<T>(this.HandleCacheKey(cacheKey));
+            var result = await _memcachedClient.GetAsync<object>(this.HandleCacheKey(cacheKey));
+            
             if (result.Success)
             {
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                return new CacheValue<T>(result.Value, true);
+                return NullValue.Equals(result.Value) 
+                    ? CacheValue<T>.Null 
+                    : new CacheValue<T>((T)result.Value, true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+                OnCacheMiss(cacheKey);
                 return CacheValue<T>.NoValue;
             }
         }
@@ -125,20 +113,12 @@
             var result = await Task.FromResult(_memcachedClient.Get(this.HandleCacheKey(cacheKey)));
             if (result != null)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
+                OnCacheHit(cacheKey);
                 return result;
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
+                OnCacheMiss(cacheKey);
                 return null;
             }
         }
@@ -166,7 +146,7 @@
         public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
@@ -175,8 +155,12 @@
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(cacheKey), cacheValue, expiration);
-        }  
+            await _memcachedClient.StoreAsync(
+                Enyim.Caching.Memcached.StoreMode.Set, 
+                this.HandleCacheKey(cacheKey), 
+                this.ConvertToStoredValue(cacheValue), 
+                expiration);
+        }
 
         /// <summary>
         /// Existses the specified cacheKey async.
@@ -215,7 +199,11 @@
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
-            await _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Set, this.HandleCacheKey(prefix), newValue, new TimeSpan(0, 0, 0));
+            await _memcachedClient.StoreAsync(
+                Enyim.Caching.Memcached.StoreMode.Set, 
+                this.HandleCacheKey(prefix), 
+                newValue, 
+                new TimeSpan(0, 0, 0));
         }
 
         /// <summary>
@@ -248,18 +236,12 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var values = await _memcachedClient.GetAsync<T>(cacheKeys);
-            var result = new Dictionary<string, CacheValue<T>>();
+            var values = await _memcachedClient.GetAsync<object>(cacheKeys);
 
-            foreach (var item in values)
-            {
-                if (item.Value != null)
-                    result.Add(item.Key, new CacheValue<T>(item.Value, true));
-                else
-                    result.Add(item.Key, CacheValue<T>.NoValue);
-            }
-
-            return result;
+            return values
+                .ToDictionary(
+                    pair => pair.Key,
+                    pair => ConvertFromStoredValue<T>(pair.Value));
         }
       
         /// <summary>
@@ -312,7 +294,7 @@
         public override Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
@@ -321,7 +303,11 @@
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            return _memcachedClient.StoreAsync(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey(cacheKey), cacheValue, expiration);
+            return _memcachedClient.StoreAsync(
+                Enyim.Caching.Memcached.StoreMode.Add, 
+                this.HandleCacheKey(cacheKey),
+                ConvertToStoredValue(cacheValue),
+                expiration);
         }
 
         public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)

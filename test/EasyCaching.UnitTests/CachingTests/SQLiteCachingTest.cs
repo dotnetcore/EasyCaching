@@ -2,6 +2,7 @@
 {
     using Dapper;
     using EasyCaching.Core;
+    using EasyCaching.Core.Configurations;
     using EasyCaching.SQLite;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -13,9 +14,12 @@
 
     public class SQLiteCachingTest : BaseCachingProviderTest
     {
-        private readonly ISQLiteDatabaseProvider _dbProvider;
-
         public SQLiteCachingTest()
+        {
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
@@ -27,14 +31,14 @@
                         CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default,
                         OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory,
                     };
+                    additionalSetup(options);
                 })
             );
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            var _dbProviders = serviceProvider.GetServices<ISQLiteDatabaseProvider>();
-            _dbProvider = _dbProviders.FirstOrDefault();
+            var dbProvider = serviceProvider.GetServices<ISQLiteDatabaseProvider>().First();
 
-            var conn = _dbProvider.GetConnection();
+            var conn = dbProvider.GetConnection();
             if (conn.State == System.Data.ConnectionState.Closed)
             {
                 conn.Open();
@@ -42,9 +46,7 @@
 
             conn.Execute(ConstSQL.CREATESQL);
 
-            _provider = new DefaultSQLiteCachingProvider(EasyCachingConstValue.DefaultSQLiteName, _dbProviders,
-                new SQLiteOptions());
-            _defaultTs = TimeSpan.FromSeconds(30);
+            return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
         [Fact]

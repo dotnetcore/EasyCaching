@@ -74,7 +74,8 @@
                 ProviderName = ProviderName,
                 ProviderType = ProviderType,
                 SerializerName = options.SerializerName,
-                SleepMs = options.SleepMs
+                SleepMs = options.SleepMs,
+                CacheNulls = options.CacheNulls,
             };
         }
 
@@ -118,7 +119,7 @@
 
             var res = dataRetriever();
 
-            if (res != null)
+            if (res != null || _options.CacheNulls)
             {
                 Set(cacheKey, res, expiration);
                 //remove mutex key
@@ -188,7 +189,7 @@
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
@@ -322,7 +323,7 @@
         public override bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             //var val = new CacheValue<T>(cacheValue, true, expiration);

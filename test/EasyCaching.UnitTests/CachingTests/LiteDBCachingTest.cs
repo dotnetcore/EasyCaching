@@ -1,21 +1,23 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using Dapper;
     using EasyCaching.Core;
     using EasyCaching.LiteDB;
+    using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.IO;
-    using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
 
     public class LiteDBCachingTest : BaseCachingProviderTest
     {
-        private readonly ILiteDBDatabaseProvider _dbProvider;
-
         public LiteDBCachingTest()
+        {
+            _defaultTs = TimeSpan.FromSeconds(30);
+        }
+
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
@@ -25,17 +27,12 @@
                     {
                         FileName = "s1.ldb"
                     };
+                    additionalSetup(options);
                 })
             );
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            var _dbProviders = serviceProvider.GetServices<ILiteDBDatabaseProvider>();
-            _dbProvider = _dbProviders.FirstOrDefault();
- 
- 
-            _provider = new DefaultLiteDBCachingProvider(EasyCachingConstValue.DefaultLiteDBName, _dbProviders,
-                new LiteDBOptions());
-            _defaultTs = TimeSpan.FromSeconds(30);
+            return serviceProvider.GetService<IEasyCachingProvider>();;
         }
 
         [Fact]
@@ -43,7 +40,7 @@
         {
             return Task.FromResult(1);
         }
-
+        
         [Fact]
         protected override void Get_Parallel_Should_Succeed()
         {

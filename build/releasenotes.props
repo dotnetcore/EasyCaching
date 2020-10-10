@@ -1,14 +1,14 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. IRedisProvider support search keys.
-      2. DefaultEasyCachingKeyGenerator support GenerateCacheKeyForModel.
+      1. Allow to cache null value.
+      2. Ready for 1.x version.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. IRedisProvider support search keys.
+      1. Upgrading dependencies.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
       1. Upgrading dependencies.
@@ -38,7 +38,7 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. IRedisProvider support search keys.
+      1. Upgrading dependencies.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
@@ -53,7 +53,7 @@
       1. Upgrading dependencies.
     </EasyCachingDiskPackageNotes>
     <EasyCachingLiteDBPackageNotes>
-      1. LiteDB joined for the first time.
+      1. Upgrading dependencies.
     </EasyCachingLiteDBPackageNotes>
   </PropertyGroup>
 </Project>

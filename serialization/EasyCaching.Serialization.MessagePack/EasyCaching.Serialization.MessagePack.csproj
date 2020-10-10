@@ -4,8 +4,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>    
-    <Version>$(EasyCachingMessagePackPackageVersion)</Version>
+    <Authors>ncc;Catcher Wong</Authors>
+    <VersionPrefix>$(EasyCachingMessagePackPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>      
       A serialize library based on MessagePack
     </Description>    

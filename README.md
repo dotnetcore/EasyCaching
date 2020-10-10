@@ -34,6 +34,8 @@ EasyCaching is an open source caching library that contains basic usages and som
 | EasyCaching.Bus.Redis | ![](https://img.shields.io/nuget/v/EasyCaching.Bus.Redis.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Bus.Redis.svg)
 | EasyCaching.Bus.CSRedis | ![](https://img.shields.io/nuget/v/EasyCaching.Bus.CSRedis.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Bus.CSRedis.svg)
 | EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)
+| EasyCaching.Disk | ![](https://img.shields.io/nuget/v/EasyCaching.Disk.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Disk.svg)
+| EasyCaching.LiteDB | ![](https://img.shields.io/nuget/v/EasyCaching.LiteDB.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.LiteDB.svg)
 
 ## Basic Usages 
 
@@ -142,6 +144,8 @@ Detailed EasyCaching documentation can be found [here](http://easycaching.readth
 ## Extension Libs
 
 - [EasyCaching.Extensions](https://github.com/yrinleung/EasyCaching.Extensions)
+
+- [EasyCaching.Extensions.EasyCompressor](https://github.com/mjebrahimi/EasyCompressor/blob/master/src/EasyCaching.Extensions.EasyCompressor/README.md)
 
 ## Examples
 
