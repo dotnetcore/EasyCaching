@@ -369,8 +369,8 @@
                 var addSec = new Random().Next(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
-            var exp = expiration.Ticks / 10000000;
-            var r = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration == exp);
+            
+            var r = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration  >= DateTimeOffset.Now.ToUnixTimeSeconds());
             bool result = false;
             if (r == null)
             {
@@ -379,7 +379,7 @@
                     cachekey = cacheKey,
                     name = _name,
                     cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
-                    expiration = expiration.Ticks / 10000000
+                    expiration = DateTimeOffset.UtcNow.Add(expiration).ToUnixTimeSeconds()
                 });
                 result = rows != null;
             }
