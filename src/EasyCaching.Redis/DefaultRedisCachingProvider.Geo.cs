@@ -95,7 +95,7 @@
             return res.ToList();
         }
 
-        public List<(double longitude, double latitude)?> GeoPos(string cacheKey, List<string> members)
+        public List<(decimal longitude, decimal latitude)?> GeoPos(string cacheKey, List<string> members)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNullAndCountGTZero(members, nameof(members));
@@ -108,13 +108,13 @@
 
             var res = _cache.GeoPosition(cacheKey, list.ToArray());
 
-            var tuple = new List<(double longitude, double latitude)?>();
+            var tuple = new List<(decimal longitude, decimal latitude)?>();
 
             foreach (var item in res)
             {
                 if (item.HasValue)
                 {
-                    tuple.Add((item.Value.Longitude, item.Value.Latitude));
+                    tuple.Add(((decimal longitude, decimal latitude)?)(item.Value.Longitude, item.Value.Latitude));
                 }
                 else
                 {
@@ -126,7 +126,7 @@
             return tuple;
         }
 
-        public async Task<List<(double longitude, double latitude)?>> GeoPosAsync(string cacheKey, List<string> members)
+        public async Task<List<(decimal longitude, decimal latitude)?>> GeoPosAsync(string cacheKey, List<string> members)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNullAndCountGTZero(members, nameof(members));
@@ -139,13 +139,13 @@
 
             var res = await _cache.GeoPositionAsync(cacheKey, list.ToArray());
 
-            var tuple = new List<(double longitude, double latitude)?>();
+            var tuple = new List<(decimal longitude, decimal latitude)?>();
 
             foreach (var item in res)
             {
                 if (item.HasValue)
                 {
-                    tuple.Add((item.Value.Longitude, item.Value.Latitude));
+                    tuple.Add(((decimal longitude, decimal latitude)?)(item.Value.Longitude, item.Value.Latitude));
                 }
                 else
                 {

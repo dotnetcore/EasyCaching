@@ -26,16 +26,16 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var res = _cache.IncrByFloat(cacheKey, value);
-            return res;
+            var res = _cache.IncrByFloat(cacheKey, (decimal)value);
+            return (double)res;
         }
 
         public async Task<double> IncrByFloatAsync(string cacheKey, double value = 1)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var res = await _cache.IncrByFloatAsync(cacheKey, value);
-            return res;
+            var res = await _cache.IncrByFloatAsync(cacheKey, (decimal)value);
+            return (double)res;
         }
 
         public bool StringSet(string cacheKey, string cacheValue, System.TimeSpan? expiration, string when)
