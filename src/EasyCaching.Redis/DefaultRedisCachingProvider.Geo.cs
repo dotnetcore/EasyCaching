@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using StackExchange.Redis;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -114,13 +115,12 @@
             {
                 if (item.HasValue)
                 {
-                    tuple.Add(((decimal longitude, decimal latitude)?)(item.Value.Longitude, item.Value.Latitude));
+                    tuple.Add((Convert.ToDecimal(item.Value.Longitude.ToString()), Convert.ToDecimal(item.Value.Latitude.ToString())));
                 }
                 else
                 {
                     tuple.Add(null);
                 }
-
             }
 
             return tuple;
@@ -145,7 +145,7 @@
             {
                 if (item.HasValue)
                 {
-                    tuple.Add(((decimal longitude, decimal latitude)?)(item.Value.Longitude, item.Value.Latitude));
+                    tuple.Add((Convert.ToDecimal(item.Value.Longitude.ToString()), Convert.ToDecimal(item.Value.Latitude.ToString())));
                 }
                 else
                 {

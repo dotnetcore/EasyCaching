@@ -5,6 +5,8 @@
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
 
@@ -66,6 +68,42 @@
         protected override void RPushX_Should_Succeed()
         {
 
+        }
+
+        protected override async Task GeoAddAsync_And_GeoPosAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geohashasync-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.GeoAddAsync(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var pos = await _provider.GeoPosAsync(cacheKey, new List<string> { "Palermo", "Catania", "NonExisting" });
+
+            Assert.Equal(3, pos.Count);
+            Assert.Contains(13.361389338970184m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(15.087267458438873m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(null, pos);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
+
+        protected override void GeoAdd_And_GeoPos_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-geohash-{Guid.NewGuid().ToString()}";
+
+            var res = _provider.GeoAdd(cacheKey, new List<(double longitude, double latitude, string member)> { (13.361389, 38.115556, "Palermo"), (15.087269, 37.502669, "Catania") });
+
+            Assert.Equal(2, res);
+
+            var pos = _provider.GeoPos(cacheKey, new List<string> { "Palermo", "Catania", "NonExisting" });
+
+            Assert.Equal(3, pos.Count);
+            Assert.Contains(13.361389338970184m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(15.087267458438873m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(null, pos);
+
+            _provider.KeyDel(cacheKey);
         }
     }
 }
