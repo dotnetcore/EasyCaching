@@ -55,5 +55,8 @@
     <EasyCachingLiteDBPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingLiteDBPackageNotes>
+    <EasyCachingSTJsonPackageNotes>
+      1. Init.
+    </EasyCachingSTJsonPackageNotes>
   </PropertyGroup>
 </Project>
