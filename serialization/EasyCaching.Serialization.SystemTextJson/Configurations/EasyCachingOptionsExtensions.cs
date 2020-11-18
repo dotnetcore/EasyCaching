@@ -16,7 +16,7 @@ namespace EasyCaching.Serialization.SystemTextJson.Configurations
         /// </summary>        
         /// <param name="options">Options.</param>        
         /// <param name="name">The name of this serializer instance.</param>        
-        public static EasyCachingOptions WithJson(this EasyCachingOptions options, string name = "json") => options.WithJson(configure: x => { }, name);
+        public static EasyCachingOptions WithSystemTextJson(this EasyCachingOptions options, string name = "json") => options.WithSystemTextJson(configure: x => { }, name);
 
         /// <summary>
         /// Withs the json serializer.
@@ -24,7 +24,7 @@ namespace EasyCaching.Serialization.SystemTextJson.Configurations
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure serializer settings.</param>
         /// <param name="name">The name of this serializer instance.</param>     
-        public static EasyCachingOptions WithJson(this EasyCachingOptions options, Action<EasyCachingJsonSerializerOptions> configure, string name)
+        public static EasyCachingOptions WithSystemTextJson(this EasyCachingOptions options, Action<EasyCachingJsonSerializerOptions> configure, string name)
         {
             var easyCachingJsonSerializerOptions = new EasyCachingJsonSerializerOptions();
 
@@ -61,7 +61,7 @@ namespace EasyCaching.Serialization.SystemTextJson.Configurations
         /// <param name="options">Options.</param>
         /// <param name="jsonSerializerSettingsConfigure">Configure serializer settings.</param>
         /// <param name="name">The name of this serializer instance.</param>     
-        public static EasyCachingOptions WithJson(this EasyCachingOptions options, Action<JsonSerializerOptions> jsonSerializerSettingsConfigure, string name)
+        public static EasyCachingOptions WithSystemTextJson(this EasyCachingOptions options, Action<JsonSerializerOptions> jsonSerializerSettingsConfigure, string name)
         {
             options.RegisterExtension(new JsonOptionsExtension(name, jsonSerializerSettingsConfigure));
 

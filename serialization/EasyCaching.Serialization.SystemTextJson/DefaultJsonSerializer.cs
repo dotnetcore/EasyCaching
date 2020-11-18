@@ -1,6 +1,7 @@
-﻿using EasyCaching.Core.Serialization;
+﻿using EasyCaching.Core.Internal;
+using EasyCaching.Core.Serialization;
 using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 
@@ -63,10 +64,24 @@ namespace EasyCaching.Serialization.SystemTextJson
         /// <param name="value">Value.</param>
         public object DeserializeObject(ArraySegment<byte> value)
         {
-            return JsonSerializer.Deserialize<object>(value, jsonSerializerOption);
+            var jr = new Utf8JsonReader(value);
+            jr.Read();
+            if (jr.TokenType == JsonTokenType.StartArray)
+            {
+                jr.Read();
+                var typeName = Encoding.UTF8.GetString(jr.ValueSpan.ToArray());
+                var type = Type.GetType(typeName, throwOnError: true);
+
+                jr.Read();
+                return JsonSerializer.Deserialize(ref jr, type, jsonSerializerOption);
+            }
+            else
+            {
+                throw new InvalidDataException("JsonTranscoder only supports [\"TypeName\", object]");
+            }
         }
         /// <summary>
-        /// Serialize the specified value.
+        //; Serialize the specified value.
         /// </summary>
         /// <returns>The serialize.</returns>
         /// <param name="value">Value.</param>
@@ -82,7 +97,22 @@ namespace EasyCaching.Serialization.SystemTextJson
         /// <param name="obj">Object.</param>
         public ArraySegment<byte> SerializeObject(object obj)
         {
-            return new ArraySegment<byte>(JsonSerializer.SerializeToUtf8Bytes(obj, jsonSerializerOption));
+            var typeName = TypeHelper.BuildTypeName(obj.GetType());
+
+            using (var ms = new MemoryStream())
+            using (var jw = new Utf8JsonWriter(ms))
+            {
+                jw.WriteStartArray();
+                jw.WriteStringValue(typeName);
+
+                JsonSerializer.Serialize(jw, obj, jsonSerializerOption);
+
+                jw.WriteEndArray();
+
+                jw.Flush();
+
+                return new ArraySegment<byte>(ms.ToArray(), 0, (int)ms.Length);
+            }
         }
     }
 }
