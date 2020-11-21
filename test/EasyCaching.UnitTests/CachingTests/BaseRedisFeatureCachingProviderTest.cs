@@ -1783,8 +1783,8 @@
             var pos = _provider.GeoPos(cacheKey, new List<string> { "Palermo", "Catania", "NonExisting" });
 
             Assert.Equal(3, pos.Count);
-            Assert.Contains(13.361389338970184, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
-            Assert.Contains(15.087267458438873, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(13.36138933897018433m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(15.08726745843887329m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
             Assert.Contains(null, pos);
 
             _provider.KeyDel(cacheKey);
@@ -1802,8 +1802,8 @@
             var pos = await _provider.GeoPosAsync(cacheKey, new List<string> { "Palermo", "Catania", "NonExisting" });
 
             Assert.Equal(3, pos.Count);
-            Assert.Contains(13.361389338970184, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
-            Assert.Contains(15.087267458438873, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(13.36138933897018433m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
+            Assert.Contains(15.08726745843887329m, pos.Where(x => x.HasValue).Select(x => x.Value.longitude));
             Assert.Contains(null, pos);
 
             await _provider.KeyDelAsync(cacheKey);

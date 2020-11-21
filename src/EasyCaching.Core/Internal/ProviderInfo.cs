@@ -41,5 +41,10 @@
         /// Mainly for distributed cache
         /// </summary>
         public string SerializerName { get; set; }
+
+        /// <summary>
+        /// Get or sets whether null values should be cached, default is false.
+        /// </summary>
+        public bool CacheNulls { get; set; } = false;
     }
 }
