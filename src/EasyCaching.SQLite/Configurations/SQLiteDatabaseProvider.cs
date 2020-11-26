@@ -1,10 +1,9 @@
-﻿using System;
-
-namespace EasyCaching.SQLite
+﻿namespace EasyCaching.SQLite
 {
     using EasyCaching.Core;
     using Microsoft.Data.Sqlite;
     using System.Collections.Concurrent;
+    using System;
     using System.Data;
     using System.Threading;
     using System.Threading.Tasks;
