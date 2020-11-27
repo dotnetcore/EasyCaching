@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using Microsoft.Data.Sqlite;
     using System.Collections.Concurrent;
+    using System;
     using System.Data;
     using System.Threading;
     using System.Threading.Tasks;
@@ -13,9 +14,19 @@
     public class SQLiteDatabaseProvider : ISQLiteDatabaseProvider
     {
         /// <summary>
-        /// The options.
+        ///     Connections pool
+        /// </summary>
+        private readonly ConcurrentDictionary<int, SqliteConnection> _conns;
+
+        /// <summary>
+        ///     The options.
         /// </summary>
         private readonly SQLiteDBOptions _options;
+
+        /// <summary>
+        ///     The builder
+        /// </summary>
+        private readonly SqliteConnectionStringBuilder _builder;
         
         public SQLiteDatabaseProvider(string name , SQLiteOptions options)
         {
@@ -30,13 +41,6 @@
 
             _conns = new ConcurrentDictionary<int, SqliteConnection>();
         }
-
-        private static ConcurrentDictionary<int, SqliteConnection> _conns;
-
-        /// <summary>
-        /// The builder
-        /// </summary>
-        private static SqliteConnectionStringBuilder _builder;
 
         private readonly string _name = EasyCachingConstValue.DefaultSQLiteName;
 
@@ -53,7 +57,8 @@
 
             Task.Run(async () =>
             {
-                await Task.Delay(5000).ConfigureAwait(false);
+                //keep the connection for 30 minutes
+                await Task.Delay(TimeSpan.FromMinutes(30)).ConfigureAwait(false);
                 _conns.TryRemove(threadId, out var removingConn);
                 if (removingConn?.State == ConnectionState.Closed)
                 {
