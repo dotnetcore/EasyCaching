@@ -54,6 +54,7 @@
                 x.LockMs = LiteDBOptions.LockMs;
                 x.SleepMs = LiteDBOptions.SleepMs;
                 x.SerializerName = LiteDBOptions.SerializerName;
+                x.CacheNulls = LiteDBOptions.CacheNulls;
                 x.DBConfig = LiteDBOptions.DBConfig;
             }
 

@@ -54,6 +54,7 @@
                 x.LockMs = mOptions.LockMs;
                 x.SleepMs = mOptions.SleepMs;
                 x.SerializerName = mOptions.SerializerName;
+                x.CacheNulls = mOptions.CacheNulls;
                 x.DBConfig = mOptions.DBConfig;
             }
 
