@@ -54,6 +54,7 @@
                 x.LockMs = redisOptions.LockMs;
                 x.SleepMs = redisOptions.SleepMs;
                 x.SerializerName = redisOptions.SerializerName;
+                x.CacheNulls = redisOptions.CacheNulls;
                 x.DBConfig = redisOptions.DBConfig;
             }
 
