@@ -157,7 +157,7 @@
 
             var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
 
-            if (cacheItem != null || _options.CacheNulls)
+            if (cacheItem != null)
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
