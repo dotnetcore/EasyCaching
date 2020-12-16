@@ -5,6 +5,8 @@
     using EasyCaching.Core.Serialization;
     using StackExchange.Redis;
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -29,16 +31,29 @@
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
+        /// The name.
+        /// </summary>
+        private readonly string _name;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.DefaultRedisBus"/> class.
         /// </summary>
-        /// <param name="subscriberProvider">Subscriber provider.</param>
-        /// <param name="serializer">Serializer.</param>
+        /// <param name="name">Name.</param>
+        /// <param name="subscriberProviders">Subscriber provider.</param>
+        /// <param name="busOptions">bus Options.</param>
+        /// <param name="serializers">Serializers.</param>
         public DefaultRedisBus(
-            IRedisSubscriberProvider subscriberProvider,
-            IEasyCachingSerializer serializer)
+            string name
+            , IEnumerable<IRedisSubscriberProvider> subscriberProviders
+            , RedisBusOptions busOptions
+            , IEnumerable<IEasyCachingSerializer> serializers)
         {
-            this._subscriberProvider = subscriberProvider;
-            this._serializer = serializer;
+            this._name = name;
+            this.BusName = name;
+            this._subscriberProvider = subscriberProviders.Single(x => x.SubscriberName.Equals(name));
+            this._serializer = !string.IsNullOrWhiteSpace(busOptions.SerializerName)
+                ? serializers.Single(x => x.Name.Equals(busOptions.SerializerName))
+                : serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
             this._subscriber = _subscriberProvider.GetSubscriber();
         }
 
