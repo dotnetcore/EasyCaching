@@ -959,7 +959,7 @@
             Assert.Contains($"{_nameSpace}getallwithnull:key:1",res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getallwithnull:key:2", res.Select(x => x.Key));
             Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getallwithnull:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal(null, res.Where(x => x.Key == $"{_nameSpace}getallwithnull:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Null(res.Where(x => x.Key == $"{_nameSpace}getallwithnull:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -999,7 +999,7 @@
             Assert.Contains($"{_nameSpace}getallasyncwithnull:key:1", res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getallasyncwithnull:key:2", res.Select(x => x.Key));
             Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getallasyncwithnull:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal(null, res.Where(x => x.Key == $"{_nameSpace}getallasyncwithnull:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Null(res.Where(x => x.Key == $"{_nameSpace}getallasyncwithnull:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]

@@ -59,7 +59,6 @@
                 });
 
                 option.UseMemcached(Configuration);
-
             });
         }
 

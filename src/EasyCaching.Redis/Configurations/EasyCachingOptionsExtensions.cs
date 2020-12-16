@@ -50,7 +50,7 @@
             void configure(RedisOptions x)
             {
                 x.EnableLogging = redisOptions.EnableLogging;
-                x.MaxRdSecond = redisOptions.MaxRdSecond;             
+                x.MaxRdSecond = redisOptions.MaxRdSecond;
                 x.LockMs = redisOptions.LockMs;
                 x.SleepMs = redisOptions.SleepMs;
                 x.SerializerName = redisOptions.SerializerName;
