@@ -59,23 +59,6 @@
                 });
 
                 option.UseMemcached(Configuration);
-
-                option.UseHybrid(x =>
-                {
-
-                }, "name");
-                
-                option.WithRedisBus(x => 
-                {
-                    x.SerializerName = "msgpack";
-                }, "bus");
-
-                option.WithCSRedisBus(x => 
-                {
-                    
-                });
-
-                option.WithMessagePack("msgpack");
             });
         }
 
