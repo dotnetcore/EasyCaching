@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +17,10 @@
     <Compile Remove="sample\**" />
     <Compile Remove="src\**" />
     <Compile Remove="test\**" />
+    <Compile Remove="bus\**" />
+    <Compile Remove="extensions\**" />
+    <Compile Remove="interceptor\**" />
+    <Compile Remove="serialization\**" />
     <EmbeddedResource Remove="article\**" />
     <EmbeddedResource Remove="Build\bin\**" />
     <EmbeddedResource Remove="Build\obj\**" />
@@ -27,6 +32,10 @@
     <EmbeddedResource Remove="sample\**" />
     <EmbeddedResource Remove="src\**" />
     <EmbeddedResource Remove="test\**" />
+    <EmbeddedResource Remove="bus\**" />
+    <EmbeddedResource Remove="extensions\**" />
+    <EmbeddedResource Remove="interceptor\**" />
+    <EmbeddedResource Remove="serialization\**" />
     <None Remove="article\**" />
     <None Remove="Build\bin\**" />
     <None Remove="Build\obj\**" />
@@ -38,6 +47,10 @@
     <None Remove="sample\**" />
     <None Remove="src\**" />
     <None Remove="test\**" />
+    <None Remove="bus\**" />
+    <None Remove="extensions\**" />
+    <None Remove="interceptor\**" />
+    <None Remove="serialization\**" />
   </ItemGroup>
 
   <ItemGroup>

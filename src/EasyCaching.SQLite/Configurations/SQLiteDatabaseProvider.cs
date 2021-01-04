@@ -2,7 +2,10 @@
 {
     using EasyCaching.Core;
     using Microsoft.Data.Sqlite;
-    using Microsoft.Extensions.Options;
+    using System.Collections.Concurrent;
+    using System.Data;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// SQLite database provider.
@@ -16,16 +19,27 @@
         
         public SQLiteDatabaseProvider(string name , SQLiteOptions options)
         {
-            this._name = name;
-            this._options = options.DBConfig;
+            _name = name;
+            _options = options.DBConfig;
+            _builder = new SqliteConnectionStringBuilder
+            {
+                DataSource = _options.DataSource,
+                Mode = _options.OpenMode,
+                Cache = _options.CacheMode
+            };
+
+            _conns = new ConcurrentDictionary<int, SqliteConnection>();
         }
 
+        private static ConcurrentDictionary<int, SqliteConnection> _conns;
+
         /// <summary>
-        /// The conn.
+        /// The builder
         /// </summary>
-        private static SqliteConnection _conn;
+        private static SqliteConnectionStringBuilder _builder;
 
         private readonly string _name = EasyCachingConstValue.DefaultSQLiteName;
+
         public string DBProviderName => _name;
 
         /// <summary>
@@ -34,19 +48,25 @@
         /// <returns>The connection.</returns>
         public SqliteConnection GetConnection()
         {
-            if(_conn == null)
+            var threadId = Thread.CurrentThread.ManagedThreadId;
+            var con = _conns.GetOrAdd(threadId, CreateNewConnection());
+
+            Task.Run(async () =>
             {
-                SqliteConnectionStringBuilder builder = new SqliteConnectionStringBuilder()
+                await Task.Delay(5000).ConfigureAwait(false);
+                _conns.TryRemove(threadId, out var removingConn);
+                if (removingConn?.State == ConnectionState.Closed)
                 {
-                    DataSource = _options.DataSource,
-                    Mode = _options.OpenMode,
-                    Cache = _options.CacheMode
-                };
+                    removingConn.Dispose();
+                }
+            });
 
-                _conn = new SqliteConnection(builder.ToString());
+            return con;
+        }
 
-            }
-            return _conn;
+        private SqliteConnection CreateNewConnection()
+        {
+            return new SqliteConnection(_builder.ToString());
         }
     }
 }

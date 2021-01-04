@@ -9,6 +9,7 @@
 - [x] Memcached
 - [x] Hybrid(Combine local caching and distributed caching)
 - [x] Disk
+- [x] LiteDB
 - [ ] Others...
 
 ## Basic Caching API
@@ -35,6 +36,7 @@
 - [x] MessagePack
 - [x] Json
 - [x] ProtoBuf
+- [x] System.Text.Json
 - [ ] Others...
 
 ## Caching Interceptor

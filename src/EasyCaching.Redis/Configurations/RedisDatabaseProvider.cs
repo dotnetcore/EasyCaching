@@ -101,11 +101,11 @@
                     //Cluster
                     if (server.ServerType == ServerType.Cluster)
                     {
-                        masters.AddRange(server.ClusterConfiguration.Nodes.Where(n => !n.IsSlave).Select(n => n.EndPoint));
+                        masters.AddRange(server.ClusterConfiguration.Nodes.Where(n => !n.IsReplica).Select(n => n.EndPoint));
                         break;
                     }
                     // Single , Master-Slave
-                    if (server.ServerType == ServerType.Standalone && !server.IsSlave)
+                    if (server.ServerType == ServerType.Standalone && !server.IsReplica)
                     {
                         masters.Add(ep);
                         break;

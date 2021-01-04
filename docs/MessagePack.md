@@ -71,11 +71,20 @@ public void ConfigureServices(IServiceCollection services)
         option.WithMessagePack( x => 
         {
             x.EnableCustomResolver = true; 
-            x.CustomResolvers = CompositeResolver.Create(
+
+            // x.CustomResolvers = CompositeResolver.Create(
+            //     // This can solve DateTime time zone problem
+            //     NativeDateTimeResolver.Instance,
+            //     ContractlessStandardResolver.Instance
+            // );
+
+            // due to api changed
+            x.CustomResolvers = CompositeResolver.Create(new MessagePack.IFormatterResolver[]
+            {
                 // This can solve DateTime time zone problem
                 NativeDateTimeResolver.Instance,
-                ContractlessStandardResolver.Instance
-            );
+                ContractlessStandardResolver.Instance 
+            });
         },"mymsgpack");
     });
 }

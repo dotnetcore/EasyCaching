@@ -5,7 +5,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Owners>ncc;Catcher Wong</Owners>
     <Authors>ncc;Catcher Wong</Authors>
-    <Version>$(EasyCachingDiskPackageVersion)</Version>
+    <VersionPrefix>$(EasyCachingDiskPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
     <Description>
       A simple disk(file) caching provider.
     </Description>

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../build/version.props" />
+  <Import Project="../../build/releasenotes.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>EasyCaching Contributors</Authors>
+    <VersionPrefix>$(EasyCachingSTJsonPackageVersion)</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <Description>      
+      A serialize library based on System.Text.Json
+    </Description>    
+    <PackageTags>Caching,Serialization,Json</PackageTags>
+    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>    
+    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+    <PackageIcon>nuget-icon.png</PackageIcon>
+    <PackageReleaseNotes>            
+      $(EasyCachingSTJsonPackageNotes)
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+  
+  <ItemGroup>  
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+  </ItemGroup>
+</Project>

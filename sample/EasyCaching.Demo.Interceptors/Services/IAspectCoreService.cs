@@ -27,6 +27,9 @@
 
         [EasyCachingAble(Expiration = 10)]
         Demo GetDemo(int id);
+
+        [EasyCachingAble(Expiration = 10)]
+        object GetData();
     }
 
     public class AspectCoreService : IAspectCoreService
@@ -71,6 +74,10 @@
             return str;
         }
 
+        public object GetData()
+        {
+            return new { x = System.DateTimeOffset.Now.ToUnixTimeSeconds() };
+        }
     }
 
     [ProtoContract]

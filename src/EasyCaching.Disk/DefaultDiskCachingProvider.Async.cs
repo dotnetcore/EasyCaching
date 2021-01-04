@@ -130,7 +130,7 @@
 
             var res = await dataRetriever();
 
-            if (res != null)
+            if (res != null || _options.CacheNulls)
             {
                 await SetAsync(cacheKey, res, expiration);
                 //remove mutex key
@@ -392,7 +392,7 @@
         public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var (path, fileName) = GetFilePath(cacheKey);
@@ -411,7 +411,7 @@
         public override async Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var (path, fileName) = GetFilePath(cacheKey);

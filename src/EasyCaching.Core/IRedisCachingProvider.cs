@@ -65,6 +65,14 @@
         /// <param name="cacheKey"></param>
         /// <returns></returns>
         Task<long> TTLAsync(string cacheKey);
+
+        /// <summary>
+        /// Searchs the keys.
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        List<string> SearchKeys(string cacheKey, int? count = null);
         #endregion
 
         #region String
@@ -908,14 +916,18 @@
         /// <param name="cacheKey"></param>
         /// <param name="members"></param>
         /// <returns></returns>
-        List<(double longitude, double latitude)?> GeoPos(string cacheKey, List<string> members);
+        List<(decimal longitude, decimal latitude)?> GeoPos(string cacheKey, List<string> members);
         /// <summary>
         /// https://redis.io/commands/geopos
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <param name="members"></param>
         /// <returns></returns>
-        Task<List<(double longitude, double latitude)?>> GeoPosAsync(string cacheKey, List<string> members);
+        Task<List<(decimal longitude, decimal latitude)?>> GeoPosAsync(string cacheKey, List<string> members);
         #endregion
+
+        object Eval(string script, string cacheKey, List<object> args);
+
+        Task<object> EvalAsync(string script, string cacheKey, List<object> args);
     }
 }

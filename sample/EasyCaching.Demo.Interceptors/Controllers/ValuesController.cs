@@ -38,6 +38,11 @@
                 var res = _aService.GetDemo(111);
                 return $"{res.Id}-{res.Name}-{res.CreateTime}";
             }
+            else if (type == 5)
+            {
+                var res = _aService.GetData();
+                return Newtonsoft.Json.JsonConvert.SerializeObject(res);
+            }
             else
             {
                 return "wait";
