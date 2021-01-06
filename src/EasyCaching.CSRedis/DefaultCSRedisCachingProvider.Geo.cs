@@ -13,11 +13,11 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var list = new List<(double longitude, double latitude, object member)>();
+            var list = new List<(decimal longitude, decimal latitude, object member)>();
 
             foreach (var item in values)
             {
-                list.Add((item.longitude, item.latitude, item.member));
+                list.Add(((decimal longitude, decimal latitude, object member))(item.longitude, item.latitude, item.member));
             }
 
             var res = _cache.GeoAdd(cacheKey, list.ToArray());
@@ -29,11 +29,11 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var list = new List<(double longitude, double latitude, object member)>();
+            var list = new List<(decimal longitude, decimal latitude, object member)>();
 
             foreach (var item in values)
             {
-                list.Add((item.longitude, item.latitude, item.member));
+                list.Add(((decimal longitude, decimal latitude, object member))(item.longitude, item.latitude, item.member));
             }
 
             var res = await _cache.GeoAddAsync(cacheKey, list.ToArray());
@@ -48,7 +48,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(unit, nameof(unit));
 
             var res = _cache.GeoDist(cacheKey, member1, member2, GetGeoUnit(unit));
-            return res;
+            return (double?)res;
         }
 
         public async Task<double?> GeoDistAsync(string cacheKey, string member1, string member2, string unit = "m")
@@ -59,7 +59,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(unit, nameof(unit));
 
             var res = await _cache.GeoDistAsync(cacheKey, member1, member2, GetGeoUnit(unit));
-            return res;
+            return (double?)res;
         }
 
         public List<string> GeoHash(string cacheKey, List<string> members)
@@ -92,7 +92,7 @@
             return res.ToList();
         }
 
-        public List<(double longitude, double latitude)?> GeoPos(string cacheKey, List<string> members)
+        public List<(decimal longitude, decimal latitude)?> GeoPos(string cacheKey, List<string> members)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNullAndCountGTZero(members, nameof(members));
@@ -107,7 +107,7 @@
             return res.ToList();
         }
 
-        public async Task<List<(double longitude, double latitude)?>> GeoPosAsync(string cacheKey, List<string> members)
+        public async Task<List<(decimal longitude, decimal latitude)?>> GeoPosAsync(string cacheKey, List<string> members)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNullAndCountGTZero(members, nameof(members));

@@ -1,6 +1,6 @@
 ![](media/easycaching-icon.png?raw=true)
 
-EasyCaching is an open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
+EasyCaching is an open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easily!
 
 [![Coverage Status](https://coveralls.io/repos/github/catcherwong/EasyCaching/badge.svg?branch=master)](https://coveralls.io/github/catcherwong/EasyCaching?branch=master)
 [![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
@@ -36,6 +36,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 | EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)
 | EasyCaching.Disk | ![](https://img.shields.io/nuget/v/EasyCaching.Disk.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Disk.svg)
 | EasyCaching.LiteDB | ![](https://img.shields.io/nuget/v/EasyCaching.LiteDB.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.LiteDB.svg)
+| EasyCaching.Serialization.SystemTextJson | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.SystemTextJson.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.SystemTextJson.svg)
 
 ## Basic Usages 
 
@@ -153,7 +154,7 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 
 ## Todo List
 
-See [ToDo List](ToDoList.md)
+See [ToDo List](docs/ToDoList.md)
 
 ## Contributing
 

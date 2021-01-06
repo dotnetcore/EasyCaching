@@ -74,7 +74,7 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var result = await _cache.GetAsync<byte[]>(cacheKey);
-            if (result != null)
+            if (result != null || _options.CacheNulls)
             {
                 CacheStats.OnHit();
 
@@ -99,7 +99,7 @@
             }
 
             var item = await dataRetriever();
-            if (item != null)
+            if (item != null || _options.CacheNulls)
             {
                 await SetAsync(cacheKey, item, expiration);
                 //remove mutex key
@@ -324,7 +324,7 @@
         public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
@@ -353,7 +353,7 @@
         public override async Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue));
+            ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             if (MaxRdSecond > 0)
