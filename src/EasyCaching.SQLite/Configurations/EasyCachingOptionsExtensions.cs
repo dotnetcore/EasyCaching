@@ -54,6 +54,7 @@
                 x.LockMs = sqliteOptions.LockMs;
                 x.SleepMs = sqliteOptions.SleepMs;
                 x.SerializerName = sqliteOptions.SerializerName;
+                x.CacheNulls = sqliteOptions.CacheNulls;
                 x.DBConfig = sqliteOptions.DBConfig;
             }
 

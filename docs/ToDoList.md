@@ -36,6 +36,7 @@
 - [x] MessagePack
 - [x] Json
 - [x] ProtoBuf
+- [x] System.Text.Json
 - [ ] Others...
 
 ## Caching Interceptor

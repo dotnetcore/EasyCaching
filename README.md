@@ -36,6 +36,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 | EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)
 | EasyCaching.Disk | ![](https://img.shields.io/nuget/v/EasyCaching.Disk.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Disk.svg)
 | EasyCaching.LiteDB | ![](https://img.shields.io/nuget/v/EasyCaching.LiteDB.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.LiteDB.svg)
+| EasyCaching.Serialization.SystemTextJson | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.SystemTextJson.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.SystemTextJson.svg)
 
 ## Basic Usages 
 
@@ -153,7 +154,7 @@ See [sample](https://github.com/catcherwong/EasyCaching/tree/master/sample)
 
 ## Todo List
 
-See [ToDo List](ToDoList.md)
+See [ToDo List](docs/ToDoList.md)
 
 ## Contributing
 

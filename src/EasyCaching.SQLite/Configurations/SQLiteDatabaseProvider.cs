@@ -2,7 +2,11 @@
 {
     using EasyCaching.Core;
     using Microsoft.Data.Sqlite;
-    using Microsoft.Extensions.Options;
+    using System.Collections.Concurrent;
+    using System;
+    using System.Data;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// SQLite database provider.
@@ -10,22 +14,36 @@
     public class SQLiteDatabaseProvider : ISQLiteDatabaseProvider
     {
         /// <summary>
-        /// The options.
+        ///     Connections pool
+        /// </summary>
+        private readonly ConcurrentDictionary<int, SqliteConnection> _conns;
+
+        /// <summary>
+        ///     The options.
         /// </summary>
         private readonly SQLiteDBOptions _options;
+
+        /// <summary>
+        ///     The builder
+        /// </summary>
+        private readonly SqliteConnectionStringBuilder _builder;
         
         public SQLiteDatabaseProvider(string name , SQLiteOptions options)
         {
-            this._name = name;
-            this._options = options.DBConfig;
+            _name = name;
+            _options = options.DBConfig;
+            _builder = new SqliteConnectionStringBuilder
+            {
+                DataSource = _options.DataSource,
+                Mode = _options.OpenMode,
+                Cache = _options.CacheMode
+            };
+
+            _conns = new ConcurrentDictionary<int, SqliteConnection>();
         }
 
-        /// <summary>
-        /// The conn.
-        /// </summary>
-        private static SqliteConnection _conn;
-
         private readonly string _name = EasyCachingConstValue.DefaultSQLiteName;
+
         public string DBProviderName => _name;
 
         /// <summary>
@@ -34,19 +52,26 @@
         /// <returns>The connection.</returns>
         public SqliteConnection GetConnection()
         {
-            if(_conn == null)
+            var threadId = Thread.CurrentThread.ManagedThreadId;
+            var con = _conns.GetOrAdd(threadId, CreateNewConnection());
+
+            Task.Run(async () =>
             {
-                SqliteConnectionStringBuilder builder = new SqliteConnectionStringBuilder()
+                //keep the connection for 30 minutes
+                await Task.Delay(TimeSpan.FromMinutes(30)).ConfigureAwait(false);
+                _conns.TryRemove(threadId, out var removingConn);
+                if (removingConn?.State == ConnectionState.Closed)
                 {
-                    DataSource = _options.DataSource,
-                    Mode = _options.OpenMode,
-                    Cache = _options.CacheMode
-                };
+                    removingConn.Dispose();
+                }
+            });
 
-                _conn = new SqliteConnection(builder.ToString());
+            return con;
+        }
 
-            }
-            return _conn;
+        private SqliteConnection CreateNewConnection()
+        {
+            return new SqliteConnection(_builder.ToString());
         }
     }
 }

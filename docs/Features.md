@@ -32,4 +32,5 @@
     2. MessagePack
     3. Json
     4. Protobuf
+    5. System.Text.Json
 - ResponseCaching for ASP.NET Core

@@ -53,7 +53,6 @@ namespace EasyCaching.UnitTests
             });
 
             Assert.Equal(1, list.Count(x => x));
-
         }
 
         [Fact]

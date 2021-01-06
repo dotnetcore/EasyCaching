@@ -22,6 +22,7 @@
         /// <param name="clients">Clients.</param>
         public DefaultCSRedisBus(IEnumerable<EasyCachingCSRedisClient> clients)
         {
+            this.BusName = "easycachingbus";
             this._client = clients.FirstOrDefault(x => x.Name.Equals("easycachingbus"));
         }
 

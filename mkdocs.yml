@@ -28,6 +28,7 @@ pages:
     - Overview : SerializerOverview.md
     - BinaryFormatter : BinaryFormatter.md
     - MessagePack : MessagePack.md
-    - Json : Json.md
+    - NewtonsoftJson : NewtonsoftJson.md
+    - SystemTextJson : SystemTextJson.md
     - Protobuf : ProtoBuf.md
     

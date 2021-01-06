@@ -14,6 +14,8 @@
         /// </summary>
         public static readonly NullEasyCachingBus Instance = new NullEasyCachingBus();
 
+        public string Name => nameof(NullEasyCachingBus);
+
         /// <summary>
         /// Releases all resource used by the <see cref="T:EasyCaching.Core.Bus.NullEasyCachingBus"/> object.
         /// </summary>
