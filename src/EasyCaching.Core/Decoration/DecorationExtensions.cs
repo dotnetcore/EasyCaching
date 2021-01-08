@@ -1,5 +1,6 @@
 namespace EasyCaching.Core.Decoration
 {
+    using Polly;
     using System;
     using System.Linq;
 
@@ -54,6 +55,23 @@ namespace EasyCaching.Core.Decoration
                 innerDecorator, 
                 exceptionFilter.IncludingInnerExceptions(), 
                 fallbackCachingProvider);
+        }
+        
+        public static IEasyCachingProviderDecorator<TProvider> CircuitBreaker<TProvider>(
+            this IEasyCachingProviderDecorator<TProvider> innerDecorator,
+            Func<Exception, bool> exceptionFilter,
+            ICircuitBreakerParameters initParameters,
+            ICircuitBreakerParameters executeParameters) where TProvider : class, IEasyCachingProviderBase
+        {
+            var policyBuilder = Policy
+                .Handle(exceptionFilter)
+                .OrInner(exceptionFilter);
+            var initPolicy = initParameters.CreatePolicy(policyBuilder);
+            var syncExecutePolicy = executeParameters.CreatePolicy(policyBuilder);
+            var asyncExecutePolicy = executeParameters.CreatePolicyAsync(policyBuilder);
+
+            return new EasyCachingProviderPolicyDecorator<TProvider>(
+                innerDecorator, initPolicy, syncExecutePolicy, asyncExecutePolicy);
         }
 
         private static Func<Exception, bool> IncludingInnerExceptions(this Func<Exception, bool> exceptionFilter)

@@ -156,7 +156,6 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             bool flag;
 
-            // Circuit Breaker may be more better
             try
             {
                 flag = _distributedCache.Exists(cacheKey);
@@ -183,7 +182,6 @@
 
             bool flag;
 
-            // Circuit Breaker may be more better
             try
             {
                 flag = await _distributedCache.ExistsAsync(cacheKey);
@@ -217,7 +215,6 @@
 
             LogMessage($"local cache can not get the value of {cacheKey}");
 
-            // Circuit Breaker may be more better
             try
             {
                 cacheValue = _distributedCache.Get<T>(cacheKey);
