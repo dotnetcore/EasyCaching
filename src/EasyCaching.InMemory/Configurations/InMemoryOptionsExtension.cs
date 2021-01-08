@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
@@ -49,14 +50,17 @@
             });
 
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-            services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>(x =>
+            services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
-                var mCache = x.GetServices<IInMemoryCaching>();
-                var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
+                var mCache = serviceProvider.GetServices<IInMemoryCaching>();
+                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
                 var options = optionsMon.Get(_name);
                 // ILoggerFactory can be null
-                var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
-                return new DefaultInMemoryCachingProvider(_name, mCache, options, factory);
+                var factory = serviceProvider.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultInMemoryCachingProvider(_name, mCache, options, factory));
             });
         }
     }

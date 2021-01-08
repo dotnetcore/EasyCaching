@@ -3,13 +3,8 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
 
-    public class SQLiteOptions: BaseProviderOptions
+    public class SQLiteOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
     {
-        public SQLiteOptions()
-        {
-
-        }
-
         public SQLiteDBOptions DBConfig { get; set; } = new SQLiteDBOptions();
     }
 }

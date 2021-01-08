@@ -2,12 +2,14 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using System;
+    using System.Linq;
 
     /// <summary>
     /// Redis options extension.
@@ -55,18 +57,24 @@
                 return new RedisDatabaseProvider(_name, options);
             });
 
-            Func<IServiceProvider, DefaultRedisCachingProvider> createFactory = x =>
+            services.AddSingleton<IRedisAndEasyCachingProvider>(serviceProvider =>
             {
-                var dbProviders = x.GetServices<IRedisDatabaseProvider>();
-                var serializers = x.GetServices<IEasyCachingSerializer>();
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var dbProviders = serviceProvider.GetServices<IRedisDatabaseProvider>();
+                var serializers = serviceProvider.GetServices<IEasyCachingSerializer>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
-                var factory = x.GetService<ILoggerFactory>();
-                return new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, factory);
-            };
+                var factory = serviceProvider.GetService<ILoggerFactory>();
 
-            services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(createFactory);
-            services.AddSingleton<IRedisCachingProvider, DefaultRedisCachingProvider>(createFactory);
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, factory));
+            });
+            services.AddSingleton<IEasyCachingProvider>(GetProviderByName);
+            services.AddSingleton<IRedisCachingProvider>(GetProviderByName);
         }
+
+        private IRedisAndEasyCachingProvider GetProviderByName(IServiceProvider serviceProvider) =>
+            serviceProvider.GetServices<IRedisAndEasyCachingProvider>().Single(provider => provider.Name == _name);
     }
 }

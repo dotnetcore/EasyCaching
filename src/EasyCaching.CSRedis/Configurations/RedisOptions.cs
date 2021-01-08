@@ -1,14 +1,10 @@
 ﻿namespace EasyCaching.CSRedis
 {
+    using Core;
     using EasyCaching.Core.Configurations;
 
-    public class RedisOptions : BaseProviderOptions
+    public class RedisOptions : BaseProviderOptionsWithDecorator<IRedisAndEasyCachingProvider>
     {
-        public RedisOptions()
-        {
-
-        }
-
         /// <summary>
         /// Gets or sets the DBC onfig.
         /// </summary>
