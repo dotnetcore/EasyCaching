@@ -31,7 +31,7 @@
         /// <summary>
         /// The cache.
         /// </summary>
-        private readonly SqliteConnection _cache;
+        private SqliteConnection _cache => _dbProvider.GetConnection();
 
         /// <summary>
         /// The cache stats.
@@ -54,7 +54,6 @@
             this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
-            this._cache = _dbProvider.GetConnection();
             this._cacheStats = new CacheStats();
             this._name = name;
 

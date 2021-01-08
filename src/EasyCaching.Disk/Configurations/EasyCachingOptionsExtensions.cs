@@ -52,6 +52,7 @@
                 x.LockMs = diskOptions.LockMs;
                 x.SleepMs = diskOptions.SleepMs;
                 x.SerializerName = diskOptions.SerializerName;
+                x.CacheNulls = diskOptions.CacheNulls;
                 x.DBConfig = diskOptions.DBConfig;
             }
             return options.UseDisk(configure, name);
