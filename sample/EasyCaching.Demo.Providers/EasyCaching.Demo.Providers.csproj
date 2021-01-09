@@ -12,6 +12,8 @@
     <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
     <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.MessagePack\EasyCaching.Serialization.MessagePack.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+    <ProjectReference Include="..\..\bus\EasyCaching.Bus.CSRedis\EasyCaching.Bus.CSRedis.csproj" />
+    <ProjectReference Include="..\..\bus\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\bus\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj" />
   </ItemGroup>
   <ItemGroup>

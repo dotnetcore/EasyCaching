@@ -1,6 +1,5 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
-    using Microsoft.Extensions.Options;
     using StackExchange.Redis;
     using System;
 
@@ -9,6 +8,8 @@
     /// </summary>
     internal class RedisSubscriberProvider : IRedisSubscriberProvider
     {
+        private readonly string _name;
+
         /// <summary>
         /// The options.
         /// </summary>
@@ -22,19 +23,23 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.RedisSubscriberProvider"/> class.
         /// </summary>
+        /// <param name="name">name.</param>
         /// <param name="options">Options.</param>
-        public RedisSubscriberProvider(IOptions<RedisBusOptions> options)
+        public RedisSubscriberProvider(string name, RedisBusOptions options)
         {
-            _options = options.Value;
+            _name = name;
+            _options = options;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
         }
+
+        public string SubscriberName => _name;
 
         /// <summary>
         /// Gets the database connection.
         /// </summary>
         public ISubscriber GetSubscriber()
         {
-           return _connectionMultiplexer.Value.GetSubscriber();
+            return _connectionMultiplexer.Value.GetSubscriber();
         }
 
         /// <summary>
