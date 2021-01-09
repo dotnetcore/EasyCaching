@@ -44,7 +44,7 @@ namespace EasyCaching.UnitTests
             return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
-        private IEasyCachingProvider CreateCachingProviderWithUnavailableRedisAndCircuitBreaker()
+        private IEasyCachingProvider CreateCachingProviderWithUnavailableRedisAndFallback()
         {
             var serviceProvider = CreateServiceProvider(options =>
             {
@@ -130,20 +130,21 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
-        public void Use_Unavailable_Redis_With_Circuit_Breaker_Server_Get_Should_Return_Empty()
+        public void Use_Unavailable_Redis_With_Fallback_Get_Should_Return_Empty_Value()
         {
-            var cachingProvider = CreateCachingProviderWithUnavailableRedisAndCircuitBreaker();
+            var cachingProvider = CreateCachingProviderWithUnavailableRedisAndFallback();
             var cacheKey = GetUniqueCacheKey();
             
             var result = cachingProvider.Get<string>(cacheKey);
             
             Assert.False(result.HasValue);
+            Assert.Null(result.Value);
         }
 
         [Fact]
-        public void Use_Unavailable_Redis_With_Circuit_Breaker_Server_Set_Should_Do_Nothing()
+        public void Use_Unavailable_Redis_With_Fallback_Set_Should_Do_Nothing()
         {
-            var cachingProvider = CreateCachingProviderWithUnavailableRedisAndCircuitBreaker();
+            var cachingProvider = CreateCachingProviderWithUnavailableRedisAndFallback();
             var cacheKey = GetUniqueCacheKey();
 
             cachingProvider.Set(cacheKey, "value", _defaultTs);
@@ -153,9 +154,9 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
-        public void Use_Unavailable_Redis_With_Circuit_Breaker_Server_Get_With_Data_Retriever_Should_Succeed()
+        public void Use_Unavailable_Redis_With_Fallback_Get_With_Data_Retriever_Should_Succeed()
         {
-            var cachingProvider = CreateCachingProviderWithUnavailableRedisAndCircuitBreaker();
+            var cachingProvider = CreateCachingProviderWithUnavailableRedisAndFallback();
             var cacheKey = GetUniqueCacheKey();
 
             var result = cachingProvider.Get(cacheKey, () => "value", _defaultTs);
