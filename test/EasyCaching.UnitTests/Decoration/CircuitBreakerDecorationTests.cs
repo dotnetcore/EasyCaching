@@ -16,7 +16,7 @@ namespace EasyCaching.UnitTests
         private static readonly TimeSpan Expiration = TimeSpan.FromDays(1);
 
         protected IEasyCachingProvider CreateDecoratedProvider() =>
-            CachingProviderBuilders.CreateFakeProvider(options =>
+            ServiceBuilders.CreateFakeProvider(options =>
             {
                 options.ProviderFactory = CreateProvider;
 

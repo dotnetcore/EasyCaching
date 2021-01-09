@@ -7,6 +7,7 @@ namespace EasyCaching.UnitTests
     using System;
     using System.Threading.Tasks;
     using Xunit;
+    using static ServiceBuilders;
 
     public abstract class FallbackDecorationTests
     {
@@ -15,7 +16,7 @@ namespace EasyCaching.UnitTests
         protected static readonly TimeSpan Expiration = TimeSpan.FromDays(1);
 
         protected virtual IEasyCachingProvider CreateDecoratedProvider() =>
-            CachingProviderBuilders.CreateFakeProvider(options =>
+            CreateFakeProvider(options =>
             {
                 options.ProviderFactory = CreateProvider;
                 options.Decorate((name, _, cachingProvideFactory) => cachingProvideFactory

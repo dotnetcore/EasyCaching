@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests
     public static class CircuitBreakerAndFallbackDecorationBuilders
     {
         public static IEasyCachingProvider CreateDecoratedProvider(Func<IEasyCachingProvider> providerFactory) =>
-            CachingProviderBuilders.CreateFakeProvider(options =>
+            ServiceBuilders.CreateFakeProvider(options =>
             {
                 options.ProviderFactory = providerFactory;
 
