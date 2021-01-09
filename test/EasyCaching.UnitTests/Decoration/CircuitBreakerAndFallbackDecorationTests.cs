@@ -16,14 +16,14 @@ namespace EasyCaching.UnitTests
                     exceptionsAllowedBeforeBreaking: 1,
                     durationOfBreak: TimeSpan.FromMinutes(1));
                 
-                options.Decorate((name, _, cachingProvideFactory) => cachingProvideFactory
-                    .WithCircuitBreaker(
+                options
+                    .DecorateWithCircuitBreaker(
                         exception => exception is InvalidOperationException,
                         initParameters: circuitBreakerParameters,
                         executeParameters: circuitBreakerParameters)
-                    .WithFallback(
+                    .DecorateWithFallback(
                         exception => exception is InvalidOperationException,
-                        new NullCachingProvider(name, options)));
+                        (name, _) => new NullCachingProvider(name, options));
             });
         
         public static IEasyCachingProvider CreateDecoratedProviderWithBrokenCircuit(Func<IEasyCachingProvider> providerFactory)
@@ -34,7 +34,7 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class CircuitBreakerAndFallbackDecorationTestsWithFailOnInit : FallbackDecorationTestsWithFailOnInit
+    public class CircuitBreakerAndFallbackDecorationTestsWithFailOnInitialization : FallbackDecorationTestsWithFailOnInitialization
     {
         protected override IEasyCachingProvider CreateDecoratedProvider() =>
             CircuitBreakerAndFallbackDecorationBuilders.CreateDecoratedProvider(CreateProvider);
@@ -46,7 +46,7 @@ namespace EasyCaching.UnitTests
             CircuitBreakerAndFallbackDecorationBuilders.CreateDecoratedProvider(CreateProvider);
     }
 
-    public class CircuitBreakerWithBrokenCircuitAndFallbackDecorationTestsWithFailOnInit : FallbackDecorationTestsWithFailOnInit
+    public class CircuitBreakerWithBrokenCircuitAndFallbackDecorationTestsWithFailOnInitialization : FallbackDecorationTestsWithFailOnInitialization
     {
         protected override IEasyCachingProvider CreateDecoratedProvider() =>
             CircuitBreakerAndFallbackDecorationBuilders.CreateDecoratedProviderWithBrokenCircuit(CreateProvider);

@@ -2,14 +2,9 @@
 {
     using Core.Configurations;
     using Core.Decoration;
-    using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
-    using EasyCaching.HybridCache;
-    using EasyCaching.InMemory;
-    using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Options;
     using System;
     using System.Threading.Tasks;
     using Xunit;
@@ -86,11 +81,10 @@
                                 exceptionsAllowedBeforeBreaking: 1,
                                 durationOfBreak: TimeSpan.FromMinutes(1));
                 
-                            options.Decorate((name, _, cachingProvideFactory) => cachingProvideFactory
-                                .WithCircuitBreaker(
-                                    exception => exception is InvalidOperationException,
-                                    initParameters: circuitBreakerParameters,
-                                    executeParameters: circuitBreakerParameters));
+                            options.DecorateWithCircuitBreaker(
+                                exception => exception is InvalidOperationException,
+                                initParameters: circuitBreakerParameters,
+                                executeParameters: circuitBreakerParameters);
                         },
                         DistributedCacheProviderName);
 

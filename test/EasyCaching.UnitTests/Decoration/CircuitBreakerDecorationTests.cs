@@ -24,11 +24,10 @@ namespace EasyCaching.UnitTests
                     exceptionsAllowedBeforeBreaking: 1,
                     durationOfBreak: TimeSpan.FromMinutes(1));
                 
-                options.Decorate((name, _, cachingProvideFactory) => cachingProvideFactory
-                    .WithCircuitBreaker(
-                        exception => exception is InvalidOperationException,
-                        initParameters: circuitBreakerParameters,
-                        executeParameters: circuitBreakerParameters));
+                options.DecorateWithCircuitBreaker(
+                    exception => exception is InvalidOperationException,
+                    initParameters: circuitBreakerParameters,
+                    executeParameters: circuitBreakerParameters);
             });
 
         protected abstract IEasyCachingProvider CreateProvider();

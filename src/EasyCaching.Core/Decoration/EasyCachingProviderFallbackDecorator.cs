@@ -2,21 +2,24 @@
 {
     using EasyCaching.Core;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public class EasyCachingProviderFallbackDecorator<TProvider> : IEasyCachingProviderDecorator<TProvider> 
         where TProvider : class, IEasyCachingProviderBase
     {
-        private readonly IEasyCachingProviderDecorator<TProvider> _innerDecorator;
+        private readonly LazyWithoutExceptionCaching<TProvider> _lazyCachingProvider;
         private readonly TProvider _fallbackCachingProvider;
         private readonly Func<Exception, bool> _exceptionFilter;
 
         public EasyCachingProviderFallbackDecorator(
-            IEasyCachingProviderDecorator<TProvider> innerDecorator,
+            Func<TProvider> cachingProviderFactory,
             Func<Exception, bool> exceptionFilter,
             TProvider fallbackCachingProvider)
         {
-            _innerDecorator = innerDecorator ?? throw new ArgumentNullException(nameof(innerDecorator));
+            if (cachingProviderFactory == null) throw new ArgumentNullException(nameof(cachingProviderFactory));
+            _lazyCachingProvider = new LazyWithoutExceptionCaching<TProvider>(cachingProviderFactory);
+            
             _exceptionFilter = exceptionFilter ?? throw new ArgumentNullException(nameof(exceptionFilter));
             _fallbackCachingProvider = fallbackCachingProvider ?? throw new ArgumentNullException(nameof(fallbackCachingProvider));
         }
@@ -25,7 +28,7 @@
         {
             try
             {
-                return _innerDecorator.GetCachingProvider();
+                return _lazyCachingProvider.Value;
             }
             catch (Exception e) when (_exceptionFilter(e))
             {
@@ -37,7 +40,7 @@
         {
             try
             {
-                _innerDecorator.Execute(provider, action);
+                action(provider);
             }
             catch (Exception e) when(_exceptionFilter(e))
             {
@@ -49,7 +52,7 @@
         {
             try
             {
-                return _innerDecorator.Execute(provider, function);
+                return function(provider);
             }
             catch (Exception e) when(_exceptionFilter(e))
             {
@@ -61,7 +64,7 @@
         {
             try
             {
-                await _innerDecorator.ExecuteAsync(provider, function);
+                await function(provider);
             }
             catch (Exception e) when(_exceptionFilter(e))
             {
@@ -73,7 +76,7 @@
         {
             try
             {
-                return await _innerDecorator.ExecuteAsync(provider, function);
+                return await function(provider);
             }
             catch (Exception e) when(_exceptionFilter(e))
             {

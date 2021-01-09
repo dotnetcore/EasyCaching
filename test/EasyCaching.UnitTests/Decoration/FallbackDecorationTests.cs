@@ -11,18 +11,17 @@ namespace EasyCaching.UnitTests
 
     public abstract class FallbackDecorationTests
     {
-        protected const string CacheKey = "CacheKey";
-        protected const string CacheValue = "CacheValue";
-        protected static readonly TimeSpan Expiration = TimeSpan.FromDays(1);
+        private const string CacheKey = "CacheKey";
+        private const string CacheValue = "CacheValue";
+        private static readonly TimeSpan Expiration = TimeSpan.FromDays(1);
 
         protected virtual IEasyCachingProvider CreateDecoratedProvider() =>
             CreateFakeProvider(options =>
             {
                 options.ProviderFactory = CreateProvider;
-                options.Decorate((name, _, cachingProvideFactory) => cachingProvideFactory
-                    .WithFallback(
-                        exception => exception is InvalidOperationException,
-                        new NullCachingProvider(name, options)));
+                options.DecorateWithFallback(
+                    exception => exception is InvalidOperationException,
+                    (name, _) => new NullCachingProvider(name, options));
             });
 
         protected abstract IEasyCachingProvider CreateProvider();
@@ -102,7 +101,7 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class FallbackDecorationTestsWithFailOnInit : FallbackDecorationTests
+    public class FallbackDecorationTestsWithFailOnInitialization : FallbackDecorationTests
     {
         protected sealed override IEasyCachingProvider CreateProvider() => throw new InvalidOperationException("Exception on init");
 

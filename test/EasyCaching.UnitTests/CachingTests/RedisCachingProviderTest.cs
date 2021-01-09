@@ -61,14 +61,14 @@ namespace EasyCaching.UnitTests
                         minimumThroughput: 10,
                         durationOfBreak: TimeSpan.FromSeconds(60));
             
-                options.Decorate((name, _, cachingProviderFactory) => cachingProviderFactory
-                    .WithCircuitBreaker(
+                options
+                    .DecorateWithCircuitBreaker(
                         exception => exception is RedisException,
                         initCircuitBreakerParameters,
                         executeCircuitBreakerParameters)
-                    .WithFallback(
+                    .DecorateWithFallback(
                         exception => exception is RedisException,
-                        new NullCachingProvider(name, options)));
+                        (name, _) => new NullCachingProvider(name, options));
             });
             return serviceProvider.GetService<IEasyCachingProvider>();
         }
