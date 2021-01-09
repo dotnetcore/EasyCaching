@@ -78,7 +78,20 @@
                     x.UseInMemory(LocalCacheProviderName);
 
                     x.UseFake(
-                        options => options.ProviderFactory = () => fakeDistributedProvider,
+                        options =>
+                        {
+                            options.ProviderFactory = () => fakeDistributedProvider;
+
+                            var circuitBreakerParameters = new CircuitBreakerParameters(
+                                exceptionsAllowedBeforeBreaking: 1,
+                                durationOfBreak: TimeSpan.FromMinutes(1));
+                
+                            options.Decorate((name, _, cachingProvideFactory) => cachingProvideFactory
+                                .WithCircuitBreaker(
+                                    exception => exception is InvalidOperationException,
+                                    initParameters: circuitBreakerParameters,
+                                    executeParameters: circuitBreakerParameters));
+                        },
                         DistributedCacheProviderName);
 
                     UseHybrid(x);
@@ -162,7 +175,7 @@
         public void Send_Msg_Throw_Exception_Should_Not_Break()
         {
             var (hybridProvider, bus, _) = CreateFakeCachingProvider();
-            A.CallTo(() => bus.Publish("test_topic", A<EasyCachingMessage>._)).Throws((arg) => new Exception());
+            A.CallTo(() => bus.Publish("test_topic", A<EasyCachingMessage>._)).Throws((arg) => new InvalidOperationException());
 
             hybridProvider.Remove("fake-remove");
 
@@ -174,44 +187,64 @@
         {
             var (hybridProvider, bus, _) = CreateFakeCachingProvider();
             var token = new CancellationToken();
-            A.CallTo(() => bus.PublishAsync("test_topic", A<EasyCachingMessage>._, token)).ThrowsAsync((arg) => new Exception());
+            A.CallTo(() => bus.PublishAsync("test_topic", A<EasyCachingMessage>._, token)).ThrowsAsync((arg) => new InvalidOperationException());
 
             await hybridProvider.RemoveAsync("fake-remove");
 
             Assert.True(true);
         }
               
-        [Fact]
-        public void Distributed_Remove_Throw_Exception_Should_Not_Break()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void Distributed_Remove_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
             var (hybridProvider, _, distributedProvider) = CreateFakeCachingProvider();
-            A.CallTo(() => distributedProvider.Remove("fake-remove-key")).Throws(new Exception());
+            A.CallTo(() => distributedProvider.Remove("fake-remove-key")).Throws(new InvalidOperationException());
 
-            hybridProvider.Remove("fake-remove-key");
+
+            for (int i = 0; i < attemptsCount; i++)
+            {
+                hybridProvider.Remove("fake-remove-key");
+            }
+            
 
             Assert.True(true);
         }
 
-        [Fact]
-        public async Task Distributed_Remove_Async_Throw_Exception_Should_Not_Break()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task Distributed_Remove_Async_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
             var (hybridProvider, _, distributedProvider) = CreateFakeCachingProvider();
-            A.CallTo(() => distributedProvider.RemoveAsync("fake-remove-key")).ThrowsAsync(new Exception());
+            A.CallTo(() => distributedProvider.RemoveAsync("fake-remove-key")).ThrowsAsync(new InvalidOperationException());
 
-            await hybridProvider.RemoveAsync("fake-remove-key");
+
+            for (int i = 0; i < attemptsCount; i++)
+            {
+                await hybridProvider.RemoveAsync("fake-remove-key");
+            }
 
             Assert.True(true);
         }
 
-        [Fact]
-        public void Distributed_Set_Throw_Exception_Should_Not_Break()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void Distributed_Set_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
             var (hybridProvider, _, distributedProvider) = CreateFakeCachingProvider();
-            A.CallTo(() => distributedProvider.Set(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).Throws(new Exception());
+            A.CallTo(() => distributedProvider.Set(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).Throws(new InvalidOperationException());
 
             var key = GetUniqueCacheKey();
-
-            hybridProvider.Set(key, "123", Expiration);
+            
+            
+            for (int i = 0; i < attemptsCount; i++)
+            {
+                hybridProvider.Set(key, "123", Expiration);
+            }
+            
 
             var res = hybridProvider.Get<string>(key);
 
@@ -219,15 +252,22 @@
             Assert.Equal("123", res.Value);
         }
 
-        [Fact]
-        public async Task Distributed_Set_Async_Throw_Exception_Should_Not_Break()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task Distributed_Set_Async_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
             var (hybridProvider, _, distributedProvider) = CreateFakeCachingProvider();
-            A.CallTo(() => distributedProvider.SetAsync(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).ThrowsAsync(new Exception());
+            A.CallTo(() => distributedProvider.SetAsync(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).ThrowsAsync(new InvalidOperationException());
 
             var key = GetUniqueCacheKey();
-
-            await hybridProvider.SetAsync(key, "123", Expiration);
+            
+            
+            for (int i = 0; i < attemptsCount; i++)
+            {
+                await hybridProvider.SetAsync(key, "123", Expiration);
+            }
+            
 
             var res = await hybridProvider.GetAsync<string>(key);
 
