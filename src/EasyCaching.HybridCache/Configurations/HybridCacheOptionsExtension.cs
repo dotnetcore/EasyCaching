@@ -4,6 +4,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.HybridCache;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 

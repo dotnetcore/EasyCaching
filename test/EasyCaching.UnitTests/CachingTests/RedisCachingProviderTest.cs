@@ -1,4 +1,3 @@
-
 namespace EasyCaching.UnitTests
 {
     using Core.Decoration;
@@ -50,20 +49,26 @@ namespace EasyCaching.UnitTests
             var serviceProvider = CreateServiceProvider(options =>
             {
                 options.DBConfig.Configuration = "127.0.0.1:9999,allowAdmin=false,defaultdatabase=9,connectTimeout=100";
-                options.ProviderDecoratorFactory = (name, _, cachingProviderFactory) =>
-                    cachingProviderFactory
-                        .DecorateWith()
-                        .CircuitBreaker(
-                            exception => exception is RedisException,
-                            new CircuitBreakerParameters(
-                                exceptionsAllowedBeforeBreaking: 1, 
-                                durationOfBreak: TimeSpan.FromMinutes(1)),
-                            new CircuitBreakerParameters(
-                                exceptionsAllowedBeforeBreaking: 1, 
-                                durationOfBreak: TimeSpan.FromMinutes(1)))
-                        .Fallback(
-                            exception => exception is RedisException,
-                            new NullCachingProvider(name, options));
+
+                var initCircuitBreakerParameters =
+                    new CircuitBreakerParameters(
+                        exceptionsAllowedBeforeBreaking: 1,
+                        durationOfBreak: TimeSpan.FromMinutes(1));
+                var executeCircuitBreakerParameters =
+                    new AdvancedCircuitBreakerParameters(
+                        failureThreshold: 0.1,
+                        samplingDuration: TimeSpan.FromSeconds(15),
+                        minimumThroughput: 10,
+                        durationOfBreak: TimeSpan.FromSeconds(60));
+            
+                options.Decorate((name, _, cachingProviderFactory) => cachingProviderFactory
+                    .WithCircuitBreaker(
+                        exception => exception is RedisException,
+                        initCircuitBreakerParameters,
+                        executeCircuitBreakerParameters)
+                    .WithFallback(
+                        exception => exception is RedisException,
+                        new NullCachingProvider(name, options)));
             });
             return serviceProvider.GetService<IEasyCachingProvider>();
         }

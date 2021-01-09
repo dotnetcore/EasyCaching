@@ -5,10 +5,6 @@ namespace EasyCaching.Core.Decoration
     public interface IProviderOptionsWithDecorator<TProvider>
         where TProvider : IEasyCachingProviderBase
     {
-        EasyCachingProviderDecoratorFactory<TProvider> ProviderDecoratorFactory { get; set; }
+        ProviderFactoryDecorator<TProvider> ProviderFactoryDecorator { get; set; }
     }
-
-    public delegate IEasyCachingProviderDecorator<TProvider> EasyCachingProviderDecoratorFactory<TProvider>(
-            string name, IServiceProvider serviceProvider, Func<TProvider> cachingProviderFactory)
-        where TProvider : IEasyCachingProviderBase;
 }

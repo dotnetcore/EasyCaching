@@ -41,6 +41,6 @@
         /// </remarks>
         public int BusRetryCount { get; set; } = 3;
         
-        public EasyCachingProviderDecoratorFactory<IHybridCachingProvider> ProviderDecoratorFactory { get; set; }
+        public ProviderFactoryDecorator<IHybridCachingProvider> ProviderFactoryDecorator { get; set; }
     }
 }
