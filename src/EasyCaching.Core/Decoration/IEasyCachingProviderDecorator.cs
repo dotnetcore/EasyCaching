@@ -32,14 +32,14 @@ namespace EasyCaching.Core.Decoration
             where TProvider : class, IEasyCachingProviderBase
         {
             var provider = decorator.GetCachingProvider();
-            await decorator.Execute(provider, function);
+            await decorator.ExecuteAsync(provider, function);
         }
 
         public static async Task<T> ExecuteAsync<TProvider, T>(this IEasyCachingProviderDecorator<TProvider> decorator, Func<TProvider, Task<T>> function)
             where TProvider : class, IEasyCachingProviderBase
         {
             var provider = decorator.GetCachingProvider();
-            return await decorator.Execute(provider, function);
+            return await decorator.ExecuteAsync(provider, function);
         }
     }
 }

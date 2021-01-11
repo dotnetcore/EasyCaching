@@ -3,7 +3,6 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Core;
     using EasyCaching.Core.Decoration;
     using FakeItEasy;
-    using Microsoft.Extensions.DependencyInjection;
     using Polly.CircuitBreaker;
     using System;
     using System.Threading.Tasks;

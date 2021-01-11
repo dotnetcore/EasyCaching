@@ -3,7 +3,6 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Core;
     using EasyCaching.Core.Decoration;
     using FakeItEasy;
-    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;
     using Xunit;
@@ -15,71 +14,80 @@ namespace EasyCaching.UnitTests
         private const string CacheValue = "CacheValue";
         private static readonly TimeSpan Expiration = TimeSpan.FromDays(1);
 
-        protected virtual IEasyCachingProvider CreateDecoratedProvider() =>
+        protected virtual IEasyCachingProvider CreateDecoratedProvider(IEasyCachingProvider fallbackProvider) =>
             CreateFakeProvider(options =>
             {
                 options.ProviderFactory = CreateProvider;
                 options.DecorateWithFallback(
                     exception => exception is InvalidOperationException,
-                    (name, _) => new NullCachingProvider(name, options));
+                    (_, __) => fallbackProvider);
             });
 
         protected abstract IEasyCachingProvider CreateProvider();
         
         [Fact]
-        public void Set_Should_Do_Nothing()
+        public void Set_Should_Call_Fallback()
         {
-            var provider = CreateDecoratedProvider();
+            var fallback = A.Fake<IEasyCachingProvider>();
+            var provider = CreateDecoratedProvider(fallback);
             
             provider.Set(CacheKey, CacheValue, Expiration);
 
-            var result = provider.Get<string>(CacheKey);
-            Assert.False(result.HasValue);
-            Assert.Null(result.Value);
+            A.CallTo(() => fallback.Set(CacheKey, CacheValue, Expiration)).MustHaveHappenedOnceExactly();
         }
         
         [Fact]
-        public async Task SetAsync_Should_Do_Nothing()
+        public async Task SetAsync_Should_Call_Fallback()
         {
-            var provider = CreateDecoratedProvider();
+            var fallback = A.Fake<IEasyCachingProvider>();
+            var provider = CreateDecoratedProvider(fallback);
             
             await provider.SetAsync(CacheKey, CacheValue, Expiration);
-
-            var result = provider.Get<string>(CacheKey);
-            Assert.False(result.HasValue);
-            Assert.Null(result.Value);
+            
+            A.CallTo(() => fallback.SetAsync(CacheKey, CacheValue, Expiration)).MustHaveHappenedOnceExactly();
         }
         
         [Fact]
-        public void Get_Should_Return_Empty_Value()
+        public void Get_Should_Call_Fallback()
         {
-            var provider = CreateDecoratedProvider();
+            var fallback = CreateFake<IEasyCachingProvider>(fake => fake
+                .CallsTo(x => x.Get<string>(CacheKey))
+                .Returns(new CacheValue<string>(CacheValue, true))
+            );
+            var provider = CreateDecoratedProvider(fallback);
 
             var result = provider.Get<string>(CacheKey);
             
-            Assert.False(result.HasValue);
-            Assert.Null(result.Value);
+            Assert.True(result.HasValue);
+            Assert.Equal(CacheValue, result.Value);
         }
         
         [Fact]
-        public async Task GetAsync_Should_Return_Empty_Value()
+        public async Task GetAsync_Should_Call_Fallback()
         {
-            var provider = CreateDecoratedProvider();
+            var fallback = CreateFake<IEasyCachingProvider>(fake => fake
+                .CallsTo(x => x.GetAsync<string>(CacheKey))
+                .Returns(new CacheValue<string>(CacheValue, true)));
+            var provider = CreateDecoratedProvider(fallback);
 
             var result = await provider.GetAsync<string>(CacheKey);
             
-            Assert.False(result.HasValue);
-            Assert.Null(result.Value);
+            Assert.True(result.HasValue);
+            Assert.Equal(CacheValue, result.Value);
         }
         
         [Fact]
-        public void Get_With_Data_Retriever_Should_Succeed()
+        public void Get_With_Data_Retriever_Should_Call_Fallback()
         {
-            var provider = CreateDecoratedProvider();
+            var fallback = CreateFake<IEasyCachingProvider>(fake => fake
+                .CallsTo(x => x.Get(CacheKey, A<Func<string>>.Ignored, Expiration))
+                .Returns(new CacheValue<string>(CacheValue, true))
+            );
+            var provider = CreateDecoratedProvider(fallback);
 
             var result = provider.Get(
                 CacheKey, 
-                () => CacheValue, 
+                () => string.Empty, 
                 Expiration);
             
             Assert.True(result.HasValue);
@@ -87,13 +95,17 @@ namespace EasyCaching.UnitTests
         }
         
         [Fact]
-        public async Task GetAsync_With_Data_Retriever_Should_Succeed()
+        public async Task GetAsync_With_Data_Retriever_Should_Call_Fallback()
         {
-            var provider = CreateDecoratedProvider();
+            var fallback = CreateFake<IEasyCachingProvider>(fake => fake
+                .CallsTo(x => x.GetAsync(CacheKey, A<Func<Task<string>>>.Ignored, Expiration))
+                .Returns(Task.FromResult(new CacheValue<string>(CacheValue, true)))
+            );
+            var provider = CreateDecoratedProvider(fallback);
 
             var result = await provider.GetAsync(
                 CacheKey, 
-                () => Task.FromResult(CacheValue), 
+                () => Task.FromResult(string.Empty), 
                 Expiration);
             
             Assert.True(result.HasValue);
@@ -106,13 +118,15 @@ namespace EasyCaching.UnitTests
         protected sealed override IEasyCachingProvider CreateProvider() => throw new InvalidOperationException("Exception on init");
 
         [Fact]
-        public void Get_CacheStats_Should_Succeed()
+        public void Get_IsDistributedCache_Should_Call_Fallback()
         {
-            var provider = CreateDecoratedProvider();
+            var fallback = CreateFake<IEasyCachingProvider>(fake => fake
+                .CallsTo(x => x.IsDistributedCache)
+                .Returns(true)
+            );
+            var provider = CreateDecoratedProvider(fallback);
 
-            var result = provider.CacheStats;
-            
-            Assert.NotNull(result);
+            Assert.True(provider.IsDistributedCache);
         }
     }
 

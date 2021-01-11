@@ -45,7 +45,7 @@ namespace EasyCaching.Core.Decoration
             }
             else
             {
-                var existingFactoryDecorator = factoryDecorator;
+                var existingFactoryDecorator = options.ProviderFactoryDecorator;
                 options.ProviderFactoryDecorator = (name, serviceProvider, cachingProviderFactory) =>
                 {
                     var factoryDecoratedWithExistingDecorator = existingFactoryDecorator(name, serviceProvider, cachingProviderFactory);

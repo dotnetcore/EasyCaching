@@ -17,10 +17,10 @@
     public abstract class DecoratedEasyCachingProvider<TProvider> : DecoratedEasyCachingProviderBase<TProvider>, IEasyCachingProvider
         where TProvider : class, IEasyCachingProvider
     {
-        public int MaxRdSecond => Decorator.GetCachingProvider().MaxRdSecond;
-        public CachingProviderType CachingProviderType => Decorator.GetCachingProvider().CachingProviderType;
-        public CacheStats CacheStats => Decorator.GetCachingProvider().CacheStats;
-        public bool IsDistributedCache => Decorator.GetCachingProvider().IsDistributedCache;
+        public int MaxRdSecond => Decorator.Execute(provider => provider.MaxRdSecond);
+        public CachingProviderType CachingProviderType => Decorator.Execute(provider => provider.CachingProviderType);
+        public CacheStats CacheStats => Decorator.Execute(provider => provider.CacheStats);
+        public bool IsDistributedCache => Decorator.Execute(provider => provider.IsDistributedCache);
 
         protected DecoratedEasyCachingProvider(
             string name,
