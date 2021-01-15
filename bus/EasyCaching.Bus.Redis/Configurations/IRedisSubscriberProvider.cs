@@ -12,5 +12,10 @@
         /// </summary>
         /// <returns>The subscriber.</returns>
         ISubscriber GetSubscriber();
+
+        /// <summary>
+        /// Gets the name of subscriber.
+        /// </summary>
+        string SubscriberName { get; }
     }
 }

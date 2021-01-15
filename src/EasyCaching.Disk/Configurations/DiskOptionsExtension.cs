@@ -1,10 +1,11 @@
 ﻿namespace EasyCaching.Disk
 {
-    using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using System;
 
     internal sealed class DiskOptionsExtension : IEasyCachingOptionsExtension
     {
@@ -30,13 +31,16 @@
             services.Configure(_name, configure);
                                      
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-            services.AddSingleton<IEasyCachingProvider, DefaultDiskCachingProvider>(x =>
+            services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
-                var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<DiskOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<DiskOptions>>();
                 var options = optionsMon.Get(_name);
                 // ILoggerFactory can be null
-                var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
-                return new DefaultDiskCachingProvider(_name, options, factory);
+                var factory = serviceProvider.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultDiskCachingProvider(_name, options, factory));
             });
         }
     }

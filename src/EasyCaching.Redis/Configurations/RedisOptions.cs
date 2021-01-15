@@ -1,15 +1,10 @@
 ﻿namespace EasyCaching.Redis
 {
-    using EasyCaching.Core;
+    using Core;
     using EasyCaching.Core.Configurations;
 
-    public class RedisOptions: BaseProviderOptions
+    public class RedisOptions : BaseProviderOptionsWithDecorator<IRedisAndEasyCachingProvider>
     {
-        public RedisOptions()
-        {
-
-        }
-
         public RedisDBOptions DBConfig { get; set; } = new RedisDBOptions();
     }
 }

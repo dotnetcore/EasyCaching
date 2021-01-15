@@ -18,6 +18,11 @@
         private readonly JsonSerializer jsonSerializer;
 
         /// <summary>
+        /// default utf-8 encoding
+        /// </summary>
+        private static readonly UTF8Encoding s_utf8Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
+        /// <summary>
         /// The name.
         /// </summary>
         private readonly string _name;
@@ -48,7 +53,7 @@
         public T Deserialize<T>(byte[] bytes)
         {
             using (var ms = new MemoryStream(bytes))
-            using (var sr = new StreamReader(ms, Encoding.UTF8))
+            using (var sr = new StreamReader(ms, s_utf8Encoding))
             using (var jtr = new JsonTextReader(sr))
             {
                 return jsonSerializer.Deserialize<T>(jtr);
@@ -64,7 +69,7 @@
         public object Deserialize(byte[] bytes, Type type)
         {
             using (var ms = new MemoryStream(bytes))
-            using (var sr = new StreamReader(ms, Encoding.UTF8))
+            using (var sr = new StreamReader(ms, s_utf8Encoding))
             using (var jtr = new JsonTextReader(sr))
             {
                 return jsonSerializer.Deserialize(jtr, type);
@@ -81,7 +86,7 @@
         {
             using (var ms = new MemoryStream())
             {
-                using (var sr = new StreamWriter(ms, Encoding.UTF8))
+                using (var sr = new StreamWriter(ms, s_utf8Encoding))
                 using (var jtr = new JsonTextWriter(sr))
                 {
                     jsonSerializer.Serialize(jtr, value);

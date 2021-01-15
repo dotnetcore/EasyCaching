@@ -1,6 +1,9 @@
 ﻿namespace EasyCaching.HybridCache
 {
-    public class HybridCachingOptions
+    using EasyCaching.Core;
+    using EasyCaching.Core.Decoration;
+
+    public class HybridCachingOptions : IProviderOptionsWithDecorator<IHybridCachingProvider>
     {
         /// <summary>
         /// Gets or sets the name of the topic.
@@ -37,5 +40,7 @@
         /// When sending message failed, we will retry some times, default is 3 times.
         /// </remarks>
         public int BusRetryCount { get; set; } = 3;
+        
+        public ProviderFactoryDecorator<IHybridCachingProvider> ProviderFactoryDecorator { get; set; }
     }
 }

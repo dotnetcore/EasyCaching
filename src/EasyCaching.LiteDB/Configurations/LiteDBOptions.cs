@@ -3,13 +3,8 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
 
-    public class LiteDBOptions: BaseProviderOptions
+    public class LiteDBOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
     {
-        public LiteDBOptions()
-        {
-
-        }
-
         public LiteDBDBOptions DBConfig { get; set; } = new LiteDBDBOptions();
     }
 }

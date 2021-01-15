@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
@@ -52,13 +53,16 @@
                 return new LiteDBDatabaseProvider(_name, options);
             });
 
-            services.AddSingleton<IEasyCachingProvider, DefaultLiteDBCachingProvider>(x =>
+            services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
-                var dbProviders = x.GetServices<ILiteDBDatabaseProvider>();
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<LiteDBOptions>>();
+                var dbProviders = serviceProvider.GetServices<ILiteDBDatabaseProvider>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<LiteDBOptions>>();
                 var options = optionsMon.Get(_name);
-                var factory = x.GetService<ILoggerFactory>();
-                return new DefaultLiteDBCachingProvider(_name, dbProviders, options, factory);
+                var factory = serviceProvider.GetService<ILoggerFactory>();
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultLiteDBCachingProvider(_name, dbProviders, options, factory));
             });
         }
     }

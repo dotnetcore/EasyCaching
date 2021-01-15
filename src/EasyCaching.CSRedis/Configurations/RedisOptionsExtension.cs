@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -80,18 +81,24 @@
                 }
             });
 
-            Func<IServiceProvider, DefaultCSRedisCachingProvider> createFactory = x =>
+            services.AddSingleton<IRedisAndEasyCachingProvider>(serviceProvider =>
             {
-                var clients = x.GetServices<EasyCachingCSRedisClient>();
-                var serializers = x.GetServices<IEasyCachingSerializer>();
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var clients = serviceProvider.GetServices<EasyCachingCSRedisClient>();
+                var serializers = serviceProvider.GetServices<IEasyCachingSerializer>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
-                var factory = x.GetService<ILoggerFactory>();
-                return new DefaultCSRedisCachingProvider(_name, clients, serializers, options, factory);
-            };
-
-            services.AddSingleton<IEasyCachingProvider, DefaultCSRedisCachingProvider>(createFactory);
-            services.AddSingleton<IRedisCachingProvider, DefaultCSRedisCachingProvider>(createFactory);
+                var factory = serviceProvider.GetService<ILoggerFactory>();
+                
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultCSRedisCachingProvider(_name, clients, serializers, options, factory));
+            });
+            services.AddSingleton<IEasyCachingProvider>(GetProviderByName);
+            services.AddSingleton<IRedisCachingProvider>(GetProviderByName);
         }
+
+        private IRedisAndEasyCachingProvider GetProviderByName(IServiceProvider serviceProvider) =>
+            serviceProvider.GetServices<IRedisAndEasyCachingProvider>().Single(provider => provider.Name == _name);
     }
 }

@@ -3,13 +3,8 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
 
-    public class InMemoryOptions : BaseProviderOptions
+    public class InMemoryOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
     {
-        public InMemoryOptions()
-        {
-
-        }
-
         public InMemoryCachingOptions DBConfig { get; set; } = new InMemoryCachingOptions();
     }
 }

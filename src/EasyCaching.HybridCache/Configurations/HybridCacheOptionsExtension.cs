@@ -4,6 +4,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.HybridCache;
     using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -39,16 +40,19 @@
 
             services.TryAddSingleton<IHybridProviderFactory, DefaultHybridProviderFactory>();
 
-            services.AddSingleton<IHybridCachingProvider, HybridCachingProvider>(x =>
+            services.AddSingleton<IHybridCachingProvider>(serviceProvider =>
             {                
-                var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<HybridCachingOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<HybridCachingOptions>>();
                 var options = optionsMon.Get(_name);
 
-                var providerFactory = x.GetService<IEasyCachingProviderFactory>();
-                var bus = x.GetService<IEasyCachingBus>();                
-                var loggerFactory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
+                var providerFactory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+                var bus = serviceProvider.GetService<IEasyCachingBus>();                
+                var loggerFactory = serviceProvider.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
 
-                return new HybridCachingProvider(_name, options, providerFactory, bus, loggerFactory);
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new HybridCachingProvider(_name, options, providerFactory, bus, loggerFactory));
             });
         }
     }
