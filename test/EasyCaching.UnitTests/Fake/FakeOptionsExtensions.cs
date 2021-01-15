@@ -1,13 +1,13 @@
-﻿namespace EasyCaching.Disk
+namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Core;
-    using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.Decoration;
+    using Core;
+    using Core.Configurations;
+    using Core.Decoration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
-    internal sealed class DiskOptionsExtension : IEasyCachingOptionsExtension
+    public class FakeOptionsExtensions : IEasyCachingOptionsExtension
     {
         /// <summary>
         /// The name.
@@ -17,30 +17,37 @@
         /// <summary>
         /// The configure.
         /// </summary>
-        private readonly Action<DiskOptions> configure;
+        private readonly Action<FakeOptions> configure;
 
-        public DiskOptionsExtension(string name, Action<DiskOptions> configure)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.FakeOptionsExtensions"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="configure">Configure.</param>
+        public FakeOptionsExtensions(string name, Action<FakeOptions> configure)
         {
             this._name = name;
             this.configure = configure;
         }
 
+        /// <summary>
+        /// Adds the services.
+        /// </summary>
+        /// <param name="services">Services.</param>
         public void AddServices(IServiceCollection services)
         {
             services.AddOptions();
             services.Configure(_name, configure);
-                                     
+
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
-                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<DiskOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<FakeOptions>>();
                 var options = optionsMon.Get(_name);
-                // ILoggerFactory can be null
-                var factory = serviceProvider.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
                 return options.CreateDecoratedProvider(
                     _name,
                     serviceProvider,
-                    () => new DefaultDiskCachingProvider(_name, options, factory));
+                    options.ProviderFactory);
             });
         }
     }

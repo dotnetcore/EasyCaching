@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Serialization;
     using Enyim.Caching.Memcached;
     using Microsoft.Extensions.DependencyInjection;
@@ -74,13 +75,16 @@
                 return new EasyCachingMemcachedClient(_name, loggerFactory, config);
             });
 
-            services.AddSingleton<IEasyCachingProvider, DefaultMemcachedCachingProvider>(x =>
+            services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
-                var clients = x.GetServices<EasyCachingMemcachedClient>();
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
+                var clients = serviceProvider.GetServices<EasyCachingMemcachedClient>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
                 var options = optionsMon.Get(_name);
-                var factory = x.GetService<ILoggerFactory>();
-                return new DefaultMemcachedCachingProvider(_name, clients, options, factory);
+                var factory = serviceProvider.GetService<ILoggerFactory>();
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultMemcachedCachingProvider(_name, clients, options, factory));
             });
         }
     }

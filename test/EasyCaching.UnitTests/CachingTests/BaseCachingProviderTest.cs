@@ -49,7 +49,7 @@
         [Fact]
         public void Set_Value_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = null;
             Assert.Throws<ArgumentNullException>(() => _provider.Set(cacheKey, cacheVlaue, _defaultTs));
         }
@@ -57,7 +57,7 @@
         [Fact]
         public async Task Set_Value_Async_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = null;
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, _defaultTs));
         }
@@ -65,7 +65,7 @@
         [Fact]
         public void Set_Value_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = TimeSpan.Zero;
             Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
@@ -74,7 +74,7 @@
         [Fact]
         public async Task Set_Value_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = TimeSpan.Zero;
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
@@ -83,7 +83,7 @@
         [Fact]
         public void Set_Value_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = new TimeSpan(0, 0, -1);
             Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
@@ -92,7 +92,7 @@
         [Fact]
         public async Task Set_Value_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
         {
-            var cacheKey = Guid.NewGuid().ToString();
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = new TimeSpan(0, 0, -1);
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
@@ -193,7 +193,7 @@
         [Fact]
         public void Refresh_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = null;
             Assert.Throws<ArgumentNullException>(() => _provider.Set(cacheKey, cacheVlaue, _defaultTs));
         }
@@ -201,7 +201,7 @@
         [Fact]
         public async Task Refresh_Async_Should_Throw_ArgumentNullException_When_CacheValue_IsNull()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = null;
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, _defaultTs));
         }
@@ -209,7 +209,7 @@
         [Fact]
         public void Refresh_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = TimeSpan.Zero;
             Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
@@ -218,7 +218,7 @@
         [Fact]
         public async Task Refresh_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Zero()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = TimeSpan.Zero;
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
@@ -227,7 +227,7 @@
         [Fact]
         public void Refresh_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = new TimeSpan(0, 0, -1);
             Assert.Throws<ArgumentOutOfRangeException>(() => _provider.Set(cacheKey, cacheVlaue, expiration));
@@ -236,7 +236,7 @@
         [Fact]
         public async Task Refresh_Async_Should_Throw_ArgumentOutOfRangeException_When_Expiration_Is_Negative()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheVlaue = "123";
             var expiration = new TimeSpan(0, 0, -1);
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _provider.SetAsync(cacheKey, cacheVlaue, expiration));
@@ -283,7 +283,7 @@
         [Fact]
         public void Set_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -298,7 +298,7 @@
         [Fact]
         public void Set_Value_And_Get_Cached_Value_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheValue = null;
 
             _providerWithNullsCached.Set(cacheKey, cacheValue, _defaultTs);
@@ -313,7 +313,7 @@
         [Fact]
         public async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}-sgasync{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -328,7 +328,7 @@
         [Fact]
         public async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheValue = null;
 
             await _providerWithNullsCached.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -343,7 +343,7 @@
         [Fact]
         protected virtual void Set_Object_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}-sog-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             var cacheValue = new Product { Id = 999, Name = "product999" };
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -359,7 +359,7 @@
         [Fact]
         protected virtual void Set_Object_Value_And_Get_Cached_Value_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-sog-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             Product cacheValue = null;
 
             _providerWithNullsCached.Set(cacheKey, cacheValue, _defaultTs);
@@ -374,7 +374,7 @@
         [Fact]
         protected virtual async Task Set_Object_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}-sogasync-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             var cacheValue = new Product { Id = 999, Name = "product999" };
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -390,7 +390,7 @@
         [Fact]
         protected virtual async Task Set_Object_Value_And_Get_Cached_Value_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-sogasync-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             Product cacheValue = null;
 
             await _providerWithNullsCached.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -405,7 +405,7 @@
         [Fact]
         protected virtual void Set_And_Get_Value_Type_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}-svg-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             var cacheValue = 100;
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -420,7 +420,7 @@
         [Fact]
         protected virtual void Set_And_Get_Value_Type_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-svg-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             int? cacheValue = null;
 
             _providerWithNullsCached.Set(cacheKey, cacheValue, _defaultTs);
@@ -435,7 +435,7 @@
         [Fact]
         protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}-svgasync-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             var cacheValue = 100;
 
             await  _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -450,7 +450,7 @@
         [Fact]
         protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-svgasync-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             int? cacheValue = null;
 
             await _providerWithNullsCached.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -467,7 +467,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var func = Create_Fake_Retriever_Return_String();
 
@@ -479,7 +479,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var func = Create_Fake_Retriever_Return_String_Async();
 
@@ -491,7 +491,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null_Without_Caching()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_NULL();
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
@@ -505,7 +505,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Null()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_NULL_Async();
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
@@ -516,7 +516,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null_With_Caching_When_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_NULL();
 
             var res = _providerWithNullsCached.Get(cacheKey, func, _defaultTs);
@@ -530,7 +530,7 @@
         [Fact]
         public void Get_Cached_Value_Should_Not_Call_Retriever()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_String();
             var cacheVlaue = "Memory";
 
@@ -543,7 +543,7 @@
         [Fact]
         public async Task Get_Cached_Value_Async_Should_Not_Call_Retriever()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_String_Async();
             var cacheVlaue = "Memory";
 
@@ -556,7 +556,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Value()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_String();
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
@@ -567,7 +567,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Value()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_String_Async();
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
@@ -578,7 +578,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Without_Retriever_Should_Return_Default_Value()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var res = _provider.Get<string>(cacheKey);
 
@@ -588,7 +588,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Without_Retriever_Async_Should_Return_Default_Value()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var res = await _provider.GetAsync<string>(cacheKey);
 
@@ -598,7 +598,7 @@
         [Fact]
         public void Get_Cached_Value_Without_Retriever_Should_Return_Default_Value()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             _provider.Set(cacheKey, "123", _defaultTs);
 
@@ -610,7 +610,7 @@
         [Fact]
         public async Task Get_Cached_Value_Without_Retriever_Async_Should_Return_Default_Value()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             await _provider.SetAsync(cacheKey, "123", _defaultTs);
 
@@ -622,7 +622,7 @@
         [Fact]
         public void Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -634,7 +634,7 @@
         [Fact]
         public async Task Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -646,7 +646,7 @@
         [Fact]
         public void Get_Cached_Value_Without_Retriever_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -658,7 +658,7 @@
         [Fact]
         public async Task Get_Cached_Value_Without_Retriever_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -670,7 +670,7 @@
         [Fact]
         public void Get_Not_Cached_Value_Without_Retriever_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var val = _provider.Get<string>(cacheKey);
 
@@ -680,7 +680,7 @@
         [Fact]
         public async Task Get_Not_Cached_Value_Without_Retriever_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var val = await _provider.GetAsync<string>(cacheKey);
 
@@ -690,7 +690,7 @@
         [Fact]
         protected virtual void Get_Parallel_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}parallel{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
 
             int count = 0;
 
@@ -709,7 +709,7 @@
         [Fact]
         protected virtual async Task GetAsync_Parallel_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}parallelasync{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();;
             int count = 0;
 
             var tasks = Enumerable.Range(0, 20)
@@ -729,7 +729,7 @@
         [Fact]
         public void Remove_Cached_Value_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             _provider.Set(cacheKey, cacheValue, _defaultTs);
@@ -744,7 +744,7 @@
         [Fact]
         public async Task Remove_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
@@ -761,7 +761,7 @@
         [Fact]
         public void Exists_Cached_Value_Should_Return_True()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
             _provider.Set(cacheKey, cacheValue, _defaultTs);
 
@@ -773,7 +773,7 @@
         [Fact]
         public async Task Exists_Cached_Value_Async_Should_Return_True()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue = "value";
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
 
@@ -785,7 +785,7 @@
         [Fact]
         public void Exists_Cached_Value_Should_Return_False()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var flag = _provider.Exists(cacheKey);
 
@@ -795,7 +795,7 @@
         [Fact]
         public async Task Exists_Cached_Value_Async_Should_Return_False()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
 
             var flag = await _provider.ExistsAsync(cacheKey);
 
@@ -1236,7 +1236,7 @@
         [Fact]
         protected virtual void TrySet_Value_And_Get_Cached_Value_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue1 = "value1";
             var cacheValue2 = "value2";
 
@@ -1254,7 +1254,7 @@
         [Fact]
         public void TrySet_Value_And_Get_Cached_Value_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheValue = null;
 
             _providerWithNullsCached.TrySet(cacheKey, cacheValue, _defaultTs);
@@ -1269,7 +1269,7 @@
         [Fact]
         protected virtual async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue1 = "value1";
             var cacheValue2 = "value2";
 
@@ -1287,7 +1287,7 @@
         [Fact]
         public async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
-            var cacheKey = $"{_nameSpace}-sg-{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             string cacheValue = null;
 
             await _providerWithNullsCached.TrySetAsync(cacheKey, cacheValue, _defaultTs);
@@ -1304,7 +1304,7 @@
         [Fact]
         protected virtual void GetExpiration_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue1 = "value1";
 
             _provider.Set(cacheKey, cacheValue1, _defaultTs);
@@ -1317,7 +1317,7 @@
         [Fact]
         protected virtual async Task GetExpiration_Async_Should_Succeed()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             var cacheValue1 = "value1";
 
             await _provider.SetAsync(cacheKey, cacheValue1, _defaultTs);
@@ -1385,7 +1385,7 @@
         [Fact]
         protected virtual void OnHit_Should_Return_One_And_OnMiss_Should_Return_Zero()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             _provider.Set(cacheKey, "onhit", _defaultTs);
             _provider.Get<string>(cacheKey);
 
@@ -1399,7 +1399,7 @@
         [Fact]
         protected virtual void OnHit_Should_Return_Zero_And_OnMiss_Should_Return_One()
         {
-            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var cacheKey = GetUniqueCacheKey();
             _provider.Get<string>(cacheKey);
 
             var hitRes = _provider.CacheStats.GetStatistic(StatsType.Hit);
@@ -1408,5 +1408,7 @@
             Assert.Equal(0, hitRes);
             Assert.Equal(1, missedRes);
         }
+        
+        protected string GetUniqueCacheKey() => $"{_nameSpace}{Guid.NewGuid().ToString()}";
     }
 }

@@ -1,6 +1,6 @@
 ![](media/easycaching-icon.png?raw=true)
 
-EasyCaching is an open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easier!
+EasyCaching is an open source caching library that contains basic usages and some advanced usages of caching which can help us to handle caching more easily!
 
 [![Coverage Status](https://coveralls.io/repos/github/catcherwong/EasyCaching/badge.svg?branch=master)](https://coveralls.io/github/catcherwong/EasyCaching?branch=master)
 [![Member project of .NET Core Community](https://img.shields.io/badge/member%20project%20of-NCC-9e20c9.svg)](https://github.com/dotnetcore)
