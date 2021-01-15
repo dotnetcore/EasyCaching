@@ -3,7 +3,6 @@ name: Release
 on:
     push:
       branches:
-      - dev
       - master
 
 jobs:
@@ -39,3 +38,9 @@ jobs:
             name: nugetpkgs
         - name: list nugetpkgs
           run: ls nugetpkgs
+        - name: Release
+          run: |
+            for file in nugetpkgs/Mindbox.EasyCaching.*.nupkg
+            do
+              dotnet nuget push $file -k ${{ secrets.MYGET_API_KEY }} --skip-duplicate -s https://www.myget.org/F/ncc/api/v2/package
+            done

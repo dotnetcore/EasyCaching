@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingSQLitePackageNotes)
     </PackageReleaseNotes>
+    <AssemblyName>Mindbox.EasyCaching.SQLite</AssemblyName>
   </PropertyGroup>
 
   <PropertyGroup>
