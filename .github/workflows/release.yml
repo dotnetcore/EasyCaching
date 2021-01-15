@@ -42,5 +42,5 @@ jobs:
           run: |
             for file in nugetpkgs/Mindbox.EasyCaching.*.nupkg
             do
-              dotnet nuget push $file -k ${{ secrets.MINDBOX_PRIVATE_NUGET_AUTH_TOKEN}} --skip-duplicate -s https://www.myget.org/F/mindbox-private/api/v2
+              dotnet nuget push $file -k ${{ secrets.MINDBOX_NUGET_AUTH_TOKEN}} --skip-duplicate -s https://www.nuget.org/api/v2/package
             done
