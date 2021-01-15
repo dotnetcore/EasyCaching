@@ -3,7 +3,7 @@ name: Release
 on:
     push:
       branches:
-      - dev
+      - korneev/for_1001_packages_names
       - master
 
 jobs:
