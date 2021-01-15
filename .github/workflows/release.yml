@@ -39,9 +39,3 @@ jobs:
             name: nugetpkgs
         - name: list nugetpkgs
           run: ls nugetpkgs
-        - name: Release
-          run: |
-            for file in nugetpkgs/*.nupkg
-            do
-              dotnet nuget push $file -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -s https://www.nuget.org/api/v2/package
-            done
