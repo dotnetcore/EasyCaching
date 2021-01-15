@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingMemcachedPackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.Memcached</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>
