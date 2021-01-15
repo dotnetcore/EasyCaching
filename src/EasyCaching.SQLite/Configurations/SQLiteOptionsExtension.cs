@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
@@ -52,13 +53,16 @@
                 return new SQLiteDatabaseProvider(_name, options);
             });
 
-            services.AddSingleton<IEasyCachingProvider, DefaultSQLiteCachingProvider>(x =>
+            services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
-                var dbProviders = x.GetServices<ISQLiteDatabaseProvider>();
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
+                var dbProviders = serviceProvider.GetServices<ISQLiteDatabaseProvider>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();
                 var options = optionsMon.Get(_name);
-                var factory = x.GetService<ILoggerFactory>();
-                return new DefaultSQLiteCachingProvider(_name, dbProviders, options, factory);
+                var factory = serviceProvider.GetService<ILoggerFactory>();
+                return options.CreateDecoratedProvider(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultSQLiteCachingProvider(_name, dbProviders, options, factory));
             });
         }
     }

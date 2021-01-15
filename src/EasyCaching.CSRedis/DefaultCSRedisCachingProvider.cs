@@ -8,7 +8,7 @@
     using global::CSRedis;
     using Microsoft.Extensions.Logging;
 
-    public partial class DefaultCSRedisCachingProvider : EasyCachingAbstractProvider
+    public partial class DefaultCSRedisCachingProvider : EasyCachingAbstractProvider, IRedisAndEasyCachingProvider
     {
         /// <summary>
         /// The cache.

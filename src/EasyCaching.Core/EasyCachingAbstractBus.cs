@@ -18,6 +18,10 @@
 
         protected Action<EasyCachingMessage> _handler;
 
+        protected string BusName { get; set; }
+
+        public string Name => this.BusName;
+
         public void Publish(string topic, EasyCachingMessage message)
         {
             var operationId = s_diagnosticListener.WritePublishMessageBefore(new BeforePublishMessageRequestEventData(topic, message));

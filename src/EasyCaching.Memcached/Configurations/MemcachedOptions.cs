@@ -3,13 +3,8 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
 
-    public class MemcachedOptions : BaseProviderOptions
+    public class MemcachedOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
     {
-        public MemcachedOptions()
-        {
-
-        }
-
         public EasyCachingMemcachedClientOptions DBConfig { get; set; } = new EasyCachingMemcachedClientOptions();
     }
 }
