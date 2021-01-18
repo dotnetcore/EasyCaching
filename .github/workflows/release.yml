@@ -19,7 +19,7 @@ jobs:
     - name: Build with dotnet
       run: dotnet build --configuration Release /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln
     - name: Pack with dotnet
-      run: dotnet pack /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln --version-suffix alpha`date +%Y%m%d%H%M%S` -o /home/runner/work/nugetpkgs -c Release
+      run: dotnet pack /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln -o /home/runner/work/nugetpkgs -c Release
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
