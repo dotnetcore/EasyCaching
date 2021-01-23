@@ -7,6 +7,8 @@
 
     public class FakeBus : IEasyCachingBus
     {
+        public string Name => nameof(FakeBus);
+
         public void Publish(string topic, EasyCachingMessage message)
         {
 
