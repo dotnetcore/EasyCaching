@@ -40,5 +40,47 @@ namespace EasyCaching.UnitTests
         {
             return Task.CompletedTask;
         }
+
+        [Fact]
+        public async Task TrySetAgainAsync_After_Expired_Should_Succed()
+        {
+            var key = Guid.NewGuid().ToString();
+            var v1 = "123456";
+            var res1 = await _provider.TrySetAsync<string>(key, v1, TimeSpan.FromSeconds(1));
+            Assert.True(res1);
+
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            var res2 = await _provider.TrySetAsync<string>(key, v1, TimeSpan.FromSeconds(5));
+            Assert.True(res2);
+        }
+
+        [Fact]
+        public void TrySetAgain_After_Expired_Should_Succed()
+        {
+            var key = Guid.NewGuid().ToString();
+            var v1 = "123456";
+            var res1 = _provider.TrySet<string>(key, v1, TimeSpan.FromSeconds(1));
+            Assert.True(res1);
+
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
+            var res2 = _provider.TrySet<string>(key, v1, TimeSpan.FromSeconds(5));
+            Assert.True(res2);
+        }
+
+        [Fact]
+        public void Set_Diff_Len_Value_Should_Succed()
+        {
+            var key = Guid.NewGuid().ToString();
+            var v1 = "1234567890";
+            var v2 = "12345";
+
+            _provider.Set<string>(key, v1, TimeSpan.FromSeconds(15));
+            var res1 = _provider.Get<string>(key);
+            Assert.Equal(v1, res1.Value);
+
+            _provider.Set<string>(key, v2, TimeSpan.FromSeconds(15));
+            var res2 = _provider.Get<string>(key);
+            Assert.Equal(v2, res2.Value);
+        }
     }   
 }
