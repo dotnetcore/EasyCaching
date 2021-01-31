@@ -16,7 +16,7 @@
 		<EasyCachingRedisBusPackageVersion>1.2.0</EasyCachingRedisBusPackageVersion>
 		<EasyCachingCSRedisBusPackageVersion>1.2.0</EasyCachingCSRedisBusPackageVersion>
 		<EasyCachingRabbitBusPackageVersion>1.2.0</EasyCachingRabbitBusPackageVersion>
-		<EasyCachingDiskPackageVersion>1.2.0</EasyCachingDiskPackageVersion>
+		<EasyCachingDiskPackageVersion>1.2.1</EasyCachingDiskPackageVersion>
 		<EasyCachingMsExtPackageVersion>1.2.0</EasyCachingMsExtPackageVersion>
 		<EasyCachingLiteDBPackageVersion>1.2.0</EasyCachingLiteDBPackageVersion>
 		<EasyCachingSTJsonPackageVersion>1.2.0</EasyCachingSTJsonPackageVersion>

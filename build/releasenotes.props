@@ -50,7 +50,7 @@
       1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. Upgrading dependencies.
+      1. fixed disk provider tryset after expired (#280).
     </EasyCachingDiskPackageNotes>
     <EasyCachingLiteDBPackageNotes>
       1. Upgrading dependencies.
