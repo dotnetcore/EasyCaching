@@ -17,7 +17,7 @@
         /// <summary>
         /// The name.
         /// </summary>
-        private const string _name = "easycachingbus";
+        private readonly string _name;
 
         /// <summary>
         /// The configure.
@@ -27,10 +27,12 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.CSRedis.RedisOptionsExtension"/> class.
         /// </summary>        
+        /// <param name="name">Unique name of the bus.</param>
         /// <param name="configure">Configure.</param>
-        public CSRedisOptionsExtension(Action<CSRedisBusOptions> configure)
+        public CSRedisOptionsExtension(string name, Action<CSRedisBusOptions> configure)
         {
-            this._configure = configure;
+            _name = name;
+            _configure = configure;
         }
 
         /// <summary>
@@ -73,7 +75,17 @@
                 }
             });
 
-            services.AddSingleton<IEasyCachingBus, DefaultCSRedisBus>();
+            services.AddSingleton<IEasyCachingBus>(serviceProvider =>
+            {
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<CSRedisBusOptions>>();
+                var options = optionsMon.Get(_name);
+                var clients = serviceProvider.GetServices<EasyCachingCSRedisClient>();
+                
+                return options.CreateDecoratedBus(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultCSRedisBus(_name, clients));
+            });
         }
     }
 }

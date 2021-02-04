@@ -16,14 +16,15 @@
         /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure bus settings.</param>
+        /// <param name="name">Unique name of the bus.</param>
         public static EasyCachingOptions WithCSRedisBus(
             this EasyCachingOptions options
             , Action<CSRedisBusOptions> configure
-            )
+            , string name = "easycachingbus")
         {
             ArgumentCheck.NotNull(configure, nameof(configure));
 
-            options.RegisterExtension(new CSRedisOptionsExtension(configure));
+            options.RegisterExtension(new CSRedisOptionsExtension(name, configure));
             return options;
         }
 
@@ -32,10 +33,12 @@
         /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configuration">The configuration.</param>
+        /// <param name="name">Unique name of the bus.</param>
         /// <param name="sectionName">The section name in the configuration file.</param>
         public static EasyCachingOptions WithCSRedisBus(
             this EasyCachingOptions options
             , IConfiguration configuration
+            , string name = "easycachingbus"
             , string sectionName = EasyCachingConstValue.RedisBusSection
             )
         {
@@ -48,7 +51,7 @@
                 x.ConnectionStrings = redisOptions.ConnectionStrings;
             }
 
-            options.RegisterExtension(new CSRedisOptionsExtension(configure));
+            options.RegisterExtension(new CSRedisOptionsExtension(name, configure));
             return options;
         }
     }

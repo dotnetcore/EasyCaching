@@ -19,11 +19,12 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.CSRedis.DefaultCSRedisBus"/> class.
         /// </summary>
+        /// <param name="name">Unique name of the bus.</param>
         /// <param name="clients">Clients.</param>
-        public DefaultCSRedisBus(IEnumerable<EasyCachingCSRedisClient> clients)
+        public DefaultCSRedisBus(string name, IEnumerable<EasyCachingCSRedisClient> clients)
         {
-            this.BusName = "easycachingbus";
-            this._client = clients.FirstOrDefault(x => x.Name.Equals("easycachingbus"));
+            this.BusName = name ?? throw new ArgumentNullException(nameof(name));
+            this._client = clients.FirstOrDefault(x => x.Name.Equals(name));
         }
 
         /// <summary>

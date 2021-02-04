@@ -48,7 +48,7 @@ namespace EasyCaching.UnitTests
         {
             var serviceProvider = CreateServiceProvider(options =>
             {
-                options.DBConfig.Configuration = "127.0.0.1:9999,allowAdmin=false,defaultdatabase=9,connectTimeout=100";
+                options.DBConfig.Configuration = "127.0.0.1:9999,allowAdmin=false,defaultdatabase=9,connectTimeout=1";
 
                 var initCircuitBreakerParameters =
                     new CircuitBreakerParameters(

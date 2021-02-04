@@ -16,14 +16,16 @@
         /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure bus settings.</param>
+        /// <param name="name">Unique name of the bus.</param>
         public static EasyCachingOptions WithRabbitMQBus(
             this EasyCachingOptions options
             , Action<RabbitMQBusOptions> configure
+            , string name = "easycachingbus"
             )
         {
             ArgumentCheck.NotNull(configure, nameof(configure));
 
-            options.RegisterExtension(new RabbitMQBusOptionsExtension(configure));
+            options.RegisterExtension(new RabbitMQBusOptionsExtension(name, configure));
             return options;
         }
 
@@ -32,10 +34,12 @@
         /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configuration">The configuration.</param>
+        /// <param name="name">Unique name of the bus.</param>
         /// <param name="sectionName">The section name in the configuration file.</param>
         public static EasyCachingOptions WithRabbitMQBus(
             this EasyCachingOptions options
             , IConfiguration configuration
+            , string name = "easycachingbus"
             , string sectionName = EasyCachingConstValue.RabbitMQBusSection
             )
         {
@@ -59,7 +63,7 @@
                 x.QueueName = busOptions.QueueName;
             }
 
-            options.RegisterExtension(new RabbitMQBusOptionsExtension(configure));
+            options.RegisterExtension(new RabbitMQBusOptionsExtension(name, configure));
             return options;
         }
     }

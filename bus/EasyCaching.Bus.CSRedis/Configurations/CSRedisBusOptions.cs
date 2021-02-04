@@ -1,12 +1,13 @@
 ﻿namespace EasyCaching.Bus.CSRedis
 {
+    using Core.Bus;
     using System;
     using System.Collections.Generic;
 
     /// <summary>
     /// Redis bus options.
     /// </summary>
-    public class CSRedisBusOptions 
+    public class CSRedisBusOptions : IBusOptions
     {
         /// <summary>
         /// Gets or sets the node rule.
@@ -31,5 +32,7 @@
         /// </summary>
         /// <value>The read write setting.</value>
         public bool ReadOnly { get; set; }
+
+        public BusFactoryDecorator BusFactoryDecorator { get; set; }
     }
 }

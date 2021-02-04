@@ -38,7 +38,7 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.DefaultRedisBus"/> class.
         /// </summary>
-        /// <param name="name">Name.</param>
+        /// <param name="name">Unique name of the bus.</param>
         /// <param name="subscriberProviders">Subscriber provider.</param>
         /// <param name="busOptions">bus Options.</param>
         /// <param name="serializers">Serializers.</param>
@@ -48,7 +48,7 @@
             , RedisBusOptions busOptions
             , IEnumerable<IEasyCachingSerializer> serializers)
         {
-            this._name = name;
+            this._name = name ?? throw new ArgumentNullException(nameof(name));;
             this.BusName = name;
             this._subscriberProvider = subscriberProviders.Single(x => x.SubscriberName.Equals(name));
             this._serializer = !string.IsNullOrWhiteSpace(busOptions.SerializerName)

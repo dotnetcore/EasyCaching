@@ -28,7 +28,6 @@
                 options.TopicName = "test_topic";
                 options.LocalCacheProviderName = LocalCacheProviderName;
                 options.DistributedCacheProviderName = DistributedCacheProviderName;
-                options.BusRetryCount = 1;
                 options.DefaultExpirationForTtlFailed = 60;
             });
         }
@@ -50,6 +49,8 @@
                 {
                     options.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
                     options.Database = 6;
+                    
+                    options.DecorateWithRetry(1);
                 });
 
                 UseHybrid(x);

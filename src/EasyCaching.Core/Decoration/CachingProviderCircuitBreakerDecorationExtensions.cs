@@ -3,7 +3,7 @@ namespace EasyCaching.Core.Decoration
     using Polly;
     using System;
 
-    public static class CircuitBreakerDecorationExtensions
+    public static class CachingProviderCircuitBreakerDecorationExtensions
     {
         public static IProviderOptionsWithDecorator<IEasyCachingProvider> DecorateWithCircuitBreaker(
             this IProviderOptionsWithDecorator<IEasyCachingProvider> options,

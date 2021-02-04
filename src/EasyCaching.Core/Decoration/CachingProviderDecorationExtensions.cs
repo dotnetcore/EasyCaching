@@ -1,8 +1,6 @@
 namespace EasyCaching.Core.Decoration
 {
-    using Polly;
     using System;
-    using System.Linq;
 
     /// <summary>
     /// Delegate for decoration of caching provider factory
@@ -13,10 +11,9 @@ namespace EasyCaching.Core.Decoration
     /// <typeparam name="TProvider">Caching provider interface (IEasyCachingProvider, IHybridCachingProvider or IRedisAndEasyCachingProvider)</typeparam>
     /// <returns>Decorated caching provider factory</returns>
     public delegate Func<TProvider> ProviderFactoryDecorator<TProvider>(
-        string name, IServiceProvider serviceProvider, Func<TProvider> cachingProviderFactory)
-        where TProvider : IEasyCachingProviderBase;
+        string name, IServiceProvider serviceProvider, Func<TProvider> cachingProviderFactory);
     
-    public static class DecorationExtensions
+    public static class CachingProviderDecorationExtensions
     {
         public static TProvider CreateDecoratedProvider<TProvider>(
             this IProviderOptionsWithDecorator<TProvider> options,

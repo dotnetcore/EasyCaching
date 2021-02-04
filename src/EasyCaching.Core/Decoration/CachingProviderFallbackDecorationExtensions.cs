@@ -3,7 +3,7 @@ namespace EasyCaching.Core.Decoration
     using System;
     using System.Linq;
 
-    public static class FallbackDecorationExtensions
+    public static class CachingProviderFallbackDecorationExtensions
     {
         public static IProviderOptionsWithDecorator<IEasyCachingProvider> DecorateWithFallback(
             this IProviderOptionsWithDecorator<IEasyCachingProvider> options,
