@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using Xunit;
     using FakeItEasy;
+    using StackExchange.Redis;
     using System.Threading;
     using static ServiceBuilders;
 
@@ -67,13 +68,11 @@
 
             var hybridProvider = CreateService<IHybridCachingProvider>(services =>
             {
-                services.AddSingleton(fakeBus);
-
                 services.AddEasyCaching(x =>
                 {
                     x.UseInMemory(LocalCacheProviderName);
 
-                    x.UseFake(
+                    x.UseFakeProvider(
                         options =>
                         {
                             options.ProviderFactory = () => fakeDistributedProvider;
@@ -88,6 +87,12 @@
                                 executeParameters: circuitBreakerParameters);
                         },
                         DistributedCacheProviderName);
+
+                    x.WithFakeBus(options =>
+                    {
+                        options.BusFactory = () => fakeBus;
+                        options.DecorateWithRetry(1);
+                    });
 
                     UseHybrid(x);
                 });

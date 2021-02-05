@@ -20,8 +20,8 @@ namespace EasyCaching.UnitTests
         public static IEasyCachingProvider CreateEasyCachingProvider(Action<EasyCachingOptions> configure) => CreateService<IEasyCachingProvider>(
             services => services.AddEasyCaching(configure));
         
-        public static IEasyCachingProvider CreateFakeProvider(Action<FakeOptions> configure) => CreateService<IEasyCachingProvider>(
-            services => services.AddEasyCaching(x => x.UseFake(configure)));
+        public static IEasyCachingProvider CreateFakeProvider(Action<FakeProviderOptions> configure) => CreateService<IEasyCachingProvider>(
+            services => services.AddEasyCaching(x => x.UseFakeProvider(configure)));
 
         public static T CreateFake<T>(Action<Fake<T>> configure) where T : class
         {

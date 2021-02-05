@@ -11,7 +11,7 @@ namespace EasyCaching.UnitTests
     {
         private const string CacheKey = "CacheKey";
         
-        protected virtual IEasyCachingProvider CreateDecoratedProvider(Action<FakeOptions> additionalConfig) =>
+        protected virtual IEasyCachingProvider CreateDecoratedProvider(Action<FakeProviderOptions> additionalConfig) =>
             CreateFakeProvider(options =>
             {
                 options.ProviderFactory = () => CreateFake<IEasyCachingProvider>(fake => fake
@@ -55,7 +55,7 @@ namespace EasyCaching.UnitTests
             Assert.Equal("123", result.Value);
         }
 
-        private static void DecorateGetWithPostfix(FakeOptions options, string postfix)
+        private static void DecorateGetWithPostfix(FakeProviderOptions options, string postfix)
         {
             options.Decorate((_, __, cachingProviderFactory) => () =>
             {

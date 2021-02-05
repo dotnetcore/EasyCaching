@@ -1,13 +1,14 @@
 namespace EasyCaching.UnitTests
 {
     using Core;
+    using Core.Bus;
     using Core.Configurations;
     using Core.Decoration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
-    public class FakeOptionsExtensions : IEasyCachingOptionsExtension
+    public class FakeBusOptionsExtensions : IEasyCachingOptionsExtension
     {
         /// <summary>
         /// The name.
@@ -17,17 +18,17 @@ namespace EasyCaching.UnitTests
         /// <summary>
         /// The configure.
         /// </summary>
-        private readonly Action<FakeOptions> configure;
+        private readonly Action<FakeBusOptions> _configure;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.FakeOptionsExtensions"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="configure">Configure.</param>
-        public FakeOptionsExtensions(string name, Action<FakeOptions> configure)
+        public FakeBusOptionsExtensions(string name, Action<FakeBusOptions> configure)
         {
             this._name = name;
-            this.configure = configure;
+            this._configure = configure;
         }
 
         /// <summary>
@@ -37,17 +38,16 @@ namespace EasyCaching.UnitTests
         public void AddServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.Configure(_name, configure);
+            services.Configure(_name, _configure);
 
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-            services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
+            services.AddSingleton<IEasyCachingBus>(serviceProvider =>
             {
-                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<FakeOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<FakeBusOptions>>();
                 var options = optionsMon.Get(_name);
-                return options.CreateDecoratedProvider(
+                return options.CreateDecoratedBus(
                     _name,
                     serviceProvider,
-                    options.ProviderFactory);
+                    options.BusFactory);
             });
         }
     }
