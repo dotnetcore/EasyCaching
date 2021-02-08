@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests
     using Xunit;
     using static ServiceBuilders;
 
-    public abstract class FallbackDecorationTests
+    public abstract class FallbackCachingProviderDecorationTests
     {
         private const string CacheKey = "CacheKey";
         private const string CacheValue = "CacheValue";
@@ -113,7 +113,7 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class FallbackDecorationTestsWithFailOnInitialization : FallbackDecorationTests
+    public class FallbackCachingProviderCachingProviderDecorationTestsWithFailOnInitialization : FallbackCachingProviderDecorationTests
     {
         protected sealed override IEasyCachingProvider CreateProvider() => throw new InvalidOperationException("Exception on init");
 
@@ -130,7 +130,7 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class FallbackDecorationTestsWithFailOnAnyMethod : FallbackDecorationTests
+    public class FallbackCachingProviderCachingProviderDecorationTestsWithFailOnAnyMethod : FallbackCachingProviderDecorationTests
     {
         protected sealed override IEasyCachingProvider CreateProvider()
         {

@@ -7,7 +7,7 @@ namespace EasyCaching.UnitTests
     using Xunit;
     using static ServiceBuilders;
 
-    public class DecorationTests
+    public class CachingProviderDecorationTests
     {
         private const string CacheKey = "CacheKey";
         

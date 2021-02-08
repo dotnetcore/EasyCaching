@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests
     using Xunit;
     using static ServiceBuilders;
 
-    public class FallbackDecorationTestsWithFailOnFirstInitialization
+    public class FallbackCachingProviderDecorationTestsWithFailOnFirstInitialization
     {
         private int _initAttempt;
         

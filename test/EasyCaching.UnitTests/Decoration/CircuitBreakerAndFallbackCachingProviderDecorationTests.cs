@@ -35,25 +35,25 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class CircuitBreakerAndFallbackDecorationTestsWithFailOnInitialization : FallbackDecorationTestsWithFailOnInitialization
+    public class CircuitBreakerAndFallbackCachingProviderCachingProviderDecorationTestsWithFailOnInitialization : FallbackCachingProviderCachingProviderDecorationTestsWithFailOnInitialization
     {
         protected override IEasyCachingProvider CreateDecoratedProvider(IEasyCachingProvider fallbackProvider) =>
             CircuitBreakerAndFallbackDecorationBuilders.CreateDecoratedProvider(CreateProvider, fallbackProvider);
     }
 
-    public class CircuitBreakerAndFallbackDecorationTestsWithFailOnAnyMethod : FallbackDecorationTestsWithFailOnAnyMethod
+    public class CircuitBreakerAndFallbackCachingProviderCachingProviderDecorationTestsWithFailOnAnyMethod : FallbackCachingProviderCachingProviderDecorationTestsWithFailOnAnyMethod
     {
         protected override IEasyCachingProvider CreateDecoratedProvider(IEasyCachingProvider fallbackProvider) =>
             CircuitBreakerAndFallbackDecorationBuilders.CreateDecoratedProvider(CreateProvider, fallbackProvider);
     }
 
-    public class CircuitBreakerWithBrokenCircuitAndFallbackDecorationTestsWithFailOnInitialization : FallbackDecorationTestsWithFailOnInitialization
+    public class CircuitBreakerWithBrokenCircuitAndFallbackCachingProviderCachingProviderDecorationTestsWithFailOnInitialization : FallbackCachingProviderCachingProviderDecorationTestsWithFailOnInitialization
     {
         protected override IEasyCachingProvider CreateDecoratedProvider(IEasyCachingProvider fallbackProvider) =>
             CircuitBreakerAndFallbackDecorationBuilders.CreateDecoratedProviderWithBrokenCircuit(CreateProvider, fallbackProvider);
     }
 
-    public class CircuitBreakerWithBrokenCircuitAndFallbackDecorationTestsWithFailOnAnyMethod : FallbackDecorationTestsWithFailOnAnyMethod
+    public class CircuitBreakerWithBrokenCircuitAndFallbackCachingProviderCachingProviderDecorationTestsWithFailOnAnyMethod : FallbackCachingProviderCachingProviderDecorationTestsWithFailOnAnyMethod
     {
         protected override IEasyCachingProvider CreateDecoratedProvider(IEasyCachingProvider fallbackProvider) =>
             CircuitBreakerAndFallbackDecorationBuilders.CreateDecoratedProviderWithBrokenCircuit(CreateProvider, fallbackProvider);
