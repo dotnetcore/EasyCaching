@@ -74,15 +74,10 @@
             this._logger = loggerFactory?.CreateLogger<HybridCachingProvider>();
 
             // Here use the order to distinguish traditional provider
-            var local = factory.GetCachingProvider(_options.LocalCacheProviderName);
-            if (local.IsDistributedCache) throw new NotFoundCachingProviderException("Can not found any local caching providers.");
-            else this._localCache = local;
+            this._localCache = factory.GetCachingProvider(_options.LocalCacheProviderName);
 
             // Here use the order to distinguish traditional provider
-            var distributed = factory.GetCachingProvider(_options.DistributedCacheProviderName);
-
-            if (!distributed.IsDistributedCache) throw new NotFoundCachingProviderException("Can not found any distributed caching providers.");
-            else this._distributedCache = distributed;
+            this._distributedCache = factory.GetCachingProvider(_options.DistributedCacheProviderName);
 
             this._bus = bus ?? NullEasyCachingBus.Instance;
             this._bus.Subscribe(_options.TopicName, OnMessage);
