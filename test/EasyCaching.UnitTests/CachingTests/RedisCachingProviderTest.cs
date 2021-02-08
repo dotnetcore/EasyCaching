@@ -63,12 +63,12 @@ namespace EasyCaching.UnitTests
             
                 options
                     .DecorateWithCircuitBreaker(
-                        exception => exception is RedisException,
                         initCircuitBreakerParameters,
-                        executeCircuitBreakerParameters)
+                        executeCircuitBreakerParameters,
+                        exception => exception is RedisException)
                     .DecorateWithFallback(
-                        exception => exception is RedisException,
-                        (name, _) => new NullCachingProvider(name, options));
+                        (name, _) => new NullCachingProvider(name, options),
+                        exception => exception is RedisException);
             });
             return serviceProvider.GetService<IEasyCachingProvider>();
         }

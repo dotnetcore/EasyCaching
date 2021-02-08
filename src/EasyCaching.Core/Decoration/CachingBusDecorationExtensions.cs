@@ -1,5 +1,6 @@
-namespace EasyCaching.Core.Bus
+namespace EasyCaching.Core.Decoration
 {
+    using EasyCaching.Core.Bus;
     using System;
 
     /// <summary>
@@ -7,7 +8,7 @@ namespace EasyCaching.Core.Bus
     /// </summary>
     /// <param name="name">Bus name</param>
     /// <param name="serviceProvider">Service provider for dependency injection</param>
-    /// <param name="cachingProviderFactory">Initial caching bus factory</param>
+    /// <param name="busFactory">Initial caching bus factory</param>
     /// <returns>Decorated caching provider factory</returns>
     public delegate Func<IEasyCachingBus> BusFactoryDecorator(
         string name, IServiceProvider serviceProvider, Func<IEasyCachingBus> busFactory);
@@ -22,7 +23,9 @@ namespace EasyCaching.Core.Bus
         {
             if (options.BusFactoryDecorator == null)
             {
-                options.DecorateWithRetry(3);
+                options
+                    .DecorateWithRetry(3, exceptionFilter: null)
+                    .DecorateWithPublishFallback(exceptionFilter: null);
             }
             
             var decoratedProviderFactory = options.BusFactoryDecorator(name, serviceProvider, cachingBusFactory);
@@ -48,9 +51,41 @@ namespace EasyCaching.Core.Bus
             return options;
         }
 
-        public static IBusOptions DecorateWithRetry(this IBusOptions options, int retryCount) =>
+        public static IBusOptions DecorateWithRetry(
+            this IBusOptions options, 
+            int retryCount,
+            Func<Exception, bool> exceptionFilter,
+            Func<int, TimeSpan> sleepDurationProvider = null) =>
             options.Decorate((name, serviceProvider, cachingBusFactory) =>
-                () => EasyCachingBusPolicyDecorator.WithRetry(name, cachingBusFactory, retryCount));
+                () => EasyCachingBusPolicyDecorator.WithRetry(
+                    name,
+                    cachingBusFactory,
+                    retryCount,
+                    exceptionFilter,
+                    sleepDurationProvider));
+
+        public static IBusOptions DecorateWithPublishFallback(
+            this IBusOptions options, Func<Exception, bool> exceptionFilter) =>
+            options.Decorate((name, serviceProvider, cachingBusFactory) =>
+                () => EasyCachingBusPolicyDecorator.WithPublishFallback(
+                    name, 
+                    cachingBusFactory, 
+                    exceptionFilter));
+
+        public static IBusOptions DecorateWithCircuitBreaker(
+            this IBusOptions options, 
+            ICircuitBreakerParameters initParameters,
+            ICircuitBreakerParameters executeParameters,
+            TimeSpan subscribeRetryInterval,
+            Func<Exception, bool> exceptionFilter) =>
+            options.Decorate((name, serviceProvider, cachingBusFactory) =>
+                () => EasyCachingBusPolicyDecorator.WithCircuitBreaker(
+                    name, 
+                    cachingBusFactory, 
+                    initParameters,
+                    executeParameters,
+                    subscribeRetryInterval,
+                    exceptionFilter));
 
     }
 }

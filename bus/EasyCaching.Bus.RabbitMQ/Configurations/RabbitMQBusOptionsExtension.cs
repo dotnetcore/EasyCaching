@@ -2,6 +2,7 @@
 {
     using System;
     using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
     using global::RabbitMQ.Client;

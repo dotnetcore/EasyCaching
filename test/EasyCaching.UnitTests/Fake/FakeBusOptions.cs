@@ -1,6 +1,7 @@
 namespace EasyCaching.UnitTests
 {
-    using Core.Bus;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Decoration;
     using System;
 
     public class FakeBusOptions : IBusOptions

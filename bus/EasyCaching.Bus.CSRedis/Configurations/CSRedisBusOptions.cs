@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Bus.CSRedis
 {
-    using Core.Bus;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Decoration;
     using System;
     using System.Collections.Generic;
 

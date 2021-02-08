@@ -1,7 +1,8 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
-    using Core.Bus;
+    using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
 
     /// <summary>
     /// Redis bus options.

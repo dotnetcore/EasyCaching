@@ -21,8 +21,8 @@ namespace EasyCaching.UnitTests
             {
                 options.ProviderFactory = CreateProvider;
                 options.DecorateWithFallback(
-                    exception => exception is InvalidOperationException,
-                    (name, _) => new NullCachingProvider(name, options));
+                    (name, _) => new NullCachingProvider(name, options),
+                    exception => exception is InvalidOperationException);
             });
         
         private IEasyCachingProvider CreateProvider()

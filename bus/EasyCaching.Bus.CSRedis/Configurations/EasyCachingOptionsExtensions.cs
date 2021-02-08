@@ -1,8 +1,10 @@
 ﻿namespace Microsoft.Extensions.DependencyInjection
 {
+    using CSRedis;
     using EasyCaching.Bus.CSRedis;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.Configuration;
     using System;
 
@@ -11,6 +13,8 @@
     /// </summary>
     public static class EasyCachingOptionsExtensions
     {
+        private static readonly Func<Exception, bool> RedisExceptionFilter = exception => exception is RedisClientException;
+        
         /// <summary>
         /// Withs the CSRedis bus (specify the config via hard code).
         /// </summary>
@@ -53,6 +57,31 @@
 
             options.RegisterExtension(new CSRedisOptionsExtension(name, configure));
             return options;
+        }
+        
+        public static CSRedisBusOptions DecorateWithRetry(
+            this CSRedisBusOptions options,
+            int retryCount)
+        {
+            return (CSRedisBusOptions) options.DecorateWithRetry(retryCount, RedisExceptionFilter);
+        }
+
+        public static CSRedisBusOptions DecorateWithPublishFallback(this CSRedisBusOptions options)
+        {
+            return (CSRedisBusOptions) options.DecorateWithPublishFallback(RedisExceptionFilter);
+        }
+
+        public static CSRedisBusOptions DecorateWithCircuitBreaker(
+            this CSRedisBusOptions options,
+            ICircuitBreakerParameters initParameters,
+            ICircuitBreakerParameters executeParameters,
+            TimeSpan subscribeRetryInterval)
+        {
+            return (CSRedisBusOptions) options.DecorateWithCircuitBreaker(
+                initParameters,
+                executeParameters,
+                subscribeRetryInterval,
+                RedisExceptionFilter);
         }
     }
 }

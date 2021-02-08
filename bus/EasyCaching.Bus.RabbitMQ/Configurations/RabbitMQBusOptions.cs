@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Bus.RabbitMQ
 {
     using Core.Bus;
+    using Core.Decoration;
     using EasyCaching.Core.Configurations;
 
     /// <summary>

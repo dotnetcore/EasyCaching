@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;

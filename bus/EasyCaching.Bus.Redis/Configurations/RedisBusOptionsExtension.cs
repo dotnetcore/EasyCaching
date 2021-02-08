@@ -2,11 +2,11 @@
 {
     using System;
     using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     /// <summary>

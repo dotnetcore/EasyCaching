@@ -1,11 +1,9 @@
 namespace EasyCaching.UnitTests
 {
-    using Core;
-    using Core.Bus;
-    using Core.Configurations;
-    using Core.Decoration;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
     public class FakeBusOptionsExtensions : IEasyCachingOptionsExtension

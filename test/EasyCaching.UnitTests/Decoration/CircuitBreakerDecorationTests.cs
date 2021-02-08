@@ -24,9 +24,9 @@ namespace EasyCaching.UnitTests
                     durationOfBreak: TimeSpan.FromMinutes(1));
                 
                 options.DecorateWithCircuitBreaker(
-                    exception => exception is InvalidOperationException,
                     initParameters: circuitBreakerParameters,
-                    executeParameters: circuitBreakerParameters);
+                    executeParameters: circuitBreakerParameters,
+                    exception => exception is InvalidOperationException);
             });
 
         protected abstract IEasyCachingProvider CreateProvider();

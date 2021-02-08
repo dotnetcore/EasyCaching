@@ -18,12 +18,12 @@ namespace EasyCaching.UnitTests
                 
                 options
                     .DecorateWithCircuitBreaker(
-                        exception => exception is InvalidOperationException,
                         initParameters: circuitBreakerParameters,
-                        executeParameters: circuitBreakerParameters)
+                        executeParameters: circuitBreakerParameters,
+                        exception => exception is InvalidOperationException)
                     .DecorateWithFallback(
-                        exception => exception is InvalidOperationException,
-                        (_, __) => fallbackProvider);
+                        (_, __) => fallbackProvider,
+                        exception => exception is InvalidOperationException);
             });
         
         public static IEasyCachingProvider CreateDecoratedProviderWithBrokenCircuit(
