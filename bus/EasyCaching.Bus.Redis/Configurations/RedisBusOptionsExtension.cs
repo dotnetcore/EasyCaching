@@ -2,11 +2,11 @@
 {
     using System;
     using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     /// <summary>
@@ -52,14 +52,17 @@
                 return new RedisSubscriberProvider(_name, options);
             });
 
-            services.AddSingleton<IEasyCachingBus, DefaultRedisBus>(x =>
+            services.AddSingleton<IEasyCachingBus>(serviceProvider =>
             {
-                var subProviders = x.GetServices<IRedisSubscriberProvider>();
-                var serializers = x.GetServices<IEasyCachingSerializer>();
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisBusOptions>>();
+                var subProviders = serviceProvider.GetServices<IRedisSubscriberProvider>();
+                var serializers = serviceProvider.GetServices<IEasyCachingSerializer>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<RedisBusOptions>>();
                 var options = optionsMon.Get(_name);
-                var factory = x.GetService<ILoggerFactory>();
-                return new DefaultRedisBus(_name, subProviders, options, serializers);
+                
+                return options.CreateDecoratedBus(
+                    _name,
+                    serviceProvider,
+                    () => new DefaultRedisBus(_name, subProviders, options, serializers));
             });
         }
     }

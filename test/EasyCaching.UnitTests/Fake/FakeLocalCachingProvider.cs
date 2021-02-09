@@ -9,8 +9,6 @@
     {    
         public string Name => "local";
 
-        public bool IsDistributedCache => false;
-
         public int Order => 1;
 
         public int MaxRdSecond => 0;

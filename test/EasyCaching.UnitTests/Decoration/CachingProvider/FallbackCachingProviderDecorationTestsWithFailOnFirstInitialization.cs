@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests
     using Xunit;
     using static ServiceBuilders;
 
-    public class FallbackDecorationTestsWithFailOnFirstInitialization
+    public class FallbackCachingProviderDecorationTestsWithFailOnFirstInitialization
     {
         private int _initAttempt;
         
@@ -21,8 +21,8 @@ namespace EasyCaching.UnitTests
             {
                 options.ProviderFactory = CreateProvider;
                 options.DecorateWithFallback(
-                    exception => exception is InvalidOperationException,
-                    (name, _) => new NullCachingProvider(name, options));
+                    (name, _) => new NullCachingProvider(name, options),
+                    exception => exception is InvalidOperationException);
             });
         
         private IEasyCachingProvider CreateProvider()

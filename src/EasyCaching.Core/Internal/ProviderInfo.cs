@@ -14,8 +14,6 @@
 
         public int MaxRdSecond { get; set; }
 
-        public bool IsDistributedProvider { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether enable logging.
         /// </summary>

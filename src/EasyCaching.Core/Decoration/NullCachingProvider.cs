@@ -19,13 +19,11 @@ namespace EasyCaching.Core.Decoration
             this.ProviderType = CachingProviderType.InMemory;
             this.ProviderStats = new CacheStats();
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
-            this.IsDistributedProvider = false;
 
             _info = new ProviderInfo
             {
                 CacheStats = ProviderStats,
                 EnableLogging = options.EnableLogging,
-                IsDistributedProvider = IsDistributedProvider,
                 LockMs = options.LockMs,
                 MaxRdSecond = options.MaxRdSecond,
                 ProviderName = ProviderName,

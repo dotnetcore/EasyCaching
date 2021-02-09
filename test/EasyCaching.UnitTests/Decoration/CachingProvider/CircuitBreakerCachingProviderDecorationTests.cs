@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests
     using System.Threading.Tasks;
     using Xunit;
 
-    public abstract class CircuitBreakerDecorationTests
+    public abstract class CircuitBreakerCachingProviderDecorationTests
     {
         private const string CacheKey = "CacheKey";
         private const string CacheValue = "CacheValue";
@@ -24,9 +24,9 @@ namespace EasyCaching.UnitTests
                     durationOfBreak: TimeSpan.FromMinutes(1));
                 
                 options.DecorateWithCircuitBreaker(
-                    exception => exception is InvalidOperationException,
                     initParameters: circuitBreakerParameters,
-                    executeParameters: circuitBreakerParameters);
+                    executeParameters: circuitBreakerParameters,
+                    exception => exception is InvalidOperationException);
             });
 
         protected abstract IEasyCachingProvider CreateProvider();
@@ -76,7 +76,7 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class CircuitBreakerDecorationTestsWithFailOnInit : CircuitBreakerDecorationTests
+    public class CircuitBreakerCachingProviderDecorationTestsWithFailOnInit : CircuitBreakerCachingProviderDecorationTests
     {
         protected override IEasyCachingProvider CreateProvider() => throw new InvalidOperationException("Exception on init");
 
@@ -92,7 +92,7 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class CircuitBreakerDecorationTestsWithFailOnAnyMethod : CircuitBreakerDecorationTests
+    public class CircuitBreakerCachingProviderDecorationTestsWithFailOnAnyMethod : CircuitBreakerCachingProviderDecorationTests
     {
         protected override IEasyCachingProvider CreateProvider()
         {

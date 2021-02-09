@@ -1,6 +1,7 @@
 namespace EasyCaching.UnitTests
 {
     using Core;
+    using Core.Bus;
     using Core.Configurations;
     using FakeItEasy;
     using InMemory;
@@ -20,8 +21,8 @@ namespace EasyCaching.UnitTests
         public static IEasyCachingProvider CreateEasyCachingProvider(Action<EasyCachingOptions> configure) => CreateService<IEasyCachingProvider>(
             services => services.AddEasyCaching(configure));
         
-        public static IEasyCachingProvider CreateFakeProvider(Action<FakeOptions> configure) => CreateService<IEasyCachingProvider>(
-            services => services.AddEasyCaching(x => x.UseFake(configure)));
+        public static IEasyCachingProvider CreateFakeProvider(Action<FakeProviderOptions> configure) => CreateService<IEasyCachingProvider>(
+            services => services.AddEasyCaching(x => x.UseFakeProvider(configure)));
 
         public static T CreateFake<T>(Action<Fake<T>> configure) where T : class
         {
@@ -29,5 +30,8 @@ namespace EasyCaching.UnitTests
             configure(fake);
             return fake.FakedObject;
         }
+        
+        public static IEasyCachingBus CreateFakeBus(Action<FakeBusOptions> configure) => CreateService<IEasyCachingBus>(
+            services => services.AddEasyCaching(x => x.WithFakeBus(configure)));
     }
 }

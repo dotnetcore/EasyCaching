@@ -7,7 +7,7 @@ namespace EasyCaching.UnitTests
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
 
-    public class FakeOptionsExtensions : IEasyCachingOptionsExtension
+    public class FakeProviderOptionsExtensions : IEasyCachingOptionsExtension
     {
         /// <summary>
         /// The name.
@@ -17,17 +17,17 @@ namespace EasyCaching.UnitTests
         /// <summary>
         /// The configure.
         /// </summary>
-        private readonly Action<FakeOptions> configure;
+        private readonly Action<FakeProviderOptions> _configure;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.FakeOptionsExtensions"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="configure">Configure.</param>
-        public FakeOptionsExtensions(string name, Action<FakeOptions> configure)
+        public FakeProviderOptionsExtensions(string name, Action<FakeProviderOptions> configure)
         {
             this._name = name;
-            this.configure = configure;
+            this._configure = configure;
         }
 
         /// <summary>
@@ -37,12 +37,12 @@ namespace EasyCaching.UnitTests
         public void AddServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.Configure(_name, configure);
+            services.Configure(_name, _configure);
 
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
-                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<FakeOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<FakeProviderOptions>>();
                 var options = optionsMon.Get(_name);
                 return options.CreateDecoratedProvider(
                     _name,

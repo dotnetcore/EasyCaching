@@ -14,13 +14,13 @@
 
         public EasyCachingProviderFallbackDecorator(
             Func<TProvider> cachingProviderFactory,
-            Func<Exception, bool> exceptionFilter,
-            TProvider fallbackCachingProvider)
+            TProvider fallbackCachingProvider,
+            Func<Exception, bool> exceptionFilter)
         {
             if (cachingProviderFactory == null) throw new ArgumentNullException(nameof(cachingProviderFactory));
             _lazyCachingProvider = new LazyWithoutExceptionCaching<TProvider>(cachingProviderFactory);
             
-            _exceptionFilter = exceptionFilter ?? throw new ArgumentNullException(nameof(exceptionFilter));
+            _exceptionFilter = exceptionFilter ?? (_ => true);
             _fallbackCachingProvider = fallbackCachingProvider ?? throw new ArgumentNullException(nameof(fallbackCachingProvider));
         }
         

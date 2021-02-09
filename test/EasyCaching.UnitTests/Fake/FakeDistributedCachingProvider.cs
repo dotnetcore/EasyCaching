@@ -9,8 +9,6 @@
     {    
         public string Name => "distributed";
 
-        public bool IsDistributedCache => true;
-
         public int Order => 1;
 
         public int MaxRdSecond => 0;

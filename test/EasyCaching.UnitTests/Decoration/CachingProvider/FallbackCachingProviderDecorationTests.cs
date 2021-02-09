@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests
     using Xunit;
     using static ServiceBuilders;
 
-    public abstract class FallbackDecorationTests
+    public abstract class FallbackCachingProviderDecorationTests
     {
         private const string CacheKey = "CacheKey";
         private const string CacheValue = "CacheValue";
@@ -19,8 +19,8 @@ namespace EasyCaching.UnitTests
             {
                 options.ProviderFactory = CreateProvider;
                 options.DecorateWithFallback(
-                    exception => exception is InvalidOperationException,
-                    (_, __) => fallbackProvider);
+                    (_, __) => fallbackProvider,
+                    exception => exception is InvalidOperationException);
             });
 
         protected abstract IEasyCachingProvider CreateProvider();
@@ -113,24 +113,24 @@ namespace EasyCaching.UnitTests
         }
     }
 
-    public class FallbackDecorationTestsWithFailOnInitialization : FallbackDecorationTests
+    public class FallbackCachingProviderCachingProviderDecorationTestsWithFailOnInitialization : FallbackCachingProviderDecorationTests
     {
         protected sealed override IEasyCachingProvider CreateProvider() => throw new InvalidOperationException("Exception on init");
 
         [Fact]
-        public void Get_IsDistributedCache_Should_Call_Fallback()
+        public void Get_MaxRdSecond_Should_Call_Fallback()
         {
             var fallback = CreateFake<IEasyCachingProvider>(fake => fake
-                .CallsTo(x => x.IsDistributedCache)
-                .Returns(true)
+                .CallsTo(x => x.MaxRdSecond)
+                .Returns(42)
             );
             var provider = CreateDecoratedProvider(fallback);
 
-            Assert.True(provider.IsDistributedCache);
+            Assert.Equal(42, provider.MaxRdSecond);
         }
     }
 
-    public class FallbackDecorationTestsWithFailOnAnyMethod : FallbackDecorationTests
+    public class FallbackCachingProviderCachingProviderDecorationTestsWithFailOnAnyMethod : FallbackCachingProviderDecorationTests
     {
         protected sealed override IEasyCachingProvider CreateProvider()
         {

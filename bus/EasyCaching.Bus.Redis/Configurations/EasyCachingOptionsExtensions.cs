@@ -4,13 +4,22 @@
     using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.Configuration;
+    using StackExchange.Redis;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// EasyCaching options extensions.
     /// </summary>
     public static class EasyCachingOptionsExtensions
     {
+        private static readonly Func<Exception, bool> RedisExceptionFilter = exception =>
+            exception is RedisException ||
+            exception is RedisCommandException || // Derived not from RedisException
+            exception is TimeoutException || // Can be thrown on timeout in Redis is some cases, RedisTimeoutException is derived from TimeoutException
+            exception is TaskCanceledException; // Can be thrown while waiting for Redis response
+
         /// <summary>
         /// Withs the SERedis bus (specify the config via hard code).
         /// </summary>
@@ -64,6 +73,31 @@
 
             options.RegisterExtension(new RedisBusOptionsExtension(name, configure));
             return options;
+        }
+
+        public static RedisBusOptions DecorateWithRetry(
+            this RedisBusOptions options,
+            int retryCount)
+        {
+            return (RedisBusOptions) options.DecorateWithRetry(retryCount, RedisExceptionFilter);
+        }
+
+        public static RedisBusOptions DecorateWithPublishFallback(this RedisBusOptions options)
+        {
+            return (RedisBusOptions) options.DecorateWithPublishFallback(RedisExceptionFilter);
+        }
+
+        public static RedisBusOptions DecorateWithCircuitBreaker(
+            this RedisBusOptions options,
+            ICircuitBreakerParameters initParameters,
+            ICircuitBreakerParameters executeParameters,
+            TimeSpan subscribeRetryInterval)
+        {
+            return (RedisBusOptions) options.DecorateWithCircuitBreaker(
+                initParameters,
+                executeParameters,
+                subscribeRetryInterval,
+                RedisExceptionFilter);
         }
     }
 }

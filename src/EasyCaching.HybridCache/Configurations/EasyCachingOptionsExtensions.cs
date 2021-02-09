@@ -49,7 +49,6 @@
             void configure(HybridCachingOptions x)
             {
                 x.EnableLogging = hybridOptions.EnableLogging;
-                x.BusRetryCount = hybridOptions.BusRetryCount;
                 x.DefaultExpirationForTtlFailed = hybridOptions.DefaultExpirationForTtlFailed;
                 x.DistributedCacheProviderName = hybridOptions.DistributedCacheProviderName;
                 x.LocalCacheProviderName = hybridOptions.LocalCacheProviderName;

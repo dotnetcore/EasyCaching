@@ -3,59 +3,59 @@ namespace EasyCaching.Core.Decoration
     using System;
     using System.Linq;
 
-    public static class FallbackDecorationExtensions
+    public static class CachingProviderFallbackDecorationExtensions
     {
         public static IProviderOptionsWithDecorator<IEasyCachingProvider> DecorateWithFallback(
             this IProviderOptionsWithDecorator<IEasyCachingProvider> options,
-            Func<Exception, bool> exceptionFilter,
-            Func<string, IServiceProvider, IEasyCachingProvider> fallbackCachingProviderFactory)
+            Func<string, IServiceProvider, IEasyCachingProvider> fallbackCachingProviderFactory,
+            Func<Exception, bool> exceptionFilter)
         {
             return options.Decorate((name, serviceProvider, cachingProviderFactory) =>
                 () => new DecoratedEasyCachingProvider(
                     name, 
                     cachingProviderFactory.WithFallback(
-                        exceptionFilter, 
-                        fallbackCachingProviderFactory(name, serviceProvider)))
+                        fallbackCachingProviderFactory(name, serviceProvider),
+                        exceptionFilter))
             );
         }
         
         public static IProviderOptionsWithDecorator<IRedisAndEasyCachingProvider> DecorateWithFallback(
             this IProviderOptionsWithDecorator<IRedisAndEasyCachingProvider> options,
-            Func<Exception, bool> exceptionFilter,
-            Func<string, IServiceProvider, IRedisAndEasyCachingProvider> fallbackCachingProviderFactory)
+            Func<string, IServiceProvider, IRedisAndEasyCachingProvider> fallbackCachingProviderFactory,
+            Func<Exception, bool> exceptionFilter)
         {
             return options.Decorate((name, serviceProvider, cachingProviderFactory) =>
                 () => new DecoratedRedisAndEasyCachingProvider(
                     name, 
-                    cachingProviderFactory.WithFallback(
-                        exceptionFilter, 
-                        fallbackCachingProviderFactory(name, serviceProvider)))
+                    cachingProviderFactory.WithFallback( 
+                        fallbackCachingProviderFactory(name, serviceProvider),
+                        exceptionFilter))
             );
         }
         
         public static IProviderOptionsWithDecorator<IHybridCachingProvider> DecorateWithFallback(
             this IProviderOptionsWithDecorator<IHybridCachingProvider> options,
-            Func<Exception, bool> exceptionFilter,
-            Func<string, IServiceProvider, IHybridCachingProvider> fallbackCachingProviderFactory)
+            Func<string, IServiceProvider, IHybridCachingProvider> fallbackCachingProviderFactory,
+            Func<Exception, bool> exceptionFilter)
         {
             return options.Decorate((name, serviceProvider, cachingProviderFactory) =>
                 () => new DecoratedHybridCachingProvider(
                     name, 
                     cachingProviderFactory.WithFallback(
-                        exceptionFilter, 
-                        fallbackCachingProviderFactory(name, serviceProvider)))
+                        fallbackCachingProviderFactory(name, serviceProvider),
+                        exceptionFilter))
             );
         }
 
         private static IEasyCachingProviderDecorator<TProvider> WithFallback<TProvider>(
             this Func<TProvider> cachingProviderFactory,
-            Func<Exception, bool> exceptionFilter,
-            TProvider fallbackCachingProvider) where TProvider : class, IEasyCachingProviderBase
+            TProvider fallbackCachingProvider,
+            Func<Exception, bool> exceptionFilter) where TProvider : class, IEasyCachingProviderBase
         {
             return new EasyCachingProviderFallbackDecorator<TProvider>(
                 cachingProviderFactory, 
-                exceptionFilter.IncludingInnerExceptions(), 
-                fallbackCachingProvider);
+                fallbackCachingProvider, 
+                exceptionFilter?.IncludingInnerExceptions());
         }
 
         private static Func<Exception, bool> IncludingInnerExceptions(this Func<Exception, bool> exceptionFilter)

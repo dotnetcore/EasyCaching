@@ -48,7 +48,7 @@ namespace EasyCaching.UnitTests
         {
             var serviceProvider = CreateServiceProvider(options =>
             {
-                options.DBConfig.Configuration = "127.0.0.1:9999,allowAdmin=false,defaultdatabase=9,connectTimeout=100";
+                options.DBConfig.Configuration = "127.0.0.1:9999,allowAdmin=false,defaultdatabase=9,connectTimeout=1";
 
                 var initCircuitBreakerParameters =
                     new CircuitBreakerParameters(
@@ -63,12 +63,12 @@ namespace EasyCaching.UnitTests
             
                 options
                     .DecorateWithCircuitBreaker(
-                        exception => exception is RedisException,
                         initCircuitBreakerParameters,
-                        executeCircuitBreakerParameters)
+                        executeCircuitBreakerParameters,
+                        exception => exception is RedisException)
                     .DecorateWithFallback(
-                        exception => exception is RedisException,
-                        (name, _) => new NullCachingProvider(name, options));
+                        (name, _) => new NullCachingProvider(name, options),
+                        exception => exception is RedisException);
             });
             return serviceProvider.GetService<IEasyCachingProvider>();
         }

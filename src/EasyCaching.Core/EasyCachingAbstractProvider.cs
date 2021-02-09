@@ -13,13 +13,11 @@
                     new DiagnosticListener(EasyCachingDiagnosticListenerExtensions.DiagnosticListenerName);
 
         protected string ProviderName { get; set; }
-        protected bool IsDistributedProvider { get; set; }
         protected int ProviderMaxRdSecond { get; set; }
         protected CachingProviderType ProviderType { get; set; }
         protected CacheStats ProviderStats { get; set; }
 
         public string Name => this.ProviderName;
-        public bool IsDistributedCache => this.IsDistributedProvider;
         public int MaxRdSecond => this.ProviderMaxRdSecond;
         public CachingProviderType CachingProviderType => this.ProviderType;
         public CacheStats CacheStats => this.ProviderStats;

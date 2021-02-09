@@ -44,14 +44,18 @@
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.RabbitMQ.DefaultRabbitMQBus"/> class.
         /// </summary>
-        /// <param name="_objectPolicy">Object policy.</param>
+        /// <param name="name">Unique name of the bus.</param>
+        /// <param name="objectPolicy">Object policy.</param>
         /// <param name="rabbitMQOptions">RabbitMQ Options.</param>
         /// <param name="serializer">Serializer.</param>
         public DefaultRabbitMQBus(
-            IPooledObjectPolicy<IModel> _objectPolicy
+            string name
+            , IPooledObjectPolicy<IModel> objectPolicy
             , IOptions<RabbitMQBusOptions> rabbitMQOptions
             , IEasyCachingSerializer serializer)
         {
+            BusName = name ?? throw new ArgumentNullException(nameof(name));;
+            
             this._options = rabbitMQOptions.Value;
             this._serializer = serializer;
 
@@ -69,11 +73,9 @@
 
             _subConnection = factory.CreateConnection();
 
-            _pubChannelPool = new DefaultObjectPool<IModel>(_objectPolicy);
+            _pubChannelPool = new DefaultObjectPool<IModel>(objectPolicy);
             
             _busId = Guid.NewGuid().ToString("N");
-
-            BusName = "easycachingbus";
         }
 
         /// <summary>

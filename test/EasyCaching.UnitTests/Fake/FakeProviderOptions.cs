@@ -4,9 +4,9 @@ namespace EasyCaching.UnitTests
     using Core.Configurations;
     using System;
 
-    public class FakeOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
+    public class FakeProviderOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
     {
-        public const string DefaultName = "Fake";
+        public const string DefaultName = "FakeProvider";
         
         public Func<IEasyCachingProvider> ProviderFactory { get; set; }
     }
