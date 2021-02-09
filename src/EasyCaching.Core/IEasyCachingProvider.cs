@@ -10,12 +10,6 @@
     public interface IEasyCachingProvider : IEasyCachingProviderBase
     {
         /// <summary>
-        /// Gets a value indicating whether this <see cref="T:EasyCaching.Core.IEasyCachingProvider"/> is distributed cache.
-        /// </summary>
-        /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
-        bool IsDistributedCache { get; }
-
-       /// <summary>
         /// Gets all.
         /// </summary>
         /// <returns>The all.</returns>

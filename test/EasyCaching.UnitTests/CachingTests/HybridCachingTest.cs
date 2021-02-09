@@ -106,7 +106,6 @@
             setupFakeBus?.Invoke(fakeBus);
             
             var fakeDistributedProvider = A.Fake<IEasyCachingProvider>();
-            A.CallTo(() => fakeDistributedProvider.IsDistributedCache).Returns(true);
             A.CallTo(() => fakeDistributedProvider.Name).Returns(DistributedCacheProviderName);
             setupFakeDistributedProvider?.Invoke(fakeDistributedProvider);
 

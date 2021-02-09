@@ -20,7 +20,6 @@
         public int MaxRdSecond => Decorator.Execute(provider => provider.MaxRdSecond);
         public CachingProviderType CachingProviderType => Decorator.Execute(provider => provider.CachingProviderType);
         public CacheStats CacheStats => Decorator.Execute(provider => provider.CacheStats);
-        public bool IsDistributedCache => Decorator.Execute(provider => provider.IsDistributedCache);
 
         protected DecoratedEasyCachingProvider(
             string name,

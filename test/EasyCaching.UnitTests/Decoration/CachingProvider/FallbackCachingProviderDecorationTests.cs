@@ -118,15 +118,15 @@ namespace EasyCaching.UnitTests
         protected sealed override IEasyCachingProvider CreateProvider() => throw new InvalidOperationException("Exception on init");
 
         [Fact]
-        public void Get_IsDistributedCache_Should_Call_Fallback()
+        public void Get_MaxRdSecond_Should_Call_Fallback()
         {
             var fallback = CreateFake<IEasyCachingProvider>(fake => fake
-                .CallsTo(x => x.IsDistributedCache)
-                .Returns(true)
+                .CallsTo(x => x.MaxRdSecond)
+                .Returns(42)
             );
             var provider = CreateDecoratedProvider(fallback);
 
-            Assert.True(provider.IsDistributedCache);
+            Assert.Equal(42, provider.MaxRdSecond);
         }
     }
 
