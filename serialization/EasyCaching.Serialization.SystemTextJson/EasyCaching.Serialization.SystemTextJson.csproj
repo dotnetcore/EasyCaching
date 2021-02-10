@@ -18,6 +18,7 @@
     <PackageReleaseNotes>            
       $(EasyCachingSTJsonPackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.Serialization.SystemTextJson</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>
