@@ -8,7 +8,7 @@
       1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Upgrading dependencies.
+      1. Support SyncTimeout and AsyncTimeout (#282).
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
       1. Upgrading dependencies.
