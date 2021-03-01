@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using FakeItEasy;
+    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -23,7 +24,11 @@
             _providerWithNullsCached = CreateCachingProvider(options => options.CacheNulls = true);
         }
 
-        protected abstract IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup);
+        protected abstract void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup);
+
+        protected virtual IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup) =>
+            ServiceBuilders.CreateService<IEasyCachingProvider>(services =>
+                services.AddEasyCaching(options => SetupCachingProvider(options, additionalSetup)));
 
         #region Parameter Check Test
         [Theory]

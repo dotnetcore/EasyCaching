@@ -9,7 +9,7 @@ namespace EasyCaching.UnitTests
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;
 
-    public class CSRedisCachingProviderTest : BaseCachingProviderTest
+    public class CSRedisCachingProviderTest : DistributedCachingProviderTest
     {
         public CSRedisCachingProviderTest()
         {
@@ -18,25 +18,19 @@ namespace EasyCaching.UnitTests
             _nameSpace = "CSRedisBase";
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
-            var services = new ServiceCollection();
-            services.AddEasyCaching(x =>
-                x.UseCSRedis(options =>
+            options.UseCSRedis(providerOptions =>
+            {
+                providerOptions.DBConfig = new CSRedisDBOptions
                 {
-                    options.DBConfig = new CSRedisDBOptions
+                    ConnectionStrings = new System.Collections.Generic.List<string>
                     {
-                        ConnectionStrings = new System.Collections.Generic.List<string>
-                        {
-                            "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
-                        }
-                    };
-                    additionalSetup(options);
-                })
-            );
-
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<IEasyCachingProvider>();
+                        "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
+                    }
+                };
+                additionalSetup(providerOptions);
+            });
         }
     }
 

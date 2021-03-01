@@ -10,26 +10,28 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class MemcachedProviderTest : BaseCachingProviderTest
+    public class MemcachedProviderTest : DistributedCachingProviderTest
     {
         public MemcachedProviderTest()
         {
             _defaultTs = TimeSpan.FromSeconds(50);
         }
 
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        {
+            options.UseMemcached(providerOptions =>
+            {
+                providerOptions.DBConfig.AddServer("127.0.0.1", 11211);
+                additionalSetup(providerOptions);
+            });
+        }
+
         protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x =>
-                x.UseMemcached(options =>
-                {
-                    options.DBConfig.AddServer("127.0.0.1", 11211);
-                    additionalSetup(options);
-                })
-            );
+            services.AddEasyCaching(options => SetupCachingProvider(options, additionalSetup));
             services.AddLogging();
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<IEasyCachingProvider>();
+            return services.BuildServiceProvider().GetService<IEasyCachingProvider>();
         }
 
         [Fact]

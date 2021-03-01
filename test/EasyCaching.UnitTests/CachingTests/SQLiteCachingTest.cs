@@ -12,30 +12,29 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class SQLiteCachingTest : BaseCachingProviderTest
+    public class SQLiteCachingTest : DistributedCachingProviderTest
     {
         public SQLiteCachingTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x =>
-                x.UseSQLite(options =>
+            options.UseSQLite(providerOptions =>
+            {
+                providerOptions.DBConfig = new SQLiteDBOptions
                 {
-                    options.DBConfig = new SQLiteDBOptions
-                    {
-                        FileName = "s1.db",
-                        CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default,
-                        OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory,
-                    };
-                    additionalSetup(options);
-                })
-            );
+                    FileName = "s1.db",
+                    CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default,
+                    OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory,
+                };
+                additionalSetup(providerOptions);
+            });
+        }
 
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
+        private void SetupSql(IServiceProvider serviceProvider)
+        {
             var dbProvider = serviceProvider.GetServices<ISQLiteDatabaseProvider>().First();
 
             var conn = dbProvider.GetConnection();
@@ -45,7 +44,32 @@
             }
 
             conn.Execute(ConstSQL.CREATESQL);
+        }
 
+        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(options => SetupCachingProvider(options, additionalSetup));
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            SetupSql(serviceProvider);
+            return serviceProvider.GetService<IEasyCachingProvider>();
+        }
+
+        protected override IEasyCachingProvider CreateProviderWithErrorOnDeserialization()
+        {
+            IServiceCollection services = new ServiceCollection();
+            
+            AddLoggerFactory(services);
+
+            services.AddSingleton<SerializerWithErrorOnDeserialization>();
+            
+            services.AddEasyCaching(options => SetupCachingProvider(
+                options, 
+                providerOptions => providerOptions.SerializerName = nameof(SerializerWithErrorOnDeserialization)));
+            
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            SetupSql(serviceProvider);
             return serviceProvider.GetService<IEasyCachingProvider>();
         }
 

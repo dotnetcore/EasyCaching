@@ -1,16 +1,15 @@
 namespace EasyCaching.UnitTests
 {
-    using Core.Decoration;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Decoration.Polly;
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
-    using StackExchange.Redis;
     using System;
     using Xunit;
 
-    public class RedisCachingProviderTest : BaseCachingProviderTest
+    public class RedisCachingProviderTest : DistributedCachingProviderTest
     {
         private readonly string ProviderName = "Test";
 
@@ -28,21 +27,19 @@ namespace EasyCaching.UnitTests
             );
             return services.BuildServiceProvider();
         }
-
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
-            var serviceProvider = CreateServiceProvider(options =>
+            options.UseRedis(providerOptions =>
             {
-                options.DBConfig = new RedisDBOptions
+                providerOptions.DBConfig = new RedisDBOptions
                 {
                     AllowAdmin = true
                 };
-                options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                options.DBConfig.Database = 5;
-                additionalSetup(options);
+                providerOptions.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                providerOptions.DBConfig.Database = 5;
+                additionalSetup(providerOptions);
             });
-
-            return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
         private IEasyCachingProvider CreateCachingProviderWithUnavailableRedisAndFallback()
