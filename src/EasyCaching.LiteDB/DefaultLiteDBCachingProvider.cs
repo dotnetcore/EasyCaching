@@ -22,11 +22,6 @@
         /// </summary>
         private readonly LiteDBOptions _options;
 
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
         private readonly LiteDatabase _litedb;
 
         /// <summary>
@@ -57,7 +52,7 @@
 
             if (options.EnableLogging)
             {
-                this._logger = loggerFactory.CreateLogger<DefaultLiteDBCachingProvider>();
+                this.Logger = loggerFactory.CreateLogger<DefaultLiteDBCachingProvider>();
             }
             
             this._litedb = _dbProvider.GetConnection();
@@ -162,9 +157,7 @@
 
             if (cacheItem != null || _options.CacheNulls)
             {
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 return string.IsNullOrWhiteSpace(cacheItem?.cachevalue) 
                     ? CacheValue<T>.Null 
@@ -172,9 +165,7 @@
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -227,7 +218,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             _cache.DeleteMany(c => c.cachekey.StartsWith(prefix));
         }

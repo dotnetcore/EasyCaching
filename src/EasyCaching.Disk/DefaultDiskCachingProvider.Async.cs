@@ -27,7 +27,7 @@
 
         public override Task BaseFlushAsync()
         {
-            _logger?.LogInformation("FlushAsync");
+            Logger?.LogInformation("FlushAsync");
 
             var md5FolderName = GetMd5Str(_name);
 
@@ -106,17 +106,13 @@
                 {
                     var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
-                    _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
-                    CacheStats.OnHit();
+                    OnCacheHit(cacheKey);
 
                     return new CacheValue<T>(t, true);
                 }
             }
 
-            CacheStats.OnMiss();
-
-            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+            OnCacheMiss(cacheKey);
 
             // TODO: how to add mutex key here
             if (!_cacheKeysMap.TryAdd($"{cacheKey}_Lock", "1"))
@@ -162,9 +158,7 @@
 
             if (!File.Exists(path))
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return null;
             }
@@ -173,18 +167,14 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 var t = MessagePackSerializer.Deserialize(type, cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
                 return t;
             }
             else
             {
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
-
-                CacheStats.OnMiss();
+                OnCacheMiss(cacheKey);
 
                 return null;
             }
@@ -198,9 +188,7 @@
 
             if (!File.Exists(path))
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -209,18 +197,14 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
                 return new CacheValue<T>(t, true);
             }
             else
             {
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
-
-                CacheStats.OnMiss();
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }

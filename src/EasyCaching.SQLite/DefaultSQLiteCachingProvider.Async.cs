@@ -54,16 +54,12 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
 
-            CacheStats.OnMiss();
-
-            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+            OnCacheMiss(cacheKey);
 
             var item = await dataRetriever?.Invoke();
 
@@ -98,17 +94,13 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
+                OnCacheHit(cacheKey);
+                
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -151,17 +143,13 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 return Newtonsoft.Json.JsonConvert.DeserializeObject(dbResult, type);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return null;
             }
@@ -216,7 +204,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
+            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }

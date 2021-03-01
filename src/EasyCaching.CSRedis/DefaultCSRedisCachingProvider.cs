@@ -21,11 +21,6 @@
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
         /// The options.
         /// </summary>
         private readonly RedisOptions _options;
@@ -65,7 +60,7 @@
 
             if (options.EnableLogging)
             {
-                this._logger = loggerFactory.CreateLogger<DefaultCSRedisCachingProvider>();
+                this.Logger = loggerFactory.CreateLogger<DefaultCSRedisCachingProvider>();
             }
             
             this._cache = clients.Single(x => x.Name.Equals(_name));
@@ -112,7 +107,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            _logger?.LogInformation("Redis -- Flush");
+            Logger?.LogInformation("Redis -- Flush");
 
             _cache.NodesServerManager.FlushDb();
         }
@@ -133,17 +128,13 @@
             var result = _cache.Get<byte[]>(cacheKey);
             if (result != null)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
 
-            CacheStats.OnMiss();
-
-            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+            OnCacheMiss(cacheKey);
 
             if (!_cache.Set($"{cacheKey}_Lock", 1, (int)TimeSpan.FromMilliseconds(_options.LockMs).TotalSeconds, RedisExistence.Nx))
             {
@@ -180,18 +171,14 @@
             var result = _cache.Get<byte[]>(cacheKey);
             if (result != null)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -354,7 +341,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            _logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 

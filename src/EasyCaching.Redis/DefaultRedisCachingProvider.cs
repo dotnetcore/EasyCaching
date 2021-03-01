@@ -34,11 +34,6 @@
         private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
         /// The options.
         /// </summary>
         private readonly RedisOptions _options;
@@ -79,7 +74,7 @@
 
             if (options.EnableLogging)
             {
-                this._logger = loggerFactory.CreateLogger<DefaultRedisCachingProvider>();
+                this.Logger = loggerFactory.CreateLogger<DefaultRedisCachingProvider>();
             }
             
             this._cache = _dbProvider.GetDatabase();
@@ -126,17 +121,13 @@
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
 
-            CacheStats.OnMiss();
-
-            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+            OnCacheMiss(cacheKey);
 
             if (!_cache.StringSet($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists))
             {
@@ -173,18 +164,14 @@
             var result = _cache.StringGet(cacheKey);
             if (!result.IsNull)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -250,7 +237,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            _logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
@@ -432,7 +419,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            _logger?.LogInformation("Redis -- Flush");
+            Logger?.LogInformation("Redis -- Flush");
 
             foreach (var server in _servers)
             {

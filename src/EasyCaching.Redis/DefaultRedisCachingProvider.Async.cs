@@ -26,18 +26,14 @@
             var result = await _cache.StringGetAsync(cacheKey);
             if (!result.IsNull)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize(result, type);
                 return value;
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return null;
             }
@@ -59,17 +55,13 @@
             var result = await _cache.StringGetAsync(cacheKey);
             if (!result.IsNull)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
 
-            CacheStats.OnMiss();
-
-            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+            OnCacheMiss(cacheKey);
 
             var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists);
 
@@ -109,18 +101,14 @@
             var result = await _cache.StringGetAsync(cacheKey);
             if (!result.IsNull)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -206,7 +194,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            _logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
+            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
@@ -308,7 +296,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            _logger?.LogInformation("Redis -- FlushAsync");
+            Logger?.LogInformation("Redis -- FlushAsync");
 
             var tasks = new List<Task>();
 

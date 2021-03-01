@@ -22,12 +22,6 @@
         /// The options.
         /// </summary>
         private readonly SQLiteOptions _options;
-
-        /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
         /// <summary>
         /// The cache.
         /// </summary>
@@ -56,7 +50,7 @@
 
             if (options.EnableLogging)
             {
-                this._logger = loggerFactory.CreateLogger<DefaultSQLiteCachingProvider>();
+                this.Logger = loggerFactory.CreateLogger<DefaultSQLiteCachingProvider>();
             }
             
             this._cacheStats = new CacheStats();
@@ -164,9 +158,7 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult) || _options.CacheNulls)
             {
-                CacheStats.OnHit();
-
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+                OnCacheHit(cacheKey);
 
                 return string.IsNullOrWhiteSpace(dbResult) 
                     ? CacheValue<T>.Null
@@ -174,9 +166,7 @@
             }
             else
             {
-                CacheStats.OnMiss();
-
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -232,7 +222,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            _logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }

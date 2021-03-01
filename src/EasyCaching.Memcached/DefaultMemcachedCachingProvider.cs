@@ -26,11 +26,6 @@
         private readonly MemcachedOptions _options;
 
         /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
         /// The cache stats.
         /// </summary>
         private readonly CacheStats _cacheStats;
@@ -61,7 +56,7 @@
 
             if (options.EnableLogging)
             {
-                this._logger = loggerFactory.CreateLogger<DefaultMemcachedCachingProvider>();
+                this.Logger = loggerFactory.CreateLogger<DefaultMemcachedCachingProvider>();
             }
             
             this._cacheStats = new CacheStats();
@@ -219,7 +214,7 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
-            _logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -345,7 +340,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            _logger?.LogInformation("Memcached -- Flush");
+            Logger?.LogInformation("Memcached -- Flush");
 
             //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();
@@ -390,20 +385,6 @@
         public override ProviderInfo BaseGetProviderInfo()
         {
             return _info;
-        }
-
-        private void OnCacheHit(string cacheKey)
-        {
-            CacheStats.OnHit();
-
-            _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-        }
-        
-        private void OnCacheMiss(string cacheKey)
-        {
-            CacheStats.OnMiss();
-
-            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
         }
     }
 }

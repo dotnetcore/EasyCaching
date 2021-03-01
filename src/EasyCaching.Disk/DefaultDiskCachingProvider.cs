@@ -21,11 +21,6 @@
         private readonly DiskOptions _options;
 
         /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
         /// The cache stats.
         /// </summary>
         private readonly CacheStats _cacheStats;
@@ -50,7 +45,7 @@
 
             if (options.EnableLogging)
             {
-                this._logger = loggerFactory.CreateLogger<DefaultDiskCachingProvider>();
+                this.Logger = loggerFactory.CreateLogger<DefaultDiskCachingProvider>();
             }
 
             this._cacheKeysMap = new ConcurrentDictionary<string, string>();
@@ -180,7 +175,7 @@
 
         public override void BaseFlush()
         {
-            _logger?.LogInformation("Flush");
+            Logger?.LogInformation("Flush");
 
             var md5FolderName = GetMd5Str(_name);
 
@@ -206,17 +201,13 @@
                 {
                     var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
-                    _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
-                    CacheStats.OnHit();
+                    OnCacheMiss(cacheKey);
 
                     return new CacheValue<T>(t, true);
                 }
             }
 
-            CacheStats.OnMiss();
-
-            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+            OnCacheMiss(cacheKey);
 
             // TODO: how to add mutex key here
             if (!_cacheKeysMap.TryAdd($"{cacheKey}_Lock", "1"))
@@ -251,9 +242,7 @@
 
             if (!File.Exists(path))
             {
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
-
-                CacheStats.OnMiss();
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -262,18 +251,14 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
-                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
-
-                CacheStats.OnHit();
+                OnCacheMiss(cacheKey);
 
                 var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
                 return new CacheValue<T>(t, true);
             }
             else
             {
-                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
-
-                CacheStats.OnMiss();
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
