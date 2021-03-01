@@ -523,7 +523,7 @@
 
             var bytes = BuildDiskCacheValue(cacheValue, expiration);
 
-            using (FileStream stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+            using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
             {
                 stream.Write(bytes, 0, bytes.Length);
                 AppendKey(cacheKey, fileName);

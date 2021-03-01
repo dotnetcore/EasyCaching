@@ -36,6 +36,8 @@
                 option.UseRedis(config =>
                 {
                     config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                    config.DBConfig.SyncTimeout = 10000;
+                    config.DBConfig.AsyncTimeout = 10000;
                     config.SerializerName = "mymsgpack";
                 }, "redis1")
                 .WithMessagePack("mymsgpack")//with messagepack serialization
