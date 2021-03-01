@@ -138,7 +138,7 @@
                     else
                     {
                         isAvailable = false;
-                        _logger?.LogError(new EventId(), ex, $"Cache provider get error.");
+                        _logger?.LogError(new EventId(), ex, "Cache provider get error.");
                     }
                 }
 
@@ -222,7 +222,7 @@
                 catch (Exception ex)
                 {
                     if (!attribute.IsHighAvailability) throw;
-                    else _logger?.LogError(new EventId(), ex, $"Cache provider set error.");
+                    else _logger?.LogError(new EventId(), ex, "Cache provider set error.");
                 }
             }
         }
@@ -274,7 +274,7 @@
                 catch (Exception ex)
                 {
                     if (!attribute.IsHighAvailability) throw;
-                    else _logger?.LogError(new EventId(), ex, $"Cache provider remove error.");
+                    else _logger?.LogError(new EventId(), ex, "Cache provider remove error.");
                 }
             }
         }

@@ -114,8 +114,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             await Task.Run(() => BaseRemoveByPrefix(prefix));
         }

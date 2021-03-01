@@ -54,18 +54,12 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
 
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            OnCacheMiss(cacheKey);
 
             var item = await dataRetriever?.Invoke();
 
@@ -100,19 +94,13 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
+                OnCacheHit(cacheKey);
+                
                 return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -155,19 +143,13 @@
 
             if (!string.IsNullOrWhiteSpace(dbResult))
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                OnCacheHit(cacheKey);
 
                 return Newtonsoft.Json.JsonConvert.DeserializeObject(dbResult, type);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                OnCacheMiss(cacheKey);
 
                 return null;
             }
@@ -222,8 +204,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }

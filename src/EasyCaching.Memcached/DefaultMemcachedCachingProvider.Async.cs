@@ -192,8 +192,7 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -277,8 +276,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Memcached -- FlushAsync");
+            Logger?.LogInformation("Memcached -- FlushAsync");
 
             await _memcachedClient.FlushAllAsync();
         }

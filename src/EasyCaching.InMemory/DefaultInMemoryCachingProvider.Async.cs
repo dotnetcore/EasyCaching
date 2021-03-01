@@ -28,18 +28,12 @@
             var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 return result;
             }
 
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            OnCacheMiss(cacheKey);
 
             if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
             {
@@ -80,19 +74,13 @@
 
             if (result.HasValue)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 return result;
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
-                CacheStats.OnMiss();
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -122,19 +110,13 @@
 
             if (result != null)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                CacheStats.OnHit();
+                OnCacheHit(cacheKey);
 
                 return result;
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
-                CacheStats.OnMiss();
+                OnCacheMiss(cacheKey);
 
                 return null;
             }
@@ -203,8 +185,7 @@
 
             var count = await Task.Run(() => _cache.RemoveByPrefix(prefix));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix} , count = {count}");
+            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0} , count = {1}", prefix, count);
         }
       
         /// <summary>
@@ -232,8 +213,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
+            Logger?.LogInformation("GetAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             return await Task.FromResult(_cache.GetAll<T>(cacheKeys));
         }
@@ -249,8 +229,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
             var map = new Dictionary<string, CacheValue<T>>();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
+            Logger?.LogInformation("GetByPrefixAsync : prefix = {0}", prefix);
 
             return await Task.FromResult(_cache.GetByPrefix<T>(prefix));
         }
@@ -264,8 +243,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
+            Logger?.LogInformation("RemoveAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             await Task.Run(() => _cache.RemoveAll(cacheKeys));
         }
@@ -276,8 +254,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("FlushAsync");
+            Logger?.LogInformation("FlushAsync");
 
             _cache.Clear();
             await Task.CompletedTask;

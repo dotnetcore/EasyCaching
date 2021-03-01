@@ -6,6 +6,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using EasyCaching.Core.Diagnostics;
+    using Microsoft.Extensions.Logging;
 
     public abstract class EasyCachingAbstractProvider : IEasyCachingProvider
     {
@@ -16,6 +17,8 @@
         protected int ProviderMaxRdSecond { get; set; }
         protected CachingProviderType ProviderType { get; set; }
         protected CacheStats ProviderStats { get; set; }
+        
+        protected ILogger Logger { get; set; }
 
         public string Name => this.ProviderName;
         public int MaxRdSecond => this.ProviderMaxRdSecond;
@@ -728,6 +731,20 @@
         public ProviderInfo GetProviderInfo()
         {
             return BaseGetProviderInfo();            
+        }
+
+        protected void OnCacheHit(string cacheKey)
+        {
+            CacheStats.OnHit();
+
+            Logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+        }
+        
+        protected void OnCacheMiss(string cacheKey)
+        {
+            CacheStats.OnMiss();
+
+            Logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
         }
     }
 }

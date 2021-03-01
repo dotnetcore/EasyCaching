@@ -27,8 +27,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Redis -- FlushAsync");
+            Logger?.LogInformation("Redis -- FlushAsync");
 
             await _cache.NodesServerManager.FlushDbAsync();
         }
@@ -76,19 +75,13 @@
             var result = await _cache.GetAsync<byte[]>(cacheKey);
             if (result != null || _options.CacheNulls)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
 
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            OnCacheMiss(cacheKey);
 
             var flag = await _cache.SetAsync($"{cacheKey}_Lock", 1, (int)TimeSpan.FromMilliseconds(_options.LockMs).TotalSeconds, RedisExistence.Nx);
 
@@ -127,20 +120,14 @@
             var result = await _cache.GetAsync<byte[]>(cacheKey);
             if (result != null)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize(result, type);
                 return value;
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                OnCacheMiss(cacheKey);
 
                 return null;
             }
@@ -159,20 +146,14 @@
             var result = await _cache.GetAsync<byte[]>(cacheKey);
             if (result != null)
             {
-                CacheStats.OnHit();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                OnCacheHit(cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
             }
             else
             {
-                CacheStats.OnMiss();
-
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -272,8 +253,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 

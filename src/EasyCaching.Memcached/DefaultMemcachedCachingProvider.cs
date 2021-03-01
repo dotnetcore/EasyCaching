@@ -26,11 +26,6 @@
         private readonly MemcachedOptions _options;
 
         /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
         /// The cache stats.
         /// </summary>
         private readonly CacheStats _cacheStats;
@@ -58,7 +53,12 @@
             this._name = name;
             this._memcachedClient = memcachedClients.Single(x => x.Name.Equals(this._name));
             this._options = options;
-            this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
+
+            if (options.EnableLogging)
+            {
+                this.Logger = loggerFactory.CreateLogger<DefaultMemcachedCachingProvider>();
+            }
+            
             this._cacheStats = new CacheStats();
 
             this.ProviderName = this._name;
@@ -214,8 +214,7 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -341,8 +340,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Memcached -- Flush");
+            Logger?.LogInformation("Memcached -- Flush");
 
             //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();
@@ -387,22 +385,6 @@
         public override ProviderInfo BaseGetProviderInfo()
         {
             return _info;
-        }
-
-        private void OnCacheHit(string cacheKey)
-        {
-            CacheStats.OnHit();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-        }
-        
-        private void OnCacheMiss(string cacheKey)
-        {
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
         }
     }
 }

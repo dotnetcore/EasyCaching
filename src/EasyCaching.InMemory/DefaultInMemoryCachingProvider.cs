@@ -22,11 +22,6 @@
         private readonly InMemoryOptions _options;
 
         /// <summary>
-        /// The logger.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
         /// The cache stats.
         /// </summary>
         private readonly CacheStats _cacheStats;
@@ -54,7 +49,11 @@
             this._name = name;
             this._cache = cache.Single(x => x.ProviderName == _name);
             this._options = options;
-            this._logger = loggerFactory?.CreateLogger<DefaultInMemoryCachingProvider>();
+
+            if (options.EnableLogging)
+            {
+                this.Logger = loggerFactory.CreateLogger<DefaultInMemoryCachingProvider>();
+            }
 
             this._cacheStats = new CacheStats();
 
@@ -96,18 +95,12 @@
             var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                CacheStats.OnHit();
+                OnCacheMiss(cacheKey);
 
                 return result;
             }
 
-            CacheStats.OnMiss();
-
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            OnCacheMiss(cacheKey);
 
             if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
             {
@@ -146,19 +139,13 @@
             var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                CacheStats.OnHit();
+                OnCacheMiss(cacheKey);
 
                 return result;
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
-
-                CacheStats.OnMiss();
+                OnCacheMiss(cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -223,8 +210,7 @@
 
             var count = _cache.RemoveByPrefix(prefix);
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix} , count = {count}");
+            Logger?.LogInformation("RemoveByPrefix : prefix = {0} , count = {1}", prefix, count);
         }
   
         /// <summary>
@@ -251,8 +237,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"GetAll : cacheKeys = {string.Join(",", cacheKeys)}");
+            Logger?.LogInformation("GetAll : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             return _cache.GetAll<T>(cacheKeys);
         }
@@ -269,8 +254,7 @@
 
             var map = new Dictionary<string, CacheValue<T>>();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
+            Logger?.LogInformation("GetByPrefix : prefix = {0}", prefix);
 
             return _cache.GetByPrefix<T>(prefix);
         }
@@ -283,8 +267,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveAll : cacheKeys = {string.Join(",", cacheKeys)}");
+            Logger?.LogInformation("RemoveAll : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             _cache.RemoveAll(cacheKeys);
         }
@@ -304,8 +287,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Flush");
+            Logger?.LogInformation("Flush");
 
             _cache.Clear();
         }
