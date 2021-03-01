@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingAspectCorePackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.Interceptor.AspectCore</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>

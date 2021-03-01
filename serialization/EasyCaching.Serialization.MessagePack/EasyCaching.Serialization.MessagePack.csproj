@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingMessagePackPackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.Serialization.MessagePack</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>

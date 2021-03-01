@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingCastlePackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.Interceptor.Castle</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>

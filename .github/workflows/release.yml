@@ -3,7 +3,6 @@ name: Release
 on:
     push:
       branches:
-      - dev
       - master
 
 jobs:
@@ -20,7 +19,7 @@ jobs:
     - name: Build with dotnet
       run: dotnet build --configuration Release /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln
     - name: Pack with dotnet
-      run: dotnet pack /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln --version-suffix alpha`date +%Y%m%d%H%M%S` -o /home/runner/work/nugetpkgs -c Release --no-build
+      run: dotnet pack /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln -o /home/runner/work/nugetpkgs -c Release
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
@@ -41,7 +40,7 @@ jobs:
           run: ls nugetpkgs
         - name: Release
           run: |
-            for file in nugetpkgs/*.nupkg
+            for file in nugetpkgs/Mindbox.EasyCaching.*.nupkg
             do
-              dotnet nuget push $file -k ${{ secrets.MYGET_API_KEY }} --skip-duplicate -s https://www.myget.org/F/ncc/api/v2/package
+              dotnet nuget push $file -k ${{ secrets.MINDBOX_NUGET_AUTH_TOKEN}} --skip-duplicate -s https://www.nuget.org/api/v2/package
             done
