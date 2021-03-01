@@ -1,10 +1,9 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿namespace EasyCaching.Bus.CSRedis
 {
-    using CSRedis;
-    using EasyCaching.Bus.CSRedis;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.Decoration;
+    using EasyCaching.Decoration.Polly;
+    using global::CSRedis;
     using Microsoft.Extensions.Configuration;
     using System;
 

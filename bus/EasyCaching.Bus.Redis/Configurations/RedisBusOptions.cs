@@ -21,5 +21,10 @@
         public string SerializerName { get; set; }
 
         public BusFactoryDecorator BusFactoryDecorator { get; set; }
+        
+        public void DecorateWithRetryAndPublishFallback(int retryCount)
+        {
+            this.DecorateWithRetry(retryCount).DecorateWithPublishFallback();
+        }
     }
 }

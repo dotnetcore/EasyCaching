@@ -1,7 +1,7 @@
 namespace EasyCaching.UnitTests
 {
     using EasyCaching.Core;
-    using EasyCaching.Core.Decoration;
+    using EasyCaching.Decoration.Polly;
     using FakeItEasy;
     using System;
     using System.Threading.Tasks;

@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="../../build/version.props" />
+    <Import Project="../../build/releasenotes.props" />
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Owners>ncc;Catcher Wong;Andreychuk Nikolay</Owners>
+        <Authors>ncc;Catcher Wong;Andreychuk Nikolay</Authors>
+        <VersionPrefix>$(EasyCachingDecorationPollyPackageVersion)</VersionPrefix>
+        <VersionSuffix></VersionSuffix>
+        <Description>
+            Polly decorators (Circuit breaker, retry, fallback) for EasyCaching.
+        </Description>
+        <PackageTags>Caching,Cache,Distributed,Memory,Interceptor,Hybrid,ResponseCaching</PackageTags>
+        <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+        <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+        <PackageIcon>nuget-icon.png</PackageIcon>
+        <PackageReleaseNotes>
+            $(EasyCachingDecorationPollyPackageNotes)
+        </PackageReleaseNotes>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+        <None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Polly" Version="7.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
+    </ItemGroup>
+
+</Project>

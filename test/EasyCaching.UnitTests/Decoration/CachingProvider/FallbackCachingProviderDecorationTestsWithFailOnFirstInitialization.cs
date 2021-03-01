@@ -1,7 +1,8 @@
 namespace EasyCaching.UnitTests
 {
-    using Core;
-    using Core.Decoration;
+    using EasyCaching.Core;
+    using EasyCaching.Core.Decoration;
+    using EasyCaching.Decoration.Polly;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;

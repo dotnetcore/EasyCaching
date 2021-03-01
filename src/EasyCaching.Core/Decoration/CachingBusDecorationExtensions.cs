@@ -23,9 +23,7 @@ namespace EasyCaching.Core.Decoration
         {
             if (options.BusFactoryDecorator == null)
             {
-                options
-                    .DecorateWithRetry(3, exceptionFilter: null)
-                    .DecorateWithPublishFallback(exceptionFilter: null);
+                options.DecorateWithRetryAndPublishFallback(3);
             }
             
             var decoratedProviderFactory = options.BusFactoryDecorator(name, serviceProvider, cachingBusFactory);
@@ -50,42 +48,5 @@ namespace EasyCaching.Core.Decoration
 
             return options;
         }
-
-        public static IBusOptions DecorateWithRetry(
-            this IBusOptions options, 
-            int retryCount,
-            Func<Exception, bool> exceptionFilter,
-            Func<int, TimeSpan> sleepDurationProvider = null) =>
-            options.Decorate((name, serviceProvider, cachingBusFactory) =>
-                () => EasyCachingBusPolicyDecorator.WithRetry(
-                    name,
-                    cachingBusFactory,
-                    retryCount,
-                    exceptionFilter,
-                    sleepDurationProvider));
-
-        public static IBusOptions DecorateWithPublishFallback(
-            this IBusOptions options, Func<Exception, bool> exceptionFilter) =>
-            options.Decorate((name, serviceProvider, cachingBusFactory) =>
-                () => EasyCachingBusPolicyDecorator.WithPublishFallback(
-                    name, 
-                    cachingBusFactory, 
-                    exceptionFilter));
-
-        public static IBusOptions DecorateWithCircuitBreaker(
-            this IBusOptions options, 
-            ICircuitBreakerParameters initParameters,
-            ICircuitBreakerParameters executeParameters,
-            TimeSpan subscribeRetryInterval,
-            Func<Exception, bool> exceptionFilter) =>
-            options.Decorate((name, serviceProvider, cachingBusFactory) =>
-                () => EasyCachingBusPolicyDecorator.WithCircuitBreaker(
-                    name, 
-                    cachingBusFactory, 
-                    initParameters,
-                    executeParameters,
-                    subscribeRetryInterval,
-                    exceptionFilter));
-
     }
 }

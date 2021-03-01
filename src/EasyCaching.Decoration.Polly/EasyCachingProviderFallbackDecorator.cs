@@ -1,5 +1,6 @@
-﻿namespace EasyCaching.Core.Decoration
+﻿namespace EasyCaching.Decoration.Polly
 {
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core;
     using System;
     using System.Threading;

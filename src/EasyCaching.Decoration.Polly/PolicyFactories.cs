@@ -1,6 +1,6 @@
-namespace EasyCaching.Core.Decoration
+namespace EasyCaching.Decoration.Polly
 {
-    using Polly;
+    using global::Polly;
     using System;
 
     public static class PolicyFactories

@@ -1,5 +1,7 @@
-namespace EasyCaching.Core.Decoration
+namespace EasyCaching.Decoration.Polly
 {
+    using EasyCaching.Core;
+    using EasyCaching.Core.Decoration;
     using Polly;
     using System;
 

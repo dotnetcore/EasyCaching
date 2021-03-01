@@ -7,10 +7,6 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using Microsoft.Extensions.Logging;
-    using Polly;
-    using Polly.Fallback;
-    using Polly.Retry;
-    using Polly.Wrap;
 
     /// <summary>
     /// Hybrid caching provider.

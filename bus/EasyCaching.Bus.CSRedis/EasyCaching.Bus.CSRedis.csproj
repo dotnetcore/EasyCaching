@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Decoration.Polly\EasyCaching.Decoration.Polly.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configurations\" />

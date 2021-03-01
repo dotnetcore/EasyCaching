@@ -1,6 +1,7 @@
-namespace EasyCaching.Core.Decoration
+namespace EasyCaching.Decoration.Polly
 {
-    using Polly;
+    using global::Polly;
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core.Bus;
     using System;
     using System.Threading;
