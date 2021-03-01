@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿namespace EasyCaching.Redis
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
@@ -12,9 +12,9 @@
     /// <summary>
     /// EasyCaching options extensions.
     /// </summary>
-    public static class EasyCachingOptionsExtensions
+    public static class RedisOptionsExtensions
     {      
-        private static readonly Func<Exception, bool> RedisExceptionFilter = exception =>
+        public static Func<Exception, bool> RedisExceptionFilter { get; } = exception =>
             exception is RedisException ||
             exception is RedisCommandException || // Derived not from RedisException
             exception is TimeoutException || // Can be thrown on timeout in Redis is some cases, RedisTimeoutException is derived from TimeoutException
@@ -69,26 +69,6 @@
 
             options.RegisterExtension(new RedisOptionsExtension(name, configure));
             return options;
-        }
-
-        public static RedisOptions DecorateWithCircuitBreaker(
-            this RedisOptions options,
-            ICircuitBreakerParameters initParameters,
-            ICircuitBreakerParameters executeParameters)
-        {
-            return (RedisOptions) options.DecorateWithCircuitBreaker(
-                initParameters,
-                executeParameters,
-                RedisExceptionFilter);
-        }
-
-        public static RedisOptions DecorateWithFallback(
-            this RedisOptions options,
-            Func<string, IServiceProvider, IRedisAndEasyCachingProvider> fallbackCachingProviderFactory)
-        {
-            return (RedisOptions) options.DecorateWithFallback(
-                fallbackCachingProviderFactory,
-                RedisExceptionFilter);
         }
     }
 }

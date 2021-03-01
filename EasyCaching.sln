@@ -70,6 +70,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.LiteDB", "src\E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.SystemTextJson", "serialization\EasyCaching.Serialization.SystemTextJson\EasyCaching.Serialization.SystemTextJson.csproj", "{4FCF16BF-5E21-4B74-AB45-3C121ADF1485}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Decoration.Polly", "src\EasyCaching.Decoration.Polly\EasyCaching.Decoration.Polly.csproj", "{6D756175-3AE0-4BDD-B574-5227F7E2B8EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -184,6 +186,10 @@ Global
 		{4FCF16BF-5E21-4B74-AB45-3C121ADF1485}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FCF16BF-5E21-4B74-AB45-3C121ADF1485}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4FCF16BF-5E21-4B74-AB45-3C121ADF1485}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D756175-3AE0-4BDD-B574-5227F7E2B8EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D756175-3AE0-4BDD-B574-5227F7E2B8EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D756175-3AE0-4BDD-B574-5227F7E2B8EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D756175-3AE0-4BDD-B574-5227F7E2B8EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -216,6 +222,7 @@ Global
 		{711603E1-8363-4F8D-9AA9-8C03EC8BD35F} = {B4241D34-A973-4A13-BD89-9BAE3F2BDDF6}
 		{BA850294-3103-4540-8A27-FC768E1DC8FC} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{4FCF16BF-5E21-4B74-AB45-3C121ADF1485} = {15070C49-A507-4844-BCFE-D319CFBC9A63}
+		{6D756175-3AE0-4BDD-B574-5227F7E2B8EF} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63A57886-054B-476C-AAE1-8D7C8917682E}

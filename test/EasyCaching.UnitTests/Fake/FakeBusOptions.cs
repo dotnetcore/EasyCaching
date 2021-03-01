@@ -9,7 +9,11 @@ namespace EasyCaching.UnitTests
         public const string DefaultName = "FakeBus";
         
         public BusFactoryDecorator BusFactoryDecorator { get; set; }
-        
+
         public Func<IEasyCachingBus> BusFactory { get; set; }
+        
+        public void DecorateWithRetryAndPublishFallback(int retryCount)
+        {
+        }
     }
 }

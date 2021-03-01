@@ -1,9 +1,11 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using Core.Configurations;
-    using Core.Decoration;
+    using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Decoration.Polly;
+    using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;
@@ -76,7 +78,8 @@
                 
                             options.DecorateWithCircuitBreaker(
                                 initParameters: circuitBreakerParameters,
-                                executeParameters: circuitBreakerParameters);
+                                executeParameters: circuitBreakerParameters,
+                                exceptionFilter: RedisOptionsExtensions.RedisExceptionFilter);
                         },
                         DistributedCacheProviderName);
 

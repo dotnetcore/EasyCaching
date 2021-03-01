@@ -1,6 +1,7 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageVersion>1.3.1</EasyCachingCorePackageVersion>
+		<EasyCachingDecorationPollyPackageVersion>1.3.1</EasyCachingDecorationPollyPackageVersion>
 		<EasyCachingMemcachedPackageVersion>1.3.1</EasyCachingMemcachedPackageVersion>
 		<EasyCachingRedisPackageVersion>1.3.1</EasyCachingRedisPackageVersion>
 		<EasyCachingSQLitePackageVersion>1.3.1</EasyCachingSQLitePackageVersion>

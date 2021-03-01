@@ -1,8 +1,7 @@
 namespace EasyCaching.UnitTests
 {
-    using Core.Bus;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Decoration;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Decoration.Polly;
     using FakeItEasy;
     using Polly.CircuitBreaker;
     using System;

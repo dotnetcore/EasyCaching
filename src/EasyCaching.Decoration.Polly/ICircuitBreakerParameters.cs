@@ -1,6 +1,6 @@
-namespace EasyCaching.Core.Decoration
+namespace EasyCaching.Decoration.Polly
 {
-    using Polly;
+    using global::Polly;
 
     public interface ICircuitBreakerParameters
     {

@@ -3,6 +3,7 @@ namespace EasyCaching.UnitTests
     using Core.Decoration;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Decoration.Polly;
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
     using StackExchange.Redis;
@@ -65,10 +66,10 @@ namespace EasyCaching.UnitTests
                     .DecorateWithCircuitBreaker(
                         initCircuitBreakerParameters,
                         executeCircuitBreakerParameters,
-                        exception => exception is RedisException)
+                        exceptionFilter: RedisOptionsExtensions.RedisExceptionFilter)
                     .DecorateWithFallback(
                         (name, _) => new NullCachingProvider(name, options),
-                        exception => exception is RedisException);
+                        exceptionFilter: RedisOptionsExtensions.RedisExceptionFilter);
             });
             return serviceProvider.GetService<IEasyCachingProvider>();
         }

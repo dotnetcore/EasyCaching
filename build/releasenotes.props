@@ -1,9 +1,11 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Allow to cache null value.
-      2. Ready for 1.x version.
+      1. Added decorators functionality.
     </EasyCachingCorePackageNotes>
+    <EasyCachingDecorationPollyPackageNotes>
+      1. Added decorators for circuit breaker, retry and fallback.
+    </EasyCachingDecorationPollyPackageNotes>
     <EasyCachingMemcachedPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>

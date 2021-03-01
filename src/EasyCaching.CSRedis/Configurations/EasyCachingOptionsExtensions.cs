@@ -1,19 +1,17 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿namespace EasyCaching.CSRedis
 {
-    using CSRedis;
     using System;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.Decoration;
-    using EasyCaching.CSRedis;
+    using global::CSRedis;
     using Microsoft.Extensions.Configuration;
 
     /// <summary>
     /// EasyCaching options extensions.
     /// </summary>
-    public static class EasyCachingOptionsExtensions
+    public static class CSRedisOptionsExtensions
     {
-        private static readonly Func<Exception, bool> RedisExceptionFilter = exception => exception is RedisClientException;
+        public static Func<Exception, bool> RedisExceptionFilter { get; } = exception => exception is RedisClientException;
         
         /// <summary>
         /// Uses the CSRedis provider (specify the config via hard code).
@@ -64,26 +62,6 @@
 
             options.RegisterExtension(new RedisOptionsExtension(name, configure));
             return options;
-        }
-
-        public static RedisOptions DecorateWithCircuitBreaker(
-            this RedisOptions options,
-            ICircuitBreakerParameters initParameters,
-            ICircuitBreakerParameters executeParameters)
-        {
-            return (RedisOptions) options.DecorateWithCircuitBreaker(
-                initParameters,
-                executeParameters,
-                RedisExceptionFilter);
-        }
-
-        public static RedisOptions DecorateWithFallback(
-            this RedisOptions options,
-            Func<string, IServiceProvider, IRedisAndEasyCachingProvider> fallbackCachingProviderFactory)
-        {
-            return (RedisOptions) options.DecorateWithFallback(
-                fallbackCachingProviderFactory,
-                RedisExceptionFilter);
         }
     }
 }

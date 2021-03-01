@@ -1,10 +1,10 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿namespace EasyCaching.Bus.Redis
 {
+    using Decoration.Polly;
     using System;
     using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.Decoration;
     using Microsoft.Extensions.Configuration;
     using StackExchange.Redis;
     using System.Threading.Tasks;

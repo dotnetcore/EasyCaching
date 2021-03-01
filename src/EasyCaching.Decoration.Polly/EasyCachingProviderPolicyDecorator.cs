@@ -1,9 +1,10 @@
-﻿namespace EasyCaching.Core.Decoration
+﻿namespace EasyCaching.Decoration.Polly
 {
+    using EasyCaching.Core.Decoration;
     using EasyCaching.Core;
+    using global::Polly;
     using System;
     using System.Threading.Tasks;
-    using Polly;
 
     public class EasyCachingProviderPolicyDecorator<TProvider> : IEasyCachingProviderDecorator<TProvider> 
         where TProvider : class, IEasyCachingProviderBase
