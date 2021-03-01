@@ -53,7 +53,12 @@
         {
             this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
             this._options = options;
-            this._logger = loggerFactory?.CreateLogger<DefaultSQLiteCachingProvider>();
+
+            if (options.EnableLogging)
+            {
+                this._logger = loggerFactory.CreateLogger<DefaultSQLiteCachingProvider>();
+            }
+            
             this._cacheStats = new CacheStats();
             this._name = name;
 
@@ -161,8 +166,7 @@
             {
                 CacheStats.OnHit();
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 return string.IsNullOrWhiteSpace(dbResult) 
                     ? CacheValue<T>.Null
@@ -172,8 +176,7 @@
             {
                 CacheStats.OnMiss();
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -229,8 +232,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+            _logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }

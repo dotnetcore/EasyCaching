@@ -33,7 +33,10 @@
                 throw new ArgumentNullException(nameof(optionsAccessor));
             }
 
-            _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
+            if (optionsAccessor.EnableLogging)
+            {
+                _logger = loggerFactory.CreateLogger<EasyCachingMemcachedClientConfiguration>();
+            }
 
             var options = optionsAccessor.DBConfig;
 
@@ -46,22 +49,22 @@
                 options.SocketPool.CheckTimeout();
 
                 SocketPool.MinPoolSize = options.SocketPool.MinPoolSize;
-                _logger.LogInformation($"{nameof(SocketPool.MinPoolSize)}: {SocketPool.MinPoolSize}");
+                _logger?.LogInformation("{0}: {1}", nameof(SocketPool.MinPoolSize), SocketPool.MinPoolSize);
 
                 SocketPool.MaxPoolSize = options.SocketPool.MaxPoolSize;
-                _logger.LogInformation($"{nameof(SocketPool.MaxPoolSize)}: {SocketPool.MaxPoolSize}");
+                _logger?.LogInformation("{0}: {1}", nameof(SocketPool.MaxPoolSize), SocketPool.MaxPoolSize);
 
                 SocketPool.ConnectionTimeout = options.SocketPool.ConnectionTimeout;
-                _logger.LogInformation($"{nameof(SocketPool.ConnectionTimeout)}: {SocketPool.ConnectionTimeout}");
+                _logger?.LogInformation("{0}: {1}", nameof(SocketPool.ConnectionTimeout), SocketPool.ConnectionTimeout);
 
                 SocketPool.ReceiveTimeout = options.SocketPool.ReceiveTimeout;
-                _logger.LogInformation($"{nameof(SocketPool.ReceiveTimeout)}: {SocketPool.ReceiveTimeout}");
+                _logger?.LogInformation("{0}: {1}", nameof(SocketPool.ReceiveTimeout), SocketPool.ReceiveTimeout);
 
                 SocketPool.DeadTimeout = options.SocketPool.DeadTimeout;
-                _logger.LogInformation($"{nameof(SocketPool.DeadTimeout)}: {SocketPool.DeadTimeout}");
+                _logger?.LogInformation("{0}: {1}", nameof(SocketPool.DeadTimeout), SocketPool.DeadTimeout);
 
                 SocketPool.QueueTimeout = options.SocketPool.QueueTimeout;
-                _logger.LogInformation($"{nameof(SocketPool.QueueTimeout)}: {SocketPool.QueueTimeout}");
+                _logger?.LogInformation("{0}: {1}", nameof(SocketPool.QueueTimeout), SocketPool.QueueTimeout);
 
                 SocketPool.InitPoolTimeout = options.SocketPool.InitPoolTimeout;
             }
@@ -75,31 +78,31 @@
                     var authenticationType = Type.GetType(options.Authentication.Type);
                     if (authenticationType != null)
                     {
-                        _logger.LogDebug($"Authentication type is {authenticationType}.");
+                        _logger?.LogDebug("Authentication type is {0}.", authenticationType);
 
                         Authentication = new AuthenticationConfiguration();
                         Authentication.Type = authenticationType;
                         foreach (var parameter in options.Authentication.Parameters)
                         {
                             Authentication.Parameters[parameter.Key] = parameter.Value;
-                            _logger.LogDebug($"Authentication {parameter.Key} is '{parameter.Value}'.");
+                            _logger?.LogDebug("Authentication {0} is '{1}'.", parameter.Key, parameter.Value);
                         }
                     }
                     else
                     {
-                        _logger.LogError($"Unable to load authentication type {options.Authentication.Type}.");
+                        _logger?.LogError("Unable to load authentication type {0}.", options.Authentication.Type);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(new EventId(), ex, $"Unable to load authentication type {options.Authentication.Type}.");
+                    _logger?.LogError(new EventId(), ex, "Unable to load authentication type {0}.", options.Authentication.Type);
                 }
             }
 
             if (keyTransformer != null)
             {
                 this.KeyTransformer = keyTransformer;
-                _logger.LogDebug($"Use KeyTransformer Type : '{keyTransformer.ToString()}'");
+                _logger?.LogDebug("Use KeyTransformer Type : '{0}'", keyTransformer);
             }
 
             if (NodeLocator == null)
@@ -123,7 +126,7 @@
                 if (coder != null)
                 {
                     this._transcoder = coder;
-                    _logger.LogDebug($"Use Transcoder Type : '{coder.ToString()}'");
+                    _logger?.LogDebug("Use Transcoder Type : '{0}'", coder.ToString());
                 }
             }
 
@@ -145,16 +148,16 @@
 
                     if (address == null)
                     {
-                        _logger.LogError($"Could not resolve host '{server.Address}'.");
+                        _logger?.LogError("Could not resolve host '{0}'.", server.Address);
                     }
                     else
                     {
-                        _logger.LogInformation($"Memcached server address - {address}");
+                        _logger?.LogInformation("Memcached server address - {0}", address);
                     }
                 }
                 else
                 {
-                    _logger.LogInformation($"Memcached server address - {server.Address }:{server.Port}");
+                    _logger?.LogInformation("Memcached server address - {0}:{1}", server.Address, server.Port);
                 }
 
                 Servers.Add(new IPEndPoint(address, server.Port));

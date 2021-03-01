@@ -28,8 +28,7 @@
             {
                 CacheStats.OnHit();
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 var value = _serializer.Deserialize(result, type);
                 return value;
@@ -38,8 +37,7 @@
             {
                 CacheStats.OnMiss();
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
                 return null;
             }
@@ -63,8 +61,7 @@
             {
                 CacheStats.OnHit();
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
@@ -72,8 +69,7 @@
 
             CacheStats.OnMiss();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
             var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists);
 
@@ -115,8 +111,7 @@
             {
                 CacheStats.OnHit();
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 var value = _serializer.Deserialize<T>(result);
                 return new CacheValue<T>(value, true);
@@ -125,8 +120,7 @@
             {
                 CacheStats.OnMiss();
 
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
                 return CacheValue<T>.NoValue;
             }
@@ -212,8 +206,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
+            _logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
@@ -315,8 +308,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Redis -- FlushAsync");
+            _logger?.LogInformation("Redis -- FlushAsync");
 
             var tasks = new List<Task>();
 

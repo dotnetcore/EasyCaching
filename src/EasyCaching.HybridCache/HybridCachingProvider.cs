@@ -67,7 +67,10 @@
 
             ArgumentCheck.NotNullOrWhiteSpace(_options.TopicName, nameof(_options.TopicName));
 
-            this._logger = loggerFactory?.CreateLogger<HybridCachingProvider>();
+            if (optionsAccs.EnableLogging)
+            {
+                this._logger = loggerFactory.CreateLogger<HybridCachingProvider>();
+            }
 
             // Here use the order to distinguish traditional provider
             this._localCache = factory.GetCachingProvider(_options.LocalCacheProviderName);
@@ -98,7 +101,7 @@
 
                 _localCache.RemoveByPrefix(prefix);
 
-                LogMessage($"remove local cache that prefix is {prefix}");
+                _logger?.LogDebug("remove local cache that prefix is {0}", prefix);
 
                 return;
             }
@@ -107,7 +110,7 @@
             {
                 _localCache.Remove(item);
 
-                LogMessage($"remove local cache that cache key is {item}");
+                _logger?.LogDebug("remove local cache that cache key is {0}", item);
             }
         }
 
@@ -128,7 +131,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"Check cache key exists error [{cacheKey}] ", ex);
+                _logger?.LogError(ex, "Check cache key exists error [{0}] ", cacheKey);
             }
 
             flag = _localCache.Exists(cacheKey);
@@ -154,7 +157,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"Check cache key [{cacheKey}] exists error", ex);
+                _logger?.LogError(ex, "Check cache key [{0}] exists error", cacheKey);
             }
 
             flag = await _localCache.ExistsAsync(cacheKey);
@@ -178,7 +181,7 @@
                 return cacheValue;
             }
 
-            LogMessage($"local cache can not get the value of {cacheKey}");
+            _logger?.LogDebug("local cache can not get the value of {0}", cacheKey);
 
             try
             {
@@ -186,7 +189,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"distributed cache get error, [{cacheKey}]", ex);
+                _logger?.LogError(ex, "distributed cache get error, [{0}]", cacheKey);
             }
 
             if (cacheValue.HasValue)
@@ -198,7 +201,7 @@
                 return cacheValue;
             }
 
-            LogMessage($"distributed cache can not get the value of {cacheKey}");
+            _logger?.LogDebug("distributed cache can not get the value of {0}", cacheKey);
 
             return CacheValue<T>.NoValue;
         }
@@ -220,7 +223,7 @@
                 return cacheValue;
             }
 
-            LogMessage($"local cache can not get the value of {cacheKey}");
+            _logger?.LogDebug("local cache can not get the value of {0}", cacheKey);
 
             try
             {
@@ -228,7 +231,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"distributed cache get error, [{cacheKey}]", ex);
+                _logger?.LogError(ex, "distributed cache get error, [{0}]", cacheKey);
             }
 
             if (cacheValue.HasValue)
@@ -240,7 +243,7 @@
                 return cacheValue;
             }
 
-            LogMessage($"distributed cache can not get the value of {cacheKey}");
+            _logger?.LogDebug("distributed cache can not get the value of {0}", cacheKey);
 
             return CacheValue<T>.NoValue;
         }
@@ -260,7 +263,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"remove cache key [{cacheKey}] error", ex);
+                _logger?.LogError(ex, "remove cache key [{0}] error", cacheKey);
             }
 
             _localCache.Remove(cacheKey);
@@ -285,7 +288,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"remove cache key [{cacheKey}] error", ex);
+                _logger?.LogError(ex, "remove cache key [{0}] error", cacheKey);
             }
 
             await _localCache.RemoveAsync(cacheKey);
@@ -313,7 +316,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"set cache key [{cacheKey}] error", ex);
+                _logger?.LogError(ex, "set cache key [{0}] error", cacheKey);
             }
 
             // When create/update cache, send message to bus so that other clients can remove it.
@@ -340,7 +343,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"set cache key [{cacheKey}] error", ex);
+                _logger?.LogError(ex, "set cache key [{0}] error", cacheKey);
             }
 
             // When create/update cache, send message to bus so that other clients can remove it.
@@ -369,7 +372,7 @@
             catch (Exception ex)
             {
                 distributedError = true;
-                LogMessage($"tryset cache key [{cacheKey}] error", ex);
+                _logger?.LogError(ex, "tryset cache key [{0}] error", cacheKey);
             }
 
             if (flag && !distributedError)
@@ -416,7 +419,7 @@
             catch (Exception ex)
             {
                 distributedError = true;
-                LogMessage($"tryset cache key [{cacheKey}] error", ex);
+                _logger?.LogError(ex, "tryset cache key [{0}] error", cacheKey);
             }
 
             if (flag && !distributedError)
@@ -457,7 +460,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"set all from distributed provider error [{string.Join(",", value.Keys)}]", ex);
+                _logger?.LogError(ex, "set all from distributed provider error [{0}]", string.Join(",", value.Keys));
             }
 
             // send message to bus 
@@ -481,7 +484,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"set all from distributed provider error [{string.Join(",", value.Keys)}]", ex);
+                _logger?.LogError(ex, "set all from distributed provider error [{0}]", string.Join(",", value.Keys));
             }
 
             // send message to bus 
@@ -502,7 +505,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"remove all from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
+                _logger?.LogError(ex, "remove all from distributed provider error [{0}]", string.Join(",", cacheKeys));
             }
 
             _localCache.RemoveAll(cacheKeys);
@@ -526,7 +529,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"remove all async from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
+                _logger?.LogError(ex, "remove all async from distributed provider error [{0}]", string.Join(",", cacheKeys));
             }
 
             await _localCache.RemoveAllAsync(cacheKeys);
@@ -561,7 +564,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"get with data retriever from distributed provider error [{cacheKey}]", ex);
+                _logger?.LogError(ex, "get with data retriever from distributed provider error [{0}]", cacheKey);
             }
 
             if (result.HasValue)
@@ -602,7 +605,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"get async with data retriever from distributed provider error [{cacheKey}]", ex);
+                _logger?.LogError(ex, "get async with data retriever from distributed provider error [{0}]", cacheKey);
             }
 
             if (result.HasValue)
@@ -631,7 +634,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"remove by prefix [{prefix}] error", ex);
+                _logger?.LogError(ex, "remove by prefix [{0}] error", prefix);
             }
 
             _localCache.RemoveByPrefix(prefix);
@@ -655,33 +658,13 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"remove by prefix [{prefix}] error", ex);
+                _logger?.LogError(ex, "remove by prefix [{0}] error", prefix);
             }
 
             await _localCache.RemoveByPrefixAsync(prefix);
 
             // send message to bus in order to notify other clients.
             await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
-        }
-
-        /// <summary>
-        /// Logs the message.
-        /// </summary>
-        /// <param name="message">Message.</param>
-        /// <param name="ex">Ex.</param>
-        private void LogMessage(string message, Exception ex = null)
-        {
-            if (_options.EnableLogging)
-            {
-                if (ex == null)
-                {
-                    _logger.LogDebug(message);
-                }
-                else
-                {
-                    _logger.LogError(ex, message);
-                }
-            }
         }
 
         private async Task<TimeSpan> GetExpirationAsync(string cacheKey)
@@ -737,7 +720,7 @@
                 return cacheValue;
             }
 
-            LogMessage($"local cache can not get the value of {cacheKey}");
+            _logger?.LogDebug("local cache can not get the value of {0}", cacheKey);
 
             try
             {
@@ -745,7 +728,7 @@
             }
             catch (Exception ex)
             {
-                LogMessage($"distributed cache get error, [{cacheKey}]", ex);
+                _logger?.LogError(ex, "distributed cache get error, [{0}]", cacheKey);
             }
 
             if (cacheValue != null)
@@ -757,7 +740,7 @@
                 return cacheValue;
             }
 
-            LogMessage($"distributed cache can not get the value of {cacheKey}");
+            _logger?.LogDebug("distributed cache can not get the value of {0}", cacheKey);
 
             return null;
         }

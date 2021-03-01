@@ -28,8 +28,7 @@
             var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 CacheStats.OnHit();
 
@@ -38,8 +37,7 @@
 
             CacheStats.OnMiss();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
             if (!_cache.Add($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs)))
             {
@@ -80,8 +78,7 @@
 
             if (result.HasValue)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 CacheStats.OnHit();
 
@@ -89,8 +86,7 @@
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
                 CacheStats.OnMiss();
 
@@ -122,8 +118,7 @@
 
             if (result != null)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 CacheStats.OnHit();
 
@@ -131,8 +126,7 @@
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
                 CacheStats.OnMiss();
 
@@ -203,8 +197,7 @@
 
             var count = await Task.Run(() => _cache.RemoveByPrefix(prefix));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix} , count = {count}");
+            _logger?.LogInformation("RemoveByPrefixAsync : prefix = {0} , count = {1}", prefix, count);
         }
       
         /// <summary>
@@ -232,8 +225,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
+            _logger?.LogInformation("GetAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             return await Task.FromResult(_cache.GetAll<T>(cacheKeys));
         }
@@ -249,8 +241,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
             var map = new Dictionary<string, CacheValue<T>>();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
+            _logger?.LogInformation("GetByPrefixAsync : prefix = {0}", prefix);
 
             return await Task.FromResult(_cache.GetByPrefix<T>(prefix));
         }
@@ -264,8 +255,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
+            _logger?.LogInformation("RemoveAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             await Task.Run(() => _cache.RemoveAll(cacheKeys));
         }
@@ -276,8 +266,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("FlushAsync");
+            _logger?.LogInformation("FlushAsync");
 
             _cache.Clear();
             await Task.CompletedTask;

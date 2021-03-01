@@ -47,7 +47,11 @@
         {
             this._name = name;
             this._options = options;
-            this._logger = loggerFactory?.CreateLogger<DefaultDiskCachingProvider>();
+
+            if (options.EnableLogging)
+            {
+                this._logger = loggerFactory.CreateLogger<DefaultDiskCachingProvider>();
+            }
 
             this._cacheKeysMap = new ConcurrentDictionary<string, string>();
 
@@ -176,8 +180,7 @@
 
         public override void BaseFlush()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Flush");
+            _logger?.LogInformation("Flush");
 
             var md5FolderName = GetMd5Str(_name);
 
@@ -203,8 +206,7 @@
                 {
                     var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
-                    if (_options.EnableLogging)
-                        _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                    _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                     CacheStats.OnHit();
 
@@ -214,8 +216,7 @@
 
             CacheStats.OnMiss();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
             // TODO: how to add mutex key here
             if (!_cacheKeysMap.TryAdd($"{cacheKey}_Lock", "1"))
@@ -250,8 +251,7 @@
 
             if (!File.Exists(path))
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
                 CacheStats.OnMiss();
 
@@ -262,8 +262,7 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
 
                 CacheStats.OnHit();
 
@@ -272,8 +271,7 @@
             }
             else
             {
-                if (_options.EnableLogging)
-                    _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+                _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
 
                 CacheStats.OnMiss();
 

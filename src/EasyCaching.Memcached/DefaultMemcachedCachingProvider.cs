@@ -58,7 +58,12 @@
             this._name = name;
             this._memcachedClient = memcachedClients.Single(x => x.Name.Equals(this._name));
             this._options = options;
-            this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
+
+            if (options.EnableLogging)
+            {
+                this._logger = loggerFactory.CreateLogger<DefaultMemcachedCachingProvider>();
+            }
+            
             this._cacheStats = new CacheStats();
 
             this.ProviderName = this._name;
@@ -214,8 +219,7 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
+            _logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -341,8 +345,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("Memcached -- Flush");
+            _logger?.LogInformation("Memcached -- Flush");
 
             //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();
@@ -393,16 +396,14 @@
         {
             CacheStats.OnHit();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+            _logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
         }
         
         private void OnCacheMiss(string cacheKey)
         {
             CacheStats.OnMiss();
 
-            if (_options.EnableLogging)
-                _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+            _logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
         }
     }
 }
