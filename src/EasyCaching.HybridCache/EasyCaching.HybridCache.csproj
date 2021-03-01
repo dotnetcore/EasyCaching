@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingHybridPackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.HybridCache</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>

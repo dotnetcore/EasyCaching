@@ -19,6 +19,7 @@
     <PackageReleaseNotes>            
       $(EasyCachingProtobufPackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.Serialization.Protobuf</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>
