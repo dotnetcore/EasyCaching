@@ -17,6 +17,7 @@
     <PackageReleaseNotes>
       $(EasyCachingLiteDBPackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.LiteDB</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>

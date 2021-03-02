@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingCSRedisPackageVersion)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.CSRedis</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>

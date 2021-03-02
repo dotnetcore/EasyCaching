@@ -19,6 +19,7 @@
     <PackageReleaseNotes>
       $(EasyCachingRabbitBusPackageNotes)
     </PackageReleaseNotes>
+    <PackageId>Mindbox.EasyCaching.Bus.RabbitMQ</PackageId>
   </PropertyGroup>
 
   <PropertyGroup>
