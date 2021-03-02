@@ -46,7 +46,7 @@ namespace EasyCaching.UnitTests
         }
         
         [Fact]
-        public void Get_With_Deserialization_Error_Should_Return_No_Value()
+        public void Get_OnDeserializationError_ShouldReturnNoValue()
         {
             var cachingProvider = CreateProviderWithErrorOnDeserialization();
             cachingProvider.Set("key", "value", _defaultTs);
@@ -54,13 +54,13 @@ namespace EasyCaching.UnitTests
             var result = cachingProvider.Get<string>("key");
             
             Assert.False(result.HasValue);
-            Assert.Equal(null, result.Value);
+            Assert.Null(result.Value);
             AssertCacheMissed(cachingProvider.CacheStats);
             AssertDeserializationErrorLoggedAsWarning();
         }
         
         [Fact]
-        public async void GetAsync_With_Deserialization_Error_Should_Return_No_Value()
+        public async void GetAsync_OnDeserializationError_ShouldReturnNoValue()
         {
             var cachingProvider = CreateProviderWithErrorOnDeserialization();
             await cachingProvider.SetAsync("key", "value", _defaultTs);
@@ -68,13 +68,13 @@ namespace EasyCaching.UnitTests
             var result = await cachingProvider.GetAsync<string>("key");
             
             Assert.False(result.HasValue);
-            Assert.Equal(null, result.Value);
+            Assert.Null(result.Value);
             AssertCacheMissed(cachingProvider.CacheStats);
             AssertDeserializationErrorLoggedAsWarning();
         }
         
         [Fact]
-        public void Get_With_Data_Retriever_And_Deserialization_Error_Should_Return_No_Value()
+        public void GetWithDataRetriever_OnDeserializationError_ShouldReturnNoValue()
         {
             var cachingProvider = CreateProviderWithErrorOnDeserialization();
             cachingProvider.Set("key", "value", _defaultTs);
@@ -88,7 +88,7 @@ namespace EasyCaching.UnitTests
         }
         
         [Fact]
-        public async void GetAsync_With_Data_Retriever_And_Deserialization_Error_Should_Return_No_Value()
+        public async void GetAsyncWithDataRetriever_OnDeserializationError_ShouldReturnNoValue()
         {
             var cachingProvider = CreateProviderWithErrorOnDeserialization();
             await cachingProvider.SetAsync("key", "value", _defaultTs);
@@ -100,6 +100,54 @@ namespace EasyCaching.UnitTests
             AssertCacheMissed(cachingProvider.CacheStats);
             AssertDeserializationErrorLoggedAsWarning();
         }
+        
+        [Fact]
+        public void GetAll_OnDeserializationError_ShouldReturnNoValue()
+        {
+            var cachingProvider = CreateProviderWithErrorOnDeserialization();
+            cachingProvider.Set("key1", "value2", _defaultTs);
+            cachingProvider.Set("key2", "value2", _defaultTs);
+
+            
+            var result = cachingProvider.GetAll<string>(new[] {"key1", "key2" });
+
+
+            var value1 = result["key1"];
+            Assert.False(value1.HasValue);
+            Assert.Null(value1.Value);
+            
+            var value2 = result["key2"];
+            Assert.False(value2.HasValue);
+            Assert.Null(value2.Value);
+            
+            AssertDeserializationWarning(fakeLogger.LoggedExceptions[0]);
+            AssertDeserializationWarning(fakeLogger.LoggedExceptions[1]);
+            Assert.Equal(2, fakeLogger.LoggedExceptions.Count);
+        }
+        
+        [Fact]
+        public async void GetAllAsync_OnDeserializationError_ShouldReturnNoValue()
+        {
+            var cachingProvider = CreateProviderWithErrorOnDeserialization();
+            cachingProvider.Set("key1", "value2", _defaultTs);
+            cachingProvider.Set("key2", "value2", _defaultTs);
+
+            
+            var result = await cachingProvider.GetAllAsync<string>(new[] {"key1", "key2" });
+
+
+            var value1 = result["key1"];
+            Assert.False(value1.HasValue);
+            Assert.Null(value1.Value);
+            
+            var value2 = result["key2"];
+            Assert.False(value2.HasValue);
+            Assert.Null(value2.Value);
+            
+            AssertDeserializationWarning(fakeLogger.LoggedExceptions[0]);
+            AssertDeserializationWarning(fakeLogger.LoggedExceptions[1]);
+            Assert.Equal(2, fakeLogger.LoggedExceptions.Count);
+        }
 
         private void AssertCacheMissed(CacheStats cacheStats)
         {
@@ -109,7 +157,11 @@ namespace EasyCaching.UnitTests
 
         private void AssertDeserializationErrorLoggedAsWarning()
         {
-            var loggedException = fakeLogger.LoggedExceptions.Single();
+            AssertDeserializationWarning(fakeLogger.LoggedExceptions.Single());
+        }
+
+        private void AssertDeserializationWarning((LogLevel LogLevel, Exception Exception) loggedException)
+        {
             Assert.Equal(DeserializationErrorMessage, loggedException.Exception.Message);
             Assert.Equal(LogLevel.Warning, loggedException.LogLevel);
         }
@@ -118,7 +170,7 @@ namespace EasyCaching.UnitTests
         {
             private readonly List<(LogLevel, Exception)> _loggedExceptions = new List<(LogLevel, Exception)>();
 
-            public IEnumerable<(LogLevel LogLevel, Exception Exception)> LoggedExceptions => _loggedExceptions;
+            public IReadOnlyList<(LogLevel LogLevel, Exception Exception)> LoggedExceptions => _loggedExceptions;
             
             public void Log<TState>(
                 LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
