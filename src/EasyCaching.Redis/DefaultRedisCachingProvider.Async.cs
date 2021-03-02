@@ -52,16 +52,12 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _cache.StringGetAsync(cacheKey);
-            if (!result.IsNull)
-            {
-                OnCacheHit(cacheKey);
+            var redisValue = await _cache.StringGetAsync(cacheKey);
+            var result = Deserialize<T>(cacheKey, redisValue);
+            TrackCacheStats(cacheKey, result);
 
-                var value = _serializer.Deserialize<T>(result);
-                return new CacheValue<T>(value, true);
-            }
-
-            OnCacheMiss(cacheKey);
+            if (result.HasValue)
+                return result;
 
             var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists);
 
@@ -78,14 +74,16 @@
 
                 //remove mutex key
                 await _cache.KeyDeleteAsync($"{cacheKey}_Lock");
-                return new CacheValue<T>(item, true);
+                result = new CacheValue<T>(item, true);
             }
             else
             {
                 //remove mutex key
                 await _cache.KeyDeleteAsync($"{cacheKey}_Lock");
-                return CacheValue<T>.NoValue;
+                result = CacheValue<T>.NoValue;
             }
+            
+            return result;
         }
 
         /// <summary>
@@ -98,20 +96,11 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await _cache.StringGetAsync(cacheKey);
-            if (!result.IsNull)
-            {
-                OnCacheHit(cacheKey);
+            var redisValue = await _cache.StringGetAsync(cacheKey);
+            var result = Deserialize<T>(cacheKey, redisValue);
+            TrackCacheStats(cacheKey, result);
 
-                var value = _serializer.Deserialize<T>(result);
-                return new CacheValue<T>(value, true);
-            }
-            else
-            {
-                OnCacheMiss(cacheKey);
-
-                return CacheValue<T>.NoValue;
-            }
+            return result;
         }
 
         /// <summary>
@@ -233,18 +222,8 @@
 
             var keyArray = cacheKeys.ToArray();
             var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey)k).ToArray());
-
-            var result = new Dictionary<string, CacheValue<T>>();
-            for (int i = 0; i < keyArray.Length; i++)
-            {
-                var cachedValue = values[i];
-                if (!cachedValue.IsNull)
-                    result.Add(keyArray[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
-                else
-                    result.Add(keyArray[i], CacheValue<T>.NoValue);
-            }
-
-            return result;
+            
+            return DeserializeAll<T>(keyArray, values);
         }
 
         /// <summary>
@@ -263,17 +242,7 @@
 
             var values = (await _cache.StringGetAsync(redisKeys)).ToArray();
 
-            var result = new Dictionary<string, CacheValue<T>>();
-            for (int i = 0; i < redisKeys.Length; i++)
-            {
-                var cachedValue = values[i];
-                if (!cachedValue.IsNull)
-                    result.Add(redisKeys[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
-                else
-                    result.Add(redisKeys[i], CacheValue<T>.NoValue);
-            }
-
-            return result;
+            return DeserializeAll<T>(redisKeys, values);
         }
 
         /// <summary>

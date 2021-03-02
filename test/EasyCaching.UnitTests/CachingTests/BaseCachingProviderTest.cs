@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using FakeItEasy;
+    using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -23,7 +24,11 @@
             _providerWithNullsCached = CreateCachingProvider(options => options.CacheNulls = true);
         }
 
-        protected abstract IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup);
+        protected abstract void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup);
+
+        protected virtual IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup) =>
+            ServiceBuilders.CreateService<IEasyCachingProvider>(services =>
+                services.AddEasyCaching(options => SetupCachingProvider(options, additionalSetup)));
 
         #region Parameter Check Test
         [Theory]
@@ -518,13 +523,45 @@
         {
             var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_NULL();
-
+            
             var res = _providerWithNullsCached.Get(cacheKey, func, _defaultTs);
 
-            Assert.Equal(default(string),res.Value);
-            var cachedValue = _providerWithNullsCached.Get<string>(cacheKey);
-            Assert.True(cachedValue.HasValue);
-            Assert.Null(cachedValue.Value);
+            Assert.True(res.HasValue);
+            Assert.Null(res.Value);
+            Assert.Equal(0, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
+            
+            
+            var funcThatShouldNotBeCalled = Create_Fake_Retriever_Return_NULL();
+            
+            res = _providerWithNullsCached.Get(cacheKey, funcThatShouldNotBeCalled, _defaultTs);
+
+            Assert.True(res.HasValue);
+            Assert.Null(res.Value);
+            Assert.Equal(1, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
+            A.CallTo(() => funcThatShouldNotBeCalled.Invoke()).MustNotHaveHappened();
+        }
+        
+        [Fact]
+        public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Null_With_Caching_When_Nulls_Are_Cached()
+        {
+            var cacheKey = GetUniqueCacheKey();
+            var func = Create_Fake_Retriever_Return_NULL_Async();
+
+            var res = await _providerWithNullsCached.GetAsync(cacheKey, func, _defaultTs);
+
+            Assert.True(res.HasValue);
+            Assert.Null(res.Value);
+            Assert.Equal(0, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
+            
+            
+            var funcThatShouldNotBeCalled = Create_Fake_Retriever_Return_NULL_Async();
+            
+            res = await _providerWithNullsCached.GetAsync(cacheKey, funcThatShouldNotBeCalled, _defaultTs);
+
+            Assert.True(res.HasValue);
+            Assert.Null(res.Value);
+            Assert.Equal(1, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
+            A.CallTo(() => funcThatShouldNotBeCalled.Invoke()).MustNotHaveHappened();
         }
 
         [Fact]

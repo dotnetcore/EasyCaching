@@ -10,29 +10,23 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class LiteDBCachingTest : BaseCachingProviderTest
+    public class LiteDBCachingTest : DistributedCachingProviderTest
     {
         public LiteDBCachingTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x =>
-                x.UseLiteDB(options =>
+            options.UseLiteDB(providerOptions =>
+            {
+                providerOptions.DBConfig = new LiteDBDBOptions
                 {
-                    options.DBConfig = new  LiteDBDBOptions
-                    {
-                        FileName = "s1.ldb"
-                    };
-                    additionalSetup(options);
-                })
-            );
-
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<IEasyCachingProvider>();;
+                    FileName = "s1.ldb"
+                };
+                additionalSetup(providerOptions);
+            });
         }
 
         [Fact]

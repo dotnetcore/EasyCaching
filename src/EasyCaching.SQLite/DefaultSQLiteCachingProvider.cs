@@ -156,7 +156,7 @@
                 name = _name
             }).FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(dbResult) || _options.CacheNulls)
+            if (!string.IsNullOrWhiteSpace(dbResult))
             {
                 OnCacheHit(cacheKey);
 

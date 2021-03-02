@@ -17,22 +17,17 @@ namespace EasyCaching.UnitTests
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => 
-                x.UseDisk(options => 
+            options.UseDisk(providerOptions =>
+            {
+                providerOptions.MaxRdSecond = 0;
+                providerOptions.DBConfig = new DiskDbOptions
                 {
-                    options.MaxRdSecond = 0;
-                    options.DBConfig = new DiskDbOptions
-                    {
-                        BasePath = Path.GetTempPath()
-                    };
-                    additionalSetup(options);
-                })
-            );
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<IEasyCachingProvider>();
+                    BasePath = Path.GetTempPath()
+                };
+                additionalSetup(providerOptions);
+            });
         }
 
         [Fact(Skip = "fail in windows ci")]

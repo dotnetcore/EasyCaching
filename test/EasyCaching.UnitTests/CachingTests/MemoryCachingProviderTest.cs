@@ -21,19 +21,15 @@ namespace EasyCaching.UnitTests
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => x
-                .UseInMemory(options =>
-                {
-                    options.MaxRdSecond = 0;
-                    additionalSetup(options);
-                })
-            );
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<IEasyCachingProvider>();;
+            options.UseInMemory(providerOptions =>
+            {
+                providerOptions.MaxRdSecond = 0;
+                additionalSetup(providerOptions);
+            });
         }
+
 
         [Fact]
         public void Default_MaxRdSecond_Should_Be_0()
