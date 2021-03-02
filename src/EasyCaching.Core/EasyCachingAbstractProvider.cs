@@ -733,6 +733,18 @@
             return BaseGetProviderInfo();            
         }
 
+        protected void TrackCacheStats<T>(string cacheKey, CacheValue<T> cacheValue)
+        {
+            if (cacheValue.HasValue)
+            {
+                OnCacheHit(cacheKey);
+            }
+            else
+            {
+                OnCacheMiss(cacheKey);
+            }
+        }
+
         protected void OnCacheHit(string cacheKey)
         {
             CacheStats.OnHit();

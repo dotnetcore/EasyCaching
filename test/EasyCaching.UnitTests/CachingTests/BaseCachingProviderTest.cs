@@ -523,10 +523,9 @@
         {
             var cacheKey = GetUniqueCacheKey();
             var func = Create_Fake_Retriever_Return_NULL();
-
+            
             var res = _providerWithNullsCached.Get(cacheKey, func, _defaultTs);
 
-            
             Assert.True(res.HasValue);
             Assert.Null(res.Value);
             Assert.Equal(0, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
@@ -539,7 +538,7 @@
             Assert.True(res.HasValue);
             Assert.Null(res.Value);
             Assert.Equal(1, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
-            A.CallTo(() => funcThatShouldNotBeCalled()).MustNotHaveHappened();
+            A.CallTo(() => funcThatShouldNotBeCalled.Invoke()).MustNotHaveHappened();
         }
         
         [Fact]
@@ -562,7 +561,7 @@
             Assert.True(res.HasValue);
             Assert.Null(res.Value);
             Assert.Equal(1, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
-            A.CallTo(() => funcThatShouldNotBeCalled()).MustNotHaveHappened();
+            A.CallTo(() => funcThatShouldNotBeCalled.Invoke()).MustNotHaveHappened();
         }
 
         [Fact]
@@ -1448,13 +1447,5 @@
         }
         
         protected string GetUniqueCacheKey() => $"{_nameSpace}{Guid.NewGuid().ToString()}";
-
-        protected Func<Task<string>> Create_Fake_Retriever_That_Should_Not_Be_Called_Async()
-        {
-            var func = A.Fake<Func<Task<string>>>();
-            A.CallTo(() => func.Invoke()).ThrowsAsync(new InvalidOperationException("This function should not be called"));
-            
-            return func;
-        }
     }
 }
