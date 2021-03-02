@@ -344,7 +344,7 @@
             prefix = this.HandlePrefix(prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
-
+            
             var values = _cache.StringGet(redisKeys).ToArray();
             
             return DeserializeAll<T>(redisKeys, values);
