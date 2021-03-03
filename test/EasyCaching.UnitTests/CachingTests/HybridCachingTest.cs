@@ -38,45 +38,22 @@
             });
         }
 
-        private IHybridCachingProvider CreateCachingProvider() => CreateService<IHybridCachingProvider>(services =>
-        {
-            services.AddEasyCaching(x =>
-            {
-                x.UseInMemory(LocalCacheProviderName);
-
-                x.UseRedis(options =>
-                {
-                    options.DBConfig.Configuration = AvailableRedis;
-                },
-                DistributedCacheProviderName);
-
-                x.WithRedisBus(options =>
-                {
-                    options.Configuration = AvailableRedis;
-                    
-                    options.DecorateWithRetry(1).DecorateWithPublishFallback();
-                });
-
-                UseHybrid(x);
-            });
-        });
-
-        private IHybridCachingProvider CreateCachingProviderWithCacheNulls() => CreateService<IHybridCachingProvider>(services =>
+        private IHybridCachingProvider CreateCachingProvider(bool cacheNulls = false) => CreateService<IHybridCachingProvider>(services =>
         {
             services.AddEasyCaching(x =>
             {
                 x.UseInMemory(
                     options =>
                     {
-                        options.CacheNulls = true;
-                    }, LocalCacheProviderName);
+                        options.CacheNulls = cacheNulls;
+                    },LocalCacheProviderName);
 
                 x.UseRedis(options =>
-                    {
-                        options.CacheNulls = true;
-                        options.DBConfig.Configuration = AvailableRedis;
-                    },
-                    DistributedCacheProviderName);
+                {
+                    options.CacheNulls = cacheNulls;
+                    options.DBConfig.Configuration = AvailableRedis;
+                },
+                DistributedCacheProviderName);
 
                 x.WithRedisBus(options =>
                 {
@@ -300,10 +277,10 @@
         }
 
         [Fact]
-        public void SetNull_NoCachesNull_ReturnsNoValue()
+        public void SetNull_GetWithNoCachesNullProvider_ReturnsNoValue()
         {
             var hybridProvider = CreateCachingProvider();
-            var hybridProviderWithCacheNulls = CreateCachingProviderWithCacheNulls();
+            var hybridProviderWithCacheNulls = CreateCachingProvider(cacheNulls: true);
             var cacheKey = GetUniqueCacheKey();
 
             hybridProviderWithCacheNulls.Set<string>(cacheKey, null, Expiration);
