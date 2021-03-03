@@ -38,14 +38,19 @@
             });
         }
 
-        private IHybridCachingProvider CreateCachingProvider() => CreateService<IHybridCachingProvider>(services =>
+        private IHybridCachingProvider CreateCachingProvider(bool cacheNulls = false) => CreateService<IHybridCachingProvider>(services =>
         {
             services.AddEasyCaching(x =>
             {
-                x.UseInMemory(LocalCacheProviderName);
+                x.UseInMemory(
+                    options =>
+                    {
+                        options.CacheNulls = cacheNulls;
+                    },LocalCacheProviderName);
 
                 x.UseRedis(options =>
                 {
+                    options.CacheNulls = cacheNulls;
                     options.DBConfig.Configuration = AvailableRedis;
                 },
                 DistributedCacheProviderName);
@@ -269,6 +274,19 @@
             hybridProvider.RemoveAsync("fake-remove");
 
             Assert.True(true);
+        }
+
+        [Fact]
+        public void SetNull_GetWithNoCachesNullProvider_ReturnsNoValue()
+        {
+            var hybridProvider = CreateCachingProvider();
+            var hybridProviderWithCacheNulls = CreateCachingProvider(cacheNulls: true);
+            var cacheKey = GetUniqueCacheKey();
+
+            hybridProviderWithCacheNulls.Set<string>(cacheKey, null, Expiration);
+
+            var res = hybridProvider.Get<string>(cacheKey);
+            Assert.Equal(CacheValue<string>.NoValue, res);
         }
               
         [Theory]

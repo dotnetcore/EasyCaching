@@ -344,7 +344,7 @@
             prefix = this.HandlePrefix(prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
-
+            
             var values = _cache.StringGet(redisKeys).ToArray();
             
             return DeserializeAll<T>(redisKeys, values);
@@ -456,6 +456,8 @@
             try
             {
                 var value = _serializer.Deserialize<T>(redisValue);
+                if (value == null && !_options.CacheNulls)
+                    return CacheValue<T>.NoValue;
                 return new CacheValue<T>(value, true);
             }
             catch (Exception ex)

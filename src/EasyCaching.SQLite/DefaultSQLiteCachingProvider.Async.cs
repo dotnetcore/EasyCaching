@@ -51,27 +51,25 @@
             });
 
             var dbResult = list.FirstOrDefault();
+            var result = Deserialize<T>(cacheKey, dbResult);
+            TrackCacheStats(cacheKey, result);
 
-            if (!string.IsNullOrWhiteSpace(dbResult))
-            {
-                OnCacheHit(cacheKey);
-
-                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
-            }
-
-            OnCacheMiss(cacheKey);
+            if (result.HasValue)
+                return result;
 
             var item = await dataRetriever?.Invoke();
 
             if (item != null || _options.CacheNulls)
             {
                 await SetAsync(cacheKey, item, expiration);
-                return new CacheValue<T>(item, true);
+                result = new CacheValue<T>(item, true);
             }
             else
             {
-                return CacheValue<T>.NoValue;
+                result = CacheValue<T>.NoValue;
             }
+
+            return result;
         }
 
         /// <summary>
@@ -91,19 +89,10 @@
             });
 
             var dbResult = list.FirstOrDefault();
+            var result = Deserialize<T>(cacheKey, dbResult);
+            TrackCacheStats(cacheKey, result);
 
-            if (!string.IsNullOrWhiteSpace(dbResult))
-            {
-                OnCacheHit(cacheKey);
-                
-                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
-            }
-            else
-            {
-                OnCacheMiss(cacheKey);
-
-                return CacheValue<T>.NoValue;
-            }
+            return result;
         }
 
         /// <summary>
