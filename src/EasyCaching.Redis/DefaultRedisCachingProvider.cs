@@ -456,6 +456,8 @@
             try
             {
                 var value = _serializer.Deserialize<T>(redisValue);
+                if (value == null && !_options.CacheNulls)
+                    return CacheValue<T>.NoValue;
                 return new CacheValue<T>(value, true);
             }
             catch (Exception ex)
