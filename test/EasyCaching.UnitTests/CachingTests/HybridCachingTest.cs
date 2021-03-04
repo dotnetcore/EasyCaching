@@ -13,6 +13,7 @@
     using FakeItEasy;
     using System.Threading;
     using static ServiceBuilders;
+    using static TestHelpers;
 
     public class HybridCachingTest //: BaseCachingProviderTest
     {
@@ -324,6 +325,78 @@
             }
 
             Assert.True(true);
+        }
+
+        [Fact]
+        public void GetWithDataRetriever_DistributedCacheThrowsException_ShouldReturnValue()
+        {
+            var hybridProvider = CreateFakeCachingProvider(
+                setupFakeDistributedProvider: distributedProvider => 
+                    A.CallTo(() => distributedProvider.Get(A<string>.Ignored, A<Func<string>>.Ignored, A<TimeSpan>.Ignored)).Throws(new InvalidOperationException()));
+
+            
+            var dataRetriever = CreateFakeDataRetriever(result: "value");
+            
+            
+            var res = hybridProvider.Get("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("value", res.Value);
+            
+            var cachedValue = hybridProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("value", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public async Task GetAsyncWithDataRetriever_DistributedCacheThrowsException_ShouldReturnValue()
+        {
+            var hybridProvider = CreateFakeCachingProvider(
+                setupFakeDistributedProvider: distributedProvider => 
+                    A.CallTo(() => distributedProvider.GetAsync(A<string>.Ignored, A<Func<Task<string>>>.Ignored, A<TimeSpan>.Ignored)).Throws(new InvalidOperationException()));
+            
+            var dataRetriever = CreateFakeAsyncDataRetriever(result: "value");
+            
+            
+            var res = await hybridProvider.GetAsync("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("value", res.Value);
+            
+            var cachedValue = hybridProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("value", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void GetWithDataRetriever_DataRetrieverThrowsException_ShouldBeCalledOnce()
+        {
+            var hybridProvider = CreateCachingProvider();
+            var dataRetriever = CreateFakeDataRetrieverWithException(new InvalidOperationException("DataRetrieverError"));
+            
+            var exception = Assert.Throws<InvalidOperationException>(() => hybridProvider.Get("key", dataRetriever, Expiration));
+            
+            Assert.Equal("DataRetrieverError", exception.Message);
+            A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public async void GetAsyncWithDataRetriever_DataRetrieverThrowsException_ShouldBeCalledOnce()
+        {
+            var hybridProvider = CreateCachingProvider();
+            var dataRetriever = CreateFakeAsyncDataRetrieverWithException(new InvalidOperationException("DataRetrieverError"));
+            
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                async () => await hybridProvider.GetAsync("key", dataRetriever, Expiration));
+            
+            Assert.Equal("DataRetrieverError", exception.Message);
+            A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
         }
 
         [Theory]
