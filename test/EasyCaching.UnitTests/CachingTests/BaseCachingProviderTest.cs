@@ -9,6 +9,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Xunit;
+    using static TestHelpers;
 
     public abstract class BaseCachingProviderTest
     {
@@ -474,7 +475,7 @@
         {
             var cacheKey = GetUniqueCacheKey();
 
-            var func = Create_Fake_Retriever_Return_String();
+            var func = CreateFakeDataRetriever(result: "123");
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
 
@@ -486,7 +487,7 @@
         {
             var cacheKey = GetUniqueCacheKey();
 
-            var func = Create_Fake_Retriever_Return_String_Async();
+            var func = CreateFakeAsyncDataRetriever(result: "123");
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
 
@@ -497,7 +498,7 @@
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null_Without_Caching()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_NULL();
+            var func = CreateFakeDataRetriever(result: null);
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
 
@@ -511,7 +512,7 @@
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Null()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_NULL_Async();
+            var func = CreateFakeAsyncDataRetriever(result: null);
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
 
@@ -522,7 +523,7 @@
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Null_With_Caching_When_Nulls_Are_Cached()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_NULL();
+            var func = CreateFakeDataRetriever(result: null);
             
             var res = _providerWithNullsCached.Get(cacheKey, func, _defaultTs);
 
@@ -531,7 +532,7 @@
             Assert.Equal(0, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
             
             
-            var funcThatShouldNotBeCalled = Create_Fake_Retriever_Return_NULL();
+            var funcThatShouldNotBeCalled = CreateFakeDataRetriever(result: null);
             
             res = _providerWithNullsCached.Get(cacheKey, funcThatShouldNotBeCalled, _defaultTs);
 
@@ -545,7 +546,7 @@
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Null_With_Caching_When_Nulls_Are_Cached()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_NULL_Async();
+            var func = CreateFakeAsyncDataRetriever(result: null);
 
             var res = await _providerWithNullsCached.GetAsync(cacheKey, func, _defaultTs);
 
@@ -554,7 +555,7 @@
             Assert.Equal(0, _providerWithNullsCached.CacheStats.GetStatistic(StatsType.Hit));
             
             
-            var funcThatShouldNotBeCalled = Create_Fake_Retriever_Return_NULL_Async();
+            var funcThatShouldNotBeCalled = CreateFakeAsyncDataRetriever(result: null);
             
             res = await _providerWithNullsCached.GetAsync(cacheKey, funcThatShouldNotBeCalled, _defaultTs);
 
@@ -568,7 +569,7 @@
         public void Get_Cached_Value_Should_Not_Call_Retriever()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_String();
+            var func = CreateFakeDataRetriever(result: "123");
             var cacheVlaue = "Memory";
 
             _provider.Set(cacheKey, cacheVlaue, _defaultTs);
@@ -581,7 +582,7 @@
         public async Task Get_Cached_Value_Async_Should_Not_Call_Retriever()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_String_Async();
+            var func = CreateFakeAsyncDataRetriever(result: "123");
             var cacheVlaue = "Memory";
 
             await _provider.SetAsync(cacheKey, cacheVlaue, _defaultTs);
@@ -594,7 +595,7 @@
         public void Get_Not_Cached_Value_Should_Call_Retriever_And_Return_Value()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_String();
+            var func = CreateFakeDataRetriever(result: "123");
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
 
@@ -605,7 +606,7 @@
         public async Task Get_Not_Cached_Value_Async_Should_Call_Retriever_And_Return_Value()
         {
             var cacheKey = GetUniqueCacheKey();
-            var func = Create_Fake_Retriever_Return_String_Async();
+            var func = CreateFakeAsyncDataRetriever(result: "123");
 
             var res = await _provider.GetAsync(cacheKey, func, _defaultTs);
 
@@ -1380,42 +1381,6 @@
             _provider.Set(cacheKey, cacheValue, _defaultTs);
             var val = _provider.Get<string>(cacheKey);
             Assert.Equal(cacheValue, val.Value);
-        }
-
-        protected Func<string> Create_Fake_Retriever_Return_String()
-        {
-            var func = A.Fake<Func<string>>();
-
-            A.CallTo(() => func.Invoke()).Returns("123");
-
-            return func;
-        }
-
-        protected Func<string> Create_Fake_Retriever_Return_NULL()
-        {
-            var func = A.Fake<Func<string>>();
-
-            A.CallTo(() => func.Invoke()).Returns(null);
-
-            return func;
-        }
-
-        protected Func<Task<string>> Create_Fake_Retriever_Return_String_Async()
-        {
-            var func = A.Fake<Func<Task<string>>>();
-
-            A.CallTo(() => func.Invoke()).Returns(Task.FromResult("123"));
-
-            return func;
-        }
-
-        protected Func<Task<string>> Create_Fake_Retriever_Return_NULL_Async()
-        {
-            var func = A.Fake<Func<Task<string>>>();
-            string res = null;
-            A.CallTo(() => func.Invoke()).Returns(Task.FromResult(res));
-
-            return func;
         }
         #endregion
 
