@@ -552,12 +552,12 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var gotValueFromDistributedCache = false;
-            var dataRetrieverFailed = false;
             
             var result = _localCache.Get<T>(
                 cacheKey, 
                 () =>
                 {
+                    var dataRetrieverFailed = false;
                     try
                     {
                         gotValueFromDistributedCache = true;
@@ -582,6 +582,7 @@
                     }
                     catch (Exception ex) when(!dataRetrieverFailed)
                     {
+                        gotValueFromDistributedCache = false;
                         _logger?.LogError(ex, "get with data retriever from distributed provider error [{0}]", cacheKey);
                         return dataRetriever();
                     }
@@ -612,12 +613,12 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var gotValueFromDistributedCache = false;
-            var dataRetrieverFailed = false;
             
             var result = await _localCache.GetAsync<T>(
                 cacheKey, 
                 async () =>
                 {
+                    var dataRetrieverFailed = false;
                     try
                     {
                         gotValueFromDistributedCache = true;
@@ -642,6 +643,7 @@
                     }
                     catch (Exception ex) when(!dataRetrieverFailed)
                     {
+                        gotValueFromDistributedCache = false;
                         _logger?.LogError(ex, "get with data retriever from distributed provider error [{0}]", cacheKey);
                         return await dataRetriever();
                     }
@@ -713,9 +715,9 @@
             {
                 ts = await _distributedCache.GetExpirationAsync(cacheKey);
             }
-            catch
+            catch (Exception ex)
             {
-
+                _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
             }
 
             if (ts <= TimeSpan.Zero)
