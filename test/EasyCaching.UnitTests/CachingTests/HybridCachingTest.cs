@@ -6,6 +6,7 @@
     using EasyCaching.Core.Configurations;
     using EasyCaching.Decoration.Polly;
     using EasyCaching.Redis;
+    using EasyCaching.UnitTests.Fake;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;
@@ -106,7 +107,8 @@
                 });
             });
         
-        private IHybridCachingProvider CreateFakeCachingProvider(
+        private (IHybridCachingProvider HybridProvider, IEasyCachingProvider localCachingProvider, IEasyCachingProvider fakeDistributedProvider, IEasyCachingBus FakeBus) 
+            CreateCachingProviderWithFakes(
             Action<FakeBusOptions> decorateFakeBus = null,
             Action<IEasyCachingProvider> setupFakeDistributedProvider = null,
             Action<IEasyCachingBus> setupFakeBus = null)
@@ -118,47 +120,53 @@
             A.CallTo(() => fakeDistributedProvider.Name).Returns(DistributedCacheProviderName);
             setupFakeDistributedProvider?.Invoke(fakeDistributedProvider);
 
-            return CreateService<IHybridCachingProvider>(services =>
+            var services = new ServiceCollection();
+            services.AddEasyCaching(x =>
             {
-                services.AddEasyCaching(x =>
-                {
-                    x.UseInMemory(LocalCacheProviderName);
+                x.UseInMemory(LocalCacheProviderName);
 
-                    x.UseFakeProvider(
-                        options =>
-                        {
-                            options.ProviderFactory = () => fakeDistributedProvider;
-
-                            var circuitBreakerParameters = new CircuitBreakerParameters(
-                                exceptionsAllowedBeforeBreaking: 1,
-                                durationOfBreak: TimeSpan.FromMinutes(1));
-                
-                            options.DecorateWithCircuitBreaker(
-                                initParameters: circuitBreakerParameters,
-                                executeParameters: circuitBreakerParameters,
-                                exception => exception is InvalidOperationException);
-                        },
-                        DistributedCacheProviderName);
-
-                    x.WithFakeBus(options =>
+                x.UseFakeProvider(
+                    options =>
                     {
-                        options.BusFactory = () => fakeBus;
+                        options.ProviderFactory = () => fakeDistributedProvider;
 
-                        if (decorateFakeBus != null)
-                        {
-                            decorateFakeBus(options);
-                        }
-                        else
-                        {
-                            options
-                                .DecorateWithRetry(retryCount: 1, exceptionFilter: null)
-                                .DecorateWithPublishFallback(exceptionFilter: null);
-                        };
-                    });
+                        var circuitBreakerParameters = new CircuitBreakerParameters(
+                            exceptionsAllowedBeforeBreaking: 2,
+                            durationOfBreak: TimeSpan.FromMinutes(1));
+            
+                        options.DecorateWithCircuitBreaker(
+                            initParameters: circuitBreakerParameters,
+                            executeParameters: circuitBreakerParameters,
+                            exception => exception is InvalidOperationException);
+                    },
+                    DistributedCacheProviderName);
 
-                    UseHybrid(x);
+                x.WithFakeBus(options =>
+                {
+                    options.BusFactory = () => fakeBus;
+
+                    if (decorateFakeBus != null)
+                    {
+                        decorateFakeBus(options);
+                    }
+                    else
+                    {
+                        options
+                            .DecorateWithRetry(retryCount: 1, exceptionFilter: null)
+                            .DecorateWithPublishFallback(exceptionFilter: null);
+                    };
                 });
+
+                UseHybrid(x);
             });
+            
+            var serviceProvider = services.BuildServiceProvider();
+
+            return (
+                serviceProvider.GetService<IHybridCachingProvider>(),
+                serviceProvider.GetService<IEasyCachingProviderFactory>().GetCachingProvider(LocalCacheProviderName),
+                fakeDistributedProvider, 
+                fakeBus);
         }
 
         [Fact]
@@ -234,7 +242,7 @@
         [Fact]
         public void Send_Msg_Throw_Exception_Should_Not_Break()
         {
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
                 setupFakeBus: bus => 
                     A.CallTo(() => bus.Publish("test_topic", A<EasyCachingMessage>._)).Throws(new InvalidOperationException()));
 
@@ -247,7 +255,7 @@
         public async Task Send_Msg_Async_Throw_Exception_Should_Not_Break()
         {
             var token = new CancellationToken();
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
                 setupFakeBus: bus => 
                     A.CallTo(() => bus.PublishAsync("test_topic", A<EasyCachingMessage>._, token)).ThrowsAsync(new InvalidOperationException()));
 
@@ -262,7 +270,7 @@
             var circuitBreakerParameters = new CircuitBreakerParameters(
                 exceptionsAllowedBeforeBreaking: 1,
                 durationOfBreak: TimeSpan.FromMinutes(1));
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
                 decorateFakeBus: options => options.DecorateWithCircuitBreaker(
                     initParameters: circuitBreakerParameters,
                     executeParameters: circuitBreakerParameters,
@@ -295,7 +303,7 @@
         [InlineData(2)]
         public void Distributed_Remove_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
                     setupFakeDistributedProvider: distributedProvider => 
                         A.CallTo(() => distributedProvider.Remove("fake-remove-key")).Throws(new InvalidOperationException()));
 
@@ -314,7 +322,7 @@
         [InlineData(2)]
         public async Task Distributed_Remove_Async_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
                 setupFakeDistributedProvider: distributedProvider => 
                     A.CallTo(() => distributedProvider.RemoveAsync("fake-remove-key")).ThrowsAsync(new InvalidOperationException()));
 
@@ -328,13 +336,105 @@
         }
 
         [Fact]
-        public void GetWithDataRetriever_DistributedCacheThrowsException_ShouldReturnValue()
+        public void GetWithDataRetriever_LocalCacheHasValue_DistributedCacheAndDataRetrieverShouldNotBeCalled()
         {
-            var hybridProvider = CreateFakeCachingProvider(
-                setupFakeDistributedProvider: distributedProvider => 
-                    A.CallTo(() => distributedProvider.Get(A<string>.Ignored, A<Func<string>>.Ignored, A<TimeSpan>.Ignored)).Throws(new InvalidOperationException()));
-
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes();
+            var dataRetriever = CreateFakeDataRetriever(result: "value");
+            localProvider.Set("key", "cachedValue", Expiration);
             
+            
+            var res = hybridProvider.Get("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("cachedValue", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustNotHaveHappened();
+            fakeDistributedProvider.CallToGetWithDataRetriever<string>().MustNotHaveHappened();
+            A.CallTo(() => fakeDistributedProvider.GetExpiration("key")).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public async void GetAsyncWithDataRetriever_LocalCacheHasValue_DistributedCacheAndDataRetrieverShouldNotBeCalled()
+        {
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes();
+            var dataRetriever = CreateFakeAsyncDataRetriever(result: "value");
+            localProvider.Set("key", "cachedValue", Expiration);
+            
+            
+            var res = await hybridProvider.GetAsync("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("cachedValue", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustNotHaveHappened();
+            fakeDistributedProvider.CallToGetAsyncWithDataRetriever<string>().MustNotHaveHappened();
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync("key")).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void GetWithDataRetriever_DistributedCacheHasValue_DataRetrieverShouldNotBeCalled_ShouldGetExpirationFromDistributedCache()
+        {
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetWithDataRetriever<string>().Returns(new CacheValue<string>("cachedValue", hasValue: true)));
+            var dataRetriever = CreateFakeDataRetriever(result: "value");
+            
+            
+            var res = hybridProvider.Get("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("cachedValue", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustNotHaveHappened();
+            fakeDistributedProvider.CallToGetWithDataRetriever<string>().MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDistributedProvider.GetExpiration("key")).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public async void GetAsyncWithDataRetriever_DistributedCacheHasValue_DataRetrieverShouldNotBeCalled_ShouldGetExpirationFromDistributedCache()
+        {
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetAsyncWithDataRetriever<string>().Returns(new CacheValue<string>("cachedValue", hasValue: true)));
+            var dataRetriever = CreateFakeAsyncDataRetriever(result: "value");
+            
+            
+            var res = await hybridProvider.GetAsync("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("cachedValue", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustNotHaveHappened();
+            fakeDistributedProvider.CallToGetAsyncWithDataRetriever<string>().MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync("key")).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public void GetWithDataRetriever_DistributedCacheHasNoValue_ShouldReturnValue()
+        {
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetWithDataRetriever<string>().CallsDataRetriever());
             var dataRetriever = CreateFakeDataRetriever(result: "value");
             
             
@@ -344,20 +444,21 @@
             Assert.True(res.HasValue);
             Assert.Equal("value", res.Value);
             
-            var cachedValue = hybridProvider.Get<string>("key");
+            var cachedValue = localProvider.Get<string>("key");
             Assert.True(cachedValue.HasValue);
             Assert.Equal("value", cachedValue.Value);
             
             A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
+            fakeDistributedProvider.CallToGetWithDataRetriever<string>().MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDistributedProvider.GetExpiration("key")).MustNotHaveHappened();
         }
 
         [Fact]
-        public async Task GetAsyncWithDataRetriever_DistributedCacheThrowsException_ShouldReturnValue()
+        public async void GetAsyncWithDataRetriever_DistributedCacheHasNoValue_ShouldReturnValue()
         {
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
                 setupFakeDistributedProvider: distributedProvider => 
-                    A.CallTo(() => distributedProvider.GetAsync(A<string>.Ignored, A<Func<Task<string>>>.Ignored, A<TimeSpan>.Ignored)).Throws(new InvalidOperationException()));
-            
+                    distributedProvider.CallToGetAsyncWithDataRetriever<string>().CallsDataRetriever());
             var dataRetriever = CreateFakeAsyncDataRetriever(result: "value");
             
             
@@ -367,17 +468,69 @@
             Assert.True(res.HasValue);
             Assert.Equal("value", res.Value);
             
-            var cachedValue = hybridProvider.Get<string>("key");
+            var cachedValue = localProvider.Get<string>("key");
             Assert.True(cachedValue.HasValue);
             Assert.Equal("value", cachedValue.Value);
             
             A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
+            fakeDistributedProvider.CallToGetAsyncWithDataRetriever<string>().MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync("key")).MustNotHaveHappened();
         }
 
         [Fact]
-        public void GetWithDataRetriever_DataRetrieverThrowsException_ShouldBeCalledOnce()
+        public void GetWithDataRetriever_DistributedCacheThrowsException_ShouldReturnValue()
         {
-            var hybridProvider = CreateCachingProvider();
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetWithDataRetriever<string>().Throws(new InvalidOperationException()));
+            var dataRetriever = CreateFakeDataRetriever(result: "value");
+            
+            
+            var res = hybridProvider.Get("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("value", res.Value);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("value", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
+            fakeDistributedProvider.CallToGetWithDataRetriever<string>().MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDistributedProvider.GetExpiration("key")).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public async Task GetAsyncWithDataRetriever_DistributedCacheThrowsException_ShouldReturnValue()
+        {
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetAsyncWithDataRetriever<string>().Throws(new InvalidOperationException()));
+            var dataRetriever = CreateFakeAsyncDataRetriever(result: "value");
+            
+            
+            var res = await hybridProvider.GetAsync("key", dataRetriever, Expiration);
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("value", res.Value);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("value", cachedValue.Value);
+            
+            A.CallTo(() => dataRetriever.Invoke()).MustHaveHappenedOnceExactly();
+            fakeDistributedProvider.CallToGetAsyncWithDataRetriever<string>().MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync("key")).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public void GetWithDataRetriever_DataRetrieverThrowsException_DataRetrieverShouldBeCalledOnce()
+        {
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetWithDataRetriever<string>().Throws(new InvalidOperationException()));
             var dataRetriever = CreateFakeDataRetrieverWithException(new InvalidOperationException("DataRetrieverError"));
             
             var exception = Assert.Throws<InvalidOperationException>(() => hybridProvider.Get("key", dataRetriever, Expiration));
@@ -387,7 +540,7 @@
         }
 
         [Fact]
-        public async void GetAsyncWithDataRetriever_DataRetrieverThrowsException_ShouldBeCalledOnce()
+        public async void GetAsyncWithDataRetriever_DataRetrieverThrowsException_DataRetrieverShouldBeCalledOnce()
         {
             var hybridProvider = CreateCachingProvider();
             var dataRetriever = CreateFakeAsyncDataRetrieverWithException(new InvalidOperationException("DataRetrieverError"));
@@ -401,10 +554,10 @@
 
         [Theory]
         [InlineData(1)]
-        [InlineData(2)]
+        [InlineData(3)]
         public void Distributed_Set_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
                 setupFakeDistributedProvider: distributedProvider => 
                     A.CallTo(() => distributedProvider.Set(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).Throws(new InvalidOperationException()));
 
@@ -425,10 +578,10 @@
 
         [Theory]
         [InlineData(1)]
-        [InlineData(2)]
+        [InlineData(3)]
         public async Task Distributed_Set_Async_Throw_Exception_Should_Not_Break(int attemptsCount)
         {
-            var hybridProvider = CreateFakeCachingProvider(
+            var (hybridProvider, _, _, _) = CreateCachingProviderWithFakes(
                 setupFakeDistributedProvider: distributedProvider => 
                     A.CallTo(() => distributedProvider.SetAsync(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).ThrowsAsync(new InvalidOperationException()));
 
@@ -451,11 +604,11 @@
 
         [Theory]
         [InlineData(AvailableRedis, 1)]
-        [InlineData(AvailableRedis, 2)]
+        [InlineData(AvailableRedis, 3)]
         [InlineData(UnavailableRedis, 1)]
-        [InlineData(UnavailableRedis, 2)]
+        [InlineData(UnavailableRedis, 3)]
         [InlineData(UnavailableRedisWithAbortConnect, 1)]
-        [InlineData(UnavailableRedisWithAbortConnect, 2)]
+        [InlineData(UnavailableRedisWithAbortConnect, 3)]
         public void Distributed_Set_RedisWithCircuitBreakerAndFallback_Should_Not_Break(string connectionString, int attemptsCount)
         {
             var hybridProvider = CreateCachingProviderWithCircuitBreakerAndFallback(connectionString);
