@@ -54,7 +54,9 @@
                 {
                     options.Configuration = AvailableRedis;
                     
-                    options.DecorateWithRetry(1).DecorateWithPublishFallback();
+                    options
+                        .DecorateWithRetry(1, RedisBusOptionsExtensions.RedisExceptionFilter)
+                        .DecorateWithPublishFallback(RedisBusOptionsExtensions.RedisExceptionFilter);
                 });
 
                 UseHybrid(x);
@@ -91,9 +93,10 @@
                             .DecorateWithCircuitBreaker(
                                 initParameters: circuitBreakerParameters,
                                 executeParameters: circuitBreakerParameters,
-                                subscribeRetryInterval: TimeSpan.FromMinutes(1))
-                            .DecorateWithRetry(1)
-                            .DecorateWithPublishFallback();
+                                subscribeRetryInterval: TimeSpan.FromMinutes(1),
+                                exceptionFilter: RedisOptionsExtensions.RedisExceptionFilter)
+                            .DecorateWithRetry(1, RedisOptionsExtensions.RedisExceptionFilter)
+                            .DecorateWithPublishFallback(RedisOptionsExtensions.RedisExceptionFilter);
                     });
 
                     UseHybrid(x);
