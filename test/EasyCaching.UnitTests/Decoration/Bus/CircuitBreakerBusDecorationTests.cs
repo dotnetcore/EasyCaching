@@ -105,7 +105,7 @@ namespace EasyCaching.UnitTests
             var provider = CreateDecoratedProvider();
 
             provider.Subscribe(Topic, message => { });
-            Thread.Sleep(100);
+            Thread.Sleep(1000);
             
             Assert.Equal(2, _subscriptionAttemptsCount);
         }
