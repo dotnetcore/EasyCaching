@@ -357,9 +357,9 @@
 
                     AppendKey(item.Key, fileName);
                 }
-                catch
+                catch (Exception exception)
                 {
-
+                    Logger?.LogError(exception, "Cache error");
                 }
             }
         }

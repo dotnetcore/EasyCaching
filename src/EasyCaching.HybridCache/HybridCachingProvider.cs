@@ -675,9 +675,9 @@
             {
                 ts = await _distributedCache.GetExpirationAsync(cacheKey);
             }
-            catch
+            catch (Exception ex)
             {
-
+                _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
             }
 
             if (ts <= TimeSpan.Zero)
@@ -696,9 +696,9 @@
             {
                 ts = _distributedCache.GetExpiration(cacheKey);
             }
-            catch
+            catch (Exception ex)
             {
-
+                _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
             }
 
             if (ts <= TimeSpan.Zero)
