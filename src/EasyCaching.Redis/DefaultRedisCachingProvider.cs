@@ -237,7 +237,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogDebug("RemoveByPrefix : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
@@ -419,7 +419,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            Logger?.LogInformation("Redis -- Flush");
+            Logger?.LogDebug("Redis -- Flush");
 
             foreach (var server in _servers)
             {

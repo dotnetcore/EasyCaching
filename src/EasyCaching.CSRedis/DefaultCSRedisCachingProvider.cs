@@ -107,7 +107,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            Logger?.LogInformation("Redis -- Flush");
+            Logger?.LogDebug("Redis -- Flush");
 
             _cache.NodesServerManager.FlushDb();
         }
@@ -341,7 +341,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogDebug("RemoveByPrefix : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
