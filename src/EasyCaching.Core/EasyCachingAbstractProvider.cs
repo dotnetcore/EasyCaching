@@ -749,14 +749,14 @@
         {
             CacheStats.OnHit();
 
-            Logger?.LogInformation("Cache Hit : cachekey = {0}", cacheKey);
+            Logger?.LogDebug("Cache Hit : cachekey = {0}", cacheKey);
         }
         
         protected void OnCacheMiss(string cacheKey)
         {
             CacheStats.OnMiss();
 
-            Logger?.LogInformation("Cache Missed : cachekey = {0}", cacheKey);
+            Logger?.LogDebug("Cache Missed : cachekey = {0}", cacheKey);
         }
     }
 }

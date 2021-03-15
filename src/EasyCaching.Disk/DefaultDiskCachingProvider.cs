@@ -121,9 +121,9 @@
 
                         break;
                     }
-                    catch
+                    catch (Exception exception)
                     {
-
+                        Logger?.LogError(exception, "Cache error");
                     }
                 }
             }
@@ -153,9 +153,9 @@
 
                     break;
                 }
-                catch
+                catch (Exception exception)
                 {
-
+                    Logger?.LogError(exception, "Cache error");
                 }
             }
         }
@@ -175,7 +175,7 @@
 
         public override void BaseFlush()
         {
-            Logger?.LogInformation("Flush");
+            Logger?.LogDebug("Flush");
 
             var md5FolderName = GetMd5Str(_name);
 
@@ -479,9 +479,9 @@
 
                     AppendKey(item.Key, fileName);
                 }
-                catch
+                catch (Exception exception)
                 {
-
+                    Logger?.LogError(exception, "Cache error");
                 }
             }
         }
@@ -567,9 +567,9 @@
                     flag = true;
                     break;
                 }
-                catch
+                catch (Exception exception)
                 {
-                    //return false;
+                    Logger?.LogError(exception, "Cache error");
                 }
             }
 
@@ -638,9 +638,9 @@
                     }
                 }
             }
-            catch
+            catch (Exception exception)
             {
-
+                Logger?.LogError(exception, "Cache error");
             }
         }
 

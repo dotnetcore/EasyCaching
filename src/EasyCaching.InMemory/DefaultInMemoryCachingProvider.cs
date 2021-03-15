@@ -210,7 +210,7 @@
 
             var count = _cache.RemoveByPrefix(prefix);
 
-            Logger?.LogInformation("RemoveByPrefix : prefix = {0} , count = {1}", prefix, count);
+            Logger?.LogDebug("RemoveByPrefix : prefix = {0} , count = {1}", prefix, count);
         }
   
         /// <summary>
@@ -237,7 +237,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            Logger?.LogInformation("GetAll : cacheKeys = {0}", string.Join(",", cacheKeys));
+            Logger?.LogDebug("GetAll : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             return _cache.GetAll<T>(cacheKeys);
         }
@@ -252,9 +252,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var map = new Dictionary<string, CacheValue<T>>();
-
-            Logger?.LogInformation("GetByPrefix : prefix = {0}", prefix);
+            Logger?.LogDebug("GetByPrefix : prefix = {0}", prefix);
 
             return _cache.GetByPrefix<T>(prefix);
         }
@@ -267,7 +265,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            Logger?.LogInformation("RemoveAll : cacheKeys = {0}", string.Join(",", cacheKeys));
+            Logger?.LogDebug("RemoveAll : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             _cache.RemoveAll(cacheKeys);
         }
@@ -287,7 +285,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            Logger?.LogInformation("Flush");
+            Logger?.LogDebug("Flush");
 
             _cache.Clear();
         }

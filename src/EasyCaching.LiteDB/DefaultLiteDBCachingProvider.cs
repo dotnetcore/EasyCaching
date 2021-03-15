@@ -208,7 +208,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogDebug("RemoveByPrefix : prefix = {0}", prefix);
 
             _cache.DeleteMany(c => c.cachekey.StartsWith(prefix));
         }

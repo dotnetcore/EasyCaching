@@ -185,7 +185,7 @@
 
             var count = await Task.Run(() => _cache.RemoveByPrefix(prefix));
 
-            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0} , count = {1}", prefix, count);
+            Logger?.LogDebug("RemoveByPrefixAsync : prefix = {0} , count = {1}", prefix, count);
         }
       
         /// <summary>
@@ -213,7 +213,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            Logger?.LogInformation("GetAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
+            Logger?.LogDebug("GetAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             return await Task.FromResult(_cache.GetAll<T>(cacheKeys));
         }
@@ -229,7 +229,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
             var map = new Dictionary<string, CacheValue<T>>();
 
-            Logger?.LogInformation("GetByPrefixAsync : prefix = {0}", prefix);
+            Logger?.LogDebug("GetByPrefixAsync : prefix = {0}", prefix);
 
             return await Task.FromResult(_cache.GetByPrefix<T>(prefix));
         }
@@ -243,7 +243,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            Logger?.LogInformation("RemoveAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
+            Logger?.LogDebug("RemoveAllAsync : cacheKeys = {0}", string.Join(",", cacheKeys));
 
             await Task.Run(() => _cache.RemoveAll(cacheKeys));
         }
@@ -254,7 +254,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            Logger?.LogInformation("FlushAsync");
+            Logger?.LogDebug("FlushAsync");
 
             _cache.Clear();
             await Task.CompletedTask;

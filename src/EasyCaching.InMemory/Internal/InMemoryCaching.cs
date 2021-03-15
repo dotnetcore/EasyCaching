@@ -100,14 +100,7 @@
                 return null;
             }
 
-            try
-            {
-                return cacheEntry.Value;
-            }
-            catch
-            {
-                return null;
-            }
+            return cacheEntry.Value;
         }
 
         public bool Add<T>(string key, T value, TimeSpan? expiresIn = null)

@@ -214,7 +214,7 @@
 
             var newValue = DateTime.UtcNow.Ticks.ToString();
 
-            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogDebug("RemoveByPrefix : prefix = {0}", prefix);
 
             if (oldPrefixKey.Equals(newValue))
             {
@@ -340,7 +340,7 @@
         /// </summary>
         public override void BaseFlush()
         {
-            Logger?.LogInformation("Memcached -- Flush");
+            Logger?.LogDebug("Memcached -- Flush");
 
             //not flush memory at once, just causes all items to expire
             _memcachedClient.FlushAll();

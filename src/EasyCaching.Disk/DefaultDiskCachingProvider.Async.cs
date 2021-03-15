@@ -27,7 +27,7 @@
 
         public override Task BaseFlushAsync()
         {
-            Logger?.LogInformation("FlushAsync");
+            Logger?.LogDebug("FlushAsync");
 
             var md5FolderName = GetMd5Str(_name);
 
@@ -357,9 +357,9 @@
 
                     AppendKey(item.Key, fileName);
                 }
-                catch
+                catch (Exception exception)
                 {
-
+                    Logger?.LogError(exception, "Cache error");
                 }
             }
         }

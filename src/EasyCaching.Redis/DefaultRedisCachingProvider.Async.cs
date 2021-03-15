@@ -183,7 +183,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            Logger?.LogInformation("RemoveByPrefixAsync : prefix = {0}", prefix);
+            Logger?.LogDebug("RemoveByPrefixAsync : prefix = {0}", prefix);
 
             var redisKeys = this.SearchRedisKeys(prefix);
 
@@ -265,7 +265,7 @@
         /// <returns>The async.</returns>
         public override async Task BaseFlushAsync()
         {
-            Logger?.LogInformation("Redis -- FlushAsync");
+            Logger?.LogDebug("Redis -- FlushAsync");
 
             var tasks = new List<Task>();
 

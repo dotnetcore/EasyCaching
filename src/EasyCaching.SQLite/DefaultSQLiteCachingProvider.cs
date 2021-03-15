@@ -212,7 +212,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            Logger?.LogInformation("RemoveByPrefix : prefix = {0}", prefix);
+            Logger?.LogDebug("RemoveByPrefix : prefix = {0}", prefix);
 
             _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }
