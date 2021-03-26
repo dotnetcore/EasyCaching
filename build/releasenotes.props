@@ -1,58 +1,59 @@
 <Project>
   <PropertyGroup>
+    <EasyCachingCorePackageVersion>1.3.7</EasyCachingCorePackageVersion>
     <EasyCachingCorePackageNotes>
-      1. Added decorators functionality.
     </EasyCachingCorePackageNotes>
+    <EasyCachingDecorationPollyPackageVersion>1.3.7</EasyCachingDecorationPollyPackageVersion>
     <EasyCachingDecorationPollyPackageNotes>
-      1. Added decorators for circuit breaker, retry and fallback.
     </EasyCachingDecorationPollyPackageNotes>
+    <EasyCachingMemcachedPackageVersion>1.3.7</EasyCachingMemcachedPackageVersion>
     <EasyCachingMemcachedPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>
+    <EasyCachingRedisPackageVersion>1.3.7</EasyCachingRedisPackageVersion>
     <EasyCachingRedisPackageNotes>
-      1. Support SyncTimeout and AsyncTimeout (#282).
     </EasyCachingRedisPackageNotes>
+    <EasyCachingSQLitePackageVersion>1.3.7</EasyCachingSQLitePackageVersion>
     <EasyCachingSQLitePackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingSQLitePackageNotes>
+    <EasyCachingInMemoryPackageVersion>1.3.7</EasyCachingInMemoryPackageVersion>
     <EasyCachingInMemoryPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingInMemoryPackageNotes>
+    <EasyCachingHybridPackageVersion>1.3.7</EasyCachingHybridPackageVersion>
     <EasyCachingHybridPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingHybridPackageNotes>
+    <EasyCachingAspectCorePackageVersion>1.3.7</EasyCachingAspectCorePackageVersion>
     <EasyCachingAspectCorePackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingAspectCorePackageNotes>
+    <EasyCachingCastlePackageVersion>1.3.7</EasyCachingCastlePackageVersion>
     <EasyCachingCastlePackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingCastlePackageNotes>
+    <EasyCachingResponseCachingPackageVersion>1.3.7</EasyCachingResponseCachingPackageVersion>
     <EasyCachingResponseCachingPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingResponseCachingPackageNotes>
+    <EasyCachingJsonPackageVersion>1.3.7</EasyCachingJsonPackageVersion>
     <EasyCachingJsonPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingJsonPackageNotes>
+    <EasyCachingMessagePackPackageVersion>1.3.7</EasyCachingMessagePackPackageVersion>
     <EasyCachingMessagePackPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingMessagePackPackageNotes>
+    <EasyCachingProtobufPackageVersion>1.3.7</EasyCachingProtobufPackageVersion>
     <EasyCachingProtobufPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
+    <EasyCachingRedisBusPackageVersion>1.3.7</EasyCachingRedisBusPackageVersion>
     <EasyCachingRedisBusPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingRedisBusPackageNotes>
+    <EasyCachingRabbitBusPackageVersion>1.3.7</EasyCachingRabbitBusPackageVersion>
     <EasyCachingRabbitBusPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
+    <EasyCachingDiskPackageVersion>1.3.7</EasyCachingDiskPackageVersion>
     <EasyCachingDiskPackageNotes>
-      1. fixed disk provider tryset after expired (#280).
     </EasyCachingDiskPackageNotes>
+    <EasyCachingLiteDBPackageVersion>1.3.7</EasyCachingLiteDBPackageVersion>
     <EasyCachingLiteDBPackageNotes>
-      1. Upgrading dependencies.
     </EasyCachingLiteDBPackageNotes>
+    <EasyCachingSTJsonPackageVersion>1.3.7</EasyCachingSTJsonPackageVersion>
     <EasyCachingSTJsonPackageNotes>
-      1. Init.
     </EasyCachingSTJsonPackageNotes>
+    <EasyCachingMsExtPackageVersion>1.3.7</EasyCachingMsExtPackageVersion>
   </PropertyGroup>
 </Project>
