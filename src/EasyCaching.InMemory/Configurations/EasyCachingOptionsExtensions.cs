@@ -80,6 +80,7 @@
                 x.LockMs = memoryOptions.LockMs;
                 x.SleepMs = memoryOptions.SleepMs;
                 x.SerializerName = memoryOptions.SerializerName;
+                x.CacheNulls = memoryOptions.CacheNulls;
                 x.DBConfig = memoryOptions.DBConfig;
             }
             return options.UseInMemory(configure,name);

@@ -80,8 +80,9 @@ namespace EasyCaching.Serialization.SystemTextJson
                 throw new InvalidDataException("JsonTranscoder only supports [\"TypeName\", object]");
             }
         }
+
         /// <summary>
-        //; Serialize the specified value.
+        /// Serialize the specified value.
         /// </summary>
         /// <returns>The serialize.</returns>
         /// <param name="value">Value.</param>
