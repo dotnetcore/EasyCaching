@@ -40,6 +40,7 @@
     <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj" />
     <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.SystemTextJson\EasyCaching.Serialization.SystemTextJson.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Decoration.Polly\EasyCaching.Decoration.Polly.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.LiteDB\EasyCaching.LiteDB.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Memcached\EasyCaching.Memcached.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />

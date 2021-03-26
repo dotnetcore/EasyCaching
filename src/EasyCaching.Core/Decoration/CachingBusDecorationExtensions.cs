@@ -23,11 +23,13 @@ namespace EasyCaching.Core.Decoration
         {
             if (options.BusFactoryDecorator == null)
             {
-                options.DecorateWithRetryAndPublishFallback(3);
+                return cachingBusFactory();
             }
-            
-            var decoratedProviderFactory = options.BusFactoryDecorator(name, serviceProvider, cachingBusFactory);
-            return decoratedProviderFactory();
+            else
+            {
+                var decoratedProviderFactory = options.BusFactoryDecorator(name, serviceProvider, cachingBusFactory);
+                return decoratedProviderFactory();
+            }
         }
         
         public static IBusOptions Decorate(this IBusOptions options, BusFactoryDecorator factoryDecorator)

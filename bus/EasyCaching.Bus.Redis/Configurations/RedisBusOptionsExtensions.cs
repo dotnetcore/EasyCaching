@@ -1,8 +1,6 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
-    using Decoration.Polly;
     using System;
-    using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using Microsoft.Extensions.Configuration;
@@ -12,9 +10,9 @@
     /// <summary>
     /// EasyCaching options extensions.
     /// </summary>
-    public static class EasyCachingOptionsExtensions
+    public static class RedisBusOptionsExtensions
     {
-        private static readonly Func<Exception, bool> RedisExceptionFilter = exception =>
+        public static Func<Exception, bool> RedisExceptionFilter { get; } = exception =>
             exception is RedisException ||
             exception is RedisCommandException || // Derived not from RedisException
             exception is TimeoutException || // Can be thrown on timeout in Redis is some cases, RedisTimeoutException is derived from TimeoutException
@@ -73,31 +71,6 @@
 
             options.RegisterExtension(new RedisBusOptionsExtension(name, configure));
             return options;
-        }
-
-        public static RedisBusOptions DecorateWithRetry(
-            this RedisBusOptions options,
-            int retryCount)
-        {
-            return (RedisBusOptions) options.DecorateWithRetry(retryCount, RedisExceptionFilter);
-        }
-
-        public static RedisBusOptions DecorateWithPublishFallback(this RedisBusOptions options)
-        {
-            return (RedisBusOptions) options.DecorateWithPublishFallback(RedisExceptionFilter);
-        }
-
-        public static RedisBusOptions DecorateWithCircuitBreaker(
-            this RedisBusOptions options,
-            ICircuitBreakerParameters initParameters,
-            ICircuitBreakerParameters executeParameters,
-            TimeSpan subscribeRetryInterval)
-        {
-            return (RedisBusOptions) options.DecorateWithCircuitBreaker(
-                initParameters,
-                executeParameters,
-                subscribeRetryInterval,
-                RedisExceptionFilter);
         }
     }
 }
