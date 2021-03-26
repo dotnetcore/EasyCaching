@@ -3,7 +3,7 @@
     using Core;
     using EasyCaching.Core.Configurations;
 
-    public class RedisOptions : BaseProviderOptionsWithDecorator<IRedisAndEasyCachingProvider>
+    public class RedisOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
     {
         public RedisDBOptions DBConfig { get; set; } = new RedisDBOptions();
     }

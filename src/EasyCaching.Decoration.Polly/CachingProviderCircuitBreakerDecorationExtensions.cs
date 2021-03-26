@@ -19,19 +19,6 @@ namespace EasyCaching.Decoration.Polly
                     cachingProviderFactory.WithCircuitBreaker(initParameters, executeParameters, exceptionFilter))
             );
         }
-        
-        public static IProviderOptionsWithDecorator<IRedisAndEasyCachingProvider> DecorateWithCircuitBreaker(
-            this IProviderOptionsWithDecorator<IRedisAndEasyCachingProvider> options,
-            ICircuitBreakerParameters initParameters,
-            ICircuitBreakerParameters executeParameters,
-            Func<Exception, bool> exceptionFilter)
-        {
-            return options.Decorate((name, serviceProvider, cachingProviderFactory) =>
-                () => new DecoratedRedisAndEasyCachingProvider(
-                    name, 
-                    cachingProviderFactory.WithCircuitBreaker(initParameters, executeParameters, exceptionFilter))
-            );
-        }
 
         public static IProviderOptionsWithDecorator<IHybridCachingProvider> DecorateWithCircuitBreaker(
             this IProviderOptionsWithDecorator<IHybridCachingProvider> options,

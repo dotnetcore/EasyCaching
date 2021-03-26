@@ -57,7 +57,7 @@
                 return new RedisDatabaseProvider(_name, options);
             });
 
-            services.AddSingleton<IRedisAndEasyCachingProvider>(serviceProvider =>
+            services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
             {
                 var dbProviders = serviceProvider.GetServices<IRedisDatabaseProvider>();
                 var serializers = serviceProvider.GetServices<IEasyCachingSerializer>();
@@ -70,11 +70,6 @@
                     serviceProvider,
                     () => new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, factory));
             });
-            services.AddSingleton<IEasyCachingProvider>(GetProviderByName);
-            services.AddSingleton<IRedisCachingProvider>(GetProviderByName);
         }
-
-        private IRedisAndEasyCachingProvider GetProviderByName(IServiceProvider serviceProvider) =>
-            serviceProvider.GetServices<IRedisAndEasyCachingProvider>().Single(provider => provider.Name == _name);
     }
 }
