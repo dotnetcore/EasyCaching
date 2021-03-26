@@ -13,9 +13,7 @@
 		<EasyCachingJsonPackageVersion>1.3.7</EasyCachingJsonPackageVersion>
 		<EasyCachingMessagePackPackageVersion>1.3.7</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>1.3.7</EasyCachingProtobufPackageVersion>
-		<EasyCachingCSRedisPackageVersion>1.3.7</EasyCachingCSRedisPackageVersion>
 		<EasyCachingRedisBusPackageVersion>1.3.7</EasyCachingRedisBusPackageVersion>
-		<EasyCachingCSRedisBusPackageVersion>1.3.7</EasyCachingCSRedisBusPackageVersion>
 		<EasyCachingRabbitBusPackageVersion>1.3.7</EasyCachingRabbitBusPackageVersion>
 		<EasyCachingDiskPackageVersion>1.3.7</EasyCachingDiskPackageVersion>
 		<EasyCachingMsExtPackageVersion>1.3.7</EasyCachingMsExtPackageVersion>

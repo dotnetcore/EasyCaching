@@ -39,12 +39,6 @@
     <EasyCachingProtobufPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
-    <EasyCachingCSRedisPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingCSRedisPackageNotes>
-    <EasyCachingCSRedisBusPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingCSRedisBusPackageNotes>
     <EasyCachingRedisBusPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingRedisBusPackageNotes>

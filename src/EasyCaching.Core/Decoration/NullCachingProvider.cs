@@ -6,7 +6,7 @@ namespace EasyCaching.Core.Decoration
     using System.Linq;
     using System.Threading.Tasks;
     
-    public partial class NullCachingProvider : EasyCachingAbstractProvider, IRedisAndEasyCachingProvider
+    public class NullCachingProvider : EasyCachingAbstractProvider
     {
         private readonly ProviderInfo _info;
         private readonly BaseProviderOptions _options;

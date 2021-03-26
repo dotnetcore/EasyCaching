@@ -11,7 +11,7 @@
     /// <summary>
     /// Default redis caching provider.
     /// </summary>
-    public partial class DefaultRedisCachingProvider : EasyCachingAbstractProvider, IRedisAndEasyCachingProvider
+    public partial class DefaultRedisCachingProvider : EasyCachingAbstractProvider
     {
         /// <summary>
         /// The cache.

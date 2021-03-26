@@ -21,20 +21,6 @@ namespace EasyCaching.Decoration.Polly
             );
         }
         
-        public static IProviderOptionsWithDecorator<IRedisAndEasyCachingProvider> DecorateWithFallback(
-            this IProviderOptionsWithDecorator<IRedisAndEasyCachingProvider> options,
-            Func<string, IServiceProvider, IRedisAndEasyCachingProvider> fallbackCachingProviderFactory,
-            Func<Exception, bool> exceptionFilter)
-        {
-            return options.Decorate((name, serviceProvider, cachingProviderFactory) =>
-                () => new DecoratedRedisAndEasyCachingProvider(
-                    name, 
-                    cachingProviderFactory.WithFallback( 
-                        fallbackCachingProviderFactory(name, serviceProvider),
-                        exceptionFilter))
-            );
-        }
-        
         public static IProviderOptionsWithDecorator<IHybridCachingProvider> DecorateWithFallback(
             this IProviderOptionsWithDecorator<IHybridCachingProvider> options,
             Func<string, IServiceProvider, IHybridCachingProvider> fallbackCachingProviderFactory,
