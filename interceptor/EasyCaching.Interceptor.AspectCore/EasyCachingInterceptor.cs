@@ -247,7 +247,10 @@
                         if (attribute.IsAll)
                             await _cacheProvider.RemoveByPrefixAsync(cacheKeyPrefix);
                         else
-                            await _cacheProvider.RemoveAsync(cacheKeyPrefix);
+                        {
+                            cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
+                            await _cacheProvider.RemoveAsync(cacheKey);
+                        }                     
                     }
                 }
                 catch (Exception ex)

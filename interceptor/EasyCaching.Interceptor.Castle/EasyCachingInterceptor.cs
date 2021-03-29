@@ -251,7 +251,10 @@
                         if (attribute.IsAll)
                             _cacheProvider.RemoveByPrefix(cacheKeyPrefix);
                         else
-                            _cacheProvider.Remove(cacheKeyPrefix);
+                        {
+                             cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
+                            _cacheProvider.Remove(cacheKey);
+                        }                        
                     }
                 }
                 catch (Exception ex)
