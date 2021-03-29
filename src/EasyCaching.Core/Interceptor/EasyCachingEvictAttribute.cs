@@ -22,10 +22,5 @@
         /// </summary>
         /// <value><c>true</c> if is before; otherwise, <c>false</c>.</value>
         public bool IsBefore { get; set; } = false;
-
-        /// <summary>
-        /// The cache keys
-        /// </summary>
-        public string[] CacheKeys { get; set; } = new string[] { };
     }
 }

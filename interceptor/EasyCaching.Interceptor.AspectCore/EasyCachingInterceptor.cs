@@ -103,20 +103,21 @@
                         ? context.ServiceMethod.ReturnType.GetGenericArguments().First()
                         : context.ServiceMethod.ReturnType;
 
-                var cacheKey = string.IsNullOrEmpty(attribute.CacheKey)
-                     ? KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix)
-                     : attribute.CacheKey
-                     ;
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
 
                 object cacheValue = null;
                 var isAvailable = true;
                 try
                 {
-                    dynamic _cacheProvider = HybridCachingProvider;
-                    if (!attribute.IsHybridProvider)
-                        _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
-
-                    cacheValue = await _cacheProvider.GetAsync(cacheKey, returnType);
+                    if (attribute.IsHybridProvider)
+                    {
+                        cacheValue = await HybridCachingProvider.GetAsync(cacheKey, returnType);
+                    }
+                    else
+                    {
+                        var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
+                        cacheValue = await _cacheProvider.GetAsync(cacheKey, returnType);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -167,11 +168,15 @@
                         // 2. do nothing
                         if (returnValue != null)
                         {
-                            dynamic _cacheProvider = HybridCachingProvider;
-                            if (!attribute.IsHybridProvider)
-                                _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
-
-                            await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                            if (attribute.IsHybridProvider)
+                            {
+                                await HybridCachingProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                            }
+                            else
+                            {
+                                var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
+                                await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                            }
                         }
                     }
                 }
@@ -192,10 +197,8 @@
         {
             if (GetMethodAttributes(context.ServiceMethod).FirstOrDefault(x => typeof(EasyCachingPutAttribute).IsAssignableFrom(x.GetType())) is EasyCachingPutAttribute attribute && context.ReturnValue != null)
             {
-                var cacheKey = string.IsNullOrEmpty(attribute.CacheKey)
-                     ? KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix)
-                     : attribute.CacheKey
-                     ;
+                var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
+
                 try
                 {
                     // get the result
@@ -203,11 +206,15 @@
                         ? await context.UnwrapAsyncReturnValue()
                         : context.ReturnValue;
 
-                    dynamic _cacheProvider = HybridCachingProvider;
-                    if (!attribute.IsHybridProvider)
-                        _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
-
-                    await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    if (attribute.IsHybridProvider)
+                    {
+                        await HybridCachingProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    }
+                    else
+                    {
+                        var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
+                        await _cacheProvider.SetAsync(cacheKey, returnValue, TimeSpan.FromSeconds(attribute.Expiration));
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -229,25 +236,35 @@
             {
                 try
                 {
-                    var cacheKey = attribute.CacheKey;
-                    var cacheKeys = attribute.CacheKeys;
-                    var cacheKeyPrefix = KeyGenerator.GetCacheKeyPrefix(context.ServiceMethod, attribute.CacheKeyPrefix);
+                    if (attribute.IsAll)
+                    {
+                        // If is all , clear all cached items which cachekey start with the prefix.
+                        var cachePrefix = KeyGenerator.GetCacheKeyPrefix(context.ServiceMethod, attribute.CacheKeyPrefix);
 
-                    dynamic _cacheProvider = HybridCachingProvider; 
-                    if (!attribute.IsHybridProvider)
-                        _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
-
-                    if (!string.IsNullOrEmpty(cacheKey))
-                        await _cacheProvider.RemoveAsync(cacheKey);
-                    else if (cacheKeys?.Length > 0)
-                        await _cacheProvider.RemoveAllAsync(cacheKeys);
+                        if (attribute.IsHybridProvider)
+                        {
+                            await HybridCachingProvider.RemoveByPrefixAsync(cachePrefix);
+                        }
+                        else
+                        {
+                            var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
+                            await _cacheProvider.RemoveByPrefixAsync(cachePrefix);
+                        }
+                    }
                     else
                     {
-                        //If is all , clear all cached items which cachekey start with the prefix.
-                        if (attribute.IsAll)
-                            await _cacheProvider.RemoveByPrefixAsync(cacheKeyPrefix);
+                        // If not all , just remove the cached item by its cachekey.
+                        var cacheKey = KeyGenerator.GetCacheKey(context.ServiceMethod, context.Parameters, attribute.CacheKeyPrefix);
+
+                        if (attribute.IsHybridProvider)
+                        {
+                            await HybridCachingProvider.RemoveAsync(cacheKey);
+                        }
                         else
-                            await _cacheProvider.RemoveAsync(cacheKeyPrefix);
+                        {
+                            var _cacheProvider = CacheProviderFactory.GetCachingProvider(attribute.CacheProviderName ?? Options.Value.CacheProviderName);
+                            await _cacheProvider.RemoveAsync(cacheKey);
+                        }
                     }
                 }
                 catch (Exception ex)
