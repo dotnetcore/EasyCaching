@@ -140,6 +140,53 @@
         }
 
         [Fact]
+        protected virtual void EvictAssignedKey_Should_Succeed()
+        {
+            System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("EvictTestAssignedKey");
+
+            var key = "CastleExample";
+
+            _cachingProvider.Set(key, "AAA", TimeSpan.FromSeconds(30));
+
+            var value = _cachingProvider.Get<string>(key);
+
+            Assert.Equal("AAA", value.Value);
+
+
+            _service.EvictTestAssignedKey();
+
+            var after = _cachingProvider.Get<string>(key);
+
+            Assert.False(after.HasValue);
+        }
+
+        [Fact]
+        protected virtual void EvictTestAssignedKeys_Should_Succeed()
+        {
+            System.Reflection.MethodInfo method = typeof(CastleExampleService).GetMethod("EvictAllTestAssignedKeys");
+
+            var key01 = "KEY01";
+            var key02 = "KEY02";
+
+            _cachingProvider.Set(key01, "A11", TimeSpan.FromSeconds(30));
+            _cachingProvider.Set(key02, "B22", TimeSpan.FromSeconds(30));
+
+            var value1 = _cachingProvider.Get<string>(key01);
+            var value2 = _cachingProvider.Get<string>(key02);
+
+            Assert.Equal("A11", value1.Value);
+            Assert.Equal("B22", value2.Value);
+
+            _service.EvictAllTestAssignedKeys();
+
+            var after1 = _cachingProvider.Get<string>(key01);
+            var after2 = _cachingProvider.Get<string>(key02);
+
+            Assert.False(after1.HasValue);
+            Assert.False(after2.HasValue);
+        }
+
+        [Fact]
         protected virtual async Task Interceptor_Able_Attribute_Task_Method_Should_Succeed()
         {
             var tick1 = await _service.AbleTestAsync();
