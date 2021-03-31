@@ -32,5 +32,10 @@
         /// </summary>
         /// <value>The cache key prefix.</value>
         public bool IsHighAvailability { get; set; } = true;
+
+        /// <summary>
+        /// The cache key
+        /// </summary>
+        public string CacheKey { get; set; } = string.Empty;
     }
 }

@@ -25,6 +25,12 @@
         [EasyCachingEvict(CacheKeyPrefix = "CastleExample", IsAll = true)]
         string EvictAllTest();
 
+        [EasyCachingEvict(CacheKey = "CastleExample")]
+        string EvictTestAssignedKey();
+
+        [EasyCachingEvict(CacheKeys = new[] { "KEY01", "KEY02" })]
+        string EvictAllTestAssignedKeys();
+
         [EasyCachingAble(Expiration = 1)]
         Task<string> AbleTestAsync();
 
@@ -57,6 +63,16 @@
         public string EvictTest()
         {
             return "EvictTest";
+        }
+
+        public string EvictTestAssignedKey()
+        {
+            return "EvictTestAssignedKey";
+        }
+
+        public string EvictAllTestAssignedKeys()
+        {
+            return "EvictAllTestAssignedKeys";
         }
 
         public string GetCurrentUTC()
