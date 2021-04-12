@@ -78,7 +78,7 @@ public class Startup
         services.AddEasyCaching(options =>
         {
             //use memory cache
-            options.UseInMemory(Configuration, "default", "easycahing:inmemory");
+            options.UseInMemory(Configuration, "default", "easycaching:inmemory");
         });
     }
 }
