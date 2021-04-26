@@ -725,7 +725,7 @@
             return ts;
         }
 
-        private  async Task<TimeSpan> GetExpirationFromDistributedProviderAsync(string cacheKey)
+        private async Task<TimeSpan> GetExpirationFromDistributedProviderAsync(string cacheKey)
         {
             var ts = TimeSpan.Zero;
 
@@ -775,7 +775,6 @@
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
-                return TimeSpan.Zero;
             }
 
             if (ts <= TimeSpan.Zero)
