@@ -1,6 +1,4 @@
-﻿using System.Net.Sockets;
-using EasyCaching.HybridCache;
-using EasyCaching.InMemory;
+﻿using EasyCaching.HybridCache;
 
 namespace EasyCaching.UnitTests
 {
@@ -192,52 +190,6 @@ namespace EasyCaching.UnitTests
                 }, fakeProvidersFactory);
             return (hybridProvider, fakeLocalProvider, fakeDistributedProvider);
         }
-        
-        // private (IHybridCachingProvider HybridProvider, IEasyCachingProvider localCachingProvider, IEasyCachingProvider fakeDistributedProvider, IEasyCachingBus FakeBus) 
-        //     CreateCachingProviderWithFakes(
-        //     Action<IEasyCachingProvider> setupFakeDistributedProvider = null,
-        //     Action<IEasyCachingProvider> setupFakeLocalProvider = null)
-        // {
-        //     var fakeDistributedProvider = A.Fake<IEasyCachingProvider>();
-        //     A.CallTo(() => fakeDistributedProvider.Name).Returns(DistributedCacheProviderName);
-        //     setupFakeDistributedProvider?.Invoke(fakeDistributedProvider);
-        //     
-        //     var fakeLocalProvider = A.Fake<IEasyCachingProvider>();
-        //     A.CallTo(() => fakeDistributedProvider.Name).Returns(LocalCacheProviderName);
-        //     setupFakeLocalProvider?.Invoke(fakeLocalProvider);
-        //
-        //     var services = new ServiceCollection();
-        //     services.AddEasyCaching(x =>
-        //     {
-        //         x.UseInMemory(options =>
-        //         {
-        //             options.ProviderFactoryDecorator =(name, serviceProvider, cachingProviderFactory) =>
-        //             {
-        //                 var existingFactoryDecorator = options.ProviderFactoryDecorator;
-        //                 var factoryDecoratedWithExistingDecorator = existingFactoryDecorator(name, serviceProvider, cachingProviderFactory);
-        //                 return factoryDecorator(name, serviceProvider, factoryDecoratedWithExistingDecorator);
-        //             };
-        //             
-        //             options.MaxRdSecond = 0;
-        //         }, LocalCacheProviderName);
-        //
-        //         x.UseFakeProvider(
-        //             options =>
-        //             {
-        //                 options.ProviderFactory = () => fakeDistributedProvider;
-        //             },
-        //             DistributedCacheProviderName);
-        //
-        //         UseHybrid(x);
-        //     });
-        //     
-        //     var serviceProvider = services.BuildServiceProvider();
-        //
-        //     return (
-        //         serviceProvider.GetService<IHybridCachingProvider>(),
-        //         serviceProvider.GetService<IEasyCachingProviderFactory>().GetCachingProvider(LocalCacheProviderName),
-        //         fakeDistributedProvider);
-        // }
 
         [Fact]
         public void Set_And_Get_Should_Succeed()
