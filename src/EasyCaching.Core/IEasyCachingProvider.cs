@@ -85,20 +85,6 @@
         CacheStats CacheStats { get; }
 
         /// <summary>
-        /// Gets the exporation of specify cachekey.
-        /// </summary>
-        /// <param name="cacheKey">Cache key.</param>
-        /// <returns></returns>
-        TimeSpan GetExpiration(string cacheKey);
-
-        /// <summary>
-        /// Gets the exporation of specify cachekey async.
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <returns></returns>
-        Task<TimeSpan> GetExpirationAsync(string cacheKey);
-
-        /// <summary>
         /// Gets the information of provider.
         /// </summary>
         /// <returns></returns>
