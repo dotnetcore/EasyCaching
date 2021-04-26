@@ -722,11 +722,6 @@
                 return TimeSpan.Zero;
             }
 
-            if (ts <= TimeSpan.Zero)
-            {
-                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
-            }
-
             return ts;
         }
 
@@ -764,11 +759,6 @@
             {
                 _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
                 return TimeSpan.Zero;
-            }
-
-            if (ts <= TimeSpan.Zero)
-            {
-                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
             }
 
             return ts;

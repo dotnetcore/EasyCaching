@@ -1,4 +1,6 @@
-﻿using EasyCaching.InMemory;
+﻿using System.Net.Sockets;
+using EasyCaching.HybridCache;
+using EasyCaching.InMemory;
 
 namespace EasyCaching.UnitTests
 {
@@ -41,47 +43,37 @@ namespace EasyCaching.UnitTests
                 options.DefaultExpirationForTtlFailed = 60;
             });
         }
-      
-        private (IHybridCachingProvider hybridProvider, IEasyCachingProvider localProvider, IEasyCachingProvider distributedProvider) CreateCachingProvider(
-            bool cacheNulls = false, int? maxRdSeconds = null)
-        {
-            var services = new ServiceCollection();
-            services.AddEasyCaching(x =>
-            {
-                x.UseInMemory(
-                    options =>
-                    {
-                        options.CacheNulls = cacheNulls;
-                        if(maxRdSeconds.HasValue)
-                            options.MaxRdSecond = maxRdSeconds.Value;
-                    }, LocalCacheProviderName);
 
-                x.UseRedis(options =>
-                    {
-                        options.CacheNulls = cacheNulls;
-                        options.DBConfig.Configuration = AvailableRedis;
-                    },
-                    DistributedCacheProviderName);
-
-                x.WithRedisBus(options =>
+        private IHybridCachingProvider CreateCachingProvider(bool cacheNulls = false, int? maxRdSeconds = null) =>
+            CreateService<IHybridCachingProvider>(services =>
+                services.AddEasyCaching(x =>
                 {
-                    options.Configuration = AvailableRedis;
+                    x.UseInMemory(
+                        options =>
+                        {
+                            options.CacheNulls = cacheNulls;
+                            if (maxRdSeconds.HasValue)
+                                options.MaxRdSecond = maxRdSeconds.Value;
+                        }, LocalCacheProviderName);
 
-                    options
-                        .DecorateWithRetry(1, RedisBusOptionsExtensions.RedisExceptionFilter)
-                        .DecorateWithPublishFallback(RedisBusOptionsExtensions.RedisExceptionFilter);
-                });
+                    x.UseRedis(options =>
+                        {
+                            options.CacheNulls = cacheNulls;
+                            options.DBConfig.Configuration = AvailableRedis;
+                        },
+                        DistributedCacheProviderName);
 
-                UseHybrid(x);
-            });
+                    x.WithRedisBus(options =>
+                    {
+                        options.Configuration = AvailableRedis;
 
-            var serviceProvider = services.BuildServiceProvider();
+                        options
+                            .DecorateWithRetry(1, RedisBusOptionsExtensions.RedisExceptionFilter)
+                            .DecorateWithPublishFallback(RedisBusOptionsExtensions.RedisExceptionFilter);
+                    });
 
-            return (
-                serviceProvider.GetService<IHybridCachingProvider>(),
-                serviceProvider.GetService<IEasyCachingProviderFactory>().GetCachingProvider(LocalCacheProviderName),
-                serviceProvider.GetService<IEasyCachingProviderFactory>().GetCachingProvider(DistributedCacheProviderName));
-        }
+                    UseHybrid(x);
+                }));
 
         private IHybridCachingProvider CreateCachingProviderWithCircuitBreakerAndFallback(string connectionString) => 
             CreateService<IHybridCachingProvider>(services =>
@@ -127,8 +119,7 @@ namespace EasyCaching.UnitTests
             CreateCachingProviderWithFakes(
             Action<FakeBusOptions> decorateFakeBus = null,
             Action<IEasyCachingProvider> setupFakeDistributedProvider = null,
-            Action<IEasyCachingBus> setupFakeBus = null,
-            Action<InMemoryOptions> inMemoryOptions = null)
+            Action<IEasyCachingBus> setupFakeBus = null)
         {
             var fakeBus = A.Fake<IEasyCachingBus>();
             setupFakeBus?.Invoke(fakeBus);
@@ -140,14 +131,7 @@ namespace EasyCaching.UnitTests
             var services = new ServiceCollection();
             services.AddEasyCaching(x =>
             {
-                if (inMemoryOptions != null)
-                {
-                    x.UseInMemory(inMemoryOptions, LocalCacheProviderName);
-                }
-                else
-                {
-                    x.UseInMemory(LocalCacheProviderName);
-                }
+                x.UseInMemory(LocalCacheProviderName);
 
                 x.UseFakeProvider(
                     options =>
@@ -193,10 +177,72 @@ namespace EasyCaching.UnitTests
                 fakeBus);
         }
 
+        private (HybridCachingProvider hybridProvider, IEasyCachingProvider fakeLocalCachingProvider, IEasyCachingProvider fakeDistributedProvider)  CreateFakeHybridProvider()
+        {
+            var fakeLocalProvider = A.Fake<IEasyCachingProvider>();
+            var fakeDistributedProvider = A.Fake<IEasyCachingProvider>();
+            var fakeProvidersFactory = A.Fake<IEasyCachingProviderFactory>();
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(LocalCacheProviderName)).Returns(fakeLocalProvider);
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(DistributedCacheProviderName)).Returns(fakeDistributedProvider);
+            var hybridProvider = new HybridCachingProvider("TestProvider",
+                new HybridCachingOptions()
+                {
+                    TopicName = "TestTopicName", LocalCacheProviderName = LocalCacheProviderName,
+                    DistributedCacheProviderName = DistributedCacheProviderName
+                }, fakeProvidersFactory);
+            return (hybridProvider, fakeLocalProvider, fakeDistributedProvider);
+        }
+        
+        // private (IHybridCachingProvider HybridProvider, IEasyCachingProvider localCachingProvider, IEasyCachingProvider fakeDistributedProvider, IEasyCachingBus FakeBus) 
+        //     CreateCachingProviderWithFakes(
+        //     Action<IEasyCachingProvider> setupFakeDistributedProvider = null,
+        //     Action<IEasyCachingProvider> setupFakeLocalProvider = null)
+        // {
+        //     var fakeDistributedProvider = A.Fake<IEasyCachingProvider>();
+        //     A.CallTo(() => fakeDistributedProvider.Name).Returns(DistributedCacheProviderName);
+        //     setupFakeDistributedProvider?.Invoke(fakeDistributedProvider);
+        //     
+        //     var fakeLocalProvider = A.Fake<IEasyCachingProvider>();
+        //     A.CallTo(() => fakeDistributedProvider.Name).Returns(LocalCacheProviderName);
+        //     setupFakeLocalProvider?.Invoke(fakeLocalProvider);
+        //
+        //     var services = new ServiceCollection();
+        //     services.AddEasyCaching(x =>
+        //     {
+        //         x.UseInMemory(options =>
+        //         {
+        //             options.ProviderFactoryDecorator =(name, serviceProvider, cachingProviderFactory) =>
+        //             {
+        //                 var existingFactoryDecorator = options.ProviderFactoryDecorator;
+        //                 var factoryDecoratedWithExistingDecorator = existingFactoryDecorator(name, serviceProvider, cachingProviderFactory);
+        //                 return factoryDecorator(name, serviceProvider, factoryDecoratedWithExistingDecorator);
+        //             };
+        //             
+        //             options.MaxRdSecond = 0;
+        //         }, LocalCacheProviderName);
+        //
+        //         x.UseFakeProvider(
+        //             options =>
+        //             {
+        //                 options.ProviderFactory = () => fakeDistributedProvider;
+        //             },
+        //             DistributedCacheProviderName);
+        //
+        //         UseHybrid(x);
+        //     });
+        //     
+        //     var serviceProvider = services.BuildServiceProvider();
+        //
+        //     return (
+        //         serviceProvider.GetService<IHybridCachingProvider>(),
+        //         serviceProvider.GetService<IEasyCachingProviderFactory>().GetCachingProvider(LocalCacheProviderName),
+        //         fakeDistributedProvider);
+        // }
+
         [Fact]
         public void Set_And_Get_Should_Succeed()
         {
-            var (hybridProvider, _, _) = CreateCachingProvider();
+            var hybridProvider = CreateCachingProvider();
             var cacheKey = GetUniqueCacheKey();
 
             hybridProvider.Set(cacheKey, "val", Expiration);
@@ -209,7 +255,7 @@ namespace EasyCaching.UnitTests
         [Fact]
         public async Task SetAsync_And_ExistsAsync_Should_Succeed()
         {
-            var (hybridProvider, _, _) = CreateCachingProvider();
+            var hybridProvider = CreateCachingProvider();
             var cacheKey = GetUniqueCacheKey();
 
             await hybridProvider.SetAsync(cacheKey, "val", Expiration);
@@ -221,7 +267,7 @@ namespace EasyCaching.UnitTests
         [Fact]
         public void Set_And_Remove_Should_Succeed()
         {
-            var (hybridProvider, _, _) = CreateCachingProvider();
+            var hybridProvider = CreateCachingProvider();
             var cacheKey = GetUniqueCacheKey();
 
             hybridProvider.Set(cacheKey, "val", Expiration);
@@ -234,7 +280,7 @@ namespace EasyCaching.UnitTests
         [Fact]
         public async Task SetAsync_And_RemoveAsync_Should_Succeed()
         {
-            var (hybridProvider, _, _) = CreateCachingProvider();
+            var hybridProvider = CreateCachingProvider();
             var cacheKey = GetUniqueCacheKey();
 
             await hybridProvider.SetAsync(cacheKey, "val", Expiration);
@@ -249,7 +295,7 @@ namespace EasyCaching.UnitTests
         [Fact(Skip = "Delay")]
         public void Second_Client_Set_Same_Key_Should_Get_New_Value()
         {
-            var (hybridProvider, _, _) = CreateCachingProvider();
+            var hybridProvider = CreateCachingProvider();
             var cacheKey = GetUniqueCacheKey();
 
             hybridProvider.Set(cacheKey, "val", Expiration);
@@ -312,8 +358,8 @@ namespace EasyCaching.UnitTests
         [Fact]
         public void SetNull_GetWithNoCachesNullProvider_ReturnsNoValue()
         {
-            var (hybridProvider, _, _) = CreateCachingProvider();
-            var (hybridProviderWithCacheNulls, _, _) = CreateCachingProvider(cacheNulls: true);
+            var hybridProvider = CreateCachingProvider();
+            var hybridProviderWithCacheNulls = CreateCachingProvider(cacheNulls: true);
             var cacheKey = GetUniqueCacheKey();
 
             hybridProviderWithCacheNulls.Set<string>(cacheKey, null, Expiration);
@@ -325,96 +371,81 @@ namespace EasyCaching.UnitTests
         [Fact]
         public void GetExpiration_LocalExpirationMoreThanZero_ReturnsLocalExpiration()
         {
-            var (hybridProvider, localProvider, distributedProvider) = CreateCachingProvider(maxRdSeconds: 120);
+            var (hybridProvider, fakeLocalProvider, _) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.FromMinutes(5);
             var cacheKey = GetUniqueCacheKey();
-            var value = "value";
-
-            hybridProvider.Set(cacheKey, value, Expiration);
-            distributedProvider.Set(cacheKey, value, TimeSpan.FromMilliseconds(1));
-            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            A.CallTo(() => fakeLocalProvider.GetExpiration(cacheKey)).Returns(localExpiration);
             
             var ts = hybridProvider.GetExpiration(cacheKey);
 
-            Assert.InRange(ts, TimeSpan.FromSeconds(1), Expiration.Add(TimeSpan.FromSeconds(localProvider.MaxRdSecond)));
+            Assert.Equal(ts, localExpiration);
         }
         
         [Fact]
         public void GetExpiration_LocalExpirationEqualsZero_ReturnsDistributedExpiration()
         {
-            var (hybridProvider, localProvider, distributedProvider) = CreateCachingProvider(maxRdSeconds: 0);
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var distributeExpiration = TimeSpan.FromMinutes(5);
             var cacheKey = GetUniqueCacheKey();
-            var value = "value";
-
-            hybridProvider.Set(cacheKey, value, Expiration);
-            localProvider.Set(cacheKey, value, TimeSpan.FromMilliseconds(1));
-            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            A.CallTo(() => fakeLocalProvider.GetExpiration(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).Returns(distributeExpiration);
             
             var ts = hybridProvider.GetExpiration(cacheKey);
 
-            Assert.InRange(ts, TimeSpan.FromSeconds(1), Expiration.Add(TimeSpan.FromSeconds(distributedProvider.MaxRdSecond)));
+            Assert.Equal(ts, distributeExpiration);
         }
         
         [Fact]
         public void GetExpiration_DistributedExpirationThrowsException_ReturnsZero()
         {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
             var cacheKey = GetUniqueCacheKey();
-            var (hybridProvider, localProvider, _, _) = CreateCachingProviderWithFakes(
-                setupFakeDistributedProvider: distributedProvider =>
-                    A.CallTo(() => distributedProvider.GetExpiration(cacheKey)).Throws(new Exception()),
-                inMemoryOptions: options => options.MaxRdSecond = 0);
-
-            hybridProvider.Set(cacheKey, "value", TimeSpan.FromMilliseconds(1));
-            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            A.CallTo(() => fakeLocalProvider.GetExpiration(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).Throws(new Exception());
             
             var ts = hybridProvider.GetExpiration(cacheKey);
 
             Assert.Equal(ts, TimeSpan.Zero);
         }
         
-        
         [Fact]
         public async Task GetExpirationAsync_LocalExpirationMoreThanZero_ReturnsLocalExpiration()
         {
-            var (hybridProvider, localProvider, distributedProvider) = CreateCachingProvider(maxRdSeconds: 120);
+            var (hybridProvider, fakeLocalProvider, _) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.FromMinutes(5);
             var cacheKey = GetUniqueCacheKey();
-            var value = "value";
-
-            await hybridProvider.SetAsync(cacheKey, value, Expiration);
-            await distributedProvider.SetAsync(cacheKey, value, TimeSpan.FromMilliseconds(1));
-            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
             
             var ts = await hybridProvider.GetExpirationAsync(cacheKey);
 
-            Assert.InRange(ts, TimeSpan.FromSeconds(1), Expiration.Add(TimeSpan.FromSeconds(localProvider.MaxRdSecond)));
+            Assert.Equal(ts, localExpiration);
         }
         
         [Fact]
         public async Task GetExpirationAsync_LocalExpirationEqualsZero_ReturnsDistributedExpiration()
         {
-            var (hybridProvider, localProvider, distributedProvider) = CreateCachingProvider(maxRdSeconds: 0);
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var distributeExpiration = TimeSpan.FromMinutes(5);
             var cacheKey = GetUniqueCacheKey();
-            var value = "value";
-
-            await hybridProvider.SetAsync(cacheKey, value, Expiration);
-            await localProvider.SetAsync(cacheKey, value, TimeSpan.FromMilliseconds(1));
-            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).Returns(distributeExpiration);
             
             var ts = await hybridProvider.GetExpirationAsync(cacheKey);
 
-            Assert.InRange(ts, TimeSpan.FromSeconds(1), Expiration.Add(TimeSpan.FromSeconds(distributedProvider.MaxRdSecond)));
+            Assert.Equal(ts, distributeExpiration);
         }
         
         [Fact]
         public async Task GetExpirationAsync_DistributedExpirationThrowsException_ReturnsZero()
         {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
             var cacheKey = GetUniqueCacheKey();
-            var (hybridProvider, localProvider, _, _) = CreateCachingProviderWithFakes(
-                setupFakeDistributedProvider: distributedProvider =>
-                    A.CallTo(() => distributedProvider.GetExpirationAsync(cacheKey)).Throws(new Exception()),
-                inMemoryOptions: options => options.MaxRdSecond = 0);
-
-            await hybridProvider.SetAsync(cacheKey, "value", TimeSpan.FromMilliseconds(1));
-            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).Throws(new Exception());
             
             var ts = await hybridProvider.GetExpirationAsync(cacheKey);
 
@@ -665,7 +696,7 @@ namespace EasyCaching.UnitTests
         [Fact]
         public async void GetAsyncWithDataRetriever_DataRetrieverThrowsException_DataRetrieverShouldBeCalledOnce()
         {
-            var (hybridProvider, _, _) = CreateCachingProvider();
+            var hybridProvider = CreateCachingProvider();
             var dataRetriever = CreateFakeAsyncDataRetrieverWithException(new InvalidOperationException("DataRetrieverError"));
             
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(
