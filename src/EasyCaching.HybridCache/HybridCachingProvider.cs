@@ -551,51 +551,53 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _localCache.Get<T>(cacheKey);
+            var gotValueFromDistributedCache = false;
+            
+            var result = _localCache.Get<T>(
+                cacheKey, 
+                () =>
+                {
+                    var dataRetrieverFailed = false;
+                    try
+                    {
+                        gotValueFromDistributedCache = true;
+                        var resultFromDistributedCache = _distributedCache.Get<T>(
+                            cacheKey, 
+                            () =>
+                            {
+                                gotValueFromDistributedCache = false;
+                                try
+                                {
+                                    return dataRetriever();
+                                }
+                                catch (Exception)
+                                {
+                                    dataRetrieverFailed = true;
+                                    throw;
+                                }
+                            }, 
+                            expiration);
 
-            if (result.HasValue)
-            {
-                return result;
-            }
-
-            bool gotValueFromDistributedCache;
-            var dataRetrieverFailed = false;
-            CacheValue<T> dataFromDistributedCache;
-            try
-            {
-                gotValueFromDistributedCache = true;
-                var resultFromDistributedCache = _distributedCache.Get<T>(
-                    cacheKey,
-                    () =>
+                        return resultFromDistributedCache.Value;
+                    }
+                    catch (Exception ex) when(!dataRetrieverFailed)
                     {
                         gotValueFromDistributedCache = false;
-                        try
-                        {
-                            return dataRetriever();
-                        }
-                        catch (Exception)
-                        {
-                            dataRetrieverFailed = true;
-                            throw;
-                        }
-                    },
-                    expiration);
+                        _logger?.LogError(ex, "get with data retriever from distributed provider error [{0}]", cacheKey);
+                        return dataRetriever();
+                    }
+                },
+                expiration);
 
-                dataFromDistributedCache = resultFromDistributedCache;
-            }
-            catch (Exception ex) when (!dataRetrieverFailed)
+            if (gotValueFromDistributedCache && result.HasValue)
             {
-                gotValueFromDistributedCache = false;
-                _logger?.LogError(ex, "get with data retriever from distributed provider error [{0}]", cacheKey);
-                dataFromDistributedCache = new CacheValue<T>(dataRetriever(), true);
+                var ts = GetExpiration(cacheKey);
+
+                _localCache.Set(cacheKey, result.Value, ts);
             }
 
-            var ts = gotValueFromDistributedCache ? GetExpiration(cacheKey) : expiration;
-
-            _localCache.Set(cacheKey, dataFromDistributedCache.Value, ts);
-            return dataFromDistributedCache;
+            return result;
         }
-
 
         /// <summary>
         /// Gets the specified cacheKey, dataRetriever and expiration async.
@@ -610,49 +612,52 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _localCache.GetAsync<T>(cacheKey);
+            var gotValueFromDistributedCache = false;
+            
+            var result = await _localCache.GetAsync<T>(
+                cacheKey, 
+                async () =>
+                {
+                    var dataRetrieverFailed = false;
+                    try
+                    {
+                        gotValueFromDistributedCache = true;
+                        var resultFromDistributedCache = await _distributedCache.GetAsync<T>(
+                            cacheKey, 
+                            async () =>
+                            {
+                                gotValueFromDistributedCache = false;
+                                try
+                                {
+                                    return await dataRetriever();
+                                }
+                                catch (Exception)
+                                {
+                                    dataRetrieverFailed = true;
+                                    throw;
+                                }
+                            }, 
+                            expiration);
 
-            if (result.HasValue)
-            {
-                return result;
-            }
-
-            bool gotValueFromDistributedCache;
-            var dataRetrieverFailed = false;
-            CacheValue<T> dataFromDistributedCache;
-            try
-            {
-                gotValueFromDistributedCache = true;
-                var resultFromDistributedCache = await _distributedCache.GetAsync<T>(
-                    cacheKey,
-                    async () =>
+                        return resultFromDistributedCache.Value;
+                    }
+                    catch (Exception ex) when(!dataRetrieverFailed)
                     {
                         gotValueFromDistributedCache = false;
-                        try
-                        {
-                            return await dataRetriever();
-                        }
-                        catch (Exception)
-                        {
-                            dataRetrieverFailed = true;
-                            throw;
-                        }
-                    },
-                    expiration);
+                        _logger?.LogError(ex, "get with data retriever from distributed provider error [{0}]", cacheKey);
+                        return await dataRetriever();
+                    }
+                },
+                expiration);
 
-                dataFromDistributedCache = resultFromDistributedCache;
-            }
-            catch (Exception ex) when (!dataRetrieverFailed)
+            if (gotValueFromDistributedCache && result.HasValue)
             {
-                gotValueFromDistributedCache = false;
-                _logger?.LogError(ex, "get with data retriever from distributed provider error [{0}]", cacheKey);
-                dataFromDistributedCache = new CacheValue<T>(await dataRetriever(), true);
+                var ts = await GetExpirationAsync(cacheKey);
+
+                _localCache.Set(cacheKey, result.Value, ts);
             }
 
-            var ts = gotValueFromDistributedCache ? await GetExpirationAsync(cacheKey) : expiration;
-
-            await _localCache.SetAsync(cacheKey, dataFromDistributedCache.Value, ts);
-            return dataFromDistributedCache;
+            return result;
         }
 
         /// <summary>
@@ -702,7 +707,7 @@
             await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
         }
 
-        public async Task<TimeSpan> GetExpirationAsync(string cacheKey)
+        public  async Task<TimeSpan> GetExpirationAsync(string cacheKey)
         {
             var ts = await _localCache.GetExpirationAsync(cacheKey);
             if (ts > TimeSpan.Zero) return ts;
@@ -725,7 +730,7 @@
             return ts;
         }
 
-        public TimeSpan GetExpiration(string cacheKey)
+        public  TimeSpan GetExpiration(string cacheKey)
         {
             var ts = _localCache.GetExpiration(cacheKey);
             if (ts > TimeSpan.Zero) return ts;
