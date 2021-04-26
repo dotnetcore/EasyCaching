@@ -370,6 +370,56 @@ namespace EasyCaching.UnitTests
 
             Assert.Equal(ts, TimeSpan.Zero);
         }
+        
+        
+        [Fact]
+        public async Task GetExpirationAsync_LocalExpirationMoreThanZero_ReturnsLocalExpiration()
+        {
+            var (hybridProvider, localProvider, distributedProvider) = CreateCachingProvider(maxRdSeconds: 120);
+            var cacheKey = GetUniqueCacheKey();
+            var value = "value";
+
+            await hybridProvider.SetAsync(cacheKey, value, Expiration);
+            await distributedProvider.SetAsync(cacheKey, value, TimeSpan.FromMilliseconds(1));
+            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            
+            var ts = await hybridProvider.GetExpirationAsync(cacheKey);
+
+            Assert.InRange(ts, TimeSpan.FromSeconds(1), Expiration.Add(TimeSpan.FromSeconds(localProvider.MaxRdSecond)));
+        }
+        
+        [Fact]
+        public async Task GetExpirationAsync_LocalExpirationEqualsZero_ReturnsDistributedExpiration()
+        {
+            var (hybridProvider, localProvider, distributedProvider) = CreateCachingProvider(maxRdSeconds: 0);
+            var cacheKey = GetUniqueCacheKey();
+            var value = "value";
+
+            await hybridProvider.SetAsync(cacheKey, value, Expiration);
+            await localProvider.SetAsync(cacheKey, value, TimeSpan.FromMilliseconds(1));
+            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            
+            var ts = await hybridProvider.GetExpirationAsync(cacheKey);
+
+            Assert.InRange(ts, TimeSpan.FromSeconds(1), Expiration.Add(TimeSpan.FromSeconds(distributedProvider.MaxRdSecond)));
+        }
+        
+        [Fact]
+        public async Task GetExpirationAsync_DistributedExpirationThrowsException_ReturnsZero()
+        {
+            var cacheKey = GetUniqueCacheKey();
+            var (hybridProvider, localProvider, _, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider =>
+                    A.CallTo(() => distributedProvider.GetExpirationAsync(cacheKey)).Throws(new Exception()),
+                inMemoryOptions: options => options.MaxRdSecond = 0);
+
+            await hybridProvider.SetAsync(cacheKey, "value", TimeSpan.FromMilliseconds(1));
+            Thread.Sleep(TimeSpan.FromMilliseconds(1));
+            
+            var ts = await hybridProvider.GetExpirationAsync(cacheKey);
+
+            Assert.Equal(ts, TimeSpan.Zero);
+        }
               
         [Theory]
         [InlineData(1)]
