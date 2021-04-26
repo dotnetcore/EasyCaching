@@ -42,36 +42,35 @@ namespace EasyCaching.UnitTests
             });
         }
 
-        private IHybridCachingProvider CreateCachingProvider(bool cacheNulls = false, int? maxRdSeconds = null) =>
-            CreateService<IHybridCachingProvider>(services =>
-                services.AddEasyCaching(x =>
-                {
-                    x.UseInMemory(
-                        options =>
-                        {
-                            options.CacheNulls = cacheNulls;
-                            if (maxRdSeconds.HasValue)
-                                options.MaxRdSecond = maxRdSeconds.Value;
-                        }, LocalCacheProviderName);
-
-                    x.UseRedis(options =>
-                        {
-                            options.CacheNulls = cacheNulls;
-                            options.DBConfig.Configuration = AvailableRedis;
-                        },
-                        DistributedCacheProviderName);
-
-                    x.WithRedisBus(options =>
+        private IHybridCachingProvider CreateCachingProvider(bool cacheNulls = false) => CreateService<IHybridCachingProvider>(services =>
+        {
+            services.AddEasyCaching(x =>
+            {
+                x.UseInMemory(
+                    options =>
                     {
-                        options.Configuration = AvailableRedis;
+                        options.CacheNulls = cacheNulls;
+                    },LocalCacheProviderName);
 
-                        options
-                            .DecorateWithRetry(1, RedisBusOptionsExtensions.RedisExceptionFilter)
-                            .DecorateWithPublishFallback(RedisBusOptionsExtensions.RedisExceptionFilter);
-                    });
+                x.UseRedis(options =>
+                    {
+                        options.CacheNulls = cacheNulls;
+                        options.DBConfig.Configuration = AvailableRedis;
+                    },
+                    DistributedCacheProviderName);
 
-                    UseHybrid(x);
-                }));
+                x.WithRedisBus(options =>
+                {
+                    options.Configuration = AvailableRedis;
+                    
+                    options
+                        .DecorateWithRetry(1, RedisBusOptionsExtensions.RedisExceptionFilter)
+                        .DecorateWithPublishFallback(RedisBusOptionsExtensions.RedisExceptionFilter);
+                });
+
+                UseHybrid(x);
+            });
+        });
 
         private IHybridCachingProvider CreateCachingProviderWithCircuitBreakerAndFallback(string connectionString) => 
             CreateService<IHybridCachingProvider>(services =>
