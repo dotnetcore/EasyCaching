@@ -591,7 +591,7 @@
 
             if (gotValueFromDistributedCache && result.HasValue)
             {
-                var ts = GetExpiration(cacheKey);
+                var ts = GetExpirationFromDistributedProvider(cacheKey);
 
                 _localCache.Set(cacheKey, result.Value, ts);
             }
@@ -652,9 +652,9 @@
 
             if (gotValueFromDistributedCache && result.HasValue)
             {
-                var ts = await GetExpirationAsync(cacheKey);
+                var ts = await GetExpirationFromDistributedProviderAsync(cacheKey);
 
-                _localCache.Set(cacheKey, result.Value, ts);
+                await _localCache.SetAsync(cacheKey, result.Value, ts);
             }
 
             return result;
@@ -730,10 +730,53 @@
             return ts;
         }
 
+        private  async Task<TimeSpan> GetExpirationFromDistributedProviderAsync(string cacheKey)
+        {
+            var ts = TimeSpan.Zero;
+
+            try
+            {
+                ts = await _distributedCache.GetExpirationAsync(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
+            }
+
+            if (ts <= TimeSpan.Zero)
+            {
+                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+            }
+
+            return ts;
+        }
+
         public  TimeSpan GetExpiration(string cacheKey)
         {
             var ts = _localCache.GetExpiration(cacheKey);
             if (ts > TimeSpan.Zero) return ts;
+
+            try
+            {
+                ts = _distributedCache.GetExpiration(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
+                return TimeSpan.Zero;
+            }
+
+            if (ts <= TimeSpan.Zero)
+            {
+                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+            }
+
+            return ts;
+        }
+
+        private  TimeSpan GetExpirationFromDistributedProvider(string cacheKey)
+        {
+            var ts = TimeSpan.Zero;
 
             try
             {
