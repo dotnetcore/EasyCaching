@@ -67,16 +67,6 @@
             return Decorator.ExecuteAsync(provider => provider.FlushAsync());
         }
 
-        public TimeSpan GetExpiration(string cacheKey)
-        {
-            return Decorator.Execute(provider => provider.GetExpiration(cacheKey));
-        }
-
-        public Task<TimeSpan> GetExpirationAsync(string cacheKey)
-        {
-            return Decorator.ExecuteAsync(provider => provider.GetExpirationAsync(cacheKey));
-        }
-
         public ProviderInfo GetProviderInfo()
         {
             return Decorator.GetCachingProvider().GetProviderInfo();

@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.UnitTests
+﻿using EasyCaching.HybridCache;
+
+namespace EasyCaching.UnitTests
 {
     using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
@@ -51,11 +53,11 @@
                     },LocalCacheProviderName);
 
                 x.UseRedis(options =>
-                {
-                    options.CacheNulls = cacheNulls;
-                    options.DBConfig.Configuration = AvailableRedis;
-                },
-                DistributedCacheProviderName);
+                    {
+                        options.CacheNulls = cacheNulls;
+                        options.DBConfig.Configuration = AvailableRedis;
+                    },
+                    DistributedCacheProviderName);
 
                 x.WithRedisBus(options =>
                 {
@@ -170,6 +172,22 @@
                 serviceProvider.GetService<IEasyCachingProviderFactory>().GetCachingProvider(LocalCacheProviderName),
                 fakeDistributedProvider, 
                 fakeBus);
+        }
+
+        private (HybridCachingProvider hybridProvider, IEasyCachingProvider fakeLocalCachingProvider, IEasyCachingProvider fakeDistributedProvider)  CreateFakeHybridProvider()
+        {
+            var fakeLocalProvider = A.Fake<IEasyCachingProvider>();
+            var fakeDistributedProvider = A.Fake<IEasyCachingProvider>();
+            var fakeProvidersFactory = A.Fake<IEasyCachingProviderFactory>();
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(LocalCacheProviderName)).Returns(fakeLocalProvider);
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(DistributedCacheProviderName)).Returns(fakeDistributedProvider);
+            var hybridProvider = new HybridCachingProvider("TestProvider",
+                new HybridCachingOptions()
+                {
+                    TopicName = "TestTopicName", LocalCacheProviderName = LocalCacheProviderName,
+                    DistributedCacheProviderName = DistributedCacheProviderName
+                }, fakeProvidersFactory);
+            return (hybridProvider, fakeLocalProvider, fakeDistributedProvider);
         }
 
         [Fact]
@@ -299,6 +317,90 @@
 
             var res = hybridProvider.Get<string>(cacheKey);
             Assert.Equal(CacheValue<string>.NoValue, res);
+        }
+        
+        [Fact]
+        public void GetExpiration_LocalExpirationMoreThanZero_ReturnsLocalExpiration()
+        {
+            var (hybridProvider, fakeLocalProvider, _) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.FromMinutes(5);
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpiration(cacheKey)).Returns(localExpiration);
+            
+            var ts = hybridProvider.GetExpiration(cacheKey);
+
+            Assert.Equal(ts, localExpiration);
+        }
+        
+        [Fact]
+        public void GetExpiration_LocalExpirationEqualsZero_ReturnsDistributedExpiration()
+        {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var distributeExpiration = TimeSpan.FromMinutes(5);
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpiration(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).Returns(distributeExpiration);
+            
+            var ts = hybridProvider.GetExpiration(cacheKey);
+
+            Assert.Equal(ts, distributeExpiration);
+        }
+        
+        [Fact]
+        public void GetExpiration_DistributedExpirationThrowsException_ReturnsZero()
+        {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpiration(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).Throws(new Exception());
+            
+            var ts = hybridProvider.GetExpiration(cacheKey);
+
+            Assert.Equal(ts, TimeSpan.Zero);
+        }
+        
+        [Fact]
+        public async Task GetExpirationAsync_LocalExpirationMoreThanZero_ReturnsLocalExpiration()
+        {
+            var (hybridProvider, fakeLocalProvider, _) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.FromMinutes(5);
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
+            
+            var ts = await hybridProvider.GetExpirationAsync(cacheKey);
+
+            Assert.Equal(ts, localExpiration);
+        }
+        
+        [Fact]
+        public async Task GetExpirationAsync_LocalExpirationEqualsZero_ReturnsDistributedExpiration()
+        {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var distributeExpiration = TimeSpan.FromMinutes(5);
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).Returns(distributeExpiration);
+            
+            var ts = await hybridProvider.GetExpirationAsync(cacheKey);
+
+            Assert.Equal(ts, distributeExpiration);
+        }
+        
+        [Fact]
+        public async Task GetExpirationAsync_DistributedExpirationThrowsException_ReturnsZero()
+        {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).Throws(new Exception());
+            
+            var ts = await hybridProvider.GetExpirationAsync(cacheKey);
+
+            Assert.Equal(ts, TimeSpan.Zero);
         }
               
         [Theory]

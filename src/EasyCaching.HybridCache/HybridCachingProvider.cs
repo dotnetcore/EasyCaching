@@ -591,7 +591,7 @@
 
             if (gotValueFromDistributedCache && result.HasValue)
             {
-                var ts = GetExpiration(cacheKey);
+                var ts = GetExpirationFromDistributedProvider(cacheKey);
 
                 _localCache.Set(cacheKey, result.Value, ts);
             }
@@ -652,9 +652,9 @@
 
             if (gotValueFromDistributedCache && result.HasValue)
             {
-                var ts = await GetExpirationAsync(cacheKey);
+                var ts = await GetExpirationFromDistributedProviderAsync(cacheKey);
 
-                _localCache.Set(cacheKey, result.Value, ts);
+                await _localCache.SetAsync(cacheKey, result.Value, ts);
             }
 
             return result;
@@ -707,9 +707,27 @@
             await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true });
         }
 
-        private async Task<TimeSpan> GetExpirationAsync(string cacheKey)
+        public  async Task<TimeSpan> GetExpirationAsync(string cacheKey)
         {
-            TimeSpan ts = TimeSpan.Zero;
+            var ts = await _localCache.GetExpirationAsync(cacheKey);
+            if (ts > TimeSpan.Zero) return ts;
+
+            try
+            {
+                ts = await _distributedCache.GetExpirationAsync(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
+                return TimeSpan.Zero;
+            }
+
+            return ts;
+        }
+
+        private async Task<TimeSpan> GetExpirationFromDistributedProviderAsync(string cacheKey)
+        {
+            var ts = TimeSpan.Zero;
 
             try
             {
@@ -728,9 +746,27 @@
             return ts;
         }
 
-        private TimeSpan GetExpiration(string cacheKey)
+        public  TimeSpan GetExpiration(string cacheKey)
         {
-            TimeSpan ts = TimeSpan.Zero;
+            var ts = _localCache.GetExpiration(cacheKey);
+            if (ts > TimeSpan.Zero) return ts;
+
+            try
+            {
+                ts = _distributedCache.GetExpiration(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
+                return TimeSpan.Zero;
+            }
+
+            return ts;
+        }
+
+        private  TimeSpan GetExpirationFromDistributedProvider(string cacheKey)
+        {
+            var ts = TimeSpan.Zero;
 
             try
             {
