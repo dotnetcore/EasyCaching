@@ -236,7 +236,7 @@
 
             if (cacheValue.HasValue)
             {
-                TimeSpan ts = await GetExpirationAsync(cacheKey);
+                TimeSpan ts = await GetExpirationFromDistributedProviderAsync(cacheKey);
 
                 await _localCache.SetAsync(cacheKey, cacheValue.Value, ts);
 
@@ -758,13 +758,8 @@
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
+                return TimeSpan.Zero;
             }
-            
-            if (ts <= TimeSpan.Zero)
-            {
-                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
-            }
-
 
             return ts;
         }
@@ -814,8 +809,8 @@
 
             if (cacheValue != null)
             {
-                TimeSpan ts = await GetExpirationAsync(cacheKey);
-              
+                TimeSpan ts = await GetExpirationFromDistributedProviderAsync(cacheKey);
+
                 await _localCache.SetAsync(cacheKey, cacheValue, ts);
 
                 return cacheValue;
