@@ -535,6 +535,47 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
+        public async void GetAsyncTyped_DistributedCacheHasValue_ShouldGetExpirationFromDistributedCache()
+        {
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetAsyncTyped<string>().Returns(new CacheValue<string>("cachedValue", hasValue: true)));
+            
+            
+            var res = await hybridProvider.GetAsync<string>("key");
+            
+            
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("cachedValue", cachedValue.Value);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync("key")).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
+        public async void GetAsync_DistributedCacheHasValue_ShouldGetExpirationFromDistributedCache()
+        {
+            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
+                setupFakeDistributedProvider: distributedProvider => 
+                    distributedProvider.CallToGetAsync<string>().Returns("cachedValue"));
+
+            var res = await hybridProvider.GetAsync("key", typeof(string)) as string;
+            
+            
+            Assert.NotNull(res);
+            Assert.Equal("cachedValue", res);
+            
+            var cachedValue = localProvider.Get<string>("key");
+            Assert.True(cachedValue.HasValue);
+            Assert.Equal("cachedValue", cachedValue.Value);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync("key")).MustHaveHappenedOnceExactly();
+        }
+
+        [Fact]
         public void GetWithDataRetriever_DistributedCacheHasNoValue_ShouldReturnValue()
         {
             var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(

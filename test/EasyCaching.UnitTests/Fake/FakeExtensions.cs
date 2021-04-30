@@ -23,6 +23,12 @@ namespace EasyCaching.UnitTests.Fake
         public static IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> CallToGetAsyncWithDataRetriever<T>(this IEasyCachingProviderBase cachingProvider) =>
             A.CallTo(() => cachingProvider.GetAsync<T>(A<string>._, A<Func<Task<T>>>._, A<TimeSpan>._));
         
+        public static IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> CallToGetAsyncTyped<T>(this IEasyCachingProviderBase cachingProvider) =>
+            A.CallTo(() => cachingProvider.GetAsync<T>(A<string>._));
+        
+        public static IReturnValueArgumentValidationConfiguration<Task<Object>> CallToGetAsync<T>(this IEasyCachingProviderBase cachingProvider) =>
+            A.CallTo(() => cachingProvider.GetAsync(A<string>._, typeof(T)));
+        
         public static void CallsDataRetriever<T>(this IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> configuration) =>
             configuration
                 .ReturnsLazily(async call =>
