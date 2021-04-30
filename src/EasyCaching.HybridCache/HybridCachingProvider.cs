@@ -236,7 +236,7 @@
 
             if (cacheValue.HasValue)
             {
-                TimeSpan ts = await GetExpirationAsync(cacheKey);
+                TimeSpan ts = await GetExpirationFromDistributedProviderAsync(cacheKey);
 
                 await _localCache.SetAsync(cacheKey, cacheValue.Value, ts);
 
@@ -746,7 +746,7 @@
             return ts;
         }
 
-        public  TimeSpan GetExpiration(string cacheKey)
+        public TimeSpan GetExpiration(string cacheKey)
         {
             var ts = _localCache.GetExpiration(cacheKey);
             if (ts > TimeSpan.Zero) return ts;
@@ -764,7 +764,7 @@
             return ts;
         }
 
-        private  TimeSpan GetExpirationFromDistributedProvider(string cacheKey)
+        private TimeSpan GetExpirationFromDistributedProvider(string cacheKey)
         {
             var ts = TimeSpan.Zero;
 
@@ -809,8 +809,8 @@
 
             if (cacheValue != null)
             {
-                TimeSpan ts = await GetExpirationAsync(cacheKey);
-              
+                TimeSpan ts = await GetExpirationFromDistributedProviderAsync(cacheKey);
+
                 await _localCache.SetAsync(cacheKey, cacheValue, ts);
 
                 return cacheValue;
