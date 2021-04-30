@@ -732,29 +732,5 @@ namespace EasyCaching.UnitTests
             Assert.True(res.HasValue);
             Assert.Equal("123", res.Value);
         }
-
-        // [Fact]
-        public void Get_DistributedCacheHasValue_ExpirationEqualsZero_NotSetValueToLocalCache()
-        {
-            var (hybridProvider, localProvider, fakeDistributedProvider, _) = CreateCachingProviderWithFakes(
-                setupFakeDistributedProvider: distributedProvider => 
-                    distributedProvider.CallToGetWithDataRetriever<string>().Returns(new CacheValue<string>("cachedValue", hasValue: true)));
-            var dataRetriever = CreateFakeDataRetriever(result: "value");
-            
-            
-            var res = hybridProvider.Get("key", dataRetriever, Expiration);
-            
-            
-            Assert.True(res.HasValue);
-            Assert.Equal("cachedValue", res.Value);
-            
-            var cachedValue = localProvider.Get<string>("key");
-            Assert.True(cachedValue.HasValue);
-            Assert.Equal("cachedValue", cachedValue.Value);
-            
-            A.CallTo(() => dataRetriever.Invoke()).MustNotHaveHappened();
-            fakeDistributedProvider.CallToGetWithDataRetriever<string>().MustHaveHappenedOnceExactly();
-            A.CallTo(() => fakeDistributedProvider.GetExpiration("key")).MustHaveHappenedOnceExactly();
-        }
     }
 }
