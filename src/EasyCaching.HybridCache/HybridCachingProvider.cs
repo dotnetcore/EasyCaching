@@ -746,7 +746,7 @@
             return ts;
         }
 
-        public  TimeSpan GetExpiration(string cacheKey)
+        public TimeSpan GetExpiration(string cacheKey)
         {
             var ts = _localCache.GetExpiration(cacheKey);
             if (ts > TimeSpan.Zero) return ts;
@@ -758,13 +758,18 @@
             catch (Exception ex)
             {
                 _logger?.LogError(ex, "Error getting expiration for cache key = '{0}'.", cacheKey);
-                return TimeSpan.Zero;
             }
+            
+            if (ts <= TimeSpan.Zero)
+            {
+                ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+            }
+
 
             return ts;
         }
 
-        private  TimeSpan GetExpirationFromDistributedProvider(string cacheKey)
+        private TimeSpan GetExpirationFromDistributedProvider(string cacheKey)
         {
             var ts = TimeSpan.Zero;
 

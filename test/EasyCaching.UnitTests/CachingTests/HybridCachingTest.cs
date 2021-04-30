@@ -358,7 +358,7 @@ namespace EasyCaching.UnitTests
             
             var ts = hybridProvider.GetExpiration(cacheKey);
 
-            Assert.Equal(ts, TimeSpan.Zero);
+            Assert.Equal(ts, TimeSpan.FromSeconds(60));
         }
         
         [Fact]
