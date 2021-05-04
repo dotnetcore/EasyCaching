@@ -1,4 +1,5 @@
 ﻿using EasyCaching.HybridCache;
+using EasyCaching.InMemory;
 
 namespace EasyCaching.UnitTests
 {
@@ -772,6 +773,193 @@ namespace EasyCaching.UnitTests
 
             Assert.True(res.HasValue);
             Assert.Equal("123", res.Value);
+        }
+
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(3, 3)]
+        public async void GetAsyncTyped_DistributedCacheHasValue_SetLocalWithDefaultOrDistributedExpiration(int distributedExpirationMinutes, int setLocalExpirationMinutes)
+        {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var distributeExpiration = TimeSpan.FromMinutes(distributedExpirationMinutes);
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeLocalProvider.GetAsync(cacheKey, typeof(string)))
+                .Returns((string)null);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).Returns(distributeExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetAsync(cacheKey, typeof(string)))
+                .Returns(new CacheValue<string>("cachedValue", true));
+
+            
+            var res = await hybridProvider.GetAsync(cacheKey, typeof(string)) as CacheValue<string>;
+            
+            
+            Assert.NotNull(res);
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLocalProvider.SetAsync(cacheKey, A<Object>._, TimeSpan.FromMinutes(setLocalExpirationMinutes)))
+                .MustHaveHappenedOnceExactly();
+        }
+
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(3, 3)]
+        public async void GetAsync_DistributedCacheHasValue_SetLocalWithDefaultOrDistributedExpiration(int distributedExpirationMinutes, int setLocalExpirationMinutes)
+        {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var distributeExpiration = TimeSpan.FromMinutes(distributedExpirationMinutes);
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpirationAsync(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeLocalProvider.GetAsync<string>(cacheKey))
+                .Returns(Task.FromResult(CacheValue<string>.NoValue));
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).Returns(distributeExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetAsync<string>(cacheKey))
+                .Returns(Task.FromResult(new CacheValue<string>("cachedValue", true)));
+            
+            
+            var res = await hybridProvider.GetAsync<string>(cacheKey);
+            
+            
+            Assert.NotNull(res.Value);
+            Assert.Equal("cachedValue", res.Value);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLocalProvider.SetAsync(cacheKey, "cachedValue", TimeSpan.FromMinutes(setLocalExpirationMinutes)))
+                .MustHaveHappenedOnceExactly();
+        }
+
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(3, 3)]
+        public async void GetAsyncWithDataRetriever_DistributedCacheHasValue_SetLocalWithDefaultOrDistributedExpiration(int distributedExpirationMinutes, int setLocalExpirationMinutes)
+        {
+            var cacheKey = GetUniqueCacheKey();      
+            var fakeLocalCache = A.Fake<IInMemoryCaching>();
+            
+            A.CallTo(() => fakeLocalCache.ProviderName)
+                .Returns("testCache");
+            A.CallTo(() => fakeLocalCache.Get<string>(cacheKey))
+                .Returns(CacheValue<string>.NoValue);
+            A.CallTo(() => fakeLocalCache.Add($"{cacheKey}_Lock", A<int>._, A<TimeSpan>._))
+                .Returns(true);
+            var localProvider =
+                new DefaultInMemoryCachingProvider("testCache", new[] {fakeLocalCache},
+                    new InMemoryOptions() {MaxRdSecond = 0});
+            var fakeDistributedProvider = A.Fake<IEasyCachingProvider>();
+            var fakeProvidersFactory = A.Fake<IEasyCachingProviderFactory>();
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(LocalCacheProviderName)).Returns(localProvider);
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(DistributedCacheProviderName)).Returns(fakeDistributedProvider);
+            var hybridProvider = new HybridCachingProvider("TestProvider",
+                new HybridCachingOptions()
+                {
+                    TopicName = "TestTopicName", LocalCacheProviderName = LocalCacheProviderName,
+                    DistributedCacheProviderName = DistributedCacheProviderName
+                }, fakeProvidersFactory);
+            
+            var newExpiration = TimeSpan.FromMinutes(5);
+            var distributeExpiration = TimeSpan.FromMinutes(distributedExpirationMinutes);
+            var dataRetriever = CreateFakeAsyncDataRetriever(result: "cachedValue");
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).Returns(distributeExpiration);
+            A.CallTo(() => fakeDistributedProvider.GetAsync(cacheKey, A<Func<Task<string>>>._, A<TimeSpan>._))
+                .Returns(new CacheValue<string>("cachedValue", true));
+
+            
+            var res = await hybridProvider.GetAsync(cacheKey, dataRetriever, newExpiration);
+            
+            
+            Assert.NotNull(res);
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpirationAsync(cacheKey)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLocalCache.Set(cacheKey, A<string>._, TimeSpan.FromMinutes(setLocalExpirationMinutes)))
+                .MustHaveHappenedOnceExactly();
+        }
+
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(3, 3)]
+        public void GetSync_DistributedCacheHasValue_SetLocalWithDefaultOrDistributedExpiration(int distributedExpirationMinutes, int setLocalExpirationMinutes)
+        {
+            var (hybridProvider, fakeLocalProvider, fakeDistributedProvider) = CreateFakeHybridProvider();
+            var localExpiration = TimeSpan.Zero;
+            var distributeExpiration = TimeSpan.FromMinutes(distributedExpirationMinutes);
+            var cacheKey = GetUniqueCacheKey();
+            A.CallTo(() => fakeLocalProvider.GetExpiration(cacheKey)).Returns(localExpiration);
+            A.CallTo(() => fakeLocalProvider.Get<string>(cacheKey))
+                .Returns(CacheValue<string>.NoValue);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).Returns(distributeExpiration);
+            A.CallTo(() => fakeDistributedProvider.Get<string>(cacheKey))
+                .Returns(new CacheValue<string>("cachedValue", true));
+            
+            
+            var res = hybridProvider.Get<string>(cacheKey);
+            
+            
+            Assert.NotNull(res.Value);
+            Assert.Equal("cachedValue", res.Value);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLocalProvider.Set(cacheKey, "cachedValue", TimeSpan.FromMinutes(setLocalExpirationMinutes)))
+                .MustHaveHappenedOnceExactly();
+        }
+
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(3, 3)]
+        public void GetSyncWithDataRetriever_DistributedCacheHasValue_SetLocalWithDefaultOrDistributedExpiration(int distributedExpirationMinutes, int setLocalExpirationMinutes)
+        {
+            var cacheKey = GetUniqueCacheKey();      
+            var fakeLocalCache = A.Fake<IInMemoryCaching>();
+            
+            A.CallTo(() => fakeLocalCache.ProviderName)
+                .Returns("testCache");
+            A.CallTo(() => fakeLocalCache.Get<string>(cacheKey))
+                .Returns(CacheValue<string>.NoValue);
+            A.CallTo(() => fakeLocalCache.Add($"{cacheKey}_Lock", A<int>._, A<TimeSpan>._))
+                .Returns(true);
+            var localProvider =
+                new DefaultInMemoryCachingProvider("testCache", new[] {fakeLocalCache},
+                    new InMemoryOptions() {MaxRdSecond = 0});
+            var fakeDistributedProvider = A.Fake<IEasyCachingProvider>();
+            var fakeProvidersFactory = A.Fake<IEasyCachingProviderFactory>();
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(LocalCacheProviderName)).Returns(localProvider);
+            A.CallTo(() => fakeProvidersFactory.GetCachingProvider(DistributedCacheProviderName)).Returns(fakeDistributedProvider);
+            var hybridProvider = new HybridCachingProvider("TestProvider",
+                new HybridCachingOptions()
+                {
+                    TopicName = "TestTopicName", LocalCacheProviderName = LocalCacheProviderName,
+                    DistributedCacheProviderName = DistributedCacheProviderName
+                }, fakeProvidersFactory);
+            
+            var newExpiration = TimeSpan.FromMinutes(5);
+            var distributeExpiration = TimeSpan.FromMinutes(distributedExpirationMinutes);
+            var dataRetriever = A.Fake<Func<string>>();
+            A.CallTo(() => dataRetriever.Invoke()).Returns("cachedValue");
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).Returns(distributeExpiration);
+            A.CallTo(() => fakeDistributedProvider.Get(cacheKey, A<Func<string>>._, A<TimeSpan>._))
+                .Returns(new CacheValue<string>("cachedValue", true));
+
+            
+            var res = hybridProvider.Get(cacheKey, dataRetriever, newExpiration);
+            
+            
+            Assert.NotNull(res);
+            Assert.True(res.HasValue);
+            Assert.Equal("cachedValue", res.Value);
+            
+            A.CallTo(() => fakeDistributedProvider.GetExpiration(cacheKey)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => fakeLocalCache.Set(cacheKey, A<string>._, TimeSpan.FromMinutes(setLocalExpirationMinutes)))
+                .MustHaveHappenedOnceExactly();
         }
     }
 }
