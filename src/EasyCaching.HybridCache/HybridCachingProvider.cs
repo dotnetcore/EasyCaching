@@ -194,7 +194,7 @@
 
             if (cacheValue.HasValue)
             {
-                TimeSpan ts = GetExpiration(cacheKey);
+                TimeSpan ts = GetExpirationFromDistributedProvider(cacheKey);
                
                 _localCache.Set(cacheKey, cacheValue.Value, ts);
 
