@@ -117,21 +117,30 @@
                 return Get(cacheKey, dataRetriever, expiration);
             }
 
-            var res = dataRetriever();
-
-            if (res != null || _options.CacheNulls)
+            try
             {
-                Set(cacheKey, res, expiration);
-                //remove mutex key
-                _cache.Remove($"{cacheKey}_Lock");
+                var res = dataRetriever();
 
-                return new CacheValue<T>(res, true);
+                if (res != null || _options.CacheNulls)
+                {
+                    Set(cacheKey, res, expiration);
+                    //remove mutex key
+                    _cache.Remove($"{cacheKey}_Lock");
+
+                    return new CacheValue<T>(res, true);
+                }
+                else
+                {
+                    //remove mutex key
+                    _cache.Remove($"{cacheKey}_Lock");
+                    return CacheValue<T>.NoValue;
+                }
             }
-            else
+            catch
             {
                 //remove mutex key
                 _cache.Remove($"{cacheKey}_Lock");
-                return CacheValue<T>.NoValue;
+                throw;
             }
         }
 

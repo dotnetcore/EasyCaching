@@ -48,21 +48,30 @@
                 return await GetAsync(cacheKey, dataRetriever, expiration);
             }
 
-            var res = await dataRetriever();
-
-            if (res != null || _options.CacheNulls)
+            try
             {
-                await SetAsync(cacheKey, res, expiration);
-                //remove mutex key
-                _cache.Remove($"{cacheKey}_Lock");
+                var res = await dataRetriever();
 
-                return new CacheValue<T>(res, true);
+                if (res != null || _options.CacheNulls)
+                {
+                    await SetAsync(cacheKey, res, expiration);
+                    //remove mutex key
+                    _cache.Remove($"{cacheKey}_Lock");
+
+                    return new CacheValue<T>(res, true);
+                }
+                else
+                {
+                    //remove mutex key
+                    _cache.Remove($"{cacheKey}_Lock");
+                    return CacheValue<T>.NoValue;
+                }
             }
-            else
+            catch
             {
                 //remove mutex key
                 _cache.Remove($"{cacheKey}_Lock");
-                return CacheValue<T>.NoValue;
+                throw;
             }
         }
 
