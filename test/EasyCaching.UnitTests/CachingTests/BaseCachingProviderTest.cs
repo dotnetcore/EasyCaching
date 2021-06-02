@@ -521,10 +521,25 @@
 
             var res = _providerWithNullsCached.Get(cacheKey, func, _defaultTs);
 
-            Assert.Equal(default(string),res.Value);
+            Assert.Equal(default(string), res.Value);
             var cachedValue = _providerWithNullsCached.Get<string>(cacheKey);
             Assert.True(cachedValue.HasValue);
             Assert.Null(cachedValue.Value);
+        }
+
+        [Fact]
+        public async Task Get_Cached_Value_Async_Should_Call_Retriever_And_Return_String_With_Caching_When_Nulls_Are_Cached()
+        {
+            var cacheKey = $"{_nameSpace}{Guid.NewGuid().ToString()}";
+            var func = Create_Fake_Retriever_Return_String_Async();
+
+            var res = await _providerWithNullsCached.GetAsync(cacheKey, func, _defaultTs);
+
+            Assert.Equal("123", res.Value);
+            var cachedValue = await _providerWithNullsCached.GetAsync<string>(cacheKey);
+            Assert.True(cachedValue.HasValue);
+            Assert.NotNull(cachedValue.Value);
+            Assert.Equal("123", cachedValue.Value);
         }
 
         [Fact]
