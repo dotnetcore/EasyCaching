@@ -74,7 +74,7 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var result = await _cache.GetAsync<byte[]>(cacheKey);
-            if (result != null || _options.CacheNulls)
+            if (result != null)
             {
                 CacheStats.OnHit();
 
