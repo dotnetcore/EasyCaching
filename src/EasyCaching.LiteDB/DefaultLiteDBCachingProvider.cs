@@ -127,11 +127,16 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = BaseGet<T>(cacheKey);
+            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
 
-            if (result.HasValue)
+            if (cacheItem != null)
             {
-                return result;
+                if (_options.EnableLogging)
+                    _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
+
+                CacheStats.OnHit();
+
+                return new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cacheItem.cachevalue), true);
             }
             
             var item = dataRetriever();
@@ -139,10 +144,10 @@
             if (item != null || _options.CacheNulls)
             {
                 Set(cacheKey, item, expiration);
-                result = new CacheValue<T>(item, true);
+                return new CacheValue<T>(item, true);
             }
 
-            return result;
+            return CacheValue<T>.NoValue;
         }
 
         /// <summary>

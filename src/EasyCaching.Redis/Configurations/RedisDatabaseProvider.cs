@@ -19,7 +19,7 @@
         /// <summary>
         /// The connection multiplexer.
         /// </summary>
-        private readonly Lazy<ConnectionMultiplexer> _connectionMultiplexer;
+        private Lazy<ConnectionMultiplexer> _connectionMultiplexer;
         
         public RedisDatabaseProvider(string name, RedisOptions options)
         {
@@ -37,7 +37,15 @@
         /// </summary>
         public IDatabase GetDatabase()
         {
-            return _connectionMultiplexer.Value.GetDatabase();
+            try
+            {
+                return _connectionMultiplexer.Value.GetDatabase();
+            }
+            catch (Exception)
+            {
+                _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
+                throw;
+            }
         }
 
         /// <summary>

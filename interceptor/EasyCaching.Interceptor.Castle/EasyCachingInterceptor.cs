@@ -112,7 +112,7 @@
                 var returnType = serviceMethod.IsReturnTask()
                         ? serviceMethod.ReturnType.GetGenericArguments().First()
                         : serviceMethod.ReturnType;
-                        
+
                 var cacheKey = _keyGenerator.GetCacheKey(serviceMethod, invocation.Arguments, attribute.CacheKeyPrefix);
 
                 object cacheValue = null;
