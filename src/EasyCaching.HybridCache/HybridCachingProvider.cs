@@ -771,6 +771,8 @@
             try
             {
                 ts = _distributedCache.GetExpiration(cacheKey);
+                if (ts <= TimeSpan.Zero)
+                    _logger?.LogError($"Expiration from distributed cache = {ts} for cache key = '{cacheKey}'.");
             }
             catch (Exception ex)
             {
@@ -780,7 +782,13 @@
             if (ts <= TimeSpan.Zero)
             {
                 ts = TimeSpan.FromSeconds(_options.DefaultExpirationForTtlFailed);
+                if (ts <= TimeSpan.Zero)
+                    _logger?.LogError(
+                        $"DefaultExpirationForTtlFailed = {_options.DefaultExpirationForTtlFailed} for cache key = '{cacheKey}'.");
             }
+
+            if (ts <= TimeSpan.Zero)
+                _logger?.LogError($"Expiration before returning = {ts} for cache key = '{cacheKey}'.");
 
             return ts;
         }
