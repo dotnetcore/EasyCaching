@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.Redis
+﻿using EasyCaching.Core.DistributedLock;
+
+namespace EasyCaching.Redis
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
@@ -61,8 +63,9 @@
                 var serializers = x.GetServices<IEasyCachingSerializer>();
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
+                var dlf = x.GetService<IDistributedLockFactory>();
                 var factory = x.GetService<ILoggerFactory>();
-                return new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, factory);
+                return new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, dlf, factory);
             };
 
             services.AddSingleton<IEasyCachingProvider, DefaultRedisCachingProvider>(createFactory);

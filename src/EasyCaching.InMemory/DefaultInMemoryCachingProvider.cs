@@ -1,10 +1,11 @@
 ﻿namespace EasyCaching.InMemory
 {
+    using EasyCaching.Core;
+    using EasyCaching.Core.DistributedLock;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using EasyCaching.Core;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// MemoryCaching provider.
@@ -50,6 +51,25 @@
             IEnumerable<IInMemoryCaching> cache,
             InMemoryOptions options,
             ILoggerFactory loggerFactory = null)
+            : this(name, cache, options, null, loggerFactory)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.InMemory.DefaultInMemoryCachingProvider"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="cache">Cache.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="factory">Distributed lock factory</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        public DefaultInMemoryCachingProvider(
+            string name,
+            IEnumerable<IInMemoryCaching> cache,
+            InMemoryOptions options,
+            IDistributedLockFactory factory = null,
+            ILoggerFactory loggerFactory = null)
+            : base(factory, options)
         {
             this._name = name;
             this._cache = cache.Single(x => x.ProviderName == _name);
@@ -186,7 +206,7 @@
 
             _cache.Remove(cacheKey);
         }
-  
+
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
@@ -237,7 +257,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix} , count = {count}");
         }
-  
+
         /// <summary>
         /// Sets all.
         /// </summary>
@@ -251,7 +271,7 @@
 
             _cache.SetAll(values, expiration);
         }
-      
+
         /// <summary>
         /// Gets all.
         /// </summary>
@@ -285,7 +305,7 @@
 
             return _cache.GetByPrefix<T>(prefix);
         }
-   
+
         /// <summary>
         /// Removes all.
         /// </summary>
@@ -299,7 +319,7 @@
 
             _cache.RemoveAll(cacheKeys);
         }
-   
+
         /// <summary>
         /// Gets the count.
         /// </summary>

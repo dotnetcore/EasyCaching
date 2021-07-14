@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core.Serialization;
     using Enyim.Caching.Memcached;
     using Microsoft.Extensions.DependencyInjection;
@@ -79,8 +80,9 @@
                 var clients = x.GetServices<EasyCachingMemcachedClient>();
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();
                 var options = optionsMon.Get(_name);
+                var dlf = x.GetService<IDistributedLockFactory>();
                 var factory = x.GetService<ILoggerFactory>();
-                return new DefaultMemcachedCachingProvider(_name, clients, options, factory);
+                return new DefaultMemcachedCachingProvider(_name, clients, options, dlf, factory);
             });
         }
     }

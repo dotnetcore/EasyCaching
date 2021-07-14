@@ -1,12 +1,13 @@
 ﻿namespace EasyCaching.Memcached
 {
+    using EasyCaching.Core;
+    using EasyCaching.Core.DistributedLock;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
-    using EasyCaching.Core;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// Default memcached caching provider.
@@ -14,7 +15,7 @@
     public partial class DefaultMemcachedCachingProvider : EasyCachingAbstractProvider
     {
         public const string NullValue = "{NULL}";
-        
+
         /// <summary>
         /// The memcached client.
         /// </summary>
@@ -41,7 +42,7 @@
         private readonly string _name;
 
         private readonly ProviderInfo _info;
-       
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
         /// </summary>
@@ -54,6 +55,25 @@
             IEnumerable<EasyCachingMemcachedClient> memcachedClients,
             MemcachedOptions options,
             ILoggerFactory loggerFactory = null)
+            : this(name, memcachedClients, options, null, loggerFactory)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Memcached.DefaultMemcachedCachingProvider"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="memcachedClients">Memcached client.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="factory">Distributed lock factory</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        public DefaultMemcachedCachingProvider(
+            string name,
+            IEnumerable<EasyCachingMemcachedClient> memcachedClients,
+            MemcachedOptions options,
+            IDistributedLockFactory factory = null,
+            ILoggerFactory loggerFactory = null)
+            : base(factory, options)
         {
             this._name = name;
             this._memcachedClient = memcachedClients.Single(x => x.Name.Equals(this._name));
@@ -101,7 +121,7 @@
             {
                 return result;
             }
-            
+
             var flag = _memcachedClient.Store(Enyim.Caching.Memcached.StoreMode.Add, this.HandleCacheKey($"{cacheKey}_Lock"), 1, TimeSpan.FromMilliseconds(_options.LockMs));
 
             if (!flag)
@@ -123,7 +143,7 @@
                 return CacheValue<T>.NoValue;
             }
         }
-    
+
         /// <summary>
         /// Get the specified cacheKey.
         /// </summary>
@@ -158,7 +178,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             _memcachedClient.Remove(this.HandleCacheKey(cacheKey));
-        }    
+        }
 
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
@@ -179,14 +199,14 @@
                 var addSec = new Random().Next(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
-            
+
             _memcachedClient.Store(
-                Enyim.Caching.Memcached.StoreMode.Set, 
-                this.HandleCacheKey(cacheKey), 
-                this.ConvertToStoredValue(cacheValue), 
+                Enyim.Caching.Memcached.StoreMode.Set,
+                this.HandleCacheKey(cacheKey),
+                this.ConvertToStoredValue(cacheValue),
                 expiration);
         }
-      
+
         /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>
@@ -203,7 +223,7 @@
         /// Removes cached item by cachekey's prefix.
         /// </summary>
         /// <remarks>
-        /// Before using the method , you should follow this link 
+        /// Before using the method , you should follow this link
         /// https://github.com/memcached/memcached/wiki/ProgrammingTricks#namespacing
         /// and confirm that you use the namespacing when you set and get the cache.
         /// </remarks>
@@ -224,12 +244,12 @@
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
             _memcachedClient.Store(
-                Enyim.Caching.Memcached.StoreMode.Set, 
-                this.HandleCacheKey(prefix), 
-                newValue, 
+                Enyim.Caching.Memcached.StoreMode.Set,
+                this.HandleCacheKey(prefix),
+                newValue,
                 new TimeSpan(0, 0, 0));
         }
-      
+
         /// <summary>
         /// Handle the cache key of memcached limititaion
         /// </summary>
@@ -250,7 +270,7 @@
 
             return cacheKey;
         }
-        
+
         private object ConvertToStoredValue(object cacheValue) => cacheValue ?? NullValue;
 
         private CacheValue<T> ConvertFromStoredValue<T>(object cacheValue)
@@ -279,7 +299,7 @@
                 Set(item.Key, item.Value, expiration);
             }
         }
-       
+
         /// <summary>
         /// Gets all.
         /// </summary>
@@ -296,7 +316,7 @@
                     pair => pair.Key,
                     pair => ConvertFromStoredValue<T>(pair.Value));
         }
-     
+
         /// <summary>
         /// Gets the by prefix.
         /// </summary>
@@ -319,7 +339,7 @@
             foreach (var item in cacheKeys.Distinct())
                 Remove(item);
         }
-    
+
         /// <summary>
         /// Gets the count.
         /// </summary>
@@ -371,9 +391,9 @@
             }
 
             return _memcachedClient.Store(
-                Enyim.Caching.Memcached.StoreMode.Add, 
-                this.HandleCacheKey(cacheKey), 
-                ConvertToStoredValue(cacheValue), 
+                Enyim.Caching.Memcached.StoreMode.Add,
+                this.HandleCacheKey(cacheKey),
+                ConvertToStoredValue(cacheValue),
                 expiration);
         }
 
@@ -385,7 +405,7 @@
         /// <summary>
         /// Get te information of this provider.
         /// </summary>
-        /// <returns></returns>   
+        /// <returns></returns>
         public override ProviderInfo BaseGetProviderInfo()
         {
             return _info;
@@ -398,7 +418,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
         }
-        
+
         private void OnCacheMiss(string cacheKey)
         {
             CacheStats.OnMiss();

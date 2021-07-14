@@ -1,12 +1,13 @@
 ﻿namespace EasyCaching.Redis
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using EasyCaching.Core;
+    using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.Logging;
     using StackExchange.Redis;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
     /// <summary>
     /// Default redis caching provider.
@@ -54,7 +55,7 @@
         private readonly string _name;
 
         private readonly ProviderInfo _info;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
         /// </summary>
@@ -69,12 +70,33 @@
             IEnumerable<IEasyCachingSerializer> serializers,
             RedisOptions options,
             ILoggerFactory loggerFactory = null)
+            : this(name, dbProviders, serializers, options, null, loggerFactory)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisCachingProvider"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="dbProviders">Db providers.</param>
+        /// <param name="serializers">Serializers.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="factory">Distributed lock factory</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        public DefaultRedisCachingProvider(
+            string name,
+            IEnumerable<IRedisDatabaseProvider> dbProviders,
+            IEnumerable<IEasyCachingSerializer> serializers,
+            RedisOptions options,
+            IDistributedLockFactory factory = null,
+            ILoggerFactory loggerFactory = null)
+            : base(factory, options)
         {
             ArgumentCheck.NotNullAndCountGTZero(dbProviders, nameof(dbProviders));
             ArgumentCheck.NotNullAndCountGTZero(serializers, nameof(serializers));
 
             this._name = name;
-            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));            
+            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
@@ -264,9 +286,9 @@
         /// </summary>
         /// <returns>The redis keys.</returns>
         /// <remarks>
-        /// If your Redis Servers support command SCAN , 
+        /// If your Redis Servers support command SCAN ,
         /// IServer.Keys will use command SCAN to find out the keys.
-        /// Following 
+        /// Following
         /// https://github.com/StackExchange/StackExchange.Redis/blob/master/StackExchange.Redis/StackExchange/Redis/RedisServer.cs#L289
         /// </remarks>
         /// <param name="pattern">Pattern.</param>

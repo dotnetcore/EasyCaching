@@ -1,4 +1,5 @@
 ﻿using EasyCaching.Core;
+using EasyCaching.Core.DistributedLock;
 using EasyCaching.InMemory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,9 +34,10 @@ namespace EasyCaching.UnitTests.DistributedLock
                 var mCache = x.GetServices<IInMemoryCaching>();
                 var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
                 var options = optionsMon.Get(EasyCachingConstValue.DefaultInMemoryName);
+                var dlf = x.GetService<IDistributedLockFactory>();
                 // ILoggerFactory can be null
                 var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
-                return new TestCachingProvider(EasyCachingConstValue.DefaultInMemoryName, mCache, options, factory);
+                return new TestCachingProvider(EasyCachingConstValue.DefaultInMemoryName, mCache, options, dlf, factory);
             });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>(); ;
@@ -44,7 +46,7 @@ namespace EasyCaching.UnitTests.DistributedLock
 
     public class TestCachingProvider : DefaultInMemoryCachingProvider
     {
-        public TestCachingProvider(string name, IEnumerable<IInMemoryCaching> cache, InMemoryOptions options, ILoggerFactory loggerFactory = null) : base(name, cache, options, loggerFactory)
+        public TestCachingProvider(string name, IEnumerable<IInMemoryCaching> cache, InMemoryOptions options, IDistributedLockFactory factory, ILoggerFactory loggerFactory = null) : base(name, cache, options, factory, loggerFactory)
         {
         }
 
