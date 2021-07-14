@@ -13,7 +13,7 @@
     {
         /// <summary>
         /// Uses the memcached provider (specify the config via hard code).
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure provider settings.</param>
         /// <param name="name">The name of this provider instance.</param>
@@ -59,6 +59,19 @@
             }
 
             options.RegisterExtension(new MemcachedOptionsExtension(name, configure));
+            return options;
+        }
+
+        /// <summary>
+        /// Uses the memcached lock.
+        /// </summary>
+        /// <param name="options">Options.</param>
+        /// <param name="name">The name of this provider instance.</param>
+        public static EasyCachingOptions UseMemcachedLock(this EasyCachingOptions options
+            , string name = EasyCachingConstValue.DefaultMemcachedName)
+        {
+            options.RegisterExtension(new MemcachedLockExtension(name));
+
             return options;
         }
     }

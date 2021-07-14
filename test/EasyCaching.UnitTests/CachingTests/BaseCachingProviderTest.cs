@@ -294,7 +294,7 @@
 
             _provider.Remove(cacheKey);
         }
-        
+
         [Fact]
         public void Set_Value_And_Get_Cached_Value_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
@@ -324,7 +324,7 @@
 
             await _provider.RemoveAsync(cacheKey);
         }
-        
+
         [Fact]
         public async Task Set_Value_And_Get_Cached_Value_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
@@ -431,7 +431,7 @@
 
             _providerWithNullsCached.Remove(cacheKey);
         }
-         
+
         [Fact]
         protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed()
         {
@@ -446,7 +446,7 @@
 
             await _provider.RemoveAsync(cacheKey);
         }
-         
+
         [Fact]
         protected virtual async Task Set_And_Get_Value_Type_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
@@ -738,7 +738,7 @@
 
             Assert.InRange(count, 1, 5);
         }
-        #endregion              
+        #endregion
 
         #region Remove/RemoveAsync
         [Fact]
@@ -815,7 +815,7 @@
             var flag = await _provider.ExistsAsync(cacheKey);
 
             Assert.False(flag);
-        }              
+        }
         #endregion
 
         #region RemoveByPrefix/RemoveByPrefixAsync
@@ -882,7 +882,7 @@
             Assert.Equal("value1", res1.Value);
             Assert.Equal("value2", res2.Value);
         }
-        
+
         [Fact]
         protected virtual void SetAll_Should_Succeed_When_One_Of_Values_Is_Null_And_Nulls_Are_Cached()
         {
@@ -915,7 +915,7 @@
             Assert.Equal("value1", res1.Value);
             Assert.Equal("value2", res2.Value);
         }
-        
+
         [Fact]
         protected virtual async Task SetAllAsync_Should_Succeed_When_One_Of_Values_Is_Null_And_Nulls_Are_Cached()
         {
@@ -954,7 +954,7 @@
             Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getall:key:1").Select(x => x.Value).FirstOrDefault().Value);
             Assert.Equal("value2", res.Where(x => x.Key == $"{_nameSpace}getall:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
-        
+
         [Fact]
         protected virtual void GetAll_Should_Succeed_When_One_Of_Values_Is_Null_And_Nulls_Are_Cached()
         {
@@ -994,7 +994,7 @@
             Assert.Equal("value1",res.Where(x => x.Key == $"{_nameSpace}getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value) ;
             Assert.Equal("value2",res.Where(x => x.Key == $"{_nameSpace}getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
-        
+
         [Fact]
         protected virtual async Task GetAllAsync_Should_Succeed_When_One_Of_Values_Is_Null_And_Nulls_Are_Cached()
         {
@@ -1113,7 +1113,7 @@
             Assert.Equal(0, res.Count);
         }
 
-        #endregion    
+        #endregion
 
         #region RemoveAll/RemoveAllAsync
         [Fact]
@@ -1265,7 +1265,7 @@
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue1, val.Value);
         }
-        
+
         [Fact]
         public void TrySet_Value_And_Get_Cached_Value_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {
@@ -1298,7 +1298,7 @@
             Assert.True(val.HasValue);
             Assert.Equal(cacheValue1, val.Value);
         }
-        
+
         [Fact]
         public async Task TrySet_Value_And_Get_Cached_Value_Async_Should_Succeed_When_CacheValue_IsNull_And_Nulls_Are_Cached()
         {

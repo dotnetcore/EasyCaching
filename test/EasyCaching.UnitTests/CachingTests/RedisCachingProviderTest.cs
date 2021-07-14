@@ -23,18 +23,21 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
+            {
                 x.UseRedis(options =>
-                {
-                    options.DBConfig = new RedisDBOptions
                     {
-                        AllowAdmin = true
-                    };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    options.DBConfig.Database = 5;
-                    additionalSetup(options);
-                }, 
-                ProviderName)
-            );
+                        options.DBConfig = new RedisDBOptions
+                        {
+                            AllowAdmin = true
+                        };
+                        options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                        options.DBConfig.Database = 5;
+                        additionalSetup(options);
+                    },
+                    ProviderName);
+
+                if (DateTime.Now.Second % 2 == 0) x.UseRedisLock();
+            });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
         }

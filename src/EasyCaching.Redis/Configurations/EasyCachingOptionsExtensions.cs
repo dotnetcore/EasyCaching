@@ -13,7 +13,7 @@
     {
         /// <summary>
         /// Uses the SERedis provider (specify the config via hard code).
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure provider settings.</param>
         /// <param name="name">The name of this provider instance.</param>
@@ -31,7 +31,7 @@
 
         /// <summary>
         /// Uses the SERedis provider (read config from configuration file).
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="name">The name of this provider instance.</param>
@@ -59,6 +59,19 @@
             }
 
             options.RegisterExtension(new RedisOptionsExtension(name, configure));
+            return options;
+        }
+
+        /// <summary>
+        /// Uses the SERedis lock.
+        /// </summary>
+        /// <param name="options">Options.</param>
+        /// <param name="name">The name of this provider instance.</param>
+        public static EasyCachingOptions UseRedisLock(this EasyCachingOptions options
+            , string name = EasyCachingConstValue.DefaultRedisName)
+        {
+            options.RegisterExtension(new RedisLockExtension(name));
+
             return options;
         }
     }

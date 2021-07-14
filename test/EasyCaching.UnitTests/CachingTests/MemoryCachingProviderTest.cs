@@ -1,4 +1,5 @@
 using EasyCaching.Core.Configurations;
+using EasyCaching.Core.DistributedLock;
 
 namespace EasyCaching.UnitTests
 {
@@ -24,13 +25,16 @@ namespace EasyCaching.UnitTests
         protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => x
-                .UseInMemory(options =>
-                {
-                    options.MaxRdSecond = 0;
-                    additionalSetup(options);
-                })
-            );
+            services.AddEasyCaching(x =>
+            {
+                x.UseInMemory(options =>
+                    {
+                        options.MaxRdSecond = 0;
+                        additionalSetup(options);
+                    });
+
+                //if (DateTime.Now.Second % 2 == 0) x.UseMemoryLock();
+            });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();;
         }
