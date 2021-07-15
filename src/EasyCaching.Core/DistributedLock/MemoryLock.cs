@@ -6,8 +6,8 @@ namespace EasyCaching.Core.DistributedLock
 {
     public class MemoryLock : IDistributedLock
     {
-        private static readonly RefCounterPool<string, SemaphoreSlim> SemaphoreSlims
-            = new RefCounterPool<string, SemaphoreSlim>();
+        private readonly RefCounterPool<string, SemaphoreSlim> _semaphoreSlims
+            = new RefCounterPool<string, SemaphoreSlim>();//MemoryLock must be singleton.
 
         private readonly string _key;
         private readonly object _syncObj = new object();
@@ -24,7 +24,7 @@ namespace EasyCaching.Core.DistributedLock
             {
                 if (_semaphore != null) throw new DistributedLockException();
 
-                _semaphore = SemaphoreSlims.GetOrAdd(_key, _ => new SemaphoreSlim(1, 1));
+                _semaphore = _semaphoreSlims.GetOrAdd(_key, _ => new SemaphoreSlim(1, 1));
             }
 
             return _semaphore;
@@ -61,7 +61,7 @@ namespace EasyCaching.Core.DistributedLock
 
             semaphore.Release();
 
-            SemaphoreSlims.TryRemove(_key)?.Dispose();
+            _semaphoreSlims.TryRemove(_key)?.Dispose();
         }
 
         public virtual void Release() => InternalRelease();
@@ -80,7 +80,7 @@ namespace EasyCaching.Core.DistributedLock
 
             if (semaphore == null) return;
 
-            SemaphoreSlims.TryRemove(_key)?.Dispose();
+            _semaphoreSlims.TryRemove(_key)?.Dispose();
         }
 
         public virtual bool Lock(int millisecondsTimeout, CancellationToken cancellationToken)
