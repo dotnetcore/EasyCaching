@@ -67,7 +67,9 @@ namespace EasyCaching.UnitTests.DistributedLock
 
                 handle.Set();
 
-                handle.WaitOne();
+                await Task.Delay(100);
+
+                handle.WaitOne(10000);
             }
             finally
             {
@@ -80,7 +82,7 @@ namespace EasyCaching.UnitTests.DistributedLock
             var @lock = _lockFactory.CreateLock("test", key);
             try
             {
-                handle.WaitOne();
+                handle.WaitOne(10000);
 
                 Assert.False(await @lock.LockAsync(timeout));
             }
@@ -143,7 +145,7 @@ namespace EasyCaching.UnitTests.DistributedLock
 
             try
             {
-                handle.WaitOne();
+                handle.WaitOne(10000);
 
                 _output.WriteLine("Start Lock2");
 
@@ -157,7 +159,7 @@ namespace EasyCaching.UnitTests.DistributedLock
             }
             finally
             {
-                handle.WaitOne();
+                handle.WaitOne(10000);
 
                 _output.WriteLine("Start Lock3");
 
@@ -176,7 +178,7 @@ namespace EasyCaching.UnitTests.DistributedLock
             using (var lock2 = _lockFactory.CreateLock("test", nameof(Lock_With_CancellationToken)))
             using (var cts = new CancellationTokenSource())
             {
-                cts.CancelAfter(50);
+                cts.CancelAfter(1500);
 
                 Assert.True(await lock1.LockAsync(100, cts.Token));
 

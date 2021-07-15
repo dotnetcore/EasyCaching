@@ -1,30 +1,26 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using EasyCaching.Core.Configurations;
-using EasyCaching.Core.DistributedLock;
-using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 
-namespace EasyCaching.Redis.DistributedLock
+namespace EasyCaching.Core.DistributedLock
 {
-    public class RedisLock : MemoryLock
+    public class DistributedLock : MemoryLock
     {
+        private readonly IDistributedLockProvider _provider;
         private readonly object _syncObj = new object();
-        private readonly string _key;
-        private readonly IDatabase _database;
-        private readonly BaseProviderOptions _options;
-        private readonly ILogger<RedisLock> _logger;
+        private readonly DistributedLockOptions _options;
+        private readonly ILogger _logger;
+
         private byte[] _value;
         private Timer _timer;
 
-        public RedisLock(string key, IDatabase database, BaseProviderOptions options, ILogger<RedisLock> logger) : base(key)
+        public DistributedLock(string key, IDistributedLockProvider provider, DistributedLockOptions options, ILoggerFactory loggerFactory = null) : base(key)
         {
-            _key = key;
-            _database = database;
+            _provider = provider;
             _options = options;
-            _logger = logger;
+            _logger = loggerFactory?.CreateLogger(GetType().FullName);
         }
 
         public override bool Lock(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -38,7 +34,7 @@ namespace EasyCaching.Redis.DistributedLock
                 {
                     try
                     {
-                        if (Lock(_key, _value))
+                        if (_provider.Add(Key, _value, _options.MaxTtl))
                         {
                             StartPing();
 
@@ -49,7 +45,7 @@ namespace EasyCaching.Redis.DistributedLock
                     {
                         _logger?.LogWarning(default, ex, ex.Message);
 
-                        if (!(ex is RedisConnectionException)) break;
+                        if (!_provider.CanRetry(ex)) break;
                     }
 
                     if (cancellationToken.IsCancellationRequested)
@@ -62,7 +58,7 @@ namespace EasyCaching.Redis.DistributedLock
                     Thread.Sleep(Math.Max(0, Math.Min(100, millisecondsTimeout - (int)sw.ElapsedMilliseconds)));
                 } while (sw.ElapsedMilliseconds < millisecondsTimeout);
 
-                _logger?.LogWarning($"{_key}/Wait fail");
+                _logger?.LogWarning($"{Key}/Wait fail");
 
                 base.Release();
             }
@@ -82,7 +78,7 @@ namespace EasyCaching.Redis.DistributedLock
                 {
                     try
                     {
-                        if (await LockAsync(_key, _value))
+                        if (await _provider.AddAsync(Key, _value, _options.MaxTtl))
                         {
                             StartPing();
 
@@ -93,7 +89,7 @@ namespace EasyCaching.Redis.DistributedLock
                     {
                         _logger?.LogWarning(default, ex, ex.Message);
 
-                        if (!(ex is RedisConnectionException)) break;
+                        if (!_provider.CanRetry(ex)) break;
                     }
 
                     if (cancellationToken.IsCancellationRequested)
@@ -106,7 +102,7 @@ namespace EasyCaching.Redis.DistributedLock
                     await Task.Delay(Math.Max(0, Math.Min(100, millisecondsTimeout - (int)sw.ElapsedMilliseconds)), cancellationToken);
                 } while (sw.ElapsedMilliseconds < millisecondsTimeout);
 
-                _logger?.LogWarning($"{_key}/Wait fail");
+                _logger?.LogWarning($"{Key}/Wait fail");
 
                 await base.ReleaseAsync();
             }
@@ -115,7 +111,6 @@ namespace EasyCaching.Redis.DistributedLock
             return false;
         }
 
-        /// <summary>http://doc.redisfans.com/string/set.html#id2</summary>
         public override void Release()
         {
             Interlocked.Exchange(ref _timer, null)?.Dispose();
@@ -125,8 +120,8 @@ namespace EasyCaching.Redis.DistributedLock
 
             try
             {
-                if (GetThenDel(_key, value) < 0) _logger?.LogWarning($"{_key}/Release lock fail");
-                else _logger?.LogInformation($"{_key}/Release lock");
+                if (_provider.Delete(Key, value)) _logger?.LogInformation($"{Key}/Release lock");
+                else _logger?.LogWarning($"{Key}/Release lock fail");
             }
             finally
             {
@@ -143,8 +138,8 @@ namespace EasyCaching.Redis.DistributedLock
 
             try
             {
-                if (await GetThenDelAsync(_key, value) < 0) _logger?.LogWarning($"{_key}/Release lock fail");
-                else _logger?.LogInformation($"{_key}/Release lock");
+                if (await _provider.DeleteAsync(Key, value)) _logger?.LogInformation($"{Key}/Release lock");
+                else _logger?.LogWarning($"{Key}/Release lock fail");
             }
             finally
             {
@@ -162,49 +157,31 @@ namespace EasyCaching.Redis.DistributedLock
 
                 _value = id.ToByteArray();
 
-                _logger?.LogDebug($"{_key}/NewGuid: {id:D}");
+                _logger?.LogDebug($"{Key}/NewGuid: {id:D}");
             }
         }
 
         private void StartPing()
         {
-            _logger?.LogInformation($"{_key}/Wait success, start ping");
+            _logger?.LogInformation($"{Key}/Wait success, start ping");
 
-            _timer = new Timer(Ping, this, _options.LockMs / 3, _options.LockMs / 3);
+            _timer = new Timer(Ping, this, _options.DueTime, _options.Period);
         }
 
         private static async void Ping(object state)
         {
-            var self = (RedisLock)state;
+            var self = (DistributedLock)state;
 
             try
             {
-                await self._database.StringSetAsync(self._key, self._value, TimeSpan.FromMilliseconds(self._options.LockMs));
+                await self._provider.SetAsync(self.Key, self._value, self._options.MaxTtl);
 
-                self._logger?.LogDebug($"{self._key}/Ping success");
+                self._logger?.LogDebug($"{self.Key}/Ping success");
             }
             catch (Exception ex)
             {
-                self._logger?.LogWarning(default, ex, $"{self._key}/Ping fail");
+                self._logger?.LogWarning(default, ex, $"{self.Key}/Ping fail");
             }
         }
-
-        private bool Lock(string key, byte[] value) =>
-            _database.StringSet(key, value, TimeSpan.FromMilliseconds(_options.LockMs * 3 + 1000), When.NotExists);
-
-        private Task<bool> LockAsync(string key, byte[] value) =>
-            _database.StringSetAsync(key, value, TimeSpan.FromMilliseconds(_options.LockMs * 3 + 1000), When.NotExists);
-
-        private long GetThenDel(string key, byte[] val) =>
-            (long)_database.ScriptEvaluate(@"if redis.call('GET', KEYS[1]) == ARGV[1] then
-    return redis.call('DEL', KEYS[1]);
-end
-return -1;", new RedisKey[] { key }, new RedisValue[] { val });
-
-        private async Task<long> GetThenDelAsync(string key, byte[] val) =>
-            (long)await _database.ScriptEvaluateAsync(@"if redis.call('GET', KEYS[1]) == ARGV[1] then
-    return redis.call('DEL', KEYS[1]);
-end
-return -1;", new RedisKey[] { key }, new RedisValue[] { val });
     }
 }
