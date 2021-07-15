@@ -181,7 +181,7 @@ namespace EasyCaching.Core
             Exception e = null;
             try
             {
-                if (_lockFactory == null) return BaseGet<T>(cacheKey);
+                if (_lockFactory == null) return BaseGet<T>(cacheKey, dataRetriever, expiration);
 
                 var value = BaseGet<T>(cacheKey);
                 if (value.HasValue) return value;
@@ -189,6 +189,9 @@ namespace EasyCaching.Core
                 using (var @lock = _lockFactory.CreateLock(Name, $"{cacheKey}_Lock"))
                 {
                     if (!@lock.Lock(_options.SleepMs)) throw new TimeoutException();
+
+                    value = BaseGet<T>(cacheKey);
+                    if (value.HasValue) return value;
 
                     var item = dataRetriever();
                     if (item != null || _options.CacheNulls)
@@ -305,7 +308,7 @@ namespace EasyCaching.Core
             Exception e = null;
             try
             {
-                if (_lockFactory == null) return await BaseGetAsync<T>(cacheKey);
+                if (_lockFactory == null) return await BaseGetAsync<T>(cacheKey, dataRetriever, expiration);
 
                 var value = await BaseGetAsync<T>(cacheKey);
                 if (value.HasValue) return value;
@@ -314,6 +317,9 @@ namespace EasyCaching.Core
                 try
                 {
                     if (!await @lock.LockAsync(_options.SleepMs)) throw new TimeoutException();
+
+                    value = await BaseGetAsync<T>(cacheKey);
+                    if (value.HasValue) return value;
 
                     var task = dataRetriever();
                     if (!task.IsCompleted &&
