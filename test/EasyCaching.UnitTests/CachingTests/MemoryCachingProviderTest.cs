@@ -26,15 +26,11 @@ namespace EasyCaching.UnitTests
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
-            {
                 x.UseInMemory(options =>
-                    {
-                        options.MaxRdSecond = 0;
-                        additionalSetup(options);
-                    });
-
-                if (DateTime.Now.Second % 2 == 0) x.UseMemoryLock();
-            });
+                {
+                    options.MaxRdSecond = 0;
+                    additionalSetup(options);
+                }).UseMemoryLock());
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();;
         }

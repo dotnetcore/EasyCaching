@@ -15,7 +15,7 @@ namespace EasyCaching.UnitTests.DistributedLock
                     {
                         ConnectionStrings = new System.Collections.Generic.List<string>
                         {
-                            "127.0.0.1:6379,defaultDatabase=2,poolsize=10"
+                            "127.0.0.1:6388,defaultDatabase=13,poolsize=10"
                         }
                     };
                 })

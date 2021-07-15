@@ -23,7 +23,6 @@ namespace EasyCaching.UnitTests
         {
             var services = new ServiceCollection();
             services.AddEasyCaching(x =>
-            {
                 x.UseCSRedis(options =>
                 {
                     options.DBConfig = new CSRedisDBOptions
@@ -34,10 +33,7 @@ namespace EasyCaching.UnitTests
                         }
                     };
                     additionalSetup(options);
-                });
-
-                if (DateTime.Now.Second % 2 == 0) x.UseCSRedisLock();
-            });
+                }).UseCSRedisLock());
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();

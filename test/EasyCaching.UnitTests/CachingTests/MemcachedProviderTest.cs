@@ -21,15 +21,11 @@
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
-            {
                 x.UseMemcached(options =>
                 {
                     options.DBConfig.AddServer("127.0.0.1", 11211);
                     additionalSetup(options);
-                });
-
-                if (DateTime.Now.Second % 2 == 0) x.UseMemcachedLock();
-            });
+                }).UseMemcachedLock());
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
