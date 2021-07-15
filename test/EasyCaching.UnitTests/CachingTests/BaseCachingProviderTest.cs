@@ -737,7 +737,8 @@
 
             await Task.WhenAll(tasks);
 
-            Assert.InRange(count, 1, 5);
+            if (_provider.UseLock) Assert.Equal(1, count);
+            else Assert.InRange(count, 1, 5);
         }
         #endregion
 

@@ -67,8 +67,7 @@ namespace EasyCaching.UnitTests.DistributedLock
 
                 handle.Set();
 
-                await Task.Delay(timeout * 2);
-
+                handle.WaitOne();
             }
             finally
             {
@@ -78,11 +77,16 @@ namespace EasyCaching.UnitTests.DistributedLock
 
         private async Task Lock_After_lock2(string key, int timeout, EventWaitHandle handle)
         {
-            using (var @lock = _lockFactory.CreateLock("test", key))
+            var @lock = _lockFactory.CreateLock("test", key);
+            try
             {
                 handle.WaitOne();
 
                 Assert.False(await @lock.LockAsync(timeout));
+            }
+            finally
+            {
+                handle.Set();
             }
         }
 

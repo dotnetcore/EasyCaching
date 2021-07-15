@@ -46,11 +46,12 @@ namespace EasyCaching.Core.DistributedLock
         {
             RefCounter<TValue> item;
 
-            lock (_dictionary) if (!_dictionary.TryGetValue(key, out item)) return null;
+            lock (_dictionary)
+            {
+                if (!_dictionary.TryGetValue(key, out item) || item.Decrement() > 0) return null;
 
-            if (item.Decrement() > 0) return null;
-
-            lock (_dictionary) _dictionary.Remove(key);
+                _dictionary.Remove(key);
+            }
 
             return item.Value;
         }

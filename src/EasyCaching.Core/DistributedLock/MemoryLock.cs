@@ -6,28 +6,30 @@ namespace EasyCaching.Core.DistributedLock
 {
     public class MemoryLock : IDistributedLock
     {
-        private readonly RefCounterPool<string, SemaphoreSlim> _semaphoreSlims
-            = new RefCounterPool<string, SemaphoreSlim>();//MemoryLock must be singleton.
+        private static readonly RefCounterPool<string, SemaphoreSlim> SemaphoreSlims
+            = new RefCounterPool<string, SemaphoreSlim>();
 
         private readonly string _key;
         private readonly object _syncObj = new object();
 
         public MemoryLock(string key) => _key = key;
 
-        private volatile SemaphoreSlim _semaphore;
+        private SemaphoreSlim _semaphore;
 
         private SemaphoreSlim GetOrCreate()
         {
-            if (_semaphore != null) throw new DistributedLockException();
+            if (Volatile.Read(ref _semaphore) != null) throw new DistributedLockException();
 
             lock (_syncObj)
             {
-                if (_semaphore != null) throw new DistributedLockException();
+                if (Volatile.Read(ref _semaphore) != null) throw new DistributedLockException();
 
-                _semaphore = _semaphoreSlims.GetOrAdd(_key, _ => new SemaphoreSlim(1, 1));
+                var semaphore = SemaphoreSlims.GetOrAdd(_key, _ => new SemaphoreSlim(1, 1));
+
+                Volatile.Write(ref _semaphore, semaphore);
+
+                return semaphore;
             }
-
-            return _semaphore;
         }
 
         #region Dispose
@@ -61,7 +63,7 @@ namespace EasyCaching.Core.DistributedLock
 
             semaphore.Release();
 
-            _semaphoreSlims.TryRemove(_key)?.Dispose();
+            SemaphoreSlims.TryRemove(_key)?.Dispose();
         }
 
         public virtual void Release() => InternalRelease();
@@ -80,7 +82,7 @@ namespace EasyCaching.Core.DistributedLock
 
             if (semaphore == null) return;
 
-            _semaphoreSlims.TryRemove(_key)?.Dispose();
+            SemaphoreSlims.TryRemove(_key)?.Dispose();
         }
 
         public virtual bool Lock(int millisecondsTimeout, CancellationToken cancellationToken)
