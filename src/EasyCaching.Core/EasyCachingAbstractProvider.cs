@@ -26,6 +26,7 @@ namespace EasyCaching.Core
 
         public string Name => this.ProviderName;
         public bool IsDistributedCache => this.IsDistributedProvider;
+        public bool UseLock => _lockFactory != null;
         public int MaxRdSecond => this.ProviderMaxRdSecond;
         public CachingProviderType CachingProviderType => this.ProviderType;
         public CacheStats CacheStats => this.ProviderStats;

@@ -438,7 +438,7 @@
             var cacheKey = $"{_nameSpace}-svgasync-{Guid.NewGuid().ToString()}";
             var cacheValue = 100;
 
-            await  _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
+            await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
 
             var val = await _provider.GetAsync<int>(cacheKey);
             Assert.True(val.HasValue);
@@ -496,7 +496,7 @@
 
             var res = _provider.Get(cacheKey, func, _defaultTs);
 
-            Assert.Equal(default(string),res.Value);
+            Assert.Equal(default(string), res.Value);
             var cachedValue = _provider.Get<string>(cacheKey);
             Assert.False(cachedValue.HasValue);
             Assert.Null(cachedValue.Value);
@@ -718,7 +718,8 @@
                 }, _defaultTs);
             });
 
-            Assert.InRange(count, 1, 5);
+            if (_provider.UseLock) Assert.Equal(1, count);
+            else Assert.InRange(count, 1, 5);
         }
 
         [Fact]
@@ -890,7 +891,7 @@
             {
                 [$"{_nameSpace}setallwithnull:key:1"] = "value1",
                 [$"{_nameSpace}setallwithnull:key:2"] = null,
-            };;
+            }; ;
 
             _providerWithNullsCached.SetAll(dict, _defaultTs);
 
@@ -923,7 +924,7 @@
             {
                 [$"{_nameSpace}setallasyncwithnull:key:1"] = "value1",
                 [$"{_nameSpace}setallasyncwithnull:key:2"] = null,
-            };;
+            }; ;
 
             await _providerWithNullsCached.SetAllAsync(dict, _defaultTs);
 
@@ -949,7 +950,7 @@
 
             Assert.Equal(2, res.Count);
 
-            Assert.Contains($"{_nameSpace}getall:key:1",res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getall:key:1", res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getall:key:2", res.Select(x => x.Key));
             Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getall:key:1").Select(x => x.Value).FirstOrDefault().Value);
             Assert.Equal("value2", res.Where(x => x.Key == $"{_nameSpace}getall:key:2").Select(x => x.Value).FirstOrDefault().Value);
@@ -963,7 +964,7 @@
             {
                 [$"{_nameSpace}getallwithnull:key:1"] = "value1",
                 [$"{_nameSpace}getallwithnull:key:2"] = null,
-            };;
+            }; ;
 
             _providerWithNullsCached.SetAll(dict, _defaultTs);
 
@@ -971,7 +972,7 @@
 
             Assert.Equal(2, res.Count);
 
-            Assert.Contains($"{_nameSpace}getallwithnull:key:1",res.Select(x => x.Key));
+            Assert.Contains($"{_nameSpace}getallwithnull:key:1", res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getallwithnull:key:2", res.Select(x => x.Key));
             Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getallwithnull:key:1").Select(x => x.Value).FirstOrDefault().Value);
             Assert.Null(res.Where(x => x.Key == $"{_nameSpace}getallwithnull:key:2").Select(x => x.Value).FirstOrDefault().Value);
@@ -991,8 +992,8 @@
 
             Assert.Contains($"{_nameSpace}getallasync:key:1", res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getallasync:key:2", res.Select(x => x.Key));
-            Assert.Equal("value1",res.Where(x => x.Key == $"{_nameSpace}getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value) ;
-            Assert.Equal("value2",res.Where(x => x.Key == $"{_nameSpace}getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getallasync:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2", res.Where(x => x.Key == $"{_nameSpace}getallasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -1003,7 +1004,7 @@
             {
                 [$"{_nameSpace}getallasyncwithnull:key:1"] = "value1",
                 [$"{_nameSpace}getallasyncwithnull:key:2"] = null,
-            };;
+            }; ;
 
             _providerWithNullsCached.SetAll(dict, _defaultTs);
 
@@ -1021,7 +1022,7 @@
         protected virtual void GetAll_With_Value_Type_Should_Succeed()
         {
             _provider.RemoveAll(new List<string> { $"{_nameSpace}getall:valuetype:key:1", $"{_nameSpace}getall:valuetype:key:2" });
-            var dict = new Dictionary<string, int> {{ $"{_nameSpace}getall:valuetype:key:1",10},{ $"{_nameSpace}getall:valuetype:key:2",100} };
+            var dict = new Dictionary<string, int> { { $"{_nameSpace}getall:valuetype:key:1", 10 }, { $"{_nameSpace}getall:valuetype:key:2", 100 } };
 
             _provider.SetAll(dict, _defaultTs);
 
@@ -1032,7 +1033,7 @@
             Assert.Contains($"{_nameSpace}getall:valuetype:key:1", res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getall:valuetype:key:2", res.Select(x => x.Key));
             Assert.Equal(10, res.Where(x => x.Key == $"{_nameSpace}getall:valuetype:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal(100,res.Where(x => x.Key == $"{_nameSpace}getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal(100, res.Where(x => x.Key == $"{_nameSpace}getall:valuetype:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -1070,8 +1071,8 @@
             Assert.Equal(2, res.Count);
             Assert.Contains($"{_nameSpace}getbyprefix:key:1", res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getbyprefix:key:2", res.Select(x => x.Key));
-            Assert.Equal("value1",res.Where(x => x.Key == $"{_nameSpace}getbyprefix:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal("value2",res.Where(x => x.Key == $"{_nameSpace}getbyprefix:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getbyprefix:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2", res.Where(x => x.Key == $"{_nameSpace}getbyprefix:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]
@@ -1089,8 +1090,8 @@
             Assert.Equal(2, res.Count);
             Assert.Contains($"{_nameSpace}getbyprefixasync:key:1", res.Select(x => x.Key));
             Assert.Contains($"{_nameSpace}getbyprefixasync:key:2", res.Select(x => x.Key));
-            Assert.Equal("value1",res.Where(x => x.Key == $"{_nameSpace}getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value);
-            Assert.Equal("value2",res.Where(x => x.Key == $"{_nameSpace}getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value1", res.Where(x => x.Key == $"{_nameSpace}getbyprefixasync:key:1").Select(x => x.Value).FirstOrDefault().Value);
+            Assert.Equal("value2", res.Where(x => x.Key == $"{_nameSpace}getbyprefixasync:key:2").Select(x => x.Value).FirstOrDefault().Value);
         }
 
         [Fact]

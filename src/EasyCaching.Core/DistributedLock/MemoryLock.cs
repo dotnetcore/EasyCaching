@@ -16,7 +16,7 @@ namespace EasyCaching.Core.DistributedLock
 
         private volatile SemaphoreSlim _semaphore;
 
-        private void GetOrCreate()
+        private SemaphoreSlim GetOrCreate()
         {
             if (_semaphore != null) throw new DistributedLockException();
 
@@ -24,8 +24,10 @@ namespace EasyCaching.Core.DistributedLock
             {
                 if (_semaphore != null) throw new DistributedLockException();
 
-                _semaphore = SemaphoreSlims.GetOrAdd(_key, key => new SemaphoreSlim(1, 1));
+                _semaphore = SemaphoreSlims.GetOrAdd(_key, _ => new SemaphoreSlim(1, 1));
             }
+
+            return _semaphore;
         }
 
         #region Dispose
@@ -39,7 +41,7 @@ namespace EasyCaching.Core.DistributedLock
 
         public virtual async ValueTask DisposeAsync()
         {
-            await ReleaseAsync().ConfigureAwait(false);
+            await ReleaseAsync();
 
             GC.SuppressFinalize(this);
         }
@@ -50,6 +52,7 @@ namespace EasyCaching.Core.DistributedLock
 
         #endregion Dispose
 
+        #region Release
         private void InternalRelease()
         {
             var semaphore = Interlocked.Exchange(ref _semaphore, null);
@@ -69,19 +72,29 @@ namespace EasyCaching.Core.DistributedLock
 
             return default;
         }
+        #endregion
+
+        private void LockFail()
+        {
+            var semaphore = Interlocked.Exchange(ref _semaphore, null);
+
+            if (semaphore == null) return;
+
+            SemaphoreSlims.TryRemove(_key)?.Dispose();
+        }
 
         public virtual bool Lock(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            GetOrCreate();
+            var semaphore = GetOrCreate();
 
             var locked = false;
             try
             {
-                if (_semaphore != null) locked = _semaphore.Wait(millisecondsTimeout, cancellationToken);
+                locked = semaphore.Wait(millisecondsTimeout, cancellationToken);
             }
             finally
             {
-                if (!locked) _semaphore = null;
+                if (!locked) LockFail();
             }
 
             return locked;
@@ -89,16 +102,16 @@ namespace EasyCaching.Core.DistributedLock
 
         public virtual async ValueTask<bool> LockAsync(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            GetOrCreate();
+            var semaphore = GetOrCreate();
 
             var locked = false;
             try
             {
-                if (_semaphore != null) locked = await _semaphore.WaitAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false);
+                locked = await semaphore.WaitAsync(millisecondsTimeout, cancellationToken);
             }
             finally
             {
-                if (!locked) _semaphore = null;
+                if (!locked) LockFail();
             }
 
             return locked;

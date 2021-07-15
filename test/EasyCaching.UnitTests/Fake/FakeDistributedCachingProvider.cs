@@ -6,10 +6,12 @@
     using EasyCaching.Core;
 
     public class FakeDistributedCachingProvider : IEasyCachingProvider
-    {    
+    {
         public string Name => "distributed";
 
         public bool IsDistributedCache => true;
+
+        public bool UseLock => false;
 
         public int Order => 1;
 

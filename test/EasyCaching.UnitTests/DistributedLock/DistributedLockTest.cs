@@ -172,21 +172,11 @@ namespace EasyCaching.UnitTests.DistributedLock
             using (var lock2 = _lockFactory.CreateLock("test", nameof(Lock_With_CancellationToken)))
             using (var cts = new CancellationTokenSource())
             {
+                cts.CancelAfter(50);
+
                 Assert.True(await lock1.LockAsync(100, cts.Token));
 
-                async Task Run(CancellationTokenSource c)
-                {
-                    await Task.Delay(10, c.Token);
-
-                    c.Cancel();
-                }
-
-                Assert.Throws<OperationCanceledException>(() =>
-                {
-                    var unused = Run(cts);
-
-                    Assert.False(lock2.Lock(2000, cts.Token));
-                });
+                Assert.Throws<OperationCanceledException>(() => lock2.Lock(2000, cts.Token));
             }
         }
     }

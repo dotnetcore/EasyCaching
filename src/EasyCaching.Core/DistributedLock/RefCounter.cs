@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace EasyCaching.Core.DistributedLock
@@ -12,11 +13,14 @@ namespace EasyCaching.Core.DistributedLock
 
         public T Value { get; }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Increment() => Interlocked.Increment(ref _refCount);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Decrement() => Interlocked.Decrement(ref _refCount);
     }
 
-    public class RefCounterPool<TKey, TValue> where TValue : class
+    internal class RefCounterPool<TKey, TValue> where TValue : class
     {
         private readonly IDictionary<TKey, RefCounter<TValue>> _dictionary;
 
@@ -26,26 +30,27 @@ namespace EasyCaching.Core.DistributedLock
         {
             if (valueFactory == null) throw new ArgumentNullException(nameof(valueFactory));
 
+            RefCounter<TValue> item;
             lock (_dictionary)
             {
-                if (_dictionary.TryGetValue(key, out var item))
-                    item.Increment();
-                else
-                    item = _dictionary[key] = new RefCounter<TValue>(valueFactory(key));
-
-                return item.Value;
+                if (!_dictionary.TryGetValue(key, out item))
+                    return (_dictionary[key] = new RefCounter<TValue>(valueFactory(key))).Value;
             }
+
+            item.Increment();
+
+            return item.Value;
         }
 
-        /// <summary>减少引用，如果没有引用了，则返回原来的值</summary>
         public TValue TryRemove(TKey key)
         {
             RefCounter<TValue> item;
-            lock (_dictionary)
-                if (_dictionary.TryGetValue(key, out item) && item.Decrement() == 0)
-                    _dictionary.Remove(key);
-                else
-                    return null;
+
+            lock (_dictionary) if (!_dictionary.TryGetValue(key, out item)) return null;
+
+            if (item.Decrement() > 0) return null;
+
+            lock (_dictionary) _dictionary.Remove(key);
 
             return item.Value;
         }
