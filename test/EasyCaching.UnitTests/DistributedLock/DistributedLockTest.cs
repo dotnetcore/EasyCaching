@@ -122,11 +122,11 @@ namespace EasyCaching.UnitTests.DistributedLock
 
             _ = Task.Run(async () =>
             {
-                handle.Set();
-
                 _output.WriteLine("Start Lock1");
 
                 await lck.LockAsync(timeout);
+
+                handle.Set();
 
                 await Task.Delay(100);
 
@@ -140,8 +140,6 @@ namespace EasyCaching.UnitTests.DistributedLock
             try
             {
                 handle.WaitOne();
-
-                await Task.Delay(30);
 
                 _output.WriteLine("Start Lock2");
 
@@ -178,7 +176,7 @@ namespace EasyCaching.UnitTests.DistributedLock
 
                 async Task Run(CancellationTokenSource c)
                 {
-                    await Task.Delay(100, c.Token);
+                    await Task.Delay(10, c.Token);
 
                     c.Cancel();
                 }
@@ -187,7 +185,7 @@ namespace EasyCaching.UnitTests.DistributedLock
                 {
                     var unused = Run(cts);
 
-                    Assert.False(lock2.Lock(200, cts.Token));
+                    Assert.False(lock2.Lock(2000, cts.Token));
                 });
             }
         }

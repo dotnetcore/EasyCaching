@@ -27,7 +27,7 @@ namespace EasyCaching.UnitTests.DistributedLock
                 .UseInMemory(options =>
                 {
                     options.MaxRdSecond = 0;
-                })
+                }).UseMemoryLock()
             );
             services.AddSingleton<IEasyCachingProvider, TestCachingProvider>(x =>
             {
