@@ -19,7 +19,7 @@
 
         protected BaseCachingProviderTest()
         {
-            _provider = CreateCachingProvider(options => { });
+            _provider = CreateCachingProvider(options => options.SleepMs = 3000);
             _providerWithNullsCached = CreateCachingProvider(options => options.CacheNulls = true);
         }
 
