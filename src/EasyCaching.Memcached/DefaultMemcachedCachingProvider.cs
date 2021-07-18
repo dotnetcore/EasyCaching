@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
+using EasyCaching.Memcached.DistributedLock;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -71,7 +72,7 @@
             string name,
             IEnumerable<EasyCachingMemcachedClient> memcachedClients,
             MemcachedOptions options,
-            IDistributedLockFactory factory = null,
+            MemcachedLockFactory factory = null,
             ILoggerFactory loggerFactory = null)
             : base(factory, options)
         {

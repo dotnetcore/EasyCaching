@@ -9,13 +9,15 @@ namespace EasyCaching.Redis.DistributedLock
 {
     public class RedisLockFactory : DistributedLockFactory
     {
-        public RedisLockFactory(string name,
-            IEnumerable<IRedisDatabaseProvider> dbProviders,
+        private readonly IEnumerable<IRedisDatabaseProvider> _dbProviders;
+
+        public RedisLockFactory(IEnumerable<IRedisDatabaseProvider> dbProviders,
             IOptionsMonitor<RedisOptions> optionsMonitor,
             ILoggerFactory loggerFactory = null)
-        : base(new RedisLockProvider(dbProviders.Single(x => x.DBProviderName.Equals(name)).GetDatabase().WithKeyPrefix(name)),
-            DistributedLockOptions.FromProviderOptions(optionsMonitor.Get(name)),
-            loggerFactory)
-        { }
+            : base(name => DistributedLockOptions.FromProviderOptions(optionsMonitor.Get(name)), loggerFactory) =>
+            _dbProviders = dbProviders;
+
+        protected override IDistributedLockProvider GetLockProvider(string name) =>
+            new RedisLockProvider(_dbProviders.Single(x => x.DBProviderName.Equals(name)).GetDatabase().WithKeyPrefix(name));
     }
 }

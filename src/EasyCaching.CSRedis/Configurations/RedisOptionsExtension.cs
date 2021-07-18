@@ -4,6 +4,7 @@
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core.Serialization;
+using EasyCaching.CSRedis.DistributedLock;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;
@@ -87,7 +88,7 @@
                 var serializers = x.GetServices<IEasyCachingSerializer>();
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
-                var dlf = x.GetService<IDistributedLockFactory>();
+                var dlf = x.GetService<CSRedisLockFactory>();
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultCSRedisCachingProvider(_name, clients, serializers, options, dlf, factory);
             };

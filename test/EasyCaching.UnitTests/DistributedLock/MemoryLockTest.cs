@@ -12,7 +12,7 @@ namespace EasyCaching.UnitTests.DistributedLock
     {
         public static IDistributedLockFactory Factory = new MemoryLockFactory();
 
-        public MemoryLockTest(ITestOutputHelper output) : base(Factory, output) { }
+        public MemoryLockTest(ITestOutputHelper output) : base("test", Factory, output) { }
 
         [Fact]
         public async Task Concurrency_Test()

@@ -1,6 +1,8 @@
-﻿using EasyCaching.Core.Configurations;
+﻿using EasyCaching.Core;
+using EasyCaching.Core.Configurations;
 using EasyCaching.Core.DistributedLock;
 using EasyCaching.Redis;
+using EasyCaching.Redis.DistributedLock;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
@@ -22,8 +24,8 @@ namespace EasyCaching.UnitTests.DistributedLock
                 })
                 .UseRedisLock())
             .BuildServiceProvider()
-            .GetService<IDistributedLockFactory>();
+            .GetService<RedisLockFactory>();
 
-        public RedisLockTest(ITestOutputHelper output) : base(Factory, output) { }
+        public RedisLockTest(ITestOutputHelper output) : base(EasyCachingConstValue.DefaultRedisName, Factory, output) { }
     }
 }

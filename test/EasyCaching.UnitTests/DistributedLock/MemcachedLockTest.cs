@@ -1,5 +1,7 @@
-﻿using EasyCaching.Core.DistributedLock;
+﻿using EasyCaching.Core;
+using EasyCaching.Core.DistributedLock;
 using EasyCaching.Memcached;
+using EasyCaching.Memcached.DistributedLock;
 using Enyim.Caching.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
@@ -22,8 +24,8 @@ namespace EasyCaching.UnitTests.DistributedLock
                 })
                 .UseMemcachedLock())
             .BuildServiceProvider()
-            .GetService<IDistributedLockFactory>();
+            .GetService<MemcachedLockFactory>();
 
-        public MemcachedLockTest(ITestOutputHelper output) : base(Factory, output) { }
+        public MemcachedLockTest(ITestOutputHelper output) : base(EasyCachingConstValue.DefaultMemcachedName, Factory, output) { }
     }
 }

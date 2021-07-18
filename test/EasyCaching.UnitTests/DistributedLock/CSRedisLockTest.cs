@@ -1,5 +1,7 @@
-﻿using EasyCaching.Core.DistributedLock;
+﻿using EasyCaching.Core;
+using EasyCaching.Core.DistributedLock;
 using EasyCaching.CSRedis;
+using EasyCaching.CSRedis.DistributedLock;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
@@ -21,8 +23,8 @@ namespace EasyCaching.UnitTests.DistributedLock
                 })
                 .UseCSRedisLock())
             .BuildServiceProvider()
-            .GetService<IDistributedLockFactory>();
+            .GetService<CSRedisLockFactory>();
 
-        public CSRedisLockTest(ITestOutputHelper output) : base(Factory, output) { }
+        public CSRedisLockTest(ITestOutputHelper output) : base(EasyCachingConstValue.DefaultCSRedisName, Factory, output) { }
     }
 }

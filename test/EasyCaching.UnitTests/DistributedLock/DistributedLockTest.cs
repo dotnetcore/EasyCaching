@@ -9,11 +9,13 @@ namespace EasyCaching.UnitTests.DistributedLock
 {
     public abstract class DistributedLockTest
     {
+        private readonly string _name;
         private readonly IDistributedLockFactory _lockFactory;
         private readonly ITestOutputHelper _output;
 
-        protected DistributedLockTest(IDistributedLockFactory lockFactory, ITestOutputHelper output)
+        protected DistributedLockTest(string name, IDistributedLockFactory lockFactory, ITestOutputHelper output)
         {
+            _name = name;
             _lockFactory = lockFactory;
 
             _output = output;
@@ -22,7 +24,7 @@ namespace EasyCaching.UnitTests.DistributedLock
         [Fact]
         public void Lock_Release()
         {
-            var @lock = _lockFactory.CreateLock("test", Guid.NewGuid().ToString());
+            var @lock = _lockFactory.CreateLock(_name, Guid.NewGuid().ToString());
             try
             {
                 Assert.True(@lock.Lock(60000));
@@ -36,7 +38,7 @@ namespace EasyCaching.UnitTests.DistributedLock
         [Fact]
         public async Task LockAsync_ReleaseAsync()
         {
-            var @lock = _lockFactory.CreateLock("test", Guid.NewGuid().ToString());
+            var @lock = _lockFactory.CreateLock(_name, Guid.NewGuid().ToString());
             try
             {
                 Assert.True(await @lock.LockAsync(60000));
@@ -60,7 +62,7 @@ namespace EasyCaching.UnitTests.DistributedLock
 
         private async Task Lock_After_lock1(string key, int timeout, EventWaitHandle handle)
         {
-            var @lock = _lockFactory.CreateLock("test", key);
+            var @lock = _lockFactory.CreateLock(_name, key);
             try
             {
                 Assert.True(await @lock.LockAsync(timeout));
@@ -79,7 +81,7 @@ namespace EasyCaching.UnitTests.DistributedLock
 
         private async Task Lock_After_lock2(string key, int timeout, EventWaitHandle handle)
         {
-            var @lock = _lockFactory.CreateLock("test", key);
+            var @lock = _lockFactory.CreateLock(_name, key);
             try
             {
                 handle.WaitOne(10000);
@@ -95,8 +97,8 @@ namespace EasyCaching.UnitTests.DistributedLock
         [Fact]
         public async Task Repeat_Lock()
         {
-            using (var lck = _lockFactory.CreateLock("test", Guid.NewGuid().ToString()))
-            using (var lck2 = _lockFactory.CreateLock("test", Guid.NewGuid().ToString()))
+            using (var lck = _lockFactory.CreateLock(_name, Guid.NewGuid().ToString()))
+            using (var lck2 = _lockFactory.CreateLock(_name, Guid.NewGuid().ToString()))
             {
                 Assert.True(await lck.LockAsync(200));
                 Assert.True(await lck2.LockAsync(200));
@@ -123,7 +125,7 @@ namespace EasyCaching.UnitTests.DistributedLock
         {
             const int timeout = 200;
 
-            var lck = _lockFactory.CreateLock("test", Guid.NewGuid().ToString());
+            var lck = _lockFactory.CreateLock(_name, Guid.NewGuid().ToString());
             var handle = new AutoResetEvent(false);
 
             _ = Task.Run(async () =>
@@ -174,8 +176,8 @@ namespace EasyCaching.UnitTests.DistributedLock
         [Fact]
         public async Task Lock_With_CancellationToken()
         {
-            using (var lock1 = _lockFactory.CreateLock("test", nameof(Lock_With_CancellationToken)))
-            using (var lock2 = _lockFactory.CreateLock("test", nameof(Lock_With_CancellationToken)))
+            using (var lock1 = _lockFactory.CreateLock(_name, nameof(Lock_With_CancellationToken)))
+            using (var lock2 = _lockFactory.CreateLock(_name, nameof(Lock_With_CancellationToken)))
             using (var cts = new CancellationTokenSource())
             {
                 cts.CancelAfter(1500);

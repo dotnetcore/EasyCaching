@@ -16,7 +16,7 @@ namespace EasyCaching.Core.DistributedLock
         private byte[] _value;
         private Timer _timer;
 
-        public DistributedLock(string key, IDistributedLockProvider provider, DistributedLockOptions options, ILoggerFactory loggerFactory = null) : base(key)
+        public DistributedLock(string name, string key, IDistributedLockProvider provider, DistributedLockOptions options, ILoggerFactory loggerFactory = null) : base($"{name}/{key}")
         {
             _provider = provider;
             _options = options;

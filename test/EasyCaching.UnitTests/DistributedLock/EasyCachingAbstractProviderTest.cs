@@ -34,7 +34,7 @@ namespace EasyCaching.UnitTests.DistributedLock
                 var mCache = x.GetServices<IInMemoryCaching>();
                 var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<InMemoryOptions>>();
                 var options = optionsMon.Get(EasyCachingConstValue.DefaultInMemoryName);
-                var dlf = x.GetService<IDistributedLockFactory>();
+                var dlf = x.GetService<MemoryLockFactory>();
                 // ILoggerFactory can be null
                 var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
                 return new TestCachingProvider(EasyCachingConstValue.DefaultInMemoryName, mCache, options, dlf, factory);

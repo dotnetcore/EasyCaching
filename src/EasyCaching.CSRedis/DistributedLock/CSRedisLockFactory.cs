@@ -8,14 +8,15 @@ namespace EasyCaching.CSRedis.DistributedLock
 {
     public class CSRedisLockFactory : DistributedLockFactory
     {
-        public CSRedisLockFactory(string name,
-            IEnumerable<EasyCachingCSRedisClient> clients,
+        private readonly IEnumerable<EasyCachingCSRedisClient> _clients;
+
+        public CSRedisLockFactory(IEnumerable<EasyCachingCSRedisClient> clients,
             IOptionsMonitor<RedisOptions> optionsMonitor,
             ILoggerFactory loggerFactory = null)
-        : base(new CSRedisLockProvider(name,
-                clients.Single(x => x.Name.Equals(name))),
-            DistributedLockOptions.FromProviderOptions(optionsMonitor.Get(name)),
-            loggerFactory)
-        { }
+            : base(name => DistributedLockOptions.FromProviderOptions(optionsMonitor.Get(name)), loggerFactory) =>
+            _clients = clients;
+
+        protected override IDistributedLockProvider GetLockProvider(string name) =>
+            new CSRedisLockProvider(name, _clients.Single(x => x.Name.Equals(name)));
     }
 }

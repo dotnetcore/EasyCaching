@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core.Serialization;
+using EasyCaching.CSRedis.DistributedLock;
     using global::CSRedis;
     using Microsoft.Extensions.Logging;
     using System;
@@ -78,7 +79,7 @@
            IEnumerable<EasyCachingCSRedisClient> clients,
            IEnumerable<IEasyCachingSerializer> serializers,
            RedisOptions options,
-           IDistributedLockFactory factory = null,
+           CSRedisLockFactory factory = null,
            ILoggerFactory loggerFactory = null)
             : base(factory, options)
         {

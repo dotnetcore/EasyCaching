@@ -1,4 +1,4 @@
-﻿using EasyCaching.Core.DistributedLock;
+﻿using EasyCaching.Redis.DistributedLock;
 
 namespace EasyCaching.Redis
 {
@@ -63,7 +63,7 @@ namespace EasyCaching.Redis
                 var serializers = x.GetServices<IEasyCachingSerializer>();
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
-                var dlf = x.GetService<IDistributedLockFactory>();
+                var dlf = x.GetService<RedisLockFactory>();
                 var factory = x.GetService<ILoggerFactory>();
                 return new DefaultRedisCachingProvider(_name, dbProviders, serializers, options, dlf, factory);
             };

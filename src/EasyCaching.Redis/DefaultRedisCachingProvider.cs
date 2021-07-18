@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.Redis
+﻿using EasyCaching.Redis.DistributedLock;
+
+namespace EasyCaching.Redis
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
@@ -88,7 +90,7 @@
             IEnumerable<IRedisDatabaseProvider> dbProviders,
             IEnumerable<IEasyCachingSerializer> serializers,
             RedisOptions options,
-            IDistributedLockFactory factory = null,
+            RedisLockFactory factory = null,
             ILoggerFactory loggerFactory = null)
             : base(factory, options)
         {
