@@ -23,7 +23,7 @@
 
         protected IEasyCachingKeyGenerator _keyGenerator;
 
-        [Fact(Skip="some reason")]        
+        [Fact(Skip="some reason")]
         protected virtual void Interceptor_Attribute_Method_Should_Handle_Caching()
         {
             var tick1 = _service.GetCurrentUTC();
@@ -74,7 +74,7 @@
             Assert.True(value.HasValue);
             Assert.Equal("PutTest-1", value.Value);
         }
-        
+
 
         [Fact]
         protected virtual void Evict_And_Switch_Provider_Should_Succeed()
@@ -205,7 +205,7 @@
         {
             var tick1 = _service.CustomAbleAttributeTest();
 
-            Thread.Sleep(1);
+            //Thread.Sleep(1);
 
             var tick2 = _service.CustomAbleAttributeTest();
 
@@ -276,7 +276,7 @@
             //var container = services.ToServiceContainer();
             //container.ConfigureAspectCoreInterceptor();
 
-            IServiceProvider serviceProvider = services.BuildServiceContextProvider();          
+            IServiceProvider serviceProvider = services.BuildServiceContextProvider();
 
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
             _cachingProvider = factory.GetCachingProvider(firstCacheProviderName);
@@ -284,5 +284,5 @@
             _service = serviceProvider.GetService<IAspectCoreExampleService>();
             _keyGenerator = serviceProvider.GetService<IEasyCachingKeyGenerator>();
         }
-    }    
+    }
 }

@@ -25,8 +25,7 @@
                 {
                     options.DBConfig.AddServer("127.0.0.1", 11211);
                     additionalSetup(options);
-                })
-            );
+                }).UseMemcachedLock());
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();

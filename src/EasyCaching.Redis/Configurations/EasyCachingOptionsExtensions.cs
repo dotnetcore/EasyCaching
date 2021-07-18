@@ -1,7 +1,10 @@
-﻿namespace Microsoft.Extensions.DependencyInjection
+﻿using EasyCaching.Redis.DistributedLock;
+
+namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.DistributedLock;
     using EasyCaching.Redis;
     using Microsoft.Extensions.Configuration;
     using System;
@@ -13,7 +16,7 @@
     {
         /// <summary>
         /// Uses the SERedis provider (specify the config via hard code).
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure provider settings.</param>
         /// <param name="name">The name of this provider instance.</param>
@@ -31,7 +34,7 @@
 
         /// <summary>
         /// Uses the SERedis provider (read config from configuration file).
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="name">The name of this provider instance.</param>
@@ -59,6 +62,17 @@
             }
 
             options.RegisterExtension(new RedisOptionsExtension(name, configure));
+            return options;
+        }
+
+        /// <summary>
+        /// Uses the SERedis lock.
+        /// </summary>
+        /// <param name="options">Options.</param>
+        public static EasyCachingOptions UseRedisLock(this EasyCachingOptions options)
+        {
+            options.UseDistributedLock<RedisLockFactory>();
+
             return options;
         }
     }

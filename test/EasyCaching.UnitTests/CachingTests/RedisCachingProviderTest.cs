@@ -32,9 +32,7 @@ namespace EasyCaching.UnitTests
                     options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 5;
                     additionalSetup(options);
-                }, 
-                ProviderName)
-            );
+                }, ProviderName).UseRedisLock());
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
         }

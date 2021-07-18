@@ -1,16 +1,22 @@
-﻿namespace EasyCaching.Core
+﻿using EasyCaching.Core.DistributedLock;
+
+namespace EasyCaching.Core
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using System.Threading.Tasks;
+    using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Diagnostics;
 
     public abstract class EasyCachingAbstractProvider : IEasyCachingProvider
     {
         protected static readonly DiagnosticListener s_diagnosticListener =
                     new DiagnosticListener(EasyCachingDiagnosticListenerExtensions.DiagnosticListenerName);
+
+        private readonly IDistributedLockFactory _lockFactory;
+        private readonly BaseProviderOptions _options;
 
         protected string ProviderName { get; set; }
         protected bool IsDistributedProvider { get; set; }
@@ -20,9 +26,18 @@
 
         public string Name => this.ProviderName;
         public bool IsDistributedCache => this.IsDistributedProvider;
+        public bool UseLock => _lockFactory != null;
         public int MaxRdSecond => this.ProviderMaxRdSecond;
         public CachingProviderType CachingProviderType => this.ProviderType;
         public CacheStats CacheStats => this.ProviderStats;
+
+        protected EasyCachingAbstractProvider() { }
+
+        protected EasyCachingAbstractProvider(IDistributedLockFactory lockFactory, BaseProviderOptions options)
+        {
+            _lockFactory = lockFactory;
+            _options = options;
+        }
 
         public abstract bool BaseExists(string cacheKey);
         public abstract Task<bool> BaseExistsAsync(string cacheKey);
@@ -167,7 +182,30 @@
             Exception e = null;
             try
             {
-                return BaseGet(cacheKey, dataRetriever, expiration);
+                if (_lockFactory == null) return BaseGet<T>(cacheKey, dataRetriever, expiration);
+
+                var value = BaseGet<T>(cacheKey);
+                if (value.HasValue) return value;
+
+                using (var @lock = _lockFactory.CreateLock(Name, $"{cacheKey}_Lock"))
+                {
+                    if (!@lock.Lock(_options.SleepMs)) throw new TimeoutException();
+
+                    value = BaseGet<T>(cacheKey);
+                    if (value.HasValue) return value;
+
+                    var item = dataRetriever();
+                    if (item != null || _options.CacheNulls)
+                    {
+                        BaseSet(cacheKey, item, expiration);
+
+                        return new CacheValue<T>(item, true);
+                    }
+                    else
+                    {
+                        return CacheValue<T>.NoValue;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -271,7 +309,40 @@
             Exception e = null;
             try
             {
-                return await BaseGetAsync<T>(cacheKey, dataRetriever, expiration);
+                if (_lockFactory == null) return await BaseGetAsync<T>(cacheKey, dataRetriever, expiration);
+
+                var value = await BaseGetAsync<T>(cacheKey);
+                if (value.HasValue) return value;
+
+                var @lock = _lockFactory.CreateLock(Name, $"{cacheKey}_Lock");
+                try
+                {
+                    if (!await @lock.LockAsync(_options.SleepMs)) throw new TimeoutException();
+
+                    value = await BaseGetAsync<T>(cacheKey);
+                    if (value.HasValue) return value;
+
+                    var task = dataRetriever();
+                    if (!task.IsCompleted &&
+                        await Task.WhenAny(task, Task.Delay(_options.LockMs)) != task)
+                        throw new TimeoutException();
+
+                    var item = await task;
+                    if (item != null || _options.CacheNulls)
+                    {
+                        await BaseSetAsync(cacheKey, item, expiration);
+
+                        return new CacheValue<T>(item, true);
+                    }
+                    else
+                    {
+                        return CacheValue<T>.NoValue;
+                    }
+                }
+                finally
+                {
+                    await @lock.DisposeAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -729,7 +800,7 @@
 
         public ProviderInfo GetProviderInfo()
         {
-            return BaseGetProviderInfo();            
+            return BaseGetProviderInfo();
         }
     }
 }

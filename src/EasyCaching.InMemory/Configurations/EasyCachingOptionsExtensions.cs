@@ -13,7 +13,7 @@
     {
         /// <summary>
         /// Uses the in-memory provider.
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="name">The name of this provider instance.</param>
         public static EasyCachingOptions UseInMemory(
@@ -35,7 +35,7 @@
 
         /// <summary>
         /// Uses the in-memory provider (specify the config via hard code).
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configure">Configure provider settings.</param>
         /// <param name="name">The name of this provider instance.</param>
@@ -57,7 +57,7 @@
 
         /// <summary>
         /// Uses the in-memory provider (read config from configuration file).
-        /// </summary>        
+        /// </summary>
         /// <param name="options">Options.</param>
         /// <param name="configuration">The configuration.</param>
         /// <param name="name">The name of this provider instance.</param>

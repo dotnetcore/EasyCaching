@@ -1,4 +1,5 @@
 using EasyCaching.Core.Configurations;
+using EasyCaching.Core.DistributedLock;
 
 namespace EasyCaching.UnitTests
 {
@@ -24,13 +25,12 @@ namespace EasyCaching.UnitTests
         protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => x
-                .UseInMemory(options =>
+            services.AddEasyCaching(x =>
+                x.UseInMemory(options =>
                 {
                     options.MaxRdSecond = 0;
                     additionalSetup(options);
-                })
-            );
+                }).UseMemoryLock());
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();;
         }
@@ -108,7 +108,7 @@ namespace EasyCaching.UnitTests
             var res2 = _provider.Get<MySettingForCaching>(cacheKey);
 
             Assert.Equal("catcherwong", res2.Value.Name);
-        }      
+        }
     }
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {
@@ -183,7 +183,7 @@ namespace EasyCaching.UnitTests
         public MemoryCachingProviderUseEasyCachingWithConfigTest()
         {
             IServiceCollection services = new ServiceCollection();
-            
+
             var appsettings = "{ \"easycaching\": { \"inmemory\": { \"MaxRdSecond\": 600, \"dbconfig\": {       \"SizeLimit\" :  50 } } } }";
             var path = TestHelpers.CreateTempFile(appsettings);
             var directory = Path.GetDirectoryName(path);
@@ -221,15 +221,15 @@ namespace EasyCaching.UnitTests
         public MemoryCachingProviderDeepCloneTest()
         {
             IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x => 
+            services.AddEasyCaching(x =>
             {
-                x.UseInMemory(options => 
+                x.UseInMemory(options =>
                 {
                     options.MaxRdSecond = 0;
                     //options.DBConfig = new InMemoryCachingOptions
                     //{
                     //    EnableWriteDeepClone = false,
-                    //    EnableReadDeepClone = true,                       
+                    //    EnableReadDeepClone = true,
                     //};
                 }, "m1");
 
@@ -323,7 +323,7 @@ namespace EasyCaching.UnitTests
             var res2 = _m3.Get<MySettingForCaching>(cacheKey);
 
             Assert.Equal("kobe", res2.Value.Name);
-        }        
+        }
     }
 
     [Serializable]
