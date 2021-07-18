@@ -1,14 +1,13 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Allow to cache null value.
-      2. Ready for 1.x version.
+      1. Support distributed lock.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Upgrading dependencies.
+      1. Support distributed lock.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Support SyncTimeout and AsyncTimeout (#282).
+      1. Support distributed lock.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
       1. Upgrading dependencies.
@@ -38,7 +37,7 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. Upgrading dependencies.
+      1. Support distributed lock.
     </EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
@@ -50,13 +49,13 @@
       1. Upgrading dependencies.
     </EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. fixed disk provider tryset after expired (#280).
+      1. Upgrading dependencies.
     </EasyCachingDiskPackageNotes>
     <EasyCachingLiteDBPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingLiteDBPackageNotes>
     <EasyCachingSTJsonPackageNotes>
-      1. Init.
+      1. Upgrading dependencies.
     </EasyCachingSTJsonPackageNotes>
   </PropertyGroup>
 </Project>
