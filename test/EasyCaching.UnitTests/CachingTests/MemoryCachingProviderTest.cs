@@ -32,7 +32,7 @@ namespace EasyCaching.UnitTests
                     additionalSetup(options);
                 }).UseMemoryLock());
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<IEasyCachingProvider>();;
+            return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
         [Fact]
