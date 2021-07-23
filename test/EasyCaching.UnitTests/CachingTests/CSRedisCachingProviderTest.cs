@@ -7,13 +7,14 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Serialization.Json;
     using EasyCaching.Serialization.MessagePack;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
     using Xunit;
 
     public class CSRedisCachingProviderTest : BaseCachingProviderTest
     {
         public CSRedisCachingProviderTest()
         {
-            
+
             _defaultTs = TimeSpan.FromSeconds(30);
             _nameSpace = "CSRedisBase";
         }
@@ -32,8 +33,7 @@ namespace EasyCaching.UnitTests
                         }
                     };
                     additionalSetup(options);
-                })
-            );
+                }).UseCSRedisLock());
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
@@ -90,7 +90,7 @@ namespace EasyCaching.UnitTests
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            _providerFactory = serviceProvider.GetService<IEasyCachingProviderFactory>();       
+            _providerFactory = serviceProvider.GetService<IEasyCachingProviderFactory>();
         }
 
         [Fact]

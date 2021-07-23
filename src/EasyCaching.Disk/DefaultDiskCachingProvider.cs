@@ -1,5 +1,10 @@
 ﻿namespace EasyCaching.Disk
 {
+    using EasyCaching.Core;
+    using EasyCaching.Core.DistributedLock;
+    using MessagePack;
+    using MessagePack.Resolvers;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -8,10 +13,6 @@
     using System.Security.Cryptography;
     using System.Text;
     using System.Threading;
-    using EasyCaching.Core;
-    using MessagePack;
-    using MessagePack.Resolvers;
-    using Microsoft.Extensions.Logging;
 
     public partial class DefaultDiskCachingProvider : EasyCachingAbstractProvider
     {
@@ -44,6 +45,15 @@
         public DefaultDiskCachingProvider(string name,
             DiskOptions options,
             ILoggerFactory loggerFactory = null)
+            : this(name, options, null, loggerFactory)
+        {
+        }
+
+        public DefaultDiskCachingProvider(string name,
+            DiskOptions options,
+            IDistributedLockFactory factory = null,
+            ILoggerFactory loggerFactory = null)
+            : base(factory, options)
         {
             this._name = name;
             this._options = options;

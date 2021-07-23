@@ -15,6 +15,12 @@
         /// <value><c>true</c> if is distributed cache; otherwise, <c>false</c>.</value>
         bool IsDistributedCache { get; }
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="T:EasyCaching.Core.IEasyCachingProvider"/> is use lock.
+        /// </summary>
+        /// <value><c>true</c> if is use lock; otherwise, <c>false</c>.</value>
+        bool UseLock { get; }
+
        /// <summary>
         /// Gets all.
         /// </summary>
@@ -46,7 +52,7 @@
         /// <param name="prefix">Prefix.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix);
-       
+
         /// <summary>
         /// Gets the count.
         /// </summary>

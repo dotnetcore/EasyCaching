@@ -1,12 +1,14 @@
 ﻿namespace EasyCaching.CSRedis
 {
+    using EasyCaching.Core;
+    using EasyCaching.Core.DistributedLock;
+    using EasyCaching.Core.Serialization;
+using EasyCaching.CSRedis.DistributedLock;
+    using global::CSRedis;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using EasyCaching.Core;
-    using EasyCaching.Core.Serialization;
-    using global::CSRedis;
-    using Microsoft.Extensions.Logging;
 
     public partial class DefaultCSRedisCachingProvider : EasyCachingAbstractProvider
     {
@@ -54,11 +56,32 @@
         /// <param name="options">Options.</param>
         /// <param name="loggerFactory">Logger factory.</param>
         public DefaultCSRedisCachingProvider(
+            string name,
+            IEnumerable<EasyCachingCSRedisClient> clients,
+            IEnumerable<IEasyCachingSerializer> serializers,
+            RedisOptions options,
+            ILoggerFactory loggerFactory = null)
+            : this(name, clients, serializers, options, null, loggerFactory)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.CSRedis.DefaultCSRedisCachingProvider"/> class.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="clients">Clients.</param>
+        /// <param name="serializers">Serializers.</param>
+        /// <param name="options">Options.</param>
+        /// <param name="factory">Distributed lock factory</param>
+        /// <param name="loggerFactory">Logger factory.</param>
+        public DefaultCSRedisCachingProvider(
            string name,
            IEnumerable<EasyCachingCSRedisClient> clients,
            IEnumerable<IEasyCachingSerializer> serializers,
            RedisOptions options,
+           CSRedisLockFactory factory = null,
            ILoggerFactory loggerFactory = null)
+            : base(factory, options)
         {
             this._name = name;
             this._options = options;
@@ -401,7 +424,7 @@
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public override void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration)
         {
-            //whether to use pipe based on redis mode 
+            //whether to use pipe based on redis mode
             if (MaxRdSecond > 0)
             {
                 var addSec = new Random().Next(1, MaxRdSecond);
