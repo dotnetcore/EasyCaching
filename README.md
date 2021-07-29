@@ -96,6 +96,7 @@ public class Startup
                 config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
             }, "redis1")
             .WithMessagePack()//with messagepack serialization
+            .UseRedisLock()//with distributed lock
             ;            
         });    
     }    
