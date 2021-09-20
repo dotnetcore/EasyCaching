@@ -195,8 +195,15 @@
             Assert.NotNull(db);
             Assert.IsType<EasyCachingMemcachedClient>(db);
         }
-    }
 
+        [Fact]
+        public void GetDatabase_And_Use_Raw_Method_Should_Succeed()
+        {
+            var db = (EasyCachingMemcachedClient)_provider.Database;
+            var stats = db.Stats();
+            Assert.NotNull(stats);
+        }
+    }
 
     public class MemcachedProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {

@@ -104,6 +104,14 @@ namespace EasyCaching.UnitTests
             Assert.NotNull(db);
             Assert.IsAssignableFrom<StackExchange.Redis.IDatabase>(db);
         }
+
+        [Fact]
+        public void GetDatabase_And_Use_Raw_Method_Should_Succeed()
+        {
+            var db = (StackExchange.Redis.IDatabase)_provider.Database;
+            var ts = db.Ping();
+            Assert.True(ts.Ticks > 0);
+        }
     }
 
 

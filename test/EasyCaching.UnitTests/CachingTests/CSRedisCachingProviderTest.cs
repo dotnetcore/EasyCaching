@@ -47,6 +47,14 @@ namespace EasyCaching.UnitTests
             Assert.NotNull(db);
             Assert.IsType<EasyCachingCSRedisClient>(db);
         }
+
+        [Fact]
+        public void GetDatabase_And_Use_Raw_Method_Should_Succeed()
+        {
+            var db = (EasyCachingCSRedisClient)_provider.Database;
+            var flag = db.Ping();
+            Assert.True(flag);
+        }
     }
 
     public class CSRedisCachingProviderWithNamedSerTest
