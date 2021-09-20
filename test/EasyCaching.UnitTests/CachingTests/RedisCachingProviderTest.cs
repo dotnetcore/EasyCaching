@@ -102,7 +102,7 @@ namespace EasyCaching.UnitTests
             var db = _provider.Database;
 
             Assert.NotNull(db);
-            Assert.IsType<StackExchange.Redis.IDatabase>(db);
+            Assert.IsAssignableFrom<StackExchange.Redis.IDatabase>(db);
         }
     }
 
