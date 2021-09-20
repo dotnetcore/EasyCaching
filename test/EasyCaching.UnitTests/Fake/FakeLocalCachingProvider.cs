@@ -21,6 +21,8 @@
 
         public CacheStats CacheStats => new CacheStats();
 
+        public object Database => null;
+
         public bool Exists(string cacheKey)
         {
             return true;

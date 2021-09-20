@@ -186,6 +186,15 @@
             var val = _provider.Get<string>(cacheKey);
             Assert.False(val.HasValue);
         }
+
+        [Fact]
+        public void GetDatabase_Should_Succeed()
+        {
+            var db = _provider.Database;
+
+            Assert.NotNull(db);
+            Assert.IsType<EasyCachingMemcachedClient>(db);
+        }
     }
 
 

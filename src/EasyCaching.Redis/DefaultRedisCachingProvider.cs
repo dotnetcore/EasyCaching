@@ -512,9 +512,8 @@ namespace EasyCaching.Redis
         /// Get te information of this provider.
         /// </summary>
         /// <returns></returns>
-        public override ProviderInfo BaseGetProviderInfo()
-        {
-            return _info;
-        }
+        public override ProviderInfo BaseGetProviderInfo() => _info;
+
+        public override object BaseGetDatabse() => _cache;
     }
 }

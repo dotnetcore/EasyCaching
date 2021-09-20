@@ -165,5 +165,10 @@
         {
             return Task.FromResult(false);
         }
+
+        public override object BaseGetDatabse()
+        {
+            return null;
+        }
     }
 }

@@ -95,6 +95,15 @@ namespace EasyCaching.UnitTests
 
             Assert.Equal(8, dbProvider.GetDatabase().Database);
         }
+
+        [Fact]
+        public void GetDatabase_Should_Succeed()
+        {
+            var db = _provider.Database;
+
+            Assert.NotNull(db);
+            Assert.IsType<StackExchange.Redis.IDatabase>(db);
+        }
     }
 
 

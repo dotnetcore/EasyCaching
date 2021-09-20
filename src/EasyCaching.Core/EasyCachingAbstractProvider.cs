@@ -31,6 +31,8 @@ namespace EasyCaching.Core
         public CachingProviderType CachingProviderType => this.ProviderType;
         public CacheStats CacheStats => this.ProviderStats;
 
+        public object Database => BaseGetDatabse();
+
         protected EasyCachingAbstractProvider() { }
 
         protected EasyCachingAbstractProvider(IDistributedLockFactory lockFactory, BaseProviderOptions options)
@@ -39,6 +41,7 @@ namespace EasyCaching.Core
             _options = options;
         }
 
+        public abstract object BaseGetDatabse();
         public abstract bool BaseExists(string cacheKey);
         public abstract Task<bool> BaseExistsAsync(string cacheKey);
         public abstract void BaseFlush();
