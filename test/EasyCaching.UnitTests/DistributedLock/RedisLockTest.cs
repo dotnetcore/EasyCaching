@@ -110,7 +110,7 @@
                     .GetServices<IDistributedLockFactory>();
 
 
-            Assert.Throws<Exception>(() => factories.First(x => x.Name.Equals("t3")));
+            Assert.Throws<InvalidOperationException>(() => factories.First(x => x.Name.Equals("t3")));
         }
     }
 }
