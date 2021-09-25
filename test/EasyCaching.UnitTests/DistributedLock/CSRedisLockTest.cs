@@ -3,7 +3,6 @@
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
     using EasyCaching.CSRedis;
-    using EasyCaching.CSRedis.DistributedLock;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Linq;
@@ -26,7 +25,7 @@
                 })
                 .UseCSRedisLock())
             .BuildServiceProvider()
-            .GetService<CSRedisLockFactory>();
+            .GetService<IDistributedLockFactory>();
 
         public CSRedisLockTest(ITestOutputHelper output) : base(EasyCachingConstValue.DefaultCSRedisName, Factory, output) 
         {
@@ -112,7 +111,7 @@
                     .GetServices<IDistributedLockFactory>();
 
 
-            Assert.Throws<Exception>(() => factories.First(x => x.Name.Equals("t3")));
+            Assert.Throws<InvalidOperationException>(() => factories.First(x => x.Name.Equals("t3")));
         }
     }
 }

@@ -4,7 +4,6 @@
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.DistributedLock;
     using EasyCaching.Redis;
-    using EasyCaching.Redis.DistributedLock;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Linq;
@@ -27,7 +26,7 @@
                 })
                 .UseRedisLock())
             .BuildServiceProvider()
-            .GetService<RedisLockFactory>();
+            .GetService<IDistributedLockFactory>();
 
         public RedisLockTest(ITestOutputHelper output) : base(EasyCachingConstValue.DefaultRedisName, Factory, output) { }
     }
