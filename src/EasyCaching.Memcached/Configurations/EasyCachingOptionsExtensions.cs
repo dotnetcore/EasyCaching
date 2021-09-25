@@ -1,10 +1,7 @@
-﻿using EasyCaching.Memcached.DistributedLock;
-
-namespace Microsoft.Extensions.DependencyInjection
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.DistributedLock;
     using EasyCaching.Memcached;
     using Microsoft.Extensions.Configuration;
     using System;
@@ -69,9 +66,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Uses the memcached lock.
         /// </summary>
         /// <param name="options">Options.</param>
-        public static EasyCachingOptions UseMemcachedLock(this EasyCachingOptions options)
+        /// <param name="name">The name of this lock factory instance.</param>
+        public static EasyCachingOptions UseMemcachedLock(this EasyCachingOptions options, string name = EasyCachingConstValue.DefaultMemcachedName)
         {
-            options.UseDistributedLock<MemcachedLockFactory>();
+            options.RegisterExtension(new MemcachedLockExtension(name));
 
             return options;
         }

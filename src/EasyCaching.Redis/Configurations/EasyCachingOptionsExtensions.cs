@@ -69,9 +69,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Uses the SERedis lock.
         /// </summary>
         /// <param name="options">Options.</param>
-        public static EasyCachingOptions UseRedisLock(this EasyCachingOptions options)
+        /// <param name="name">The name of this lock factory instance.</param>
+        public static EasyCachingOptions UseRedisLock(this EasyCachingOptions options, string name = EasyCachingConstValue.DefaultRedisName)
         {
-            options.UseDistributedLock<RedisLockFactory>();
+            options.RegisterExtension(new RedisLockExtension(name));
 
             return options;
         }

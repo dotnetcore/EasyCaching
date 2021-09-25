@@ -1,10 +1,7 @@
-﻿using EasyCaching.CSRedis.DistributedLock;
-
-namespace Microsoft.Extensions.DependencyInjection
+﻿namespace Microsoft.Extensions.DependencyInjection
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.DistributedLock;
     using EasyCaching.CSRedis;
     using Microsoft.Extensions.Configuration;
     using System;
@@ -69,9 +66,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Uses the CSRedis lock.
         /// </summary>
         /// <param name="options">Options.</param>
-        public static EasyCachingOptions UseCSRedisLock(this EasyCachingOptions options)
+        /// <param name="name">The name of this lock factory instance.</param>
+        public static EasyCachingOptions UseCSRedisLock(this EasyCachingOptions options, string name = EasyCachingConstValue.DefaultCSRedisName)
         {
-            options.UseDistributedLock<CSRedisLockFactory>();
+            options.RegisterExtension(new CSRedisLockExtension(name));
 
             return options;
         }

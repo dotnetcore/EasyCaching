@@ -10,10 +10,10 @@ namespace EasyCaching.Memcached.DistributedLock
     {
         private readonly IEnumerable<EasyCachingMemcachedClient> _memcachedClients;
 
-        public MemcachedLockFactory(IEnumerable<EasyCachingMemcachedClient> memcachedClients,
+        public MemcachedLockFactory(string name, IEnumerable<EasyCachingMemcachedClient> memcachedClients,
             IOptionsMonitor<MemcachedOptions> optionsMonitor,
             ILoggerFactory loggerFactory = null)
-            : base(name => DistributedLockOptions.FromProviderOptions(optionsMonitor.Get(name)),
+            : base(name, x => DistributedLockOptions.FromProviderOptions(optionsMonitor.Get(x)),
                 loggerFactory) =>
             _memcachedClients = memcachedClients;
 

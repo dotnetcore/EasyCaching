@@ -2,9 +2,8 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
-    using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core.Serialization;
-using EasyCaching.CSRedis.DistributedLock;
+    using EasyCaching.CSRedis.DistributedLock;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Logging;

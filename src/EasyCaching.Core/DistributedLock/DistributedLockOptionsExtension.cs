@@ -1,9 +1,9 @@
-﻿using EasyCaching.Core.Configurations;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
-namespace EasyCaching.Core.DistributedLock
+﻿namespace EasyCaching.Core.DistributedLock
 {
+    using EasyCaching.Core.Configurations;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+
     internal class DistributedLockOptionsExtension<T> : IEasyCachingOptionsExtension
         where T : class, IDistributedLockFactory
     {
@@ -12,6 +12,6 @@ namespace EasyCaching.Core.DistributedLock
         /// </summary>
         /// <param name="services">Services.</param>
         public void AddServices(IServiceCollection services) =>
-            services.Replace(ServiceDescriptor.Singleton<T, T>());
+            services.Replace(ServiceDescriptor.Singleton<IDistributedLockFactory, T>());
     }
 }

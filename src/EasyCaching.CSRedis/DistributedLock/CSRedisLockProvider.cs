@@ -1,10 +1,10 @@
-﻿using CSRedis;
-using EasyCaching.Core.DistributedLock;
-using System;
-using System.Threading.Tasks;
-
-namespace EasyCaching.CSRedis.DistributedLock
+﻿namespace EasyCaching.CSRedis.DistributedLock
 {
+    using global::CSRedis;
+    using EasyCaching.Core.DistributedLock;
+    using System;
+    using System.Threading.Tasks;
+
     public class CSRedisLockProvider : IDistributedLockProvider
     {
         private readonly string _name;
@@ -26,17 +26,16 @@ namespace EasyCaching.CSRedis.DistributedLock
             _database.SetAsync($"{_name}/{key}", value, TimeSpan.FromMilliseconds(ttlMs), RedisExistence.Nx);
 
         public bool Delete(string key, byte[] value) =>
-            (long)_database.Eval(@"if redis.call('GET', KEYS[1]) == ARGV[1] then
-    return redis.call('DEL', KEYS[1]);
-end
-return -1;", $"{_name}/{key}", value) >= 0;
+            (long)_database.Eval(DEL_LuaScript, $"{_name}/{key}", value) >= 0;
 
         public async Task<bool> DeleteAsync(string key, byte[] value) =>
-            (long)await _database.EvalAsync(@"if redis.call('GET', KEYS[1]) == ARGV[1] then
-    return redis.call('DEL', KEYS[1]);
-end
-return -1;", $"{_name}/{key}", value) >= 0;
+            (long)await _database.EvalAsync(DEL_LuaScript, $"{_name}/{key}", value) >= 0;
 
         public bool CanRetry(Exception ex) => ex is RedisClientException;
+
+        private const string DEL_LuaScript = @"if redis.call('GET', KEYS[1]) == ARGV[1] then
+    return redis.call('DEL', KEYS[1]);
+end
+return -1;";
     }
 }
