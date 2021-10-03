@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Redis
 {
     using StackExchange.Redis;
+    using StackExchange.Redis.KeyspaceIsolation;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -20,7 +21,7 @@
         /// The connection multiplexer.
         /// </summary>
         private Lazy<ConnectionMultiplexer> _connectionMultiplexer;
-        
+
         public RedisDatabaseProvider(string name, RedisOptions options)
         {
             _options = options.DBConfig;
@@ -39,7 +40,11 @@
         {
             try
             {
-                return _connectionMultiplexer.Value.GetDatabase();
+
+                var database = _connectionMultiplexer.Value.GetDatabase();
+                if (!string.IsNullOrEmpty(_options.KeyPrefix))
+                    database = database.WithKeyPrefix(_options.KeyPrefix);
+                return database;
             }
             catch (Exception)
             {
