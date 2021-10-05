@@ -216,4 +216,61 @@ namespace EasyCaching.UnitTests
             Assert.Equal(EasyCachingConstValue.DefaultSerializerName, info3.Serializer.Name);
         }
     }
+
+    public class RedisCachingProviderWithKeyPrefixTest
+    {
+        private readonly IEasyCachingProviderFactory _providerFactory;
+
+        public RedisCachingProviderWithKeyPrefixTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(x =>
+            {
+
+                x.UseRedis(options =>
+                {
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 8;
+                    options.SerializerName = "json";
+                }, "NotKeyPrefix");
+
+                x.UseRedis(options =>
+                {
+                    options.DBConfig = new RedisDBOptions
+                    {
+                        AllowAdmin = true,
+                        KeyPrefix = "foo:"
+                    };
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    options.DBConfig.Database = 8;
+                    options.SerializerName = "json";
+                }, "WithKeyPrefix");
+
+                x.WithJson("json");
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            _providerFactory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+        }
+
+        [Fact]
+        public void KeyPrefixTest()
+        {
+            var NotKeyPrefix = _providerFactory.GetCachingProvider("NotKeyPrefix");
+            var WithKeyPrefix = _providerFactory.GetCachingProvider("WithKeyPrefix");
+
+            WithKeyPrefix.Set("KeyPrefix", "ok", TimeSpan.FromSeconds(10));
+
+            var val1 = NotKeyPrefix.Get<string>("foo:" + "KeyPrefix");
+            var val2 = WithKeyPrefix.Get<string>("foo:" + "KeyPrefix");
+            Assert.NotEqual(val1.Value, val2.Value);
+
+            var val3 = WithKeyPrefix.Get<string>("KeyPrefix");
+            Assert.Equal(val1.Value, val3.Value);
+        }
+    }
 }

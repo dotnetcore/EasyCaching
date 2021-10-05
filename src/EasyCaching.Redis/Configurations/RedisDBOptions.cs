@@ -24,5 +24,10 @@
         /// Specifies the time in milliseconds that the system should allow for synchronous operations (defaults to 5 seconds)
         /// </summary>
         public int SyncTimeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Redis database KeyPrefix will use.
+        /// </summary>
+        public string KeyPrefix { get; set; }
     }
 }
