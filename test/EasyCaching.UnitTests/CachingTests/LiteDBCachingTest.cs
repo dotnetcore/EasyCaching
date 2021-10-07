@@ -9,6 +9,7 @@
     using System.IO;
     using System.Threading.Tasks;
     using Xunit;
+    using global::LiteDB;
 
     public class LiteDBCachingTest : BaseCachingProviderTest
     {
@@ -44,6 +45,15 @@
         [Fact]
         protected override void Get_Parallel_Should_Succeed()
         {
+        }
+
+        [Fact]
+        public void GetDatabase_Should_Succeed()
+        {
+            var db = _provider.Database;
+
+            Assert.NotNull(db);
+            Assert.IsAssignableFrom<ILiteCollection<CacheItem>>(db);
         }
     }
 

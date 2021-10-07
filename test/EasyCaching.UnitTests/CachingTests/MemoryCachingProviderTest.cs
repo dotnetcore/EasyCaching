@@ -109,7 +109,17 @@ namespace EasyCaching.UnitTests
 
             Assert.Equal("catcherwong", res2.Value.Name);
         }
+
+        [Fact]
+        public void GetDatabase_Should_Succeed()
+        {
+            var db = _provider.Database;
+
+            Assert.NotNull(db);
+            Assert.IsType<InMemoryCaching>(db);
+        }
     }
+
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {
         public MemoryCachingProviderWithFactoryTest()

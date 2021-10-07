@@ -673,9 +673,8 @@
             }
         }
 
-        public override ProviderInfo BaseGetProviderInfo()
-        {
-            return _info;
-        }
+        public override ProviderInfo BaseGetProviderInfo() => _info;
+
+        public override object BaseGetDatabse() => throw new Exception("Disk provider don't support this ");
     }
 }

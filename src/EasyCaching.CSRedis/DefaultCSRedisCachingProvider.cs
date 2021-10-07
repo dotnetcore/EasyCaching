@@ -3,7 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core.Serialization;
-using EasyCaching.CSRedis.DistributedLock;
+    using EasyCaching.CSRedis.DistributedLock;
     using global::CSRedis;
     using Microsoft.Extensions.Logging;
     using System;
@@ -482,9 +482,8 @@ using EasyCaching.CSRedis.DistributedLock;
         /// Get te information of this provider.
         /// </summary>
         /// <returns></returns>
-        public override ProviderInfo BaseGetProviderInfo()
-        {
-            return _info;
-        }
+        public override ProviderInfo BaseGetProviderInfo() => _info;
+
+        public override object BaseGetDatabse() => _cache;
     }
 }

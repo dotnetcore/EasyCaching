@@ -186,8 +186,24 @@
             var val = _provider.Get<string>(cacheKey);
             Assert.False(val.HasValue);
         }
-    }
 
+        [Fact]
+        public void GetDatabase_Should_Succeed()
+        {
+            var db = _provider.Database;
+
+            Assert.NotNull(db);
+            Assert.IsType<EasyCachingMemcachedClient>(db);
+        }
+
+        [Fact]
+        public void GetDatabase_And_Use_Raw_Method_Should_Succeed()
+        {
+            var db = (EasyCachingMemcachedClient)_provider.Database;
+            var stats = db.Stats();
+            Assert.NotNull(stats);
+        }
+    }
 
     public class MemcachedProviderWithFactoryTest : BaseCachingProviderWithFactoryTest
     {

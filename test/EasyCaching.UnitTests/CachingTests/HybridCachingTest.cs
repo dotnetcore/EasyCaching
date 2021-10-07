@@ -221,6 +221,22 @@
             Assert.Equal(default(string), res.Value);
         }
 
+        [Fact]
+        public void Iss_311_Test()
+        {
+            var cacheKey = $"{_namespace}_iss311_{Guid.NewGuid()}";
+
+            hybridCaching_1.Set(cacheKey, "val", TimeSpan.FromSeconds(30));
+
+            var afterSet = hybridCaching_1.Exists(cacheKey);
+            Assert.True(afterSet);
+
+            hybridCaching_1.Remove(cacheKey);
+
+            var afterRemove = hybridCaching_1.Exists(cacheKey);
+            Assert.False(afterRemove);
+        }
+
         private void FakeCreatProvider()
         {
             A.CallTo(() => fakeFactory.GetCachingProvider("m1")).Returns(new FakeLocalCachingProvider());

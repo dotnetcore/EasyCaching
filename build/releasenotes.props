@@ -1,19 +1,20 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Support distributed lock.
+      1. Expose raw cache database.
     </EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Support distributed lock.
+      1. Expose raw cache database.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Support distributed lock.
+      1. Expose raw cache database.
+      2. Support KeyPrefix.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. Upgrading dependencies.
+      1. Expose raw cache database.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. Upgrading dependencies.
+      1. Expose raw cache database.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
       1. Upgrading dependencies.
@@ -52,7 +53,7 @@
       1. Upgrading dependencies.
     </EasyCachingDiskPackageNotes>
     <EasyCachingLiteDBPackageNotes>
-      1. Upgrading dependencies.
+      1. Expose raw cache database.
     </EasyCachingLiteDBPackageNotes>
     <EasyCachingSTJsonPackageNotes>
       1. Upgrading dependencies.

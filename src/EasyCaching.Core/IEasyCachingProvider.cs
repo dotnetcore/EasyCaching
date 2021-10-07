@@ -115,5 +115,10 @@
         /// </summary>
         /// <returns></returns>
         ProviderInfo GetProviderInfo();
+
+        /// <summary>
+        /// Get or sets the provider's database
+        /// </summary>
+        object Database { get; }
     }
 }

@@ -412,6 +412,8 @@ using EasyCaching.Memcached.DistributedLock;
             return _info;
         }
 
+        public override object BaseGetDatabse() => _memcachedClient;
+
         private void OnCacheHit(string cacheKey)
         {
             CacheStats.OnHit();

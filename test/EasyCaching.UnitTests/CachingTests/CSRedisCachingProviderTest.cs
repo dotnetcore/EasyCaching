@@ -38,6 +38,23 @@ namespace EasyCaching.UnitTests
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
         }
+
+        [Fact]
+        public void GetDatabase_Should_Succeed()
+        {
+            var db = _provider.Database;
+
+            Assert.NotNull(db);
+            Assert.IsType<EasyCachingCSRedisClient>(db);
+        }
+
+        [Fact]
+        public void GetDatabase_And_Use_Raw_Method_Should_Succeed()
+        {
+            var db = (EasyCachingCSRedisClient)_provider.Database;
+            var flag = db.Ping();
+            Assert.True(flag);
+        }
     }
 
     public class CSRedisCachingProviderWithNamedSerTest
