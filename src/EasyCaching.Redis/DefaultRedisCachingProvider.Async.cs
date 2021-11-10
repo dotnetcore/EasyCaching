@@ -139,17 +139,12 @@
         /// <param name="prefix">Prefix.</param>
         public override Task<int> BaseGetCountAsync(string prefix = "")
         {
-            if (string.IsNullOrWhiteSpace(prefix))
-            {
-                var allCount = 0;
+            if (!string.IsNullOrWhiteSpace(prefix))
+                return Task.FromResult(this.SearchRedisKeys(this.HandlePrefix(prefix)).Length);
+            var allCount = _servers.Sum(server => (int) server.DatabaseSize(_cache.Database));
 
-                foreach (var server in _servers)
-                    allCount += (int)server.DatabaseSize(_cache.Database);
+            return Task.FromResult(allCount);
 
-                return Task.FromResult(allCount);
-            }
-
-            return Task.FromResult(this.SearchRedisKeys(this.HandlePrefix(prefix)).Length);
         }
 
         /// <summary>
@@ -232,10 +227,7 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            var tasks = new List<Task>();
-
-            foreach (var item in values)
-                tasks.Add(SetAsync(item.Key, item.Value, expiration));
+            var tasks = values.Select(item => SetAsync(item.Key, item.Value, expiration)).ToList();
 
             await Task.WhenAll(tasks);
         }
@@ -254,13 +246,13 @@
             var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey)k).ToArray());
 
             var result = new Dictionary<string, CacheValue<T>>();
-            for (int i = 0; i < keyArray.Length; i++)
+            for (var i = 0; i < keyArray.Length; i++)
             {
                 var cachedValue = values[i];
-                if (!cachedValue.IsNull)
-                    result.Add(keyArray[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
-                else
-                    result.Add(keyArray[i], CacheValue<T>.NoValue);
+                result.Add(keyArray[i],
+                    !cachedValue.IsNull
+                        ? new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true)
+                        : CacheValue<T>.NoValue);
             }
 
             return result;
@@ -283,13 +275,13 @@
             var values = (await _cache.StringGetAsync(redisKeys)).ToArray();
 
             var result = new Dictionary<string, CacheValue<T>>();
-            for (int i = 0; i < redisKeys.Length; i++)
+            for (var i = 0; i < redisKeys.Length; i++)
             {
                 var cachedValue = values[i];
-                if (!cachedValue.IsNull)
-                    result.Add(redisKeys[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
-                else
-                    result.Add(redisKeys[i], CacheValue<T>.NoValue);
+                result.Add(redisKeys[i],
+                    !cachedValue.IsNull
+                        ? new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true)
+                        : CacheValue<T>.NoValue);
             }
 
             return result;
@@ -318,12 +310,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("Redis -- FlushAsync");
 
-            var tasks = new List<Task>();
-
-            foreach (var server in _servers)
-            {
-                tasks.Add(server.FlushDatabaseAsync(_cache.Database));
-            }
+            var tasks = _servers.Select(server => server.FlushDatabaseAsync(_cache.Database)).ToList();
 
             await Task.WhenAll(tasks);
         }
@@ -342,11 +329,15 @@
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            if (MaxRdSecond > 0)
-            {
-                var addSec = new Random().Next(1, MaxRdSecond);
-                expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
-            }
+            if (MaxRdSecond <= 0)
+                return _cache.StringSetAsync(
+                    cacheKey,
+                    _serializer.Serialize(cacheValue),
+                    expiration,
+                    When.NotExists
+                );
+            var addSec = new Random().Next(1, MaxRdSecond);
+            expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
 
             return _cache.StringSetAsync(
                 cacheKey,
