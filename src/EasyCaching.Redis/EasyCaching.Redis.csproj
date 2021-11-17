@@ -2,8 +2,6 @@
   <Import Project="../../build/version.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
     <VersionPrefix>$(EasyCachingRedisPackageVersion)</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Description>

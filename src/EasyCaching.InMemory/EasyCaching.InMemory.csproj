@@ -2,10 +2,7 @@
   <Import Project="../../build/version.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
-    <VersionPrefix>$(EasyCachingInMemoryPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(EasyCachingInMemoryPackageVersion)</PackageVersion>
     <Description>
       A simple in-memory caching provider.
     </Description>

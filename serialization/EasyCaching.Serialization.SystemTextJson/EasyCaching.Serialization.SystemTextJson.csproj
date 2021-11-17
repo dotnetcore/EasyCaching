@@ -2,9 +2,7 @@
   <Import Project="../../build/version.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>EasyCaching Contributors</Authors>
-    <VersionPrefix>$(EasyCachingSTJsonPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(EasyCachingSTJsonPackageVersion)</PackageVersion>
     <Description>      
       A serialize library based on System.Text.Json
     </Description>    

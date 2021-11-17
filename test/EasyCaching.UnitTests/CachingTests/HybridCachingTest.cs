@@ -8,7 +8,6 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Decoration.Polly;
-    using EasyCaching.Redis;
     using EasyCaching.UnitTests.Fake;
     using Microsoft.Extensions.DependencyInjection;
     using System;

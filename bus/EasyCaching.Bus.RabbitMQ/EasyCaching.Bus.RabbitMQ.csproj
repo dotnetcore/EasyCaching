@@ -2,10 +2,7 @@
   <Import Project="../../build/version.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
-    <VersionPrefix>$(EasyCachingRabbitBusPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(EasyCachingRabbitBusPackageVersion)</PackageVersion>
     <Description>
       A simple caching bus(message bus) based on RabbitMQ.
     </Description>

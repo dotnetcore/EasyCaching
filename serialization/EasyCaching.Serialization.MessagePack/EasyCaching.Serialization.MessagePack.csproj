@@ -2,10 +2,7 @@
   <Import Project="../../build/version.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
-    <VersionPrefix>$(EasyCachingMessagePackPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(EasyCachingMessagePackPackageVersion)</PackageVersion>
     <Description>      
       A serialize library based on MessagePack
     </Description>    

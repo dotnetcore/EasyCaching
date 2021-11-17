@@ -2,10 +2,8 @@
   <Import Project="../../build/version.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>maikebing</Owners>
-    <Authors>maikebing</Authors>
-    <VersionPrefix>$(EasyCachingLiteDBPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <Authors>maikebing;Mindbox</Authors>
+    <PackageVersion>$(EasyCachingLiteDBPackageVersion)</PackageVersion>
     <Description>A simple local caching provider based on LiteDB</Description>
     <PackageTags>LiteDB,LocalCache,Caching,Cache,InMemory,Persisted</PackageTags>
     <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>

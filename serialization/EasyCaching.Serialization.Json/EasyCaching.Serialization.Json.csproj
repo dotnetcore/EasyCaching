@@ -2,10 +2,7 @@
   <Import Project="../../build/version.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
-    <VersionPrefix>$(EasyCachingJsonPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(EasyCachingJsonPackageVersion)</PackageVersion>
     <Description>      
       A serialize library based on Newtonsoft.Json
     </Description>    
