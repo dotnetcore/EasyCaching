@@ -15,20 +15,21 @@
         /// </summary>
         private readonly RedisBusOptions _options;
 
+        private readonly ConnectionMultiplexerProvider _connectionMultiplexerProvider;
+
         /// <summary>
         /// The connection multiplexer.
         /// </summary>
         private readonly Lazy<ConnectionMultiplexer> _connectionMultiplexer;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisSubscriberProvider"/> class.
-        /// </summary>
-        /// <param name="name">name.</param>
-        /// <param name="options">Options.</param>
-        public RedisSubscriberProvider(string name, RedisBusOptions options)
+        public RedisSubscriberProvider(
+            string name, 
+            RedisBusOptions options,
+            ConnectionMultiplexerProvider connectionMultiplexerProvider)
         {
             _name = name;
             _options = options;
+            _connectionMultiplexerProvider = connectionMultiplexerProvider;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
         }
 
@@ -67,11 +68,11 @@
                     configurationOptions.EndPoints.Add(endpoint.Host, endpoint.Port);
                 }
 
-                return ConnectionMultiplexer.Connect(configurationOptions.ToString());
+                return _connectionMultiplexerProvider.GetConnectionMultiplexer(configurationOptions.ToString());
             }
             else
             {
-                return ConnectionMultiplexer.Connect(_options.Configuration);
+                return _connectionMultiplexerProvider.GetConnectionMultiplexer(_options.Configuration);
             }
         }
     }

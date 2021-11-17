@@ -12,6 +12,7 @@
     <EasyCachingRedisPackageVersion>1.3.11</EasyCachingRedisPackageVersion>
     <EasyCachingRedisPackageNotes>
       Merged EasyCaching.Redis into EasyCaching.Redis package.
+      Added reuse of ConnectionMultiplexer between caching providers and buses.
     </EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageVersion>1.3.10</EasyCachingSQLitePackageVersion>
     <EasyCachingSQLitePackageNotes>

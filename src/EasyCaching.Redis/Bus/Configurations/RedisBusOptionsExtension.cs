@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
+    using StackExchange.Redis;
 
     /// <summary>
     /// Redis bus options extension.
@@ -44,12 +45,16 @@
             services.AddOptions();
             services.Configure(_name, configure);
 
+            services.TryAddSingleton<ConnectionMultiplexerProvider>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-            services.AddSingleton<IRedisSubscriberProvider, RedisSubscriberProvider>(x =>
+            services.AddSingleton<IRedisSubscriberProvider, RedisSubscriberProvider>(serviceProvider =>
             {
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisBusOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<RedisBusOptions>>();
                 var options = optionsMon.Get(_name);
-                return new RedisSubscriberProvider(_name, options);
+                return new RedisSubscriberProvider(
+                    _name, 
+                    options, 
+                    serviceProvider.GetRequiredService<ConnectionMultiplexerProvider>());
             });
 
             services.AddSingleton<IEasyCachingBus>(serviceProvider =>

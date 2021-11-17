@@ -9,7 +9,7 @@
     /// <summary>
     /// Redis database provider.
     /// </summary>
-    public class RedisDatabaseProvider : IRedisDatabaseProvider
+    internal class RedisDatabaseProvider : IRedisDatabaseProvider
     {
         /// <summary>
         /// The options.
@@ -21,14 +21,17 @@
         /// </summary>
         private readonly Lazy<ConnectionMultiplexer> _connectionMultiplexer;
         
-        public RedisDatabaseProvider(string name, RedisOptions options)
+        public RedisDatabaseProvider(
+            string name, RedisOptions options, ConnectionMultiplexerProvider connectionMultiplexerProvider)
         {
             _options = options.DBConfig;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
             _name = name;
+            _connectionMultiplexerProvider = connectionMultiplexerProvider;
         }
 
         private readonly string _name;
+        private readonly ConnectionMultiplexerProvider _connectionMultiplexerProvider;
 
         public string DBProviderName => this._name;
 
@@ -79,11 +82,11 @@
                     configurationOptions.EndPoints.Add(endpoint.Host, endpoint.Port);
                 }
 
-                return ConnectionMultiplexer.Connect(configurationOptions.ToString());
+                return _connectionMultiplexerProvider.GetConnectionMultiplexer(configurationOptions.ToString());
             }
             else
             {
-                return ConnectionMultiplexer.Connect(_options.Configuration);
+                return _connectionMultiplexerProvider.GetConnectionMultiplexer(_options.Configuration);
             }
         }
 

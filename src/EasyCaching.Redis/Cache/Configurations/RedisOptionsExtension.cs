@@ -49,12 +49,16 @@
 
             services.Configure(_name, configure);
 
+            services.TryAddSingleton<ConnectionMultiplexerProvider>();
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
-            services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(x =>
+            services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(serviceProvider =>
             {
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 var options = optionsMon.Get(_name);
-                return new RedisDatabaseProvider(_name, options);
+                return new RedisDatabaseProvider(
+                    _name,
+                    options, 
+                    serviceProvider.GetRequiredService<ConnectionMultiplexerProvider>());
             });
 
             services.AddSingleton<IEasyCachingProvider>(serviceProvider =>
