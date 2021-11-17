@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Bus.Redis
+﻿namespace EasyCaching.Redis
 {
     using System;
     using EasyCaching.Core.Bus;
@@ -25,7 +25,7 @@
         private readonly Action<RedisBusOptions> configure;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.RedisBusOptionsExtension"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisBusOptionsExtension"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="configure">Configure.</param>

@@ -3,7 +3,7 @@ using EasyCaching.InMemory;
 
 namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Bus.Redis;
+    using EasyCaching.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using EasyCaching.Core.Configurations;

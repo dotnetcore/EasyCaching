@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Bus.Redis
+﻿namespace EasyCaching.Redis
 {
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
@@ -36,7 +36,7 @@
         private readonly string _name;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.DefaultRedisBus"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.DefaultRedisBus"/> class.
         /// </summary>
         /// <param name="name">Unique name of the bus.</param>
         /// <param name="subscriberProviders">Subscriber provider.</param>

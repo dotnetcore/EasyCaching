@@ -31,7 +31,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 | EasyCaching.Serialization.Json | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Json.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Json.svg)
 | EasyCaching.Serialization.Protobuf | ![](https://img.shields.io/nuget/v/EasyCaching.Serialization.Protobuf.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Serialization.Protobuf.svg)
 | EasyCaching.Bus.RabbitMQ | ![](https://img.shields.io/nuget/v/EasyCaching.Bus.RabbitMQ.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Bus.RabbitMQ.svg)
-| EasyCaching.Bus.Redis | ![](https://img.shields.io/nuget/v/EasyCaching.Bus.Redis.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Bus.Redis.svg)
+| EasyCaching.Redis | ![](https://img.shields.io/nuget/v/EasyCaching.Redis.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Redis.svg)
 | EasyCaching.Bus.CSRedis | ![](https://img.shields.io/nuget/v/EasyCaching.Bus.CSRedis.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Bus.CSRedis.svg)
 | EasyCaching.ResponseCaching | ![](https://img.shields.io/nuget/v/EasyCaching.ResponseCaching.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.ResponseCaching.svg)
 | EasyCaching.Disk | ![](https://img.shields.io/nuget/v/EasyCaching.Disk.svg) | ![](https://img.shields.io/nuget/dt/EasyCaching.Disk.svg)

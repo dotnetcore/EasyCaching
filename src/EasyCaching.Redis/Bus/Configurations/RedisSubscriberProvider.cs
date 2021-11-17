@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Bus.Redis
+﻿namespace EasyCaching.Redis
 {
     using StackExchange.Redis;
     using System;
@@ -21,7 +21,7 @@
         private readonly Lazy<ConnectionMultiplexer> _connectionMultiplexer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.RedisSubscriberProvider"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisSubscriberProvider"/> class.
         /// </summary>
         /// <param name="name">name.</param>
         /// <param name="options">Options.</param>
