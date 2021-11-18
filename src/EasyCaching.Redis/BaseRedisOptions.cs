@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Core.Configurations
+﻿namespace EasyCaching.Redis
 {
     using System.Collections.Generic;
 
@@ -8,12 +8,18 @@
     public class BaseRedisOptions
     {
         /// <summary>
+        /// Gets or sets the database.
+        /// </summary>
+        /// <value>The database.</value>
+        public int Database { get; set; }
+        
+        /// <summary>
         /// Gets or sets the username to be used to connect to the Redis server.
         /// </summary>
         /// <value>
         /// The username.
         /// </value>
-        public string Username { get; set; } = null;
+        public string Username { get; set; }
 
         /// <summary>
         /// Gets or sets the password to be used to connect to the Redis server.
@@ -21,7 +27,7 @@
         /// <value>
         /// The password.
         /// </value>
-        public string Password { get; set; } = null;
+        public string Password { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use SSL encryption.
@@ -29,7 +35,7 @@
         /// <value>
         ///   <c>true</c> if this instance is SSL; otherwise, <c>false</c>.
         /// </value>
-        public bool IsSsl { get; set; } = false;
+        public bool IsSsl { get; set; }
 
         /// <summary>
         /// Gets or sets the SSL Host.
@@ -38,7 +44,7 @@
         /// <value>
         /// The SSL host.
         /// </value>
-        public string SslHost { get; set; } = null;
+        public string SslHost { get; set; }
 
         /// <summary>
         /// Gets or sets the timeout for any connect operations.
@@ -61,7 +67,7 @@
         /// allow admin.
         /// </summary>
         /// <value><c>true</c> if allow admin; otherwise, <c>false</c>.</value>
-        public bool AllowAdmin { get; set; } = false;
+        public bool AllowAdmin { get; set; }
 
         /// <summary>
         /// Gets or sets the string configuration.
@@ -74,6 +80,6 @@
         /// abort on connect fail.
         /// </summary>
         /// <value><c>true</c> if abort on connect fail; otherwise, <c>false</c>.</value>
-        public bool AbortOnConnectFail { get; set; } = false;
+        public bool AbortOnConnectFail { get; set; }
     }
 }

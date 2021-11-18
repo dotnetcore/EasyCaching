@@ -1,5 +1,7 @@
-﻿namespace EasyCaching.Core.Configurations
-{    
+﻿namespace EasyCaching.Redis
+{
+    using EasyCaching.Core;
+
     /// <summary>
     /// Defines an endpoint.
     /// </summary>
