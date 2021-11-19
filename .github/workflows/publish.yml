@@ -22,9 +22,9 @@ jobs:
       with:
         dotnet-version: 3.1.x
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore ./EasyCaching.sln
     - name: Build
-      run: dotnet build ./Mindbox.ExceptionsHandling.sln --configuration Release --no-restore
+      run: dotnet build ./EasyCaching.sln --configuration Release --no-restore
     - name: Pack with dotnet
       run: dotnet pack ./EasyCaching.sln -o /home/runner/work/nugetpkgs -c Release
     - name: Upload artifact
