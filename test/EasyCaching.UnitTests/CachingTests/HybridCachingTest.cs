@@ -20,7 +20,7 @@ namespace EasyCaching.UnitTests
 
     public class HybridCachingTest //: BaseCachingProviderTest
     {
-        private const string AvailableRedis = "127.0.0.1:6379,abortConnect=true";
+        private const string AvailableRedis = "127.0.0.1:6380,abortConnect=true";
         private const string UnavailableRedis = "127.0.0.1:9999,abortConnect=true,connectTimeout=1";
         private const string UnavailableRedisWithAbortConnect = "127.0.0.1:9999,abortConnect=false,connectTimeout=1";
         
@@ -55,13 +55,13 @@ namespace EasyCaching.UnitTests
                 x.UseRedis(options =>
                     {
                         options.CacheNulls = cacheNulls;
-                        options.DBConfig.Configuration = AvailableRedis;
+                        options.ConnectionString = AvailableRedis;
                     },
                     DistributedCacheProviderName);
 
                 x.WithRedisBus(options =>
                 {
-                    options.Configuration = AvailableRedis;
+                    options.ConnectionString = AvailableRedis;
                     
                     options
                         .DecorateWithRetry(1, RedisBusOptionsExtensions.RedisExceptionFilter)
@@ -85,7 +85,7 @@ namespace EasyCaching.UnitTests
                 
                     x.UseRedis(options =>
                         {
-                            options.DBConfig.Configuration = connectionString;
+                            options.ConnectionString = connectionString;
                 
                             options.DecorateWithCircuitBreaker(
                                 initParameters: circuitBreakerParameters,
@@ -96,7 +96,7 @@ namespace EasyCaching.UnitTests
 
                     x.WithRedisBus(options =>
                     {
-                        options.Configuration = connectionString;
+                        options.ConnectionString = connectionString;
                     
                         options
                             .DecorateWithCircuitBreaker(

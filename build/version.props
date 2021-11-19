@@ -1,58 +1,60 @@
 <Project>
   <PropertyGroup>
-    <EasyCachingCorePackageVersion>1.3.10</EasyCachingCorePackageVersion>
+    <EasyCachingCorePackageVersion>1.3.11</EasyCachingCorePackageVersion>
     <EasyCachingCorePackageNotes>
+      Removed BaseRedisOptions.
     </EasyCachingCorePackageNotes>
-    <EasyCachingDecorationPollyPackageVersion>1.3.10</EasyCachingDecorationPollyPackageVersion>
+    <EasyCachingDecorationPollyPackageVersion>1.3.11</EasyCachingDecorationPollyPackageVersion>
     <EasyCachingDecorationPollyPackageNotes>
     </EasyCachingDecorationPollyPackageNotes>
-    <EasyCachingMemcachedPackageVersion>1.3.10</EasyCachingMemcachedPackageVersion>
+    <EasyCachingMemcachedPackageVersion>1.3.11</EasyCachingMemcachedPackageVersion>
     <EasyCachingMemcachedPackageNotes>
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageVersion>1.3.11</EasyCachingRedisPackageVersion>
     <EasyCachingRedisPackageNotes>
-      Merged EasyCaching.Redis into EasyCaching.Redis package.
+      Merged EasyCaching.Redis.Bus into EasyCaching.Redis package.
       Added reuse of ConnectionMultiplexer between caching providers and buses.
+      Reduced redis connection configuration to connection string only.
     </EasyCachingRedisPackageNotes>
-    <EasyCachingSQLitePackageVersion>1.3.10</EasyCachingSQLitePackageVersion>
+    <EasyCachingSQLitePackageVersion>1.3.11</EasyCachingSQLitePackageVersion>
     <EasyCachingSQLitePackageNotes>
     </EasyCachingSQLitePackageNotes>
-    <EasyCachingInMemoryPackageVersion>1.3.10</EasyCachingInMemoryPackageVersion>
+    <EasyCachingInMemoryPackageVersion>1.3.11</EasyCachingInMemoryPackageVersion>
     <EasyCachingInMemoryPackageNotes>
     </EasyCachingInMemoryPackageNotes>
-    <EasyCachingHybridPackageVersion>1.3.10</EasyCachingHybridPackageVersion>
+    <EasyCachingHybridPackageVersion>1.3.11</EasyCachingHybridPackageVersion>
     <EasyCachingHybridPackageNotes>
     </EasyCachingHybridPackageNotes>
-    <EasyCachingAspectCorePackageVersion>1.3.10</EasyCachingAspectCorePackageVersion>
+    <EasyCachingAspectCorePackageVersion>1.3.11</EasyCachingAspectCorePackageVersion>
     <EasyCachingAspectCorePackageNotes>
     </EasyCachingAspectCorePackageNotes>
-    <EasyCachingCastlePackageVersion>1.3.10</EasyCachingCastlePackageVersion>
+    <EasyCachingCastlePackageVersion>1.3.11</EasyCachingCastlePackageVersion>
     <EasyCachingCastlePackageNotes>
     </EasyCachingCastlePackageNotes>
-    <EasyCachingResponseCachingPackageVersion>1.3.10</EasyCachingResponseCachingPackageVersion>
+    <EasyCachingResponseCachingPackageVersion>1.3.11</EasyCachingResponseCachingPackageVersion>
     <EasyCachingResponseCachingPackageNotes>
     </EasyCachingResponseCachingPackageNotes>
-    <EasyCachingJsonPackageVersion>1.3.10</EasyCachingJsonPackageVersion>
+    <EasyCachingJsonPackageVersion>1.3.11</EasyCachingJsonPackageVersion>
     <EasyCachingJsonPackageNotes>
     </EasyCachingJsonPackageNotes>
-    <EasyCachingMessagePackPackageVersion>1.3.10</EasyCachingMessagePackPackageVersion>
+    <EasyCachingMessagePackPackageVersion>1.3.11</EasyCachingMessagePackPackageVersion>
     <EasyCachingMessagePackPackageNotes>
     </EasyCachingMessagePackPackageNotes>
-    <EasyCachingProtobufPackageVersion>1.3.10</EasyCachingProtobufPackageVersion>
+    <EasyCachingProtobufPackageVersion>1.3.11</EasyCachingProtobufPackageVersion>
     <EasyCachingProtobufPackageNotes>
     </EasyCachingProtobufPackageNotes>
-    <EasyCachingRabbitBusPackageVersion>1.3.10</EasyCachingRabbitBusPackageVersion>
+    <EasyCachingRabbitBusPackageVersion>1.3.11</EasyCachingRabbitBusPackageVersion>
     <EasyCachingRabbitBusPackageNotes>
     </EasyCachingRabbitBusPackageNotes>
-    <EasyCachingDiskPackageVersion>1.3.10</EasyCachingDiskPackageVersion>
+    <EasyCachingDiskPackageVersion>1.3.11</EasyCachingDiskPackageVersion>
     <EasyCachingDiskPackageNotes>
     </EasyCachingDiskPackageNotes>
-    <EasyCachingLiteDBPackageVersion>1.3.10</EasyCachingLiteDBPackageVersion>
+    <EasyCachingLiteDBPackageVersion>1.3.11</EasyCachingLiteDBPackageVersion>
     <EasyCachingLiteDBPackageNotes>
     </EasyCachingLiteDBPackageNotes>
-    <EasyCachingSTJsonPackageVersion>1.3.10</EasyCachingSTJsonPackageVersion>
+    <EasyCachingSTJsonPackageVersion>1.3.11</EasyCachingSTJsonPackageVersion>
     <EasyCachingSTJsonPackageNotes>
     </EasyCachingSTJsonPackageNotes>
-    <EasyCachingMsExtPackageVersion>1.3.10</EasyCachingMsExtPackageVersion>
+    <EasyCachingMsExtPackageVersion>1.3.11</EasyCachingMsExtPackageVersion>
   </PropertyGroup>
 </Project>

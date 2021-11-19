@@ -20,7 +20,7 @@
         {
             SubscriberName = name;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(() => 
-                connectionMultiplexerProvider.GetConnectionMultiplexer(options));
+                connectionMultiplexerProvider.GetConnectionMultiplexer(options.ConnectionString));
         }
 
         public string SubscriberName { get; }

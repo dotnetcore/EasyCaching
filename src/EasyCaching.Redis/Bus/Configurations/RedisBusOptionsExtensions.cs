@@ -56,17 +56,7 @@
 
             void configure(RedisBusOptions x)
             {
-                x.AbortOnConnectFail = redisOptions.AbortOnConnectFail;
-                x.AllowAdmin = redisOptions.AllowAdmin;
-                x.Configuration = redisOptions.Configuration;
-                x.ConnectionTimeout = redisOptions.ConnectionTimeout;
-                x.Database = redisOptions.Database;
-                x.IsSsl = redisOptions.IsSsl;
-                x.Username = redisOptions.Username;
-                x.Password = redisOptions.Password;
-                x.SslHost = redisOptions.SslHost;
-
-                foreach (var item in redisOptions.Endpoints) x.Endpoints.Add(item);
+                x.ConnectionString = redisOptions.ConnectionString;
             }
 
             options.RegisterExtension(new RedisBusOptionsExtension(name, configure));

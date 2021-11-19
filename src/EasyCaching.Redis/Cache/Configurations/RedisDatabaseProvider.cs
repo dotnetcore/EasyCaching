@@ -20,7 +20,7 @@
             string name, RedisOptions options, ConnectionMultiplexerProvider connectionMultiplexerProvider)
         {
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(() => 
-                connectionMultiplexerProvider.GetConnectionMultiplexer(options.DBConfig));
+                connectionMultiplexerProvider.GetConnectionMultiplexer(options.ConnectionString));
             DBProviderName = name;
         }
 

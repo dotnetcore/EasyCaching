@@ -7,8 +7,10 @@
     /// <summary>
     /// Redis bus options.
     /// </summary>
-    public class RedisBusOptions : BaseRedisOptions, IBusOptions
+    public class RedisBusOptions : IBusOptions
     {
+        public string ConnectionString { get; set; }
+        
         /// <summary>
         /// Gets or sets the serializer name that should be use in this bus.
         /// </summary>
