@@ -64,7 +64,7 @@
                 x.SleepMs = redisOptions.SleepMs;
                 x.SerializerName = redisOptions.SerializerName;
                 x.CacheNulls = redisOptions.CacheNulls;
-                x.DBConfig = redisOptions.DBConfig;
+                x.ConnectionString = redisOptions.ConnectionString;
             }
 
             options.RegisterExtension(new RedisOptionsExtension(name, configure));

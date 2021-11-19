@@ -1,11 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build/version.props" />
-  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>EasyCaching Contributors</Authors>
-    <VersionPrefix>$(EasyCachingSTJsonPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(EasyCachingSTJsonPackageVersion)</PackageVersion>
     <Description>      
       A serialize library based on System.Text.Json
     </Description>    

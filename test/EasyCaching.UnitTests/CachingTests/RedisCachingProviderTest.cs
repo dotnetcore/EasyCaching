@@ -7,7 +7,9 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Redis;
     using Microsoft.Extensions.DependencyInjection;
     using System;
+    using System.Linq;
     using Xunit;
+    using static ServiceBuilders;
 
     public class RedisCachingProviderTest : DistributedCachingProviderTest
     {
@@ -19,34 +21,23 @@ namespace EasyCaching.UnitTests
             _nameSpace = "RedisBasic";
         }
 
-        private IServiceProvider CreateServiceProvider(Action<RedisOptions> setup)
-        {
-            var services = new ServiceCollection();
-            services.AddEasyCaching(x =>
-                x.UseRedis(setup, ProviderName)
-            );
-            return services.BuildServiceProvider();
-        }
+        private IServiceProvider CreateServiceProviderWithRedis(Action<RedisOptions> setup) => CreateServiceProviderWithEasyCaching(
+           easyCachingOptions => easyCachingOptions.UseRedis(setup, ProviderName));
         
         protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
             options.UseRedis(providerOptions =>
             {
-                providerOptions.DBConfig = new RedisDBOptions
-                {
-                    AllowAdmin = true
-                };
-                providerOptions.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                providerOptions.DBConfig.Database = 5;
+                providerOptions.ConnectionString = "127.0.0.1:6380,allowAdmin=true";
                 additionalSetup(providerOptions);
             });
         }
 
         private IEasyCachingProvider CreateCachingProviderWithUnavailableRedisAndFallback()
         {
-            var serviceProvider = CreateServiceProvider(options =>
+            var serviceProvider = CreateServiceProviderWithRedis(options =>
             {
-                options.DBConfig.Configuration = "127.0.0.1:9999,allowAdmin=false,defaultdatabase=9,connectTimeout=1";
+                options.ConnectionString = "127.0.0.1:9999,allowAdmin=false,defaultDatabase=9,connectTimeout=1";
 
                 var initCircuitBreakerParameters =
                     new CircuitBreakerParameters(
@@ -78,11 +69,12 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
-        public void Fulsh_Should_Fail_When_AllowAdmin_Is_False()
+        public void Flush_Should_Fail_When_AllowAdmin_Is_False()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
-                x.UseRedis(options => { options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380)); },
+                x.UseRedis(
+                    options => options.ConnectionString = "127.0.0.1:6380,allowAdmin=false",
                     ProviderName)
             );
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -117,9 +109,9 @@ namespace EasyCaching.UnitTests
         [Fact]
         public void Use_Configuration_String_Should_Succeed()
         {
-            var serviceProvider = CreateServiceProvider(options =>
+            var serviceProvider = CreateServiceProviderWithRedis(options =>
             {
-                options.DBConfig.Configuration = "127.0.0.1:6380,allowAdmin=false,defaultdatabase=8";
+                options.ConnectionString = "127.0.0.1:6380,allowAdmin=false,defaultDatabase=8";
             });
             var dbProvider = serviceProvider.GetService<IRedisDatabaseProvider>();
             Assert.NotNull(dbProvider);
@@ -161,6 +153,70 @@ namespace EasyCaching.UnitTests
             
             Assert.Equal("value", result.Value);
         }
+
+        [Fact]
+        public void TwoCachingProviderWithSameConnectionStrings_ConnectionMultiplexerReused()
+        {
+            var serviceProvider = CreateServiceProviderWithEasyCaching(
+                easyCachingOptions =>
+                {
+                    const string connectionString = "127.0.0.1:6380";
+                    
+                    easyCachingOptions.UseRedis(
+                        options => options.ConnectionString = connectionString, 
+                        "Cache1");
+                    easyCachingOptions.UseRedis(
+                        options => options.ConnectionString = connectionString, 
+                        "Cache2");
+                });
+
+            var services = serviceProvider.GetServices<IRedisDatabaseProvider>().ToArray();
+
+            Assert.Equal(2, services.Length);
+            Assert.Equal(services[0].GetDatabase().Multiplexer, services[1].GetDatabase().Multiplexer); 
+        }
+
+        [Fact]
+        public void TwoCachingProviderWithDifferentConnectionStrings_DifferentConnectionMultiplexers()
+        {
+            var serviceProvider = CreateServiceProviderWithEasyCaching(
+                easyCachingOptions =>
+                {
+                    easyCachingOptions.UseRedis(
+                        options => options.ConnectionString = "127.0.0.1:6380", 
+                        "Cache1");
+                    easyCachingOptions.UseRedis(
+                        options => options.ConnectionString = "127.0.0.1:6380,allowAdmin=true", 
+                        "Cache2");
+                });
+
+            var services = serviceProvider.GetServices<IRedisDatabaseProvider>().ToArray();
+
+            Assert.Equal(2, services.Length);
+            Assert.NotEqual(services[0].GetDatabase().Multiplexer, services[1].GetDatabase().Multiplexer); 
+        }
+
+        [Fact]
+        public void CachingProviderAndBusWithSameConnectionStrings_ConnectionMultiplexerReused()
+        {
+            var serviceProvider = CreateServiceProviderWithEasyCaching(
+                easyCachingOptions =>
+                {
+                    const string connectionString = "127.0.0.1:6380";
+                    
+                    easyCachingOptions.UseRedis(
+                        options => options.ConnectionString = connectionString, 
+                        "Cache");
+                    easyCachingOptions.WithRedisBus(
+                        options => options.ConnectionString = connectionString, 
+                        "Bus");
+                });
+
+            var databaseProvider = serviceProvider.GetRequiredService<IRedisDatabaseProvider>();
+            var subscriberProvider = serviceProvider.GetRequiredService<IRedisSubscriberProvider>();
+
+            Assert.Equal(databaseProvider.GetDatabase().Multiplexer, subscriberProvider.GetSubscriber().Multiplexer); 
+        }
     }
 
 
@@ -173,23 +229,13 @@ namespace EasyCaching.UnitTests
             {
                 x.UseRedis(options =>
                 {
-                    options.DBConfig = new RedisDBOptions
-                    {
-                        AllowAdmin = true
-                    };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    options.DBConfig.Database = 3;
+                    options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=3";
                 });
 
 
                 x.UseRedis(options =>
                 {
-                    options.DBConfig = new RedisDBOptions
-                    {
-                        AllowAdmin = true
-                    };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    options.DBConfig.Database = 4;
+                    options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=4";
                 }, SECOND_PROVIDER_NAME);
             });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -213,33 +259,18 @@ namespace EasyCaching.UnitTests
 
                 x.UseRedis(options =>
                 {
-                    options.DBConfig = new RedisDBOptions
-                    {
-                        AllowAdmin = true
-                    };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    options.DBConfig.Database = 13;
+                    options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=13";
                     options.SerializerName = "cs11";
                 }, "se1");
 
                 x.UseRedis(options =>
                 {
-                    options.DBConfig = new RedisDBOptions
-                    {
-                        AllowAdmin = true
-                    };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    options.DBConfig.Database = 14;
+                    options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=14";
                 }, "se2");
 
                 x.UseRedis(options =>
                 {
-                    options.DBConfig = new RedisDBOptions
-                    {
-                        AllowAdmin = true
-                    };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    options.DBConfig.Database = 11;
+                    options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=11";
                 }, "se3");
 
                 x.WithJson("json").WithMessagePack("cs11").WithJson("se2");

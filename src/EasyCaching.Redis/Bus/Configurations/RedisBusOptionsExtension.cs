@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Bus.Redis
+﻿namespace EasyCaching.Redis
 {
     using System;
     using EasyCaching.Core.Bus;
@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using Microsoft.Extensions.Options;
+    using StackExchange.Redis;
 
     /// <summary>
     /// Redis bus options extension.
@@ -25,7 +26,7 @@
         private readonly Action<RedisBusOptions> configure;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:EasyCaching.Bus.Redis.RedisBusOptionsExtension"/> class.
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Redis.RedisBusOptionsExtension"/> class.
         /// </summary>
         /// <param name="name">Name.</param>
         /// <param name="configure">Configure.</param>
@@ -44,12 +45,16 @@
             services.AddOptions();
             services.Configure(_name, configure);
 
+            services.TryAddSingleton<ConnectionMultiplexerProvider>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-            services.AddSingleton<IRedisSubscriberProvider, RedisSubscriberProvider>(x =>
+            services.AddSingleton<IRedisSubscriberProvider, RedisSubscriberProvider>(serviceProvider =>
             {
-                var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisBusOptions>>();
+                var optionsMon = serviceProvider.GetRequiredService<IOptionsMonitor<RedisBusOptions>>();
                 var options = optionsMon.Get(_name);
-                return new RedisSubscriberProvider(_name, options);
+                return new RedisSubscriberProvider(
+                    _name, 
+                    options, 
+                    serviceProvider.GetRequiredService<ConnectionMultiplexerProvider>());
             });
 
             services.AddSingleton<IEasyCachingBus>(serviceProvider =>

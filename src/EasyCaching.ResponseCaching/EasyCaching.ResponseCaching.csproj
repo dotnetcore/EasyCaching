@@ -1,12 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build/version.props" />
-  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
-    <VersionPrefix>$(EasyCachingResponseCachingPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <PackageVersion>$(EasyCachingResponseCachingPackageVersion)</PackageVersion>
     <Description>
       EasyCaching.ResponseCaching is the extension of ResponseCaching
     </Description>

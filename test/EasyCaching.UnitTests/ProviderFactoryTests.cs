@@ -17,17 +17,12 @@
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(option =>
             {
-                option.UseRedis(config =>
+                option.UseRedis(options =>
                 {
-                    config.DBConfig = new RedisDBOptions
-                    {
-                        AllowAdmin = true
-                    };
-                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    config.DBConfig.Database = 12;
+                    options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=12";
                 }, "redis");
 
-                option.UseInMemory(config =>
+                option.UseInMemory(_ =>
                 {
                 }, "inMemory");
             });

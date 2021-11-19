@@ -33,11 +33,9 @@
                 option.UseInMemory("cus");
 
                 //use redis cache
-                option.UseRedis(config =>
+                option.UseRedis(config => 
                 {
-                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
-                    config.DBConfig.SyncTimeout = 10000;
-                    config.DBConfig.AsyncTimeout = 10000;
+                    config.ConnectionString = "127.0.0.1:6380,syncTimeout=10000,asyncTimeout=10000";
                     config.SerializerName = "mymsgpack";
                 }, "redis1")
                 .WithMessagePack("mymsgpack")//with messagepack serialization
@@ -46,7 +44,7 @@
                 //use redis cache
                 option.UseRedis(config =>
                 {
-                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                    config.ConnectionString = "127.0.0.1:6380";
                 }, "redis2");
 
                 //use sqlite cache

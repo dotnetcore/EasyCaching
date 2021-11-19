@@ -1,12 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <Import Project="../../build/version.props" />
-    <Import Project="../../build/releasenotes.props" />
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
-        <Owners>ncc;Catcher Wong;Andreychuk Nikolay</Owners>
-        <Authors>ncc;Catcher Wong;Andreychuk Nikolay</Authors>
-        <VersionPrefix>$(EasyCachingDecorationPollyPackageVersion)</VersionPrefix>
-        <VersionSuffix></VersionSuffix>
+        <PackageVersion>$(EasyCachingDecorationPollyPackageVersion)</PackageVersion>
         <Description>
             Polly decorators (Circuit breaker, retry, fallback) for EasyCaching.
         </Description>

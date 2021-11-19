@@ -5,6 +5,6 @@
 
     public class RedisOptions : BaseProviderOptionsWithDecorator<IEasyCachingProvider>
     {
-        public RedisDBOptions DBConfig { get; set; } = new RedisDBOptions();
+        public string ConnectionString { get; set; }
     }
 }

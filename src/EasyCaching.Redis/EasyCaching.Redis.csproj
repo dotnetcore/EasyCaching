@@ -1,10 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../build/version.props" />
-  <Import Project="../../build/releasenotes.props" />
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
     <VersionPrefix>$(EasyCachingRedisPackageVersion)</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Description>
@@ -37,8 +34,5 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configurations\" />
   </ItemGroup>
 </Project>

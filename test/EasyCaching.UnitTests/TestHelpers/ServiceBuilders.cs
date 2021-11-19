@@ -10,16 +10,21 @@ namespace EasyCaching.UnitTests
 
     public static class ServiceBuilders
     {
-        public static TService CreateService<TService>(Action<IServiceCollection> configure)
+        public static IServiceProvider CreateServiceProvider(Action<IServiceCollection> configure)
         {
             var services = new ServiceCollection();
             configure(services);
-            var serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<TService>();
+            return services.BuildServiceProvider();
         }
+
+        public static IServiceProvider CreateServiceProviderWithEasyCaching(Action<EasyCachingOptions> configure) =>
+            CreateServiceProvider(services => services.AddEasyCaching(configure));
+
+        public static TService CreateService<TService>(Action<IServiceCollection> configure) =>
+            CreateServiceProvider(configure).GetService<TService>();
         
-        public static IEasyCachingProvider CreateEasyCachingProvider(Action<EasyCachingOptions> configure) => CreateService<IEasyCachingProvider>(
-            services => services.AddEasyCaching(configure));
+        public static IEasyCachingProvider CreateEasyCachingProvider(Action<EasyCachingOptions> configure) => 
+            CreateService<IEasyCachingProvider>(services => services.AddEasyCaching(configure));
         
         public static IEasyCachingProvider CreateFakeProvider(Action<FakeProviderOptions> configure) => CreateService<IEasyCachingProvider>(
             services => services.AddEasyCaching(x => x.UseFakeProvider(configure)));
