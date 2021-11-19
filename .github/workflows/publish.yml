@@ -1,9 +1,9 @@
 name: Release
 
 on:
-    push:
-      branches:
-      - master
+  push:
+    branches:
+      - main
 
 jobs:
   build_artifact:    
@@ -11,15 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET Core
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.200
-    - name: Build with dotnet
-      run: dotnet build --configuration Release /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln
+        dotnet-version: 5.0.x
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+    - name: Install dependencies
+      run: dotnet restore ./EasyCaching.sln
+    - name: Build
+      run: dotnet build ./EasyCaching.sln --configuration Release --no-restore
     - name: Pack with dotnet
-      run: dotnet pack /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln -o /home/runner/work/nugetpkgs -c Release
+      run: dotnet pack ./EasyCaching.sln -o /home/runner/work/nugetpkgs -c Release
     - name: Upload artifact
       uses: actions/upload-artifact@v1
       with:
