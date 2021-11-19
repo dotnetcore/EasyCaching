@@ -63,17 +63,6 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
-        public void CreateTwoCachingProvidersWithSameConnectionString()
-        {
-            var cachingProvider = CreateCachingProviderWithUnavailableRedisAndFallback();
-            var cacheKey = GetUniqueCacheKey();
-
-            var result = cachingProvider.Get(cacheKey, () => "value", _defaultTs);
-            
-            Assert.Equal("value", result.Value);
-        }
-
-        [Fact]
         public void Prefix_Equal_Asterisk_Should_Throw_ArgumentException()
         {
             Assert.Throws<ArgumentException>(() => _provider.RemoveByPrefix("*"));
