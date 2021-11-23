@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="StackExchange.Redis" Version="2.1.58" />
+    <PackageReference Include="StackExchange.Redis" Version="2.2.50" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
