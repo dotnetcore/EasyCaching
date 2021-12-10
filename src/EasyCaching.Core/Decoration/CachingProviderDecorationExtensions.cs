@@ -8,7 +8,7 @@ namespace EasyCaching.Core.Decoration
     /// <param name="name">Caching provider name</param>
     /// <param name="serviceProvider">Service provider for dependency injection</param>
     /// <param name="cachingProviderFactory">Initial caching provider factory</param>
-    /// <typeparam name="TProvider">Caching provider interface (IEasyCachingProvider, IHybridCachingProvider or IRedisAndEasyCachingProvider)</typeparam>
+    /// <typeparam name="TProvider">Caching provider interface (IEasyCachingProvider or IRedisAndEasyCachingProvider)</typeparam>
     /// <returns>Decorated caching provider factory</returns>
     public delegate Func<TProvider> ProviderFactoryDecorator<TProvider>(
         string name, IServiceProvider serviceProvider, Func<TProvider> cachingProviderFactory);
@@ -19,7 +19,7 @@ namespace EasyCaching.Core.Decoration
             this IProviderOptionsWithDecorator<TProvider> options,
             string name,
             IServiceProvider serviceProvider,
-            Func<TProvider> cachingProviderFactory) where TProvider : class, IEasyCachingProviderBase
+            Func<TProvider> cachingProviderFactory) where TProvider : class, IEasyCachingProvider
         {
             if (options.ProviderFactoryDecorator == null)
             {
@@ -34,7 +34,7 @@ namespace EasyCaching.Core.Decoration
         
         public static IProviderOptionsWithDecorator<TProvider> Decorate<TProvider>(
             this IProviderOptionsWithDecorator<TProvider> options,
-            ProviderFactoryDecorator<TProvider> factoryDecorator) where TProvider : class, IEasyCachingProviderBase
+            ProviderFactoryDecorator<TProvider> factoryDecorator) where TProvider : class, IEasyCachingProvider
         {
             if (options.ProviderFactoryDecorator == null)
             {

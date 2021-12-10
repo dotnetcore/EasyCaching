@@ -11,16 +11,20 @@
     /// <summary>
     /// Hybrid caching provider.
     /// </summary>
-    public class HybridCachingProvider : IHybridCachingProvider
+    public class HybridCachingProvider : IEasyCachingProvider
     {
+        private readonly Lazy<IEasyCachingProvider> _lazyLocalCache;
+        private readonly Lazy<IEasyCachingProvider> _lazyDistributedCache;
+        private readonly Lazy<ProviderInfo> _lazyProviderInfo;
+
         /// <summary>
         /// The local cache.
         /// </summary>
-        private readonly IEasyCachingProvider _localCache;
+        private IEasyCachingProvider _localCache => _lazyLocalCache.Value;
         /// <summary>
         /// The distributed cache.
         /// </summary>
-        private readonly IEasyCachingProvider _distributedCache;
+        private IEasyCachingProvider _distributedCache => _lazyDistributedCache.Value;
         /// <summary>
         /// The bus.
         /// </summary>
@@ -37,12 +41,13 @@
         /// The cache identifier.
         /// </summary>
         private readonly string _cacheId;
+
+        private ProviderInfo _info => _lazyProviderInfo.Value;
+
         /// <summary>
         /// The name.
         /// </summary>
-        private readonly string _name;
-        
-        public string Name => _name;
+        public string Name { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.HybridCache.HybridCachingProvider"/> class.
@@ -55,15 +60,16 @@
         public HybridCachingProvider(
             string name
             , HybridCachingOptions optionsAccs
-            , IEasyCachingProviderFactory factory
+            , Lazy<IEasyCachingProviderFactory> factory
             , IEasyCachingBus bus = null
             , ILoggerFactory loggerFactory = null
             )
         {
             ArgumentCheck.NotNull(factory, nameof(factory));
 
-            this._name = name;
+            this.Name = name;
             this._options = optionsAccs;
+            this.CacheStats = new CacheStats();
 
             ArgumentCheck.NotNullOrWhiteSpace(_options.TopicName, nameof(_options.TopicName));
 
@@ -73,15 +79,36 @@
             }
 
             // Here use the order to distinguish traditional provider
-            this._localCache = factory.GetCachingProvider(_options.LocalCacheProviderName);
+            this._lazyLocalCache = new Lazy<IEasyCachingProvider>(
+                () => factory.Value.GetCachingProvider(_options.LocalCacheProviderName));
 
             // Here use the order to distinguish traditional provider
-            this._distributedCache = factory.GetCachingProvider(_options.DistributedCacheProviderName);
+            this._lazyDistributedCache = new Lazy<IEasyCachingProvider>(
+                () => factory.Value.GetCachingProvider(_options.DistributedCacheProviderName));
 
             this._bus = bus ?? NullEasyCachingBus.Instance;
             this._bus.Subscribe(_options.TopicName, OnMessage);
 
             this._cacheId = Guid.NewGuid().ToString("N");
+
+            _lazyProviderInfo = new Lazy<ProviderInfo>(
+                () =>
+                {
+                    var distributedCacheProviderInfo = _distributedCache.GetProviderInfo();
+
+                    return new ProviderInfo
+                    {
+                        CacheStats = CacheStats,
+                        EnableLogging = optionsAccs.EnableLogging,
+                        LockMs = distributedCacheProviderInfo.LockMs,
+                        MaxRdSecond = MaxRdSecond,
+                        ProviderName = Name,
+                        ProviderType = CachingProviderType,
+                        SerializerName = distributedCacheProviderInfo.SerializerName,
+                        SleepMs = distributedCacheProviderInfo.SleepMs,
+                        CacheNulls = distributedCacheProviderInfo.CacheNulls,
+                    };
+                });
         }
 
         /// <summary>
@@ -164,6 +191,64 @@
             return flag;
         }
 
+        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)
+        {
+            var keys = cacheKeys.ToArray();
+            ArgumentCheck.NotNullAndCountGTZero(keys, nameof(cacheKeys));
+
+            var localValues = _localCache
+                .GetAll<T>(keys)
+                .Where(v => v.Value.HasValue)
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            var unresolvedKeys = keys.Except(localValues.Keys).ToArray();
+            if (!unresolvedKeys.Any())
+                return localValues;
+
+            IDictionary<string, CacheValue<T>> distributedValues;
+
+            try
+            {
+                distributedValues = _distributedCache.GetAll<T>(unresolvedKeys);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "distributed cache get error, [{0}]", string.Join(",", keys));
+                distributedValues = unresolvedKeys.ToDictionary(x => x, x => CacheValue<T>.NoValue);
+            }
+
+            return distributedValues.Concat(localValues).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys)
+        {
+            var keys = cacheKeys.ToArray();
+            ArgumentCheck.NotNullAndCountGTZero(keys, nameof(cacheKeys));
+
+            var localValuesRaw = await _localCache.GetAllAsync<T>(keys);
+            var localValues = localValuesRaw
+                .Where(v => v.Value.HasValue)
+                .ToDictionary(x => x.Key, x => x.Value);
+
+            var unresolvedKeys = keys.Except(localValues.Keys).ToArray();
+            if (!unresolvedKeys.Any())
+                return localValues;
+
+            IDictionary<string, CacheValue<T>> distributedValues;
+
+            try
+            {
+                distributedValues = await _distributedCache.GetAllAsync<T>(unresolvedKeys);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "distributed cache get error, [{0}]", string.Join(",", keys));
+                distributedValues = unresolvedKeys.ToDictionary(x => x, x => CacheValue<T>.NoValue);
+            }
+
+            return distributedValues.Concat(localValues).ToDictionary(x => x.Key, x => x.Value);
+        }
+
         /// <summary>
         /// Get the specified cacheKey.
         /// </summary>
@@ -178,6 +263,7 @@
 
             if (cacheValue.HasValue)
             {
+                TrackCacheStats(cacheKey, cacheValue);
                 return cacheValue;
             }
 
@@ -198,11 +284,13 @@
                
                 _localCache.Set(cacheKey, cacheValue.Value, ts);
 
+                OnCacheHit(cacheKey);
                 return cacheValue;
             }
 
             _logger?.LogDebug("distributed cache can not get the value of {0}", cacheKey);
 
+            OnCacheMiss(cacheKey);
             return CacheValue<T>.NoValue;
         }
 
@@ -552,11 +640,13 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var gotValueFromDistributedCache = false;
-            
+            var gotValueFromLocalCache = true;
+
             var result = _localCache.Get<T>(
                 cacheKey, 
                 () =>
                 {
+                    gotValueFromLocalCache = false;
                     var dataRetrieverFailed = false;
                     try
                     {
@@ -596,6 +686,15 @@
                 _localCache.Set(cacheKey, result.Value, ts);
             }
 
+            if (gotValueFromDistributedCache || gotValueFromLocalCache)
+            {
+                OnCacheHit(cacheKey);
+            }
+            else
+            {
+                OnCacheMiss(cacheKey);            
+            }
+
             return result;
         }
 
@@ -613,12 +712,14 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             var gotValueFromDistributedCache = false;
-            
+            var gotValueFromLocalCache = true;
+
             var result = await _localCache.GetAsync<T>(
                 cacheKey, 
                 async () =>
                 {
                     var dataRetrieverFailed = false;
+                    gotValueFromLocalCache = false;
                     try
                     {
                         gotValueFromDistributedCache = true;
@@ -655,6 +756,15 @@
                 var ts = await GetExpirationFromDistributedProviderAsync(cacheKey);
 
                 await _localCache.SetAsync(cacheKey, result.Value, ts);
+            }
+
+            if (gotValueFromDistributedCache || gotValueFromLocalCache)
+            {
+                OnCacheHit(cacheKey);
+            }
+            else
+            {
+                OnCacheMiss(cacheKey);            
             }
 
             return result;
@@ -801,6 +911,7 @@
 
             if (cacheValue != null)
             {
+                OnCacheHit(cacheKey);
                 return cacheValue;
             }
 
@@ -821,12 +932,80 @@
 
                 await _localCache.SetAsync(cacheKey, cacheValue, ts);
 
+                OnCacheHit(cacheKey);
                 return cacheValue;
             }
 
             _logger?.LogDebug("distributed cache can not get the value of {0}", cacheKey);
 
+            OnCacheMiss(cacheKey);
             return null;
         }
+
+        public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            return _distributedCache.GetByPrefix<T>(prefix);
+        }
+
+        public Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            return _distributedCache.GetByPrefixAsync<T>(prefix);
+        }
+
+        public int GetCount(string prefix = "")
+        {
+            return _distributedCache.GetCount(prefix);
+        }
+
+        public Task<int> GetCountAsync(string prefix = "")
+        {
+            return _distributedCache.GetCountAsync(prefix);
+        }
+
+        public void Flush()
+        {
+            _distributedCache.Flush();
+            _localCache.Flush();
+        }
+
+        public async Task FlushAsync()
+        {
+           await Task.WhenAll(_distributedCache.FlushAsync(), _localCache.FlushAsync());
+        }
+
+        private void TrackCacheStats<T>(string cacheKey, CacheValue<T> cacheValue)
+        {
+            if (cacheValue.HasValue)
+            {
+                OnCacheHit(cacheKey);
+            }
+            else
+            {
+                OnCacheMiss(cacheKey);
+            }
+        }
+
+        private void OnCacheHit(string cacheKey)
+        {
+            CacheStats.OnHit();
+
+            _logger?.LogDebug("Cache Hit : cachekey = {0}", cacheKey);
+        }
+
+        private void OnCacheMiss(string cacheKey)
+        {
+            CacheStats.OnMiss();
+
+            _logger?.LogDebug("Cache Missed : cachekey = {0}", cacheKey);
+        }
+
+        public int MaxRdSecond => Math.Max(_distributedCache.MaxRdSecond, _localCache.MaxRdSecond);
+        public CachingProviderType CachingProviderType => CachingProviderType.Hybrid;
+        public CacheStats CacheStats { get; }
+        public ProviderInfo GetProviderInfo() => _info;
     }
 }

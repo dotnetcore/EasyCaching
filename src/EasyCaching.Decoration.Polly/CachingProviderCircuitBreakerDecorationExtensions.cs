@@ -20,24 +20,11 @@ namespace EasyCaching.Decoration.Polly
             );
         }
 
-        public static IProviderOptionsWithDecorator<IHybridCachingProvider> DecorateWithCircuitBreaker(
-            this IProviderOptionsWithDecorator<IHybridCachingProvider> options,
-            ICircuitBreakerParameters initParameters,
-            ICircuitBreakerParameters executeParameters,
-            Func<Exception, bool> exceptionFilter)
-        {
-            return options.Decorate((name, serviceProvider, cachingProviderFactory) =>
-                () => new DecoratedHybridCachingProvider(
-                    name, 
-                    cachingProviderFactory.WithCircuitBreaker(initParameters, executeParameters, exceptionFilter))
-            );
-        }
-
         private static IEasyCachingProviderDecorator<TProvider> WithCircuitBreaker<TProvider>(
             this Func<TProvider> cachingProviderFactory,
             ICircuitBreakerParameters initParameters,
             ICircuitBreakerParameters executeParameters,
-            Func<Exception, bool> exceptionFilter) where TProvider : class, IEasyCachingProviderBase
+            Func<Exception, bool> exceptionFilter) where TProvider : class, IEasyCachingProvider
         {
             var policyBuilder = exceptionFilter.GetHandleExceptionPolicyBuilder();
             var initPolicy = initParameters.CreatePolicy(policyBuilder);

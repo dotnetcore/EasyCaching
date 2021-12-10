@@ -10,12 +10,6 @@
     public class EasyCachingInterceptorAttribute : Attribute
     {
         /// <summary>
-        /// Gets or sets a value indicating whether is hybrid provider.
-        /// </summary>
-        /// <value><c>true</c> if is hybrid provider; otherwise, <c>false</c>.</value>
-        public bool IsHybridProvider { get; set; } = false;
-
-        /// <summary>
         /// Gets or sets the cache key prefix. 
         /// </summary>
         /// <value>The cache key prefix.</value>

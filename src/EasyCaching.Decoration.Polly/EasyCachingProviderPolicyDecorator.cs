@@ -6,8 +6,8 @@
     using System;
     using System.Threading.Tasks;
 
-    public class EasyCachingProviderPolicyDecorator<TProvider> : IEasyCachingProviderDecorator<TProvider> 
-        where TProvider : class, IEasyCachingProviderBase
+    public class EasyCachingProviderPolicyDecorator<TProvider> : IEasyCachingProviderDecorator<TProvider>
+        where TProvider : class, IEasyCachingProvider
     {
         private LazyWithoutExceptionCaching<TProvider> _lazyCachingProvider;
         

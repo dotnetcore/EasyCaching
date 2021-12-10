@@ -8,21 +8,13 @@
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        //1. InMemory,Memcached,Redis,SQLite
+        //InMemory,Memcached,Redis,SQLite,Hybrid
         private readonly IEasyCachingProvider _provider;
 
         public ValuesController(IEasyCachingProvider provider)
         {
             this._provider = provider;
         }
-
-        ////2. Hybird Cache
-        //private readonly IHybridCachingProvider _provider;
-
-        //public ValuesController(IHybridCachingProvider provider)
-        //{
-        //    this._provider = provider;
-        //}
 
         // GET api/values/get?type=1
         [HttpGet]
@@ -48,7 +40,6 @@
                     return "default";                    
             }
         }
-
 
         // GET api/values/getasync?type=1
         [HttpGet]

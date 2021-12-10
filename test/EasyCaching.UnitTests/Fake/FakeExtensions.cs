@@ -8,7 +8,7 @@ namespace EasyCaching.UnitTests.Fake
 
     public static class FakeExtensions
     {
-        public static IReturnValueArgumentValidationConfiguration<CacheValue<T>> CallToGetWithDataRetriever<T>(this IEasyCachingProviderBase cachingProvider) =>
+        public static IReturnValueArgumentValidationConfiguration<CacheValue<T>> CallToGetWithDataRetriever<T>(this IEasyCachingProvider cachingProvider) =>
             A.CallTo(() => cachingProvider.Get(A<string>._, A<Func<T>>._, A<TimeSpan>._));
         
         public static void CallsDataRetriever<T>(this IReturnValueArgumentValidationConfiguration<CacheValue<T>> configuration) =>
@@ -19,14 +19,14 @@ namespace EasyCaching.UnitTests.Fake
                     var result = dataRetriever();
                     return new CacheValue<T>(result, result != null);
                 });
-        
-        public static IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> CallToGetAsyncWithDataRetriever<T>(this IEasyCachingProviderBase cachingProvider) =>
+
+        public static IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> CallToGetAsyncWithDataRetriever<T>(this IEasyCachingProvider cachingProvider) =>
             A.CallTo(() => cachingProvider.GetAsync<T>(A<string>._, A<Func<Task<T>>>._, A<TimeSpan>._));
-        
-        public static IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> CallToGetAsyncTyped<T>(this IEasyCachingProviderBase cachingProvider) =>
+
+        public static IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> CallToGetAsyncTyped<T>(this IEasyCachingProvider cachingProvider) =>
             A.CallTo(() => cachingProvider.GetAsync<T>(A<string>._));
-        
-        public static IReturnValueArgumentValidationConfiguration<Task<Object>> CallToGetAsync<T>(this IEasyCachingProviderBase cachingProvider) =>
+
+        public static IReturnValueArgumentValidationConfiguration<Task<Object>> CallToGetAsync<T>(this IEasyCachingProvider cachingProvider) =>
             A.CallTo(() => cachingProvider.GetAsync(A<string>._, typeof(T)));
         
         public static void CallsDataRetriever<T>(this IReturnValueArgumentValidationConfiguration<Task<CacheValue<T>>> configuration) =>

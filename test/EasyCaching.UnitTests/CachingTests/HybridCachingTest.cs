@@ -18,17 +18,38 @@ namespace EasyCaching.UnitTests
     using static ServiceBuilders;
     using static TestHelpers;
 
-    public class HybridCachingTest //: BaseCachingProviderTest
+    public class HybridCachingTest : BaseCachingProviderTest
     {
         private const string AvailableRedis = "127.0.0.1:6380,abortConnect=true";
         private const string UnavailableRedis = "127.0.0.1:9999,abortConnect=true,connectTimeout=1";
         private const string UnavailableRedisWithAbortConnect = "127.0.0.1:9999,abortConnect=false,connectTimeout=1";
-        
-        private const string LocalCacheProviderName = "m1";
-        private const string DistributedCacheProviderName = "myredis";
+
+        private const string LocalCacheProviderName = "DefaultInMemory";
+        private const string DistributedCacheProviderName = "DefaultRedis";
         private static readonly TimeSpan Expiration = TimeSpan.FromSeconds(30);
-        
-        private readonly string _nameSpace= "hybrid";
+
+        public HybridCachingTest()
+        {
+            _nameSpace = "hybrid";
+            _defaultTs = Expiration;
+        }
+
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        {
+            options.UseInMemory(providerOptions =>
+            {
+                providerOptions.MaxRdSecond = 0;
+                additionalSetup(providerOptions);
+            });
+
+            options.UseRedis(providerOptions =>
+            {
+                providerOptions.ConnectionString = "127.0.0.1:6380,allowAdmin=true";
+                additionalSetup(providerOptions);
+            });
+
+            UseHybrid(options);
+        }
 
         private void UseHybrid(EasyCachingOptions x)
         {
@@ -42,7 +63,7 @@ namespace EasyCaching.UnitTests
             });
         }
 
-        private IHybridCachingProvider CreateCachingProvider(bool cacheNulls = false) => CreateService<IHybridCachingProvider>(services =>
+        private IEasyCachingProvider CreateCachingProvider(bool cacheNulls = false) => CreateService<IEasyCachingProvider>(services =>
         {
             services.AddEasyCaching(x =>
             {
@@ -72,8 +93,8 @@ namespace EasyCaching.UnitTests
             });
         });
 
-        private IHybridCachingProvider CreateCachingProviderWithCircuitBreakerAndFallback(string connectionString) => 
-            CreateService<IHybridCachingProvider>(services =>
+        private IEasyCachingProvider CreateCachingProviderWithCircuitBreakerAndFallback(string connectionString) =>
+            CreateService<IEasyCachingProvider>(services =>
             {
                 services.AddEasyCaching(x =>
                 {
@@ -111,8 +132,8 @@ namespace EasyCaching.UnitTests
                     UseHybrid(x);
                 });
             });
-        
-        private (IHybridCachingProvider HybridProvider, IEasyCachingProvider localCachingProvider, IEasyCachingProvider fakeDistributedProvider, IEasyCachingBus FakeBus) 
+
+        private (IEasyCachingProvider HybridProvider, IEasyCachingProvider localCachingProvider, IEasyCachingProvider fakeDistributedProvider, IEasyCachingBus FakeBus)
             CreateCachingProviderWithFakes(
             Action<FakeBusOptions> decorateFakeBus = null,
             Action<IEasyCachingProvider> setupFakeDistributedProvider = null,
@@ -168,7 +189,7 @@ namespace EasyCaching.UnitTests
             var serviceProvider = services.BuildServiceProvider();
 
             return (
-                serviceProvider.GetService<IHybridCachingProvider>(),
+                serviceProvider.GetService<IEasyCachingProvider>(),
                 serviceProvider.GetService<IEasyCachingProviderFactory>().GetCachingProvider(LocalCacheProviderName),
                 fakeDistributedProvider, 
                 fakeBus);
@@ -186,7 +207,7 @@ namespace EasyCaching.UnitTests
                 {
                     TopicName = "TestTopicName", LocalCacheProviderName = LocalCacheProviderName,
                     DistributedCacheProviderName = DistributedCacheProviderName
-                }, fakeProvidersFactory);
+                }, new Lazy<IEasyCachingProviderFactory>(() => fakeProvidersFactory));
             return (hybridProvider, fakeLocalProvider, fakeDistributedProvider);
         }
 
@@ -745,8 +766,6 @@ namespace EasyCaching.UnitTests
             Assert.True(res.HasValue);
             Assert.Equal("123", res.Value);
         }
-        
-        private string GetUniqueCacheKey() => $"{_nameSpace}{Guid.NewGuid().ToString()}";
 
         [Theory]
         [InlineData(AvailableRedis, 1)]
@@ -859,8 +878,8 @@ namespace EasyCaching.UnitTests
                 {
                     TopicName = "TestTopicName", LocalCacheProviderName = LocalCacheProviderName,
                     DistributedCacheProviderName = DistributedCacheProviderName
-                }, fakeProvidersFactory);
-            
+                }, new Lazy<IEasyCachingProviderFactory>(() => fakeProvidersFactory));
+
             var newExpiration = TimeSpan.FromMinutes(5);
             var distributeExpiration = TimeSpan.FromMinutes(distributedExpirationMinutes);
             var dataRetriever = CreateFakeAsyncDataRetriever(result: "cachedValue");
@@ -937,8 +956,8 @@ namespace EasyCaching.UnitTests
                 {
                     TopicName = "TestTopicName", LocalCacheProviderName = LocalCacheProviderName,
                     DistributedCacheProviderName = DistributedCacheProviderName
-                }, fakeProvidersFactory);
-            
+                }, new Lazy<IEasyCachingProviderFactory>(() => fakeProvidersFactory));
+
             var newExpiration = TimeSpan.FromMinutes(5);
             var distributeExpiration = TimeSpan.FromMinutes(distributedExpirationMinutes);
             var dataRetriever = A.Fake<Func<string>>();

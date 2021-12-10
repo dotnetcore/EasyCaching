@@ -4,7 +4,7 @@ namespace EasyCaching.Core.Configurations
 
     public class BaseProviderOptionsWithDecorator<TProvider> : BaseProviderOptions,
         IProviderOptionsWithDecorator<TProvider>
-        where TProvider : IEasyCachingProviderBase
+        where TProvider : IEasyCachingProvider
     {
         public ProviderFactoryDecorator<TProvider> ProviderFactoryDecorator { get; set; }
     }

@@ -3,7 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Decoration;
 
-    public class HybridCachingOptions : IProviderOptionsWithDecorator<IHybridCachingProvider>
+    public class HybridCachingOptions : IProviderOptionsWithDecorator<IEasyCachingProvider>
     {
         /// <summary>
         /// Gets or sets the name of the topic.
@@ -32,7 +32,7 @@
         /// Gets the default expiration when get ttl from distributed cache was failed
         /// </summary>        
         public int DefaultExpirationForTtlFailed { get; set; } = 60;
-        
-        public ProviderFactoryDecorator<IHybridCachingProvider> ProviderFactoryDecorator { get; set; }
+
+        public ProviderFactoryDecorator<IEasyCachingProvider> ProviderFactoryDecorator { get; set; }
     }
 }
