@@ -51,9 +51,7 @@
             this._name = name ?? throw new ArgumentNullException(nameof(name));;
             this.BusName = name;
             this._subscriberProvider = subscriberProviders.Single(x => x.SubscriberName.Equals(name));
-            this._serializer = !string.IsNullOrWhiteSpace(busOptions.SerializerName)
-                ? serializers.Single(x => x.Name.Equals(busOptions.SerializerName))
-                : serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+            this._serializer = serializers.Single(x => x.Name.Equals(busOptions.SerializerName));
             this._subscriber = _subscriberProvider.GetSubscriber();
         }
 

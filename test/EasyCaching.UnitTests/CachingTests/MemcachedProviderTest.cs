@@ -10,25 +10,27 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class MemcachedProviderTest : DistributedCachingProviderTest
+    public class MemcachedProviderTest : DistributedCachingProviderTest<MemcachedOptions>
     {
         public MemcachedProviderTest()
         {
             _defaultTs = TimeSpan.FromSeconds(50);
         }
 
-        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<MemcachedOptions> additionalSetup)
         {
+            options.WithJson("json");
             options.UseMemcached(providerOptions =>
             {
                 providerOptions.DBConfig.AddServer("127.0.0.1", 11211);
+                providerOptions.SerializerName = "json";
                 additionalSetup(providerOptions);
             });
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        protected override IEasyCachingProvider CreateCachingProvider(Action<MemcachedOptions> additionalSetup)
         {
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             services.AddEasyCaching(options => SetupCachingProvider(options, additionalSetup));
             services.AddLogging();
             return services.BuildServiceProvider().GetService<IEasyCachingProvider>();

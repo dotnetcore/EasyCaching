@@ -12,14 +12,14 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class SQLiteCachingTest : DistributedCachingProviderTest
+    public class SQLiteCachingTest : BaseCachingProviderTest<SQLiteOptions>
     {
         public SQLiteCachingTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<SQLiteOptions> additionalSetup)
         {
             options.UseSQLite(providerOptions =>
             {
@@ -46,28 +46,11 @@
             conn.Execute(ConstSQL.CREATESQL);
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        protected override IEasyCachingProvider CreateCachingProvider(Action<SQLiteOptions> additionalSetup)
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(options => SetupCachingProvider(options, additionalSetup));
 
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            SetupSql(serviceProvider);
-            return serviceProvider.GetService<IEasyCachingProvider>();
-        }
-
-        protected override IEasyCachingProvider CreateProviderWithErrorOnDeserialization()
-        {
-            IServiceCollection services = new ServiceCollection();
-            
-            AddLoggerFactory(services);
-
-            services.AddSingleton<SerializerWithErrorOnDeserialization>();
-            
-            services.AddEasyCaching(options => SetupCachingProvider(
-                options, 
-                providerOptions => providerOptions.SerializerName = nameof(SerializerWithErrorOnDeserialization)));
-            
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             SetupSql(serviceProvider);
             return serviceProvider.GetService<IEasyCachingProvider>();

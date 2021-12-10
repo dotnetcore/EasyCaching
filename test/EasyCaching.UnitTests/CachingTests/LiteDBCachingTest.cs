@@ -10,21 +10,23 @@
     using System.Threading.Tasks;
     using Xunit;
 
-    public class LiteDBCachingTest : DistributedCachingProviderTest
+    public class LiteDBCachingTest : BaseCachingProviderTest<LiteDBOptions>
     {
         public LiteDBCachingTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<LiteDBOptions> additionalSetup)
         {
+            options.WithJson("json");
             options.UseLiteDB(providerOptions =>
             {
                 providerOptions.DBConfig = new LiteDBDBOptions
                 {
                     FileName = "s1.ldb"
                 };
+                providerOptions.SerializerName = "json";
                 additionalSetup(providerOptions);
             });
         }

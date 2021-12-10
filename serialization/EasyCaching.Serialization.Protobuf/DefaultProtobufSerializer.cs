@@ -59,7 +59,6 @@
             {
                 return Serializer.Deserialize(type, ms);
             }
-            throw new NotImplementedException();
         }
 
         /// <summary>

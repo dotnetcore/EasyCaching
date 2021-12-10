@@ -49,7 +49,6 @@
 
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.AddSingleton<EasyCachingTranscoder>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<MemcachedOptions>>();

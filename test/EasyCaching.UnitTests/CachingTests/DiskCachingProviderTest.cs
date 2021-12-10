@@ -10,15 +10,16 @@ namespace EasyCaching.UnitTests
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;
 
-    public class DiskCachingProviderTest : BaseCachingProviderTest
+    public class DiskCachingProviderTest : BaseCachingProviderTest<DiskOptions>
     {
         public DiskCachingProviderTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<DiskOptions> additionalSetup)
         {
+            options.WithJson("json");
             options.UseDisk(providerOptions =>
             {
                 providerOptions.MaxRdSecond = 0;
@@ -26,6 +27,7 @@ namespace EasyCaching.UnitTests
                 {
                     BasePath = Path.GetTempPath()
                 };
+                providerOptions.SerializerName = "json";
                 additionalSetup(providerOptions);
             });
         }

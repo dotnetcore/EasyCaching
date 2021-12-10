@@ -14,14 +14,14 @@ namespace EasyCaching.UnitTests
     using System.Threading.Tasks;
     using Xunit;
 
-    public class MemoryCachingProviderTest : BaseCachingProviderTest
+    public class MemoryCachingProviderTest : BaseCachingProviderTest<InMemoryOptions>
     {
         public MemoryCachingProviderTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
         }
 
-        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<InMemoryOptions> additionalSetup)
         {
             options.UseInMemory(providerOptions =>
             {

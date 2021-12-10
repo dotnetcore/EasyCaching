@@ -95,7 +95,7 @@
             var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
-                OnCacheMiss(cacheKey);
+                OnCacheHit(cacheKey);
 
                 return result;
             }
@@ -137,18 +137,8 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             var result = _cache.Get<T>(cacheKey);
-            if (result.HasValue)
-            {
-                OnCacheMiss(cacheKey);
-
-                return result;
-            }
-            else
-            {
-                OnCacheMiss(cacheKey);
-
-                return CacheValue<T>.NoValue;
-            }
+            TrackCacheStats(cacheKey, result);
+            return result;
         }
 
         /// <summary>

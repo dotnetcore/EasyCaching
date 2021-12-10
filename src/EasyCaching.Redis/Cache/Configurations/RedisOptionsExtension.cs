@@ -45,8 +45,6 @@
         {
             services.AddOptions();
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-
             services.Configure(_name, configure);
 
             services.TryAddSingleton<ConnectionMultiplexerProvider>();

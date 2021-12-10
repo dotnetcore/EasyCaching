@@ -81,9 +81,7 @@
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
 
-            this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
-                ? serializers.Single(x => x.Name.Equals(options.SerializerName))
-                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+            this._serializer = serializers.Single(x => x.Name.Equals(options.SerializerName));
 
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;

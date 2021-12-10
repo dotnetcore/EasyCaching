@@ -11,31 +11,27 @@ namespace EasyCaching.UnitTests
     using Xunit;
     using static ServiceBuilders;
 
-    public class RedisCachingProviderTest : DistributedCachingProviderTest
+    public class RedisCachingProviderTest : DistributedCachingProviderTest<RedisOptions>
     {
-        private readonly string ProviderName = "Test";
-
         public RedisCachingProviderTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
             _nameSpace = "RedisBasic";
         }
 
-        private IServiceProvider CreateServiceProviderWithRedis(Action<RedisOptions> setup) => CreateServiceProviderWithEasyCaching(
-           easyCachingOptions => easyCachingOptions.UseRedis(setup, ProviderName));
-        
-        protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
+        protected override void SetupCachingProvider(EasyCachingOptions options, Action<RedisOptions> additionalSetup)
         {
+            options.WithJson("json");
             options.UseRedis(providerOptions =>
             {
                 providerOptions.ConnectionString = "127.0.0.1:6380,allowAdmin=true";
+                providerOptions.SerializerName = "json";
                 additionalSetup(providerOptions);
             });
         }
 
-        private IEasyCachingProvider CreateCachingProviderWithUnavailableRedisAndFallback()
-        {
-            var serviceProvider = CreateServiceProviderWithRedis(options =>
+        private IEasyCachingProvider CreateCachingProviderWithUnavailableRedisAndFallback() =>
+            CreateCachingProvider(options =>
             {
                 options.ConnectionString = "127.0.0.1:9999,allowAdmin=false,defaultDatabase=9,connectTimeout=1";
 
@@ -49,7 +45,7 @@ namespace EasyCaching.UnitTests
                         samplingDuration: TimeSpan.FromSeconds(15),
                         minimumThroughput: 10,
                         durationOfBreak: TimeSpan.FromSeconds(60));
-            
+
                 options
                     .DecorateWithCircuitBreaker(
                         initCircuitBreakerParameters,
@@ -59,8 +55,6 @@ namespace EasyCaching.UnitTests
                         (name, _) => new NullCachingProvider(name, options),
                         exceptionFilter: RedisOptionsExtensions.RedisExceptionFilter);
             });
-            return serviceProvider.GetService<IEasyCachingProvider>();
-        }
 
         [Fact]
         public void Prefix_Equal_Asterisk_Should_Throw_ArgumentException()
@@ -71,15 +65,8 @@ namespace EasyCaching.UnitTests
         [Fact]
         public void Flush_Should_Fail_When_AllowAdmin_Is_False()
         {
-            IServiceCollection services = new ServiceCollection();
-            services.AddEasyCaching(x =>
-                x.UseRedis(
-                    options => options.ConnectionString = "127.0.0.1:6380,allowAdmin=false",
-                    ProviderName)
-            );
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            var factory = serviceProvider.GetRequiredService<IEasyCachingProviderFactory>();
-            var provider = factory.GetCachingProvider(ProviderName);
+            var provider = CreateCachingProvider(
+                options => ((RedisOptions)options).ConnectionString = "127.0.0.1:6380,allowAdmin=false");
 
             Assert.Throws<StackExchange.Redis.RedisCommandException>(() => provider.Flush());
         }
@@ -109,10 +96,16 @@ namespace EasyCaching.UnitTests
         [Fact]
         public void Use_Configuration_String_Should_Succeed()
         {
-            var serviceProvider = CreateServiceProviderWithRedis(options =>
-            {
-                options.ConnectionString = "127.0.0.1:6380,allowAdmin=false,defaultDatabase=8";
-            });
+            var serviceProvider = CreateServiceProviderWithEasyCaching(
+                options =>
+                {
+                    options.WithJson("json");
+                    options.UseRedis(providerOptions =>
+                    {
+                        providerOptions.ConnectionString = "127.0.0.1:6380,allowAdmin=false,defaultDatabase=8";
+                        providerOptions.SerializerName = "json";
+                    });
+                });
             var dbProvider = serviceProvider.GetService<IRedisDatabaseProvider>();
             Assert.NotNull(dbProvider);
 
@@ -227,15 +220,18 @@ namespace EasyCaching.UnitTests
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
             {
+                x.WithJson("json");
+                
                 x.UseRedis(options =>
                 {
                     options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=3";
+                    options.SerializerName = "json";
                 });
-
 
                 x.UseRedis(options =>
                 {
                     options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=4";
+                    options.SerializerName = "json";
                 }, SECOND_PROVIDER_NAME);
             });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -266,14 +262,10 @@ namespace EasyCaching.UnitTests
                 x.UseRedis(options =>
                 {
                     options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=14";
+                    options.SerializerName = "cs12";
                 }, "se2");
 
-                x.UseRedis(options =>
-                {
-                    options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=11";
-                }, "se3");
-
-                x.WithJson("json").WithMessagePack("cs11").WithJson("se2");
+                x.WithMessagePack("cs11").WithJson("cs12");
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -285,15 +277,12 @@ namespace EasyCaching.UnitTests
         {
             var se1 = _providerFactory.GetCachingProvider("se1");
             var se2 = _providerFactory.GetCachingProvider("se2");
-            var se3 = _providerFactory.GetCachingProvider("se3");
 
             var info1 = se1.GetProviderInfo();
             var info2 = se2.GetProviderInfo();
-            var info3 = se3.GetProviderInfo();
 
             Assert.Equal("cs11", info1.Serializer.Name);
-            Assert.Equal("se2", info2.Serializer.Name);
-            Assert.Equal(EasyCachingConstValue.DefaultSerializerName, info3.Serializer.Name);
+            Assert.Equal("cs12", info2.Serializer.Name);
         }
     }
 }

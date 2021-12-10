@@ -17,9 +17,12 @@
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(option =>
             {
+                option.WithJson("json");
+                
                 option.UseRedis(options =>
                 {
                     options.ConnectionString = "127.0.0.1:6380,allowAdmin=true,defaultDatabase=12";
+                    options.SerializerName = "json";
                 }, "redis");
 
                 option.UseInMemory(_ =>

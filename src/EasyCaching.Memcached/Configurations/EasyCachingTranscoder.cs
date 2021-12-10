@@ -30,21 +30,8 @@ namespace EasyCaching.Memcached
         /// <param name="serializers">Serializers.</param>
         public EasyCachingTranscoder(string name, MemcachedOptions options, IEnumerable<IEasyCachingSerializer> serializers)
         {
-
-            if (string.IsNullOrWhiteSpace(options.SerializerName))
-            {
-                this._name = name;
-                this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
-            }
-            else
-            {
-                this._name = options.SerializerName;
-                this._serializer = serializers.Single(x=>x.Name.Equals(options.SerializerName));
-            }
-
-            //this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
-            //    ? serializers.Single(x => x.Name.Equals(options.SerializerName))
-            //    : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+             this._name = options.SerializerName;
+             this._serializer = serializers.Single(x=>x.Name.Equals(options.SerializerName));
         }
 
         /// <summary>

@@ -18,7 +18,7 @@ namespace EasyCaching.UnitTests
     using static ServiceBuilders;
     using static TestHelpers;
 
-    public class HybridCachingTest : BaseCachingProviderTest
+    public class HybridCachingTest : BaseCachingProviderTest<BaseProviderOptions>
     {
         private const string AvailableRedis = "127.0.0.1:6380,abortConnect=true";
         private const string UnavailableRedis = "127.0.0.1:9999,abortConnect=true,connectTimeout=1";
@@ -36,6 +36,8 @@ namespace EasyCaching.UnitTests
 
         protected override void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup)
         {
+            options.WithJson("json");
+            
             options.UseInMemory(providerOptions =>
             {
                 providerOptions.MaxRdSecond = 0;
@@ -45,6 +47,7 @@ namespace EasyCaching.UnitTests
             options.UseRedis(providerOptions =>
             {
                 providerOptions.ConnectionString = "127.0.0.1:6380,allowAdmin=true";
+                providerOptions.SerializerName = "json";
                 additionalSetup(providerOptions);
             });
 
@@ -67,6 +70,8 @@ namespace EasyCaching.UnitTests
         {
             services.AddEasyCaching(x =>
             {
+                x.WithJson("json");
+                
                 x.UseInMemory(
                     options =>
                     {
@@ -77,12 +82,14 @@ namespace EasyCaching.UnitTests
                     {
                         options.CacheNulls = cacheNulls;
                         options.ConnectionString = AvailableRedis;
+                        options.SerializerName = "json";
                     },
                     DistributedCacheProviderName);
 
                 x.WithRedisBus(options =>
                 {
                     options.ConnectionString = AvailableRedis;
+                    options.SerializerName = "json";
                     
                     options
                         .DecorateWithRetry(1, RedisBusOptionsExtensions.RedisExceptionFilter)
@@ -98,6 +105,7 @@ namespace EasyCaching.UnitTests
             {
                 services.AddEasyCaching(x =>
                 {
+                    x.WithJson("json");
                     x.UseInMemory(LocalCacheProviderName);
 
                     var circuitBreakerParameters = new CircuitBreakerParameters(
@@ -107,6 +115,7 @@ namespace EasyCaching.UnitTests
                     x.UseRedis(options =>
                         {
                             options.ConnectionString = connectionString;
+                            options.SerializerName = "json";
                 
                             options.DecorateWithCircuitBreaker(
                                 initParameters: circuitBreakerParameters,
@@ -118,6 +127,7 @@ namespace EasyCaching.UnitTests
                     x.WithRedisBus(options =>
                     {
                         options.ConnectionString = connectionString;
+                        options.SerializerName = "json";
                     
                         options
                             .DecorateWithCircuitBreaker(

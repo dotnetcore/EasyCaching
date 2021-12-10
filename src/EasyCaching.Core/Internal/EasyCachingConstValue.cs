@@ -6,19 +6,9 @@
     public class EasyCachingConstValue
     {
         /// <summary>
-        /// The config section.
-        /// </summary>
-        public const string ConfigSection = "easycaching";
-
-        /// <summary>
         /// The redis section.
         /// </summary>
         public const string RedisSection = "easycaching:redis";
-
-        /// <summary>
-        /// The CSRedis section.
-        /// </summary>
-        public const string CSRedisSection = "easycaching:csredis";
 
         /// <summary>
         /// The memcached section.
@@ -66,11 +56,6 @@
         public const string DefaultRedisName = "DefaultRedis";
 
         /// <summary>
-        /// The default name of the CSRedis.
-        /// </summary>
-        public const string DefaultCSRedisName = "DefaultCSRedis";
-
-        /// <summary>
         /// The default name of the memcached.
         /// </summary>
         public const string DefaultMemcachedName = "DefaultMemcached";
@@ -89,11 +74,6 @@
         /// The default name of the hybrid.
         /// </summary>
         public const string DefaultHybridName = "DefaultHybrid";
-
-        /// <summary>
-        /// The default name of the serializer.
-        /// </summary>
-        public const string DefaultSerializerName = "binary";
 
         /// <summary>
         /// The default name of the LiteDB.

@@ -201,7 +201,7 @@
                 {
                     var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
 
-                    OnCacheMiss(cacheKey);
+                    OnCacheHit(cacheKey);
 
                     return new CacheValue<T>(t, true);
                 }
@@ -251,7 +251,7 @@
 
             if (cached.Expiration > DateTimeOffset.UtcNow)
             {
-                OnCacheMiss(cacheKey);
+                OnCacheHit(cacheKey);
 
                 var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
                 return new CacheValue<T>(t, true);

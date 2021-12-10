@@ -42,8 +42,7 @@
         {
             services.AddOptions();
             services.Configure(_configure);
-
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();            
+        
             services.AddSingleton<IPooledObjectPolicy<IModel>, ModelPooledObjectPolicy>();
 
             services.AddSingleton<IEasyCachingBus>(serviceProvider =>

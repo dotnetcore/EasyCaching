@@ -11,7 +11,7 @@
     using Xunit;
     using static TestHelpers;
 
-    public abstract class BaseCachingProviderTest
+    public abstract class BaseCachingProviderTest<TProviderOptions> where TProviderOptions : BaseProviderOptions
     {
         protected IEasyCachingProvider _provider;
         protected IEasyCachingProvider _providerWithNullsCached;
@@ -21,15 +21,18 @@
 
         protected BaseCachingProviderTest()
         {
-            _provider = CreateCachingProvider(options => { });
+            _provider = CreateCachingProvider(_ => { });
             _providerWithNullsCached = CreateCachingProvider(options => options.CacheNulls = true);
         }
 
-        protected abstract void SetupCachingProvider(EasyCachingOptions options, Action<BaseProviderOptions> additionalSetup);
+        protected abstract void SetupCachingProvider(EasyCachingOptions options, Action<TProviderOptions> additionalSetup);
 
-        protected virtual IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup) =>
+        protected virtual IEasyCachingProvider CreateCachingProvider(Action<TProviderOptions> additionalSetup) =>
             ServiceBuilders.CreateService<IEasyCachingProvider>(services =>
-                services.AddEasyCaching(options => SetupCachingProvider(options, additionalSetup)));
+                services.AddEasyCaching(options =>
+                {
+                    SetupCachingProvider(options, additionalSetup);
+                }));
 
         #region Parameter Check Test
         [Theory]

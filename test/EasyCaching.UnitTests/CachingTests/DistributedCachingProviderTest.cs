@@ -2,6 +2,7 @@ namespace EasyCaching.UnitTests
 {
     using Core;
     using Core.Serialization;
+    using EasyCaching.Core.Configurations;
     using FakeItEasy;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -11,8 +12,10 @@ namespace EasyCaching.UnitTests
     using System.Text;
     using System.Threading.Tasks;
     using Xunit;
+    using static ServiceBuilders;
 
-    public abstract class DistributedCachingProviderTest : BaseCachingProviderTest
+    public abstract class DistributedCachingProviderTest<TProviderOptions> : BaseCachingProviderTest<TProviderOptions> 
+        where TProviderOptions : BaseProviderOptions
     {
         private const string DeserializationErrorMessage = "Error on deserialization";
         private FakeLogger fakeLogger;
