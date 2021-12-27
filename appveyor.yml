@@ -1,7 +1,7 @@
 version: 1.0.{build}
 image:
 - Ubuntu1804
-- Visual Studio 2019
+- Visual Studio 2022
 configuration: Release
 clone_depth: 50
 
@@ -27,7 +27,7 @@ for:
 -
   matrix:
     only:
-      - image: Visual Studio 2019
+      - image: Visual Studio 2022
   clone_folder: C:\projects\easycaching\
 
   services:

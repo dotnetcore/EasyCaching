@@ -4,6 +4,8 @@
     using FakeItEasy;
     using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
+    using System;
+    using System.Collections.Generic;
     using Xunit;
 
     public class JsonSerializerTest : BaseSerializerTest
@@ -66,5 +68,50 @@
 
             Assert.Null(joe.Manager);
         }
+
+#if NET6_0
+        [Fact]
+        public void DateOnly_Iss338_Test_Should_Succeed()
+        {
+            var serializer = new DefaultJsonSerializer("json", new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Converters = new List<JsonConverter>() { new DateOnlyJsonConverter()}
+            });
+
+            var dateTime = DateTime.Parse("2021-12-21 12:12:12");
+            var date = DateOnly.FromDateTime(dateTime);
+
+            DateOnlyModel m = new DateOnlyModel { Name = "Joe User", Date = date };
+
+            var @byte = serializer.Serialize(m);
+            var @obj = serializer.Deserialize<DateOnlyModel>(@byte);
+
+            Assert.Equal(date, obj.Date);
+        }
+
+        public class DateOnlyModel
+        {
+            public string Name { get; set; }
+
+            public DateOnly Date { get; set; }
+        }
+
+
+        public sealed class DateOnlyJsonConverter : JsonConverter<DateOnly>
+        {
+            public override void WriteJson(JsonWriter writer, DateOnly value, JsonSerializer serializer)
+            {
+                writer.WriteValue(value.ToString("O"));
+            }
+
+            public override DateOnly ReadJson(JsonReader reader, Type objectType, DateOnly existingValue, bool hasExistingValue,
+                JsonSerializer serializer)
+            {
+                //return DateOnly.FromDateTime(reader.ReadAsDateTime().Value);
+                return DateOnly.ParseExact((string)reader.Value, "yyyy-MM-dd");
+            }
+        }
+#endif
     }
 }
