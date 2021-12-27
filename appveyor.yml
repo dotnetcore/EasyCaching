@@ -34,6 +34,8 @@ for:
   - docker
                 
   before_build:
+  - ps: cd "C:\Program Files\Docker\Docker"
+  - ps: ./DockerCli.exe -SwitchDaemon
   - ps: docker pull redis  
   - ps: docker pull bitnami/memcached:latest
   - ps: docker run -p 6379:6379 --name redis6379 -d redis:latest
