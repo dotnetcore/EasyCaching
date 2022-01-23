@@ -1,4 +1,4 @@
-name: Build&Test
+name: Build
 
 on:
   push:
@@ -7,60 +7,7 @@ on:
     branches: [ dev, main, master ]
 
 jobs:
-
-  linux:    
-    name: build and test on ${{ matrix.os }} 
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-
-    services:
-      redis6379:
-        image: redis
-        ports:
-          - 6379:6379
-      redis6380:
-        image: redis
-        ports:
-          - 6380:6379
-      redis6388:
-        image: redis
-        ports:
-          - 6388:6379        
-      memcached1:
-        image: bitnami/memcached
-        ports:
-          - 11211:11211        
-      memcached2:
-        image: bitnami/memcached
-        ports:
-          - 11212:11211      
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET SDK 6.0.x
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x 
-
-    - name: Show dotnet Version
-      run: |
-        dotnet --list-sdks
-        dotnet --list-runtimes
-
-    - name: Show docker info
-      run: |
-        docker ps -a
-
-    - name: Build with dotnet      
-      run: |
-        dotnet build --configuration Release /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln
-   
-    - name: Run tests on net6.0
-      run: |
-        dotnet test --framework=net6.0 /home/runner/work/EasyCaching/EasyCaching/test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
-
+ 
   windows:    
     name: build on ${{ matrix.os }} 
     runs-on: ${{ matrix.os }}
