@@ -58,8 +58,8 @@ namespace EasyCaching.UnitTests.SerializerTests
         {
             var serializer = new DefaultJsonSerializer("json", new JsonSerializerOptions
             {
-                IgnoreNullValues = true
-            });
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            }) ;
 
             Employee joe = new Employee { Name = "Joe User" };
 

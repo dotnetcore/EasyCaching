@@ -11,8 +11,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 
 | Platform | Build Server | Master Status  | Dev Status  |
 |--------- |------------- |---------|---------|
-| AppVeyor |  Windows/Linux |[![Build status](https://ci.appveyor.com/api/projects/status/4x6qal9c1r10wn6x/branch/master?svg=true)](https://ci.appveyor.com/project/catcherwong/easycaching-48okb/branch/master) |[![Build status](https://ci.appveyor.com/api/projects/status/4x6qal9c1r10wn6x/branch/dev?svg=true)](https://ci.appveyor.com/project/catcherwong/easycaching-48okb/branch/dev)|
-| Travis   | Linux/OSX | [![Build Status](https://travis-ci.org/dotnetcore/EasyCaching.svg?branch=master)](https://travis-ci.org/dotnetcore/EasyCaching) |    [![Build Status](https://travis-ci.org/dotnetcore/EasyCaching.svg?branch=dev)](https://travis-ci.org/dotnetcore/EasyCaching) |
+| Github Action   | Linux/Windows | [![Build&Test](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml) |    [![Build&Test](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml) |
 
 ## Nuget Packages
 

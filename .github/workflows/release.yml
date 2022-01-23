@@ -5,6 +5,7 @@ on:
       branches:
       - dev
       - master
+      - main
 
 jobs:
   build_artifact:    
@@ -16,7 +17,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.200
+        dotnet-version: 6.0.x
     - name: Build with dotnet
       run: dotnet build --configuration Release /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln
     - name: Pack with dotnet
