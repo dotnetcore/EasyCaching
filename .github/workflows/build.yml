@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches: [ dev, main, master, '**' ]
+  pull_request:
+    branches: [ dev, main, master ]
+
+jobs:
+ 
+  windows:    
+    name: build on ${{ matrix.os }} 
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+   
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET SDK 6.0.x
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x 
+
+    - name: Show dotnet Version
+      run: |
+        dotnet --list-sdks
+        dotnet --list-runtimes
+   
+    - name: Build with dotnet      
+      run: |
+        dotnet build --configuration Release  D:\a\EasyCaching\EasyCaching\EasyCaching.sln              

@@ -1,40 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="../../build/version.props" />
-  <Import Project="../../build/releasenotes.props" />
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Owners>ncc;Catcher Wong</Owners>
-    <Authors>ncc;Catcher Wong</Authors>
-    <VersionPrefix>$(EasyCachingCSRedisPackageVersion)</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
-    <Description>
-      A simple distributed caching provider based on csredis.
-    </Description>
-    <PackageTags>Redis,DistributedCache,Caching,Cache</PackageTags>
-    <PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
-    <ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
-    <PackageIcon>nuget-icon.png</PackageIcon>
-    <PackageReleaseNotes>
-      $(EasyCachingCSRedisPackageVersion)
-    </PackageReleaseNotes>
-  </PropertyGroup>
+	<Import Project="../../build/version.props" />
+	<Import Project="../../build/releasenotes.props" />
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+		<Owners>ncc;Catcher Wong</Owners>
+		<Authors>ncc;Catcher Wong</Authors>
+		<VersionPrefix>$(EasyCachingCSRedisPackageVersion)</VersionPrefix>
+		<VersionSuffix></VersionSuffix>
+		<Description>
+			A simple distributed caching provider based on csredis.
+		</Description>
+		<PackageTags>Redis,DistributedCache,Caching,Cache</PackageTags>
+		<PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+		<ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+		<PackageIcon>nuget-icon.png</PackageIcon>
+		<PackageReleaseNotes>
+			$(EasyCachingCSRedisPackageVersion)
+		</PackageReleaseNotes>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591</NoWarn>
-  </PropertyGroup>
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
-    <None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+		<None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CSRedisCore" Version="3.6.5" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CSRedisCore" Version="3.6.8" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
+	</ItemGroup>
 </Project>
