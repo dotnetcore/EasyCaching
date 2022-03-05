@@ -51,5 +51,10 @@
         /// Gets or sets queue message automatic deletion time (in milliseconds). Default 864000000 ms (10 days).
         /// </summary>
         public int QueueMessageExpires { get; set; } = 864000000;
+
+        /// <summary>
+        /// Gets or sets the client-provided name for the rabbit connection. Default null (handled by rabbit client)
+        /// </summary>
+        public string ClientProvidedName { get; set; }
     }
 }
