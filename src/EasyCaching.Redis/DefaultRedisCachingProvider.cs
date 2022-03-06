@@ -107,7 +107,8 @@ namespace EasyCaching.Redis
 
             this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
                 ? serializers.Single(x => x.Name.Equals(options.SerializerName))
-                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ??
+                  serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
 
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;
@@ -304,6 +305,11 @@ namespace EasyCaching.Redis
                 // from this redis dev specification, https://yq.aliyun.com/articles/531067 , maybe the appropriate scope is 100~500, using 200 here.
                 keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database, pageSize: 200));
 
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                keys = keys.Select(x => new RedisKey(
+                        x.ToString().Remove(0, _options.DBConfig.KeyPrefix.Length)))
+                    .ToList();
+
             return keys.Distinct().ToArray();
 
             //var keys = new HashSet<RedisKey>();
@@ -343,6 +349,9 @@ namespace EasyCaching.Redis
             if (!prefix.EndsWith("*", StringComparison.OrdinalIgnoreCase))
                 prefix = string.Concat(prefix, "*");
 
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                prefix = _options.DBConfig.KeyPrefix + prefix;
+
             return prefix;
         }
 
@@ -376,7 +385,7 @@ namespace EasyCaching.Redis
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var keyArray = cacheKeys.ToArray();
-            var values = _cache.StringGet(keyArray.Select(k => (RedisKey)k).ToArray());
+            var values = _cache.StringGet(keyArray.Select(k => (RedisKey) k).ToArray());
 
             var result = new Dictionary<string, CacheValue<T>>();
             for (int i = 0; i < keyArray.Length; i++)
@@ -428,7 +437,7 @@ namespace EasyCaching.Redis
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
+            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey) k).ToArray();
             if (redisKeys.Length > 0)
                 _cache.KeyDelete(redisKeys);
         }
@@ -445,7 +454,7 @@ namespace EasyCaching.Redis
                 var allCount = 0;
 
                 foreach (var server in _servers)
-                    allCount += (int)server.DatabaseSize(_cache.Database);
+                    allCount += (int) server.DatabaseSize(_cache.Database);
 
                 return allCount;
             }
@@ -492,7 +501,7 @@ namespace EasyCaching.Redis
                 _serializer.Serialize(cacheValue),
                 expiration,
                 When.NotExists
-                );
+            );
         }
 
         /// <summary>

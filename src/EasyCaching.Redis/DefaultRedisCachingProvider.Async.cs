@@ -53,7 +53,8 @@
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever,
+            TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
@@ -75,7 +76,8 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists);
+            var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs),
+                When.NotExists);
 
             if (!flag)
             {
@@ -144,7 +146,7 @@
                 var allCount = 0;
 
                 foreach (var server in _servers)
-                    allCount += (int)server.DatabaseSize(_cache.Database);
+                    allCount += (int) server.DatabaseSize(_cache.Database);
 
                 return Task.FromResult(allCount);
             }
@@ -185,9 +187,9 @@
             }
 
             await _cache.StringSetAsync(
-                    cacheKey,
-                    _serializer.Serialize(cacheValue),
-                    expiration);
+                cacheKey,
+                _serializer.Serialize(cacheValue),
+                expiration);
         }
 
         /// <summary>
@@ -251,7 +253,7 @@
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var keyArray = cacheKeys.ToArray();
-            var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey)k).ToArray());
+            var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey) k).ToArray());
 
             var result = new Dictionary<string, CacheValue<T>>();
             for (int i = 0; i < keyArray.Length; i++)
@@ -304,7 +306,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
+            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey) k).ToArray();
             if (redisKeys.Length > 0)
                 await _cache.KeyDeleteAsync(redisKeys);
         }
@@ -353,7 +355,7 @@
                 _serializer.Serialize(cacheValue),
                 expiration,
                 When.NotExists
-                );
+            );
         }
 
         /// <summary>

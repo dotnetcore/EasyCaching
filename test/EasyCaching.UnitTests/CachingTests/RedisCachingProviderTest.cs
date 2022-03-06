@@ -27,7 +27,8 @@ namespace EasyCaching.UnitTests
                 {
                     options.DBConfig = new RedisDBOptions
                     {
-                        AllowAdmin = true
+                        AllowAdmin = true,
+                        KeyPrefix = "key-prefix:"
                     };
                     options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 5;
