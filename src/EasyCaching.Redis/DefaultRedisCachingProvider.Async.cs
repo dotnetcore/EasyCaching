@@ -144,7 +144,7 @@
                 var allCount = 0;
 
                 foreach (var server in _servers)
-                    allCount += (int) server.DatabaseSize(_cache.Database);
+                    allCount += (int)server.DatabaseSize(_cache.Database);
 
                 return Task.FromResult(allCount);
             }
@@ -185,9 +185,9 @@
             }
 
             await _cache.StringSetAsync(
-                cacheKey,
-                _serializer.Serialize(cacheValue),
-                expiration);
+                    cacheKey,
+                    _serializer.Serialize(cacheValue),
+                    expiration);
         }
 
         /// <summary>
@@ -251,7 +251,7 @@
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var keyArray = cacheKeys.ToArray();
-            var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey) k).ToArray());
+            var values = await _cache.StringGetAsync(keyArray.Select(k => (RedisKey)k).ToArray());
 
             var result = new Dictionary<string, CacheValue<T>>();
             for (int i = 0; i < keyArray.Length; i++)
@@ -304,7 +304,7 @@
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey) k).ToArray();
+            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
             if (redisKeys.Length > 0)
                 await _cache.KeyDeleteAsync(redisKeys);
         }
@@ -353,7 +353,7 @@
                 _serializer.Serialize(cacheValue),
                 expiration,
                 When.NotExists
-            );
+                );
         }
 
         /// <summary>

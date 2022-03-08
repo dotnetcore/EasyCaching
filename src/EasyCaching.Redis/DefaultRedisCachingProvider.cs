@@ -107,8 +107,7 @@ namespace EasyCaching.Redis
 
             this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
                 ? serializers.Single(x => x.Name.Equals(options.SerializerName))
-                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ??
-                  serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
 
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;
@@ -385,7 +384,7 @@ namespace EasyCaching.Redis
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var keyArray = cacheKeys.ToArray();
-            var values = _cache.StringGet(keyArray.Select(k => (RedisKey) k).ToArray());
+            var values = _cache.StringGet(keyArray.Select(k => (RedisKey)k).ToArray());
 
             var result = new Dictionary<string, CacheValue<T>>();
             for (int i = 0; i < keyArray.Length; i++)
@@ -437,7 +436,7 @@ namespace EasyCaching.Redis
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey) k).ToArray();
+            var redisKeys = cacheKeys.Where(k => !string.IsNullOrEmpty(k)).Select(k => (RedisKey)k).ToArray();
             if (redisKeys.Length > 0)
                 _cache.KeyDelete(redisKeys);
         }
@@ -454,7 +453,7 @@ namespace EasyCaching.Redis
                 var allCount = 0;
 
                 foreach (var server in _servers)
-                    allCount += (int) server.DatabaseSize(_cache.Database);
+                    allCount += (int)server.DatabaseSize(_cache.Database);
 
                 return allCount;
             }
@@ -501,7 +500,7 @@ namespace EasyCaching.Redis
                 _serializer.Serialize(cacheValue),
                 expiration,
                 When.NotExists
-            );
+                );
         }
 
         /// <summary>
