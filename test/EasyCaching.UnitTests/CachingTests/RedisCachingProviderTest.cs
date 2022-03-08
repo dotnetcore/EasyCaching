@@ -27,8 +27,7 @@ namespace EasyCaching.UnitTests
                 {
                     options.DBConfig = new RedisDBOptions
                     {
-                        AllowAdmin = true,
-                        KeyPrefix = "key-prefix:"
+                        AllowAdmin = true
                     };
                     options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 5;
@@ -272,6 +271,29 @@ namespace EasyCaching.UnitTests
 
             var val3 = WithKeyPrefix.Get<string>("KeyPrefix");
             Assert.Equal(val1.Value, val3.Value);
+        }
+
+        [Fact]
+        public void RemoveByPrefixTest()
+        {
+            var WithKeyPrefix = _providerFactory.GetCachingProvider("WithKeyPrefix");
+
+            WithKeyPrefix.Set("KeyPrefix1", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("KeyPrefix2", "ok", TimeSpan.FromSeconds(10));
+
+            var val1 = WithKeyPrefix.Get<string>("KeyPrefix1");
+            var val2 = WithKeyPrefix.Get<string>("KeyPrefix2");
+            
+            Assert.True(val1.HasValue);
+            Assert.True(val2.HasValue);
+            Assert.Equal(val1.Value, val2.Value);
+            
+            WithKeyPrefix.RemoveByPrefix("Key");
+            
+            var val3 = WithKeyPrefix.Get<string>("KeyPrefix1");
+            var val4 = WithKeyPrefix.Get<string>("KeyPrefix2");
+            Assert.False(val3.HasValue);
+            Assert.False(val4.HasValue);
         }
     }
 }
