@@ -34,6 +34,8 @@ public class Startup
 
         services.AddEasyCaching(option =>
         {
+            option.WithJson("myjson");
+
             // local
             option.UseInMemory("m1");
             // distributed
@@ -41,6 +43,7 @@ public class Startup
             {
                 config.DBConfig.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
                 config.DBConfig.Database = 5;
+                config.SerializerName = "myjson";
             }, "myredis");
 
             // combine local and distributed
@@ -58,6 +61,9 @@ public class Startup
             .WithRedisBus(busConf => 
             {
                 busConf.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+
+                // do not forget to set the SerializerName for the bus here !!
+                busConf.SerializerName = "myjson";
             });
         });
     }
