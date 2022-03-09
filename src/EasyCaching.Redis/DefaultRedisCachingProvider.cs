@@ -304,6 +304,11 @@ namespace EasyCaching.Redis
                 // from this redis dev specification, https://yq.aliyun.com/articles/531067 , maybe the appropriate scope is 100~500, using 200 here.
                 keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database, pageSize: 200));
 
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                keys = keys.Select(x => new RedisKey(
+                        x.ToString().Remove(0, _options.DBConfig.KeyPrefix.Length)))
+                    .ToList();
+
             return keys.Distinct().ToArray();
 
             //var keys = new HashSet<RedisKey>();
@@ -342,6 +347,9 @@ namespace EasyCaching.Redis
             // End with *
             if (!prefix.EndsWith("*", StringComparison.OrdinalIgnoreCase))
                 prefix = string.Concat(prefix, "*");
+
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                prefix = _options.DBConfig.KeyPrefix + prefix;
 
             return prefix;
         }
