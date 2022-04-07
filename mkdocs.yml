@@ -26,7 +26,6 @@ pages:
     - Castle : Castle.md
 - Caching Serializer:
     - Overview : SerializerOverview.md
-    - BinaryFormatter : BinaryFormatter.md
     - MessagePack : MessagePack.md
     - NewtonsoftJson : NewtonsoftJson.md
     - SystemTextJson : SystemTextJson.md

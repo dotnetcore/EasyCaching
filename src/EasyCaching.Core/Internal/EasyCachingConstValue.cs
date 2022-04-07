@@ -3,7 +3,7 @@
     /// <summary>
     /// EasyCaching const value.
     /// </summary>
-    public class EasyCachingConstValue
+    public static class EasyCachingConstValue
     {
         /// <summary>
         /// The config section.
@@ -93,7 +93,7 @@
         /// <summary>
         /// The default name of the serializer.
         /// </summary>
-        public const string DefaultSerializerName = "binary";
+        public const string DefaultSerializerName = "DefaultSerializer";
 
         /// <summary>
         /// The default name of the LiteDB.

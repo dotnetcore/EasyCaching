@@ -24,6 +24,15 @@
         /// </summary>
         /// <value>The name.</value>
         public string Name => _name;
+    
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Serialization"/> class.
+        /// </summary>
+        public DefaultSerializer()
+        {
+            _name = EasyCachingConstValue.DefaultSerializerName;
+            jsonSerializerOption = new JsonSerializerOptions();
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:EasyCaching.Core.Serialization"/> class.
