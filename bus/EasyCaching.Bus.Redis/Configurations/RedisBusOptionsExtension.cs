@@ -44,7 +44,7 @@
             services.AddOptions();
             services.Configure(_name, configure);
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultSerializer>();
             services.AddSingleton<IRedisSubscriberProvider, RedisSubscriberProvider>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisBusOptions>>();

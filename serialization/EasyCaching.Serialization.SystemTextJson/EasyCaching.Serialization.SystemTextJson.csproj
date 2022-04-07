@@ -31,10 +31,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Text.Json" Version="6.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
 	</ItemGroup>
 </Project>

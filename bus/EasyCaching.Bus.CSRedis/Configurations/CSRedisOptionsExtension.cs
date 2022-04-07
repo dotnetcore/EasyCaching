@@ -41,7 +41,7 @@
         {
             services.AddOptions();
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
+            services.TryAddSingleton<IEasyCachingSerializer, DefaultSerializer>();
 
             services.Configure(_name, _configure);
 
