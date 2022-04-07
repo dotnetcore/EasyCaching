@@ -31,7 +31,7 @@
 		<None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="StackExchange.Redis" Version="2.2.88" />
+		<PackageReference Include="StackExchange.Redis" Version="2.5.61" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />

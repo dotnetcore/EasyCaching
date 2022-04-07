@@ -161,7 +161,7 @@ namespace EasyCaching.Redis
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!_cache.StringSet($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists))
+            if (!_cache.StringSet($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), false, When.NotExists))
             {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);
@@ -499,6 +499,7 @@ namespace EasyCaching.Redis
                 cacheKey,
                 _serializer.Serialize(cacheValue),
                 expiration,
+                false,
                 When.NotExists
                 );
         }

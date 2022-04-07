@@ -75,7 +75,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), When.NotExists);
+            var flag = await _cache.StringSetAsync($"{cacheKey}_Lock", 1, TimeSpan.FromMilliseconds(_options.LockMs), false, When.NotExists);
 
             if (!flag)
             {
@@ -352,6 +352,7 @@
                 cacheKey,
                 _serializer.Serialize(cacheValue),
                 expiration,
+                false,
                 When.NotExists
                 );
         }

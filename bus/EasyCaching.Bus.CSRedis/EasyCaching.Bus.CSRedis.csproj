@@ -32,7 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CSRedisCore" Version="3.6.8" />
+		<PackageReference Include="CSRedisCore" Version="3.6.9" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />

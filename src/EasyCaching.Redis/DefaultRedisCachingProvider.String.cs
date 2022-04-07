@@ -60,7 +60,7 @@
                 w = When.Exists;
             }
 
-            bool flag = _cache.StringSet(cacheKey, cacheValue, expiration, w);
+            bool flag = _cache.StringSet(cacheKey, cacheValue, expiration, false, w);
             return flag;
         }
 
@@ -79,7 +79,7 @@
                 w = When.Exists;
             }
 
-            bool flag = await _cache.StringSetAsync(cacheKey, cacheValue, expiration, w);
+            bool flag = await _cache.StringSetAsync(cacheKey, cacheValue, expiration, false, w);
             return flag;
         }
 
