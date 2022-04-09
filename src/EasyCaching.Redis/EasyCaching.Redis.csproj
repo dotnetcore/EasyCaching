@@ -16,6 +16,7 @@
 		<RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
 		<ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
 		<PackageIcon>nuget-icon.png</PackageIcon>
+		<LangVersion>latest</LangVersion>
 		<PackageReleaseNotes>
 			$(EasyCachingRedisPackageNotes)
 		</PackageReleaseNotes>

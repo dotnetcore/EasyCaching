@@ -1,14 +1,14 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingCorePackageNotes>
+	  1. IRedisCachingProvider Support SearchKeysAsync.
+	</EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-      1. Fix removebyprefix when enable keyprefix.
-    </EasyCachingRedisPackageNotes>
+	  1. IRedisCachingProvider Support SearchKeysAsync.
+	</EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
       1. Upgrading dependencies.
     </EasyCachingSQLitePackageNotes>
@@ -37,8 +37,8 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingCSRedisPackageNotes>
+	  1. IRedisCachingProvider Support SearchKeysAsync.
+	</EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
     </EasyCachingCSRedisBusPackageNotes>

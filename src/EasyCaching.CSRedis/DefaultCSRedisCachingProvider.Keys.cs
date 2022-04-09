@@ -106,5 +106,22 @@
 
             return keys;
         }
+
+        public async Task<List<string>> SearchKeysAsync(string cacheKey, int? count)
+        {
+            var keys = new List<string>();
+
+            long nextCursor = 0;
+            do
+            {
+                var scanResult = await _cache.ScanAsync(nextCursor, cacheKey, count ?? 250);
+                nextCursor = scanResult.Cursor;
+                var items = scanResult.Items;
+                keys.AddRange(items);
+            }
+            while (nextCursor != 0);
+
+            return keys;
+        }
     }
 }
