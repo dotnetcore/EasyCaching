@@ -126,4 +126,87 @@ namespace EasyCaching.UnitTests
             Assert.Equal(EasyCachingConstValue.DefaultSerializerName, info3.Serializer.Name);
         }
     }
+
+    public class CSRedisCachingProviderWithKeyPrefixTest
+    {
+        private readonly IEasyCachingProviderFactory _providerFactory;
+
+        public CSRedisCachingProviderWithKeyPrefixTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(x =>
+            {
+                x.UseCSRedis(config =>
+                {
+                    config.DBConfig = new CSRedisDBOptions
+                    {
+                        ConnectionStrings = new System.Collections.Generic.List<string>
+                        {
+                            "127.0.0.1:6388,defaultDatabase=3,poolsize=10"
+                        }
+                    };
+
+                    config.SerializerName = "json";
+                }, "NotKeyPrefix");
+
+                x.UseCSRedis(config =>
+                {
+                    config.DBConfig = new CSRedisDBOptions
+                    {
+                        ConnectionStrings = new System.Collections.Generic.List<string>
+                        {
+                            "127.0.0.1:6388,defaultDatabase=3,poolsize=10,prefix=foo:"
+                        }
+                    };
+                    config.SerializerName = "json";
+
+                }, "WithKeyPrefix");
+
+              
+                x.WithJson("json");
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            _providerFactory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+        }
+
+        [Fact]
+        public void KeyPrefixTest()
+        {
+            var NotKeyPrefix = _providerFactory.GetCachingProvider("NotKeyPrefix");
+            var WithKeyPrefix = _providerFactory.GetCachingProvider("WithKeyPrefix");
+
+            WithKeyPrefix.Set("KeyPrefix", "ok", TimeSpan.FromSeconds(10));
+
+            var val1 = NotKeyPrefix.Get<string>("foo:" + "KeyPrefix");
+            var val2 = WithKeyPrefix.Get<string>("foo:" + "KeyPrefix");
+            Assert.NotEqual(val1.Value, val2.Value);
+
+            var val3 = WithKeyPrefix.Get<string>("KeyPrefix");
+            Assert.Equal(val1.Value, val3.Value);
+        }
+
+        [Fact]
+        public void RemoveByPrefixTest()
+        {
+            var WithKeyPrefix = _providerFactory.GetCachingProvider("WithKeyPrefix");
+
+            WithKeyPrefix.Set("KeyPrefix1", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("KeyPrefix2", "ok", TimeSpan.FromSeconds(10));
+
+            var val1 = WithKeyPrefix.Get<string>("KeyPrefix1");
+            var val2 = WithKeyPrefix.Get<string>("KeyPrefix2");
+
+            Assert.True(val1.HasValue);
+            Assert.True(val2.HasValue);
+            Assert.Equal(val1.Value, val2.Value);
+
+            WithKeyPrefix.RemoveByPrefix("Key");
+
+            var val3 = WithKeyPrefix.Get<string>("KeyPrefix1");
+            var val4 = WithKeyPrefix.Get<string>("KeyPrefix2");
+            Assert.False(val3.HasValue);
+            Assert.False(val4.HasValue);
+        }
+    }
 }
