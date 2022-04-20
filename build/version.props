@@ -12,7 +12,7 @@
 		<EasyCachingJsonPackageVersion>1.5.2</EasyCachingJsonPackageVersion>
 		<EasyCachingMessagePackPackageVersion>1.5.2</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>1.5.2</EasyCachingProtobufPackageVersion>
-		<EasyCachingCSRedisPackageVersion>1.5.2</EasyCachingCSRedisPackageVersion>
+		<EasyCachingCSRedisPackageVersion>1.5.3</EasyCachingCSRedisPackageVersion>
 		<EasyCachingRedisBusPackageVersion>1.5.2</EasyCachingRedisBusPackageVersion>
 		<EasyCachingCSRedisBusPackageVersion>1.5.2</EasyCachingCSRedisBusPackageVersion>
 		<EasyCachingRabbitBusPackageVersion>1.5.2</EasyCachingRabbitBusPackageVersion>

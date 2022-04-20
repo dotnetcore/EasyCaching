@@ -267,6 +267,9 @@
             if (!prefix.EndsWith("*", StringComparison.OrdinalIgnoreCase))
                 prefix = string.Concat(prefix, "*");
 
+            if (!string.IsNullOrWhiteSpace(_cache.Nodes?.Values?.FirstOrDefault()?.Prefix))
+                prefix = _cache.Nodes?.Values?.FirstOrDefault()?.Prefix + prefix;
+
             return prefix;
         }
 
@@ -288,6 +291,11 @@
                 keys.AddRange(items);
             }
             while (nextCursor != 0);
+
+            var prefix = _cache.Nodes?.Values?.FirstOrDefault()?.Prefix;
+
+            if (!string.IsNullOrWhiteSpace(prefix))
+                keys = keys.Select(x => x.Remove(0, prefix.Length)).ToList();
 
             return keys.Distinct().ToArray();
         }
