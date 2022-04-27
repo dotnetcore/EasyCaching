@@ -49,7 +49,7 @@ namespace EasyCaching.Redis
 
             services.Configure(_name, configure);
 
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>());
             services.AddSingleton<IRedisDatabaseProvider, RedisDatabaseProvider>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<RedisOptions>>();

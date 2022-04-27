@@ -48,7 +48,7 @@
                 return new InMemoryCaching(_name, options.DBConfig);
             });
 
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>());
             services.AddSingleton<IEasyCachingProvider, DefaultInMemoryCachingProvider>(x =>
             {
                 var mCache = x.GetServices<IInMemoryCaching>();

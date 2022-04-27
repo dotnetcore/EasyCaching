@@ -44,7 +44,7 @@
 
             services.Configure(_name, configure);
 
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>());
             services.AddSingleton<ISQLiteDatabaseProvider, SQLiteDatabaseProvider>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<SQLiteOptions>>();

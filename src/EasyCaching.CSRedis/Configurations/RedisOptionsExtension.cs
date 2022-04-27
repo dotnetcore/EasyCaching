@@ -52,7 +52,7 @@ using EasyCaching.CSRedis.DistributedLock;
 
             services.Configure(_name, _configure);
 
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>());
 
             services.AddSingleton<EasyCachingCSRedisClient>(x =>
             {

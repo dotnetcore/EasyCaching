@@ -47,7 +47,7 @@
 
             services.Configure(_name, configure);
 
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>());
             services.TryAddSingleton<IMemcachedKeyTransformer, DefaultKeyTransformer>();
             services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
             services.AddSingleton<EasyCachingTranscoder>(x =>

@@ -44,7 +44,7 @@
 
             services.Configure(_name, configure);
 
-            services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>());
             services.AddSingleton<ILiteDBDatabaseProvider, LiteDBDatabaseProvider>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<LiteDBOptions>>();
