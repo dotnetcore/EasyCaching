@@ -33,7 +33,7 @@ namespace EasyCaching.UnitTests
                         }
                     };
                     additionalSetup(options);
-                }).UseCSRedisLock());
+                }).UseCSRedisLock().WithJson(EasyCachingConstValue.DefaultCSRedisName));
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
@@ -91,18 +91,6 @@ namespace EasyCaching.UnitTests
 
                 }, "cs2");
 
-                option.UseCSRedis(config =>
-                {
-                    config.DBConfig = new CSRedisDBOptions
-                    {
-                        ConnectionStrings = new System.Collections.Generic.List<string>
-                        {
-                            "127.0.0.1:6388,defaultDatabase=3,poolsize=10"
-                        }
-                    };
-
-                }, "cs3");
-
                 option.WithJson("json").WithMessagePack("cs11").WithJson("cs2");
             });
 
@@ -115,15 +103,12 @@ namespace EasyCaching.UnitTests
         {
             var cs1 = _providerFactory.GetCachingProvider("cs1");
             var cs2 = _providerFactory.GetCachingProvider("cs2");
-            var cs3 = _providerFactory.GetCachingProvider("cs3");
 
             var info1 = cs1.GetProviderInfo();
             var info2 = cs2.GetProviderInfo();
-            var info3 = cs3.GetProviderInfo();
 
             Assert.Equal("cs11", info1.Serializer.Name);
             Assert.Equal("cs2", info2.Serializer.Name);
-            Assert.Equal(EasyCachingConstValue.DefaultSerializerName, info3.Serializer.Name);
         }
     }
 

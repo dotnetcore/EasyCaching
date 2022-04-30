@@ -22,7 +22,7 @@ namespace EasyCaching.UnitTests.DistributedLock
                         }
                     };
                 })
-                .UseRedisLock())
+                .UseRedisLock().WithJson(EasyCachingConstValue.DefaultRedisName))
             .BuildServiceProvider()
             .GetService<RedisLockFactory>();
 

@@ -21,7 +21,7 @@ namespace EasyCaching.UnitTests.DistributedLock
                         }
                     };
                 })
-                .UseCSRedisLock())
+                .UseCSRedisLock().WithJson(EasyCachingConstValue.DefaultCSRedisName))
             .BuildServiceProvider()
             .GetService<CSRedisLockFactory>();
 
