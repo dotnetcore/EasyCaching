@@ -98,16 +98,19 @@ namespace EasyCaching.Redis
             ArgumentCheck.NotNullAndCountGTZero(serializers, nameof(serializers));
 
             this._name = name;
-            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
+            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
+            if (this._dbProvider == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundCliExceptionMessage, _name));
+
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
 
-            this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
-                ? serializers.Single(x => x.Name.Equals(options.SerializerName))
-                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+            var serName = !string.IsNullOrWhiteSpace(options.SerializerName) ? options.SerializerName : _name;
+
+            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(serName));
+            if (this._serializer == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundSerExceptionMessage, serName));
 
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;

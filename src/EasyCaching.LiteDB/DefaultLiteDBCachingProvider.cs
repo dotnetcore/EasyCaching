@@ -52,7 +52,9 @@
             LiteDBOptions options,
            ILoggerFactory loggerFactory = null)
         {
-            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
+            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
+            if (this._dbProvider == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundCliExceptionMessage, _name));
+
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultLiteDBCachingProvider>();
             this._litedb = _dbProvider.GetConnection();

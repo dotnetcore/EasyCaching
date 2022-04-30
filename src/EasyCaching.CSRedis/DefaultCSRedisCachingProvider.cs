@@ -86,12 +86,15 @@
             this._name = name;
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultCSRedisCachingProvider>();
-            this._cache = clients.Single(x => x.Name.Equals(_name));
+            this._cache = clients.FirstOrDefault(x => x.Name.Equals(_name));
+
+            if (this._cache == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundCliExceptionMessage, _name));
+
             this._cacheStats = new CacheStats();
 
-            this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
-                ? serializers.Single(x => x.Name.Equals(options.SerializerName))
-                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+            var serName = !string.IsNullOrWhiteSpace(options.SerializerName) ? options.SerializerName : _name;
+            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(serName));
+            if (this._serializer == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundSerExceptionMessage, serName));
 
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;
