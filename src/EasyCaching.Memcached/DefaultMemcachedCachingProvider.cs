@@ -157,7 +157,11 @@ using EasyCaching.Memcached.DistributedLock;
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = ConvertFromStoredValue<T>(_memcachedClient.Get(this.HandleCacheKey(cacheKey)));
+            var data = _memcachedClient.PerformGet<T>(this.HandleCacheKey(cacheKey));
+
+            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
+
+            var result = ConvertFromStoredValue<T>(data.Value);
 
             if (result.HasValue)
             {
@@ -180,7 +184,9 @@ using EasyCaching.Memcached.DistributedLock;
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _memcachedClient.Remove(this.HandleCacheKey(cacheKey));
+            var data = _memcachedClient.ExecuteRemove(this.HandleCacheKey(cacheKey));
+
+            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
         }
 
         /// <summary>
@@ -203,11 +209,13 @@ using EasyCaching.Memcached.DistributedLock;
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            _memcachedClient.Store(
+            var data = _memcachedClient.ExecuteStore(
                 Enyim.Caching.Memcached.StoreMode.Set,
                 this.HandleCacheKey(cacheKey),
                 this.ConvertToStoredValue(cacheValue),
                 expiration);
+
+            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
         }
 
         /// <summary>
@@ -246,11 +254,14 @@ using EasyCaching.Memcached.DistributedLock;
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
-            _memcachedClient.Store(
-                Enyim.Caching.Memcached.StoreMode.Set,
-                this.HandleCacheKey(prefix),
-                newValue,
-                new TimeSpan(0, 0, 0));
+
+            var data = _memcachedClient.ExecuteStore(
+               Enyim.Caching.Memcached.StoreMode.Set,
+               this.HandleCacheKey(prefix),
+               newValue,
+               new TimeSpan(0, 0, 0));
+
+            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
         }
 
         /// <summary>

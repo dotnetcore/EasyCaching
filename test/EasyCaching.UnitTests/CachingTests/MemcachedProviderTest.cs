@@ -386,4 +386,39 @@
             Assert.Equal("mName", _provider.Name);
         }
     }
+
+    public class MemcachedProviderNoConnectionTest 
+    {
+        [Fact]
+        public void NoConnectionTest()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddLogging();
+            services.AddEasyCaching(option =>
+            {
+                option.UseMemcached(config =>
+                {
+                    config.DBConfig = new EasyCachingMemcachedClientOptions
+                    {
+                        Servers = new System.Collections.Generic.List<Enyim.Caching.Configuration.Server>
+                        {
+                            new Enyim.Caching.Configuration.Server() {Address = "123.123.123.123", Port = 45678 }
+                        },
+                        SocketPool = new Enyim.Caching.Configuration.SocketPoolOptions
+                        {
+                            ConnectionTimeout = TimeSpan.FromSeconds(2),
+                            DeadTimeout = TimeSpan.FromSeconds(2),
+                            ReceiveTimeout = TimeSpan.FromSeconds(2),
+                        }
+                    };
+                }, EasyCachingConstValue.DefaultMemcachedName);
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
+            var provider = factory.GetCachingProvider(EasyCachingConstValue.DefaultMemcachedName);
+
+            Assert.Throws<EasyCachingException>(() => provider.Get<string>("123123"));
+        }        
+    }
 }

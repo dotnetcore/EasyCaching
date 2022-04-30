@@ -78,7 +78,7 @@
             else
             {
                 OnCacheMiss(cacheKey);
-                return CacheValue<T>.NoValue;
+                throw new EasyCachingException($"opereation fail {result.Message}", result.Exception);
             }
         }
 
@@ -132,7 +132,8 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _memcachedClient.RemoveAsync(this.HandleCacheKey(cacheKey));
+            var data = await _memcachedClient.ExecuteRemoveAsync(this.HandleCacheKey(cacheKey));
+            if(!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
         }
 
         /// <summary>
@@ -199,6 +200,7 @@
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
+
             await _memcachedClient.StoreAsync(
                 Enyim.Caching.Memcached.StoreMode.Set, 
                 this.HandleCacheKey(prefix), 
