@@ -77,7 +77,9 @@ using EasyCaching.Memcached.DistributedLock;
             : base(factory, options)
         {
             this._name = name;
-            this._memcachedClient = memcachedClients.Single(x => x.Name.Equals(this._name));
+            this._memcachedClient = memcachedClients.FirstOrDefault(x => x.Name.Equals(this._name));
+            if (this._memcachedClient == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundCliExceptionMessage, _name));
+
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultMemcachedCachingProvider>();
             this._cacheStats = new CacheStats();
