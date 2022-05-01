@@ -78,7 +78,8 @@
             else
             {
                 OnCacheMiss(cacheKey);
-                throw new EasyCachingException($"opereation fail {result.Message}", result.Exception);
+                CheckResult(result);
+                return CacheValue<T>.NoValue;
             }
         }
 
@@ -133,7 +134,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             var data = await _memcachedClient.ExecuteRemoveAsync(this.HandleCacheKey(cacheKey));
-            if(!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
+            CheckResult(data);
         }
 
         /// <summary>

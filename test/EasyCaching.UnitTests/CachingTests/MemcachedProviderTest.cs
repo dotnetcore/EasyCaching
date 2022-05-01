@@ -390,7 +390,7 @@
     public class MemcachedProviderNoConnectionTest 
     {
         [Fact]
-        public void NoConnectionTest()
+        public async void NoConnectionTest()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddLogging();
@@ -419,6 +419,9 @@
             var provider = factory.GetCachingProvider(EasyCachingConstValue.DefaultMemcachedName);
 
             Assert.Throws<EasyCachingException>(() => provider.Get<string>("123123"));
+            await Assert.ThrowsAnyAsync<EasyCachingException>(() => provider.GetAsync<string>("123123"));
+            Assert.Throws<EasyCachingException>(() => provider.Remove("123123"));
+            await Assert.ThrowsAnyAsync<EasyCachingException>(() => provider.RemoveAsync("123123"));
         }        
     }
 }

@@ -2,7 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
-using EasyCaching.Memcached.DistributedLock;
+    using EasyCaching.Memcached.DistributedLock;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -157,9 +157,9 @@ using EasyCaching.Memcached.DistributedLock;
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var data = _memcachedClient.PerformGet<T>(this.HandleCacheKey(cacheKey));
+            var data = _memcachedClient.PerformGet<object>(this.HandleCacheKey(cacheKey));
 
-            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
+            CheckResult(data);
 
             var result = ConvertFromStoredValue<T>(data.Value);
 
@@ -186,7 +186,7 @@ using EasyCaching.Memcached.DistributedLock;
 
             var data = _memcachedClient.ExecuteRemove(this.HandleCacheKey(cacheKey));
 
-            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
+            CheckResult(data);
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ using EasyCaching.Memcached.DistributedLock;
                 this.ConvertToStoredValue(cacheValue),
                 expiration);
 
-            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
+            CheckResult(data);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ using EasyCaching.Memcached.DistributedLock;
                newValue,
                new TimeSpan(0, 0, 0));
 
-            if (!data.Success) throw new EasyCachingException($"opereation fail {data.Message}", data.Exception);
+            CheckResult(data);
         }
 
         /// <summary>
@@ -441,6 +441,14 @@ using EasyCaching.Memcached.DistributedLock;
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+        }
+
+        private void CheckResult(Enyim.Caching.Memcached.Results.IOperationResult data)
+        {
+            if (!data.Success 
+                && (!data.InnerResult?.Success ?? false) 
+                && (data.InnerResult?.Message?.Contains("Failed to create socket") ?? false))
+                throw new EasyCachingException($"opereation fail, {data.InnerResult?.Message ?? ""}", data.Exception);
         }
     }
 }
