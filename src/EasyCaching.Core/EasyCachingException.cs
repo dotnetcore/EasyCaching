@@ -8,6 +8,11 @@
             : base(message)
         {
         }
+
+        public EasyCachingException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
     }
 
     public class EasyCachingNotFoundException : Exception

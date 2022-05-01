@@ -2,7 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
-using EasyCaching.Memcached.DistributedLock;
+    using EasyCaching.Memcached.DistributedLock;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
@@ -157,7 +157,11 @@ using EasyCaching.Memcached.DistributedLock;
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = ConvertFromStoredValue<T>(_memcachedClient.Get(this.HandleCacheKey(cacheKey)));
+            var data = _memcachedClient.PerformGet<object>(this.HandleCacheKey(cacheKey));
+
+            CheckResult(data);
+
+            var result = ConvertFromStoredValue<T>(data.Value);
 
             if (result.HasValue)
             {
@@ -180,7 +184,9 @@ using EasyCaching.Memcached.DistributedLock;
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _memcachedClient.Remove(this.HandleCacheKey(cacheKey));
+            var data = _memcachedClient.ExecuteRemove(this.HandleCacheKey(cacheKey));
+
+            CheckResult(data);
         }
 
         /// <summary>
@@ -203,11 +209,13 @@ using EasyCaching.Memcached.DistributedLock;
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            _memcachedClient.Store(
+            var data = _memcachedClient.ExecuteStore(
                 Enyim.Caching.Memcached.StoreMode.Set,
                 this.HandleCacheKey(cacheKey),
                 this.ConvertToStoredValue(cacheValue),
                 expiration);
+
+            CheckResult(data);
         }
 
         /// <summary>
@@ -246,11 +254,14 @@ using EasyCaching.Memcached.DistributedLock;
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
-            _memcachedClient.Store(
-                Enyim.Caching.Memcached.StoreMode.Set,
-                this.HandleCacheKey(prefix),
-                newValue,
-                new TimeSpan(0, 0, 0));
+
+            var data = _memcachedClient.ExecuteStore(
+               Enyim.Caching.Memcached.StoreMode.Set,
+               this.HandleCacheKey(prefix),
+               newValue,
+               new TimeSpan(0, 0, 0));
+
+            CheckResult(data);
         }
 
         /// <summary>
@@ -430,6 +441,14 @@ using EasyCaching.Memcached.DistributedLock;
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
+        }
+
+        private void CheckResult(Enyim.Caching.Memcached.Results.IOperationResult data)
+        {
+            if (!data.Success 
+                && (!data.InnerResult?.Success ?? false) 
+                && (data.InnerResult?.Message?.Contains("Failed to create socket") ?? false))
+                throw new EasyCachingException($"opereation fail, {data.InnerResult?.Message ?? ""}", data.Exception);
         }
     }
 }
