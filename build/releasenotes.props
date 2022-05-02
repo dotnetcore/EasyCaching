@@ -2,12 +2,16 @@
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
 	  1. IRedisCachingProvider Support SearchKeysAsync.
+    2. IRedisCachingProvider Support ZRangeByScore/ZRangeByScoreAsync.
 	</EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
       1. Upgrading dependencies.
+      2. Throw exception when can not connect to server
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-	  1. IRedisCachingProvider Support SearchKeysAsync.
+	  1. IRedisCachingProvider Support SearchKeysAsync/ZRangeByScore/ZRangeByScoreAsync.
+    2. Make clear exception message when serializer not match or notfound.
+    3. Upgrading dependencies.
 	</EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
       1. Upgrading dependencies.
@@ -37,7 +41,9 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-	  1. Fix prefix issue.
+	  1. IRedisCachingProvider Support SearchKeysAsync/ZRangeByScore/ZRangeByScoreAsync.
+    2. Make clear exception message when serializer not match or notfound.
+    3. Upgrading dependencies.
 	</EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
@@ -46,7 +52,7 @@
       1. Upgrading dependencies.
     </EasyCachingRedisBusPackageNotes>
     <EasyCachingRabbitBusPackageNotes>
-	  1. Allow user to define client provided name.
+	  1. Upgrading dependencies.
 	</EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
       1. Upgrading dependencies.
