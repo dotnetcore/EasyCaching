@@ -35,7 +35,7 @@
 		<ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="protobuf-net" Version="3.0.101" />
+		<PackageReference Include="protobuf-net" Version="3.1.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Configurations\" />
