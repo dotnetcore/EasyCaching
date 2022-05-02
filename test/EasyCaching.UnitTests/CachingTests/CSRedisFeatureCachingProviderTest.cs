@@ -12,6 +12,7 @@
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(option =>
             {
+                option.WithJson("ser");
                 option.UseCSRedis(config =>
                 {
                     config.DBConfig = new CSRedisDBOptions
@@ -21,6 +22,7 @@
                             "127.0.0.1:6388,defaultDatabase=10,poolsize=10"
                         }
                     };
+                    config.SerializerName = "ser";
                 });
             });
 

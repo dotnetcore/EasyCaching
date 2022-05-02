@@ -16,6 +16,7 @@
 		<RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
 		<ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
 		<PackageIcon>nuget-icon.png</PackageIcon>
+		<LangVersion>latest</LangVersion>
 		<PackageReleaseNotes>
 			$(EasyCachingRedisPackageNotes)
 		</PackageReleaseNotes>
@@ -32,7 +33,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="StackExchange.Redis" Version="2.2.88" />
+		<PackageReference Include="StackExchange.Redis" Version="2.5.43" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />

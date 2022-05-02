@@ -103,5 +103,9 @@
         /// The LiteDB Bus section.
         /// </summary>
         public const string LiteDBSection= "easycaching:litedb";
+
+        public const string NotFoundCliExceptionMessage = "Can not find the matched client instance, client name is {0}";
+
+        public const string NotFoundSerExceptionMessage = "Can not find the matched serializer instance, serializer name is {0}";
     }
 }

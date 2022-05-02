@@ -49,7 +49,7 @@
                 {
                     config.DBConfig.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
                     config.DBConfig.Database = 5;
-                }, "myredis");
+                }, "myredis").WithJson("myredis");
 
                 option.UseHybrid(config =>
                 {
@@ -63,6 +63,7 @@
                 {
                     config.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
                     config.Database = 6;
+                    config.SerializerName = "myredis";
                 });
             });
 

@@ -32,7 +32,7 @@ namespace EasyCaching.UnitTests
                     options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 5;
                     additionalSetup(options);
-                }, ProviderName).UseRedisLock());
+                }, ProviderName).UseRedisLock().WithJson(ProviderName));
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
         }
@@ -49,7 +49,7 @@ namespace EasyCaching.UnitTests
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
                 x.UseRedis(options => { options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380)); },
-                    ProviderName)
+                    ProviderName).WithJson(ProviderName)
             );
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var factory = serviceProvider.GetRequiredService<IEasyCachingProviderFactory>();
@@ -88,7 +88,7 @@ namespace EasyCaching.UnitTests
                 x.UseRedis(options =>
                 {
                     options.DBConfig.Configuration = "127.0.0.1:6380,allowAdmin=false,defaultdatabase=8";
-                }));
+                }, ProviderName).WithJson(ProviderName));
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var dbProvider = serviceProvider.GetService<IRedisDatabaseProvider>();
             Assert.NotNull(dbProvider);
@@ -122,6 +122,8 @@ namespace EasyCaching.UnitTests
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
             {
+                x.WithJson("ser");
+
                 x.UseRedis(options =>
                 {
                     options.DBConfig = new RedisDBOptions
@@ -130,6 +132,7 @@ namespace EasyCaching.UnitTests
                     };
                     options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 3;
+                    options.SerializerName = "ser";
                 });
 
 
@@ -141,6 +144,7 @@ namespace EasyCaching.UnitTests
                     };
                     options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 4;
+                    options.SerializerName = "ser";
                 }, SECOND_PROVIDER_NAME);
             });
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -183,16 +187,6 @@ namespace EasyCaching.UnitTests
                     options.DBConfig.Database = 14;
                 }, "se2");
 
-                x.UseRedis(options =>
-                {
-                    options.DBConfig = new RedisDBOptions
-                    {
-                        AllowAdmin = true
-                    };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                    options.DBConfig.Database = 11;
-                }, "se3");
-
                 x.WithJson("json").WithMessagePack("cs11").WithJson("se2");
             });
 
@@ -205,15 +199,12 @@ namespace EasyCaching.UnitTests
         {
             var se1 = _providerFactory.GetCachingProvider("se1");
             var se2 = _providerFactory.GetCachingProvider("se2");
-            var se3 = _providerFactory.GetCachingProvider("se3");
 
             var info1 = se1.GetProviderInfo();
             var info2 = se2.GetProviderInfo();
-            var info3 = se3.GetProviderInfo();
 
             Assert.Equal("cs11", info1.Serializer.Name);
             Assert.Equal("se2", info2.Serializer.Name);
-            Assert.Equal(EasyCachingConstValue.DefaultSerializerName, info3.Serializer.Name);
         }
     }
 

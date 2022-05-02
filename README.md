@@ -11,7 +11,7 @@ EasyCaching is an open source caching library that contains basic usages and som
 
 | Platform | Build Server | Master Status  | Dev Status  |
 |--------- |------------- |---------|---------|
-| Github Action   | Linux/Windows | [![Build&Test](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml) |    [![Build&Test](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/dotnetcore/EasyCaching/actions/workflows/build.yml) |
+| Github Action   | Linux/Windows | [![Build&Test](https://github.com/dotnetcore/EasyCaching/actions/workflows/buildandtest.yml/badge.svg)](https://github.com/dotnetcore/EasyCaching/actions/workflows/buildandtest.yml) |    [![Build&Test](https://github.com/dotnetcore/EasyCaching/actions/workflows/buildandtest.yml/badge.svg)](https://github.com/dotnetcore/EasyCaching/actions/workflows/buildandtest.yml) |
 
 ## Nuget Packages
 
@@ -159,10 +159,6 @@ See [ToDo List](docs/ToDoList.md)
 ## Contributing
 
 Pull requests, issues and commentary! 
-
-Also can join our QQ group.
-
-![](media/qqgroup.jpg?raw=true)
 
 ## License
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fdotnetcore%2FEasyCaching.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fdotnetcore%2FEasyCaching?ref=badge_large)

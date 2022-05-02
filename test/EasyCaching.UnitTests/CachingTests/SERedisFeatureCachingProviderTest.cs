@@ -25,7 +25,7 @@
                     };
                     config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     config.DBConfig.Database = 10;
-                });
+                }).WithJson(EasyCachingConstValue.DefaultRedisName);
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
