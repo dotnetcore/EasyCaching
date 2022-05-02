@@ -70,6 +70,22 @@
             return list;
         }
 
+        public List<T> ZRangeByScore<T>(string cacheKey, double min, double max, long? count = null, long offset = 0)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var list = new List<T>();
+
+            var bytes = _cache.ZRangeByScore<byte[]>(cacheKey, (decimal)min, (decimal)max, count, offset);
+
+            foreach (var item in bytes)
+            {
+                list.Add(_serializer.Deserialize<T>(item));
+            }
+
+            return list;
+        }
+
         public long? ZRank<T>(string cacheKey, T cacheValue)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -166,6 +182,22 @@
             var list = new List<T>();
 
             var bytes = await _cache.ZRangeAsync<byte[]>(cacheKey, start, stop);
+
+            foreach (var item in bytes)
+            {
+                list.Add(_serializer.Deserialize<T>(item));
+            }
+
+            return list;
+        }
+
+        public async Task<List<T>> ZRangeByScoreAsync<T>(string cacheKey, double min, double max, long? count = null, long offset = 0)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var list = new List<T>();
+
+            var bytes = await _cache.ZRangeByScoreAsync<byte[]>(cacheKey, (decimal)min, (decimal)max, count, offset);
 
             foreach (var item in bytes)
             {

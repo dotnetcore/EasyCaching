@@ -730,6 +730,17 @@
         /// <returns></returns>
         List<T> ZRange<T>(string cacheKey, long start, long stop);
         /// <summary>
+        /// https://redis.io/commands/zrangebyscore/        
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheKey"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="count"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        List<T> ZRangeByScore<T>(string cacheKey, double min, double max, long? count = null, long offset = 0);
+        /// <summary>
         /// https://redis.io/commands/zrank
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -800,6 +811,17 @@
         /// <param name="stop"></param>
         /// <returns></returns>
         Task<List<T>> ZRangeAsync<T>(string cacheKey, long start, long stop);
+        /// <summary>
+        /// https://redis.io/commands/zrangebyscore/        
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="cacheKey"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <param name="count"></param>
+        /// <param name="offset"></param>
+        /// <returns></returns>
+        Task<List<T>> ZRangeByScoreAsync<T>(string cacheKey, double min, double max, long? count = null, long offset = 0);
         /// <summary>
         /// https://redis.io/commands/zrank
         /// </summary>
