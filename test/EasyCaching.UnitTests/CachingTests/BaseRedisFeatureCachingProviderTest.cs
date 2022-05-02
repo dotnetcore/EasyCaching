@@ -1616,6 +1616,58 @@
         }
         #endregion
 
+        #region Sorted Set
+        [Fact]
+        protected virtual void ZRangeByScore_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var dict = new Dictionary<string, double>()
+            {
+                { "one", 1},
+                { "two", 2},
+                { "three", 3},
+            };
+
+            var res = _provider.ZAdd(cacheKey, dict);
+
+            Assert.Equal(3, res);
+
+            var items = _provider.ZRangeByScore<string>(cacheKey, 1, 2, 10, 0);
+
+            Assert.Equal(2, items.Count);
+            Assert.Contains("one", items);
+            Assert.Contains("two", items);
+
+            _baseProvider.Remove(cacheKey);
+        }
+
+        [Fact]
+        protected virtual async void ZRangeByScoreAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var dict = new Dictionary<string, double>()
+            {
+                { "one", 1},
+                { "two", 2},
+                { "three", 3},
+            };
+
+            var res = await _provider.ZAddAsync(cacheKey, dict);
+
+            Assert.Equal(3, res);
+
+            var items = await _provider.ZRangeByScoreAsync<string>(cacheKey, 1, 2);
+
+            Assert.Equal(2, items.Count);
+            Assert.Contains("one", items);
+            Assert.Contains("two", items);
+
+            _baseProvider.Remove(cacheKey);
+        } 
+        #endregion
+
         #region Hyperloglog             
         [Fact]
         protected virtual void PfAdd_Should_Succeed()
