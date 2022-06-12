@@ -19,6 +19,7 @@ Install-Package EasyCaching.HybridCache
 Install-Package EasyCaching.InMemory
 Install-Package EasyCaching.Redis
 Install-Package EasyCaching.Bus.Redis
+Install-Package EasyCaching.Serialization.Json
 ```
 
 ## 2. Config in Startup class
@@ -41,7 +42,7 @@ public class Startup
             // distributed
             option.UseRedis(config =>
             {
-                config.DBConfig.Endpoints.Add(new Core.Configurations.ServerEndPoint("127.0.0.1", 6379));
+                config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
                 config.DBConfig.Database = 5;
                 config.SerializerName = "myjson";
             }, "myredis");
