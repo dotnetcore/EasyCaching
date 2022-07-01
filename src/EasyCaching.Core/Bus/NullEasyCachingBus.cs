@@ -26,7 +26,7 @@
         /// <see cref="T:EasyCaching.Core.Bus.NullEasyCachingBus"/> so the garbage collector can reclaim the memory that
         /// the <see cref="T:EasyCaching.Core.Bus.NullEasyCachingBus"/> was occupying.</remarks>
         public void Dispose() { }
-               
+
         /// <summary>
         /// Publish the specified topic and message.
         /// </summary>
@@ -54,7 +54,8 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="action">Action.</param>
-        public void Subscribe(string topic, Action<EasyCachingMessage> action)
+        /// <param name="reconnectAction">Reconnect Action.</param>
+        public void Subscribe(string topic, Action<EasyCachingMessage> action, Action reconnectAction = null)
         {
 
         }
