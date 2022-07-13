@@ -31,36 +31,68 @@
                 //use memory cache
                 option.UseInMemory("cus");
 
+                ////use redis cache
+                //option.UseRedis(config =>
+                //{
+                //    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                //    config.DBConfig.SyncTimeout = 10000;
+                //    config.DBConfig.AsyncTimeout = 10000;
+                //    config.SerializerName = "mymsgpack";
+                //}, "redis1")
+                //.WithMessagePack("mymsgpack")//with messagepack serialization
+                //;
+
+                ////use redis cache
+                //option.UseRedis(config =>
+                //{
+                //    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
+                //}, "redis2");
+
+                ////use sqlite cache
+                //option.UseSQLite(config =>
+                //{
+                //    config.DBConfig = new SQLiteDBOptions { FileName = "my.db" };
+                //});
+
+                ////use memcached cached
+                //option.UseMemcached(config =>
+                //{
+                //    config.DBConfig.AddServer("127.0.0.1", 11211);
+                //});
+
+                //option.UseMemcached(Configuration);
+
+                //kafka bus
                 //use redis cache
                 option.UseRedis(config =>
                 {
-                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                    config.DBConfig.Endpoints.Add(new ServerEndPoint("192.168.99.100", 6379));
                     config.DBConfig.SyncTimeout = 10000;
                     config.DBConfig.AsyncTimeout = 10000;
                     config.SerializerName = "mymsgpack";
-                }, "redis1")
+                }, "myredis")
                 .WithMessagePack("mymsgpack")//with messagepack serialization
                 ;
 
-                //use redis cache
-                option.UseRedis(config =>
+                //  使用hybird
+                option.UseHybrid(config =>
                 {
-                    config.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
-                }, "redis2");
-
-                //use sqlite cache
-                option.UseSQLite(config =>
-                {
-                    config.DBConfig = new SQLiteDBOptions { FileName = "my.db" };
+                    config.EnableLogging = false;
+                    // 缓存总线的订阅主题
+                    config.TopicName = "MyTestBusTp";
+                    // 本地缓存的名字
+                    config.LocalCacheProviderName = "cus";
+                    // 分布式缓存的名字
+                    config.DistributedCacheProviderName = "myredis";
                 });
 
-                //use memcached cached
-                option.UseMemcached(config =>
-                {
-                    config.DBConfig.AddServer("127.0.0.1", 11211);
+                //读取配置文件的
+                //option.WithConfluentKafkaBus(Configuration);
+                //直接配置
+                option.WithConfluentKafkaBus(x => {
+                    x.BootstrapServers = "192.168.99.100:9093";
+                    x.GroupId = "MyGroupId";
                 });
-
-                option.UseMemcached(Configuration);
             });
         }
 
