@@ -1,5 +1,6 @@
 ﻿namespace Microsoft.Extensions.DependencyInjection
 {
+    using Confluent.Kafka;
     using EasyCaching.Bus.ConfluentKafka;
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
@@ -29,13 +30,14 @@
             void kafkaBusConfigure(ConfluentKafkaBusOptions x)
             {
                 x.BootstrapServers = kafkaOptions.BootstrapServers;
-                x.ProducerConfig = kafkaOptions.ProducerConfig ?? new Confluent.Kafka.ProducerConfig();
-                x.ConsumerConfig = kafkaOptions.ConsumerConfig ?? new Confluent.Kafka.ConsumerConfig();
+                x.ProducerConfig = kafkaOptions.ProducerConfig ?? new ProducerConfig();
+                x.ConsumerConfig = kafkaOptions.ConsumerConfig ?? new ConsumerConfig();
                 //address
                 x.ProducerConfig.BootstrapServers = x.ProducerConfig.BootstrapServers ?? kafkaOptions.BootstrapServers;
                 x.ConsumerConfig.BootstrapServers = x.ConsumerConfig.BootstrapServers ?? kafkaOptions.BootstrapServers;
                 //consumer groupId
                 x.ConsumerConfig.GroupId = x.ConsumerConfig.GroupId ?? kafkaOptions.GroupId;
+                x.ConsumerConfig.AutoOffsetReset = kafkaOptions.ConsumerConfig.AutoOffsetReset ?? AutoOffsetReset.Latest;
             }
 
             options.RegisterExtension(new ConfluentKafkaOptionsExtension(kafkaBusConfigure));
@@ -62,13 +64,14 @@
             void configure(ConfluentKafkaBusOptions x)
             {
                 x.BootstrapServers = kafkaOptions.BootstrapServers;
-                x.ProducerConfig = kafkaOptions.ProducerConfig ?? new Confluent.Kafka.ProducerConfig();
-                x.ConsumerConfig = kafkaOptions.ConsumerConfig ?? new Confluent.Kafka.ConsumerConfig();
+                x.ProducerConfig = kafkaOptions.ProducerConfig ?? new ProducerConfig();
+                x.ConsumerConfig = kafkaOptions.ConsumerConfig ?? new ConsumerConfig();
                 //address
                 x.ProducerConfig.BootstrapServers = x.ProducerConfig.BootstrapServers ?? kafkaOptions.BootstrapServers;
                 x.ConsumerConfig.BootstrapServers = x.ConsumerConfig.BootstrapServers ?? kafkaOptions.BootstrapServers;
                 //consumer groupId
                 x.ConsumerConfig.GroupId = x.ConsumerConfig.GroupId ?? kafkaOptions.GroupId;
+                x.ConsumerConfig.AutoOffsetReset = kafkaOptions.ConsumerConfig.AutoOffsetReset ?? AutoOffsetReset.Latest;
             }
 
             options.RegisterExtension(new ConfluentKafkaOptionsExtension(configure));

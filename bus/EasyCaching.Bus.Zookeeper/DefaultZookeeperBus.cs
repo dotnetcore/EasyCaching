@@ -80,10 +80,6 @@
                 {
                     await zookeeperClient.CreateRecursiveAsync(path, null,ZooDefs.Ids.OPEN_ACL_UNSAFE);
                 }
-                //if (!zkSubscribeWatchers.ContainsKey(path))
-                //{
-                //    await zookeeperClient.SubscribeDataChangeAsync(path, SubscribeDataChange);
-                //}
                 await zookeeperClient.SetDataAsync(path, msg);
             }).ConfigureAwait(false).GetAwaiter().GetResult();          
         }
@@ -104,11 +100,6 @@
             {
                 await zookeeperClient.CreateRecursiveAsync(path, null, ZooDefs.Ids.OPEN_ACL_UNSAFE);
             }
-            //if (!zkSubscribeWatchers.ContainsKey(topic))
-            //{
-            //    await zookeeperClient.SubscribeDataChangeAsync(path, SubscribeDataChange);
-            //}
-
             await zookeeperClient.SetDataAsync(path, msg);
         }
 

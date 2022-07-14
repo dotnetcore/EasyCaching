@@ -35,9 +35,9 @@
                 .Configure(_zkBusOptions);
 
 
-            var options = services.BuildServiceProvider()
-                 .GetRequiredService<IOptions<ZkBusOptions>>()
-                 .Value;
+            //var options = services.BuildServiceProvider()
+            //     .GetRequiredService<IOptions<ZkBusOptions>>()
+            //     .Value;
 
             services.AddSingleton<IZookeeperClientFactory, DefaultZookeeperClientFactory>();
             services.AddSingleton<IEasyCachingBus, DefaultZookeeperBus>();

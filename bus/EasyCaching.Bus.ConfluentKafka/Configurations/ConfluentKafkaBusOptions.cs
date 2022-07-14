@@ -26,6 +26,7 @@ namespace EasyCaching.Bus.ConfluentKafka
         /// <summary>
         /// kafka bus consumer options with consumer groupId
         /// (if ConsumerConfig below has give GroupId value , this options can ignore)
+        /// import:if application is cluster,you should set this different value  in application,this will make consumer can consumerdata
         /// </summary>
         public string GroupId { get; set; }
 
