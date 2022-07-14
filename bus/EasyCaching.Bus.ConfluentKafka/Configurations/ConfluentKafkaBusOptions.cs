@@ -24,7 +24,8 @@ namespace EasyCaching.Bus.ConfluentKafka
         public ConsumerConfig ConsumerConfig { get; set; }
 
         /// <summary>
-        /// kafka bus consumer options with consumer groupId(if ConsumerConfig has give GroupId value , this options can ignore)
+        /// kafka bus consumer options with consumer groupId
+        /// (if ConsumerConfig below has give GroupId value , this options can ignore)
         /// </summary>
         public string GroupId { get; set; }
 

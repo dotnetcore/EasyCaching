@@ -60,6 +60,11 @@
         /// </summary>
         public const string KafkaBusSection = "easycaching:kafkabus";
 
+        /// <summary>
+        /// The zookeeper bus section.
+        /// </summary>
+        public const string ZookeeperBusSection = "easycaching:zookeeperbus";
+
 
         /// <summary>
         /// The default name of the in-memory.

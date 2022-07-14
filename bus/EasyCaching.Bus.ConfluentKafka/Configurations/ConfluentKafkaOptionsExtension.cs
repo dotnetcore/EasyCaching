@@ -6,7 +6,6 @@
     using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Options;
 
     /// <summary>
     /// Kafka options extension.
@@ -35,9 +34,9 @@
                 .Configure(_confluentKafkaBusOptions);
 
 
-            var options = services.BuildServiceProvider()
-                 .GetRequiredService<IOptions<ConfluentKafkaBusOptions>>()
-                 .Value;
+            //var options = services.BuildServiceProvider()
+            //     .GetRequiredService<IOptions<ConfluentKafkaBusOptions>>()
+            //     .Value;
 
             services.AddSingleton<IEasyCachingBus, DefaultConfluentKafkaBus>();
 
