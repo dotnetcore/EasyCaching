@@ -78,6 +78,7 @@
             else
             {
                 OnCacheMiss(cacheKey);
+                CheckResult(result);
                 return CacheValue<T>.NoValue;
             }
         }
@@ -132,7 +133,8 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _memcachedClient.RemoveAsync(this.HandleCacheKey(cacheKey));
+            var data = await _memcachedClient.ExecuteRemoveAsync(this.HandleCacheKey(cacheKey));
+            CheckResult(data);
         }
 
         /// <summary>
@@ -199,6 +201,7 @@
             {
                 newValue = string.Concat(newValue, new Random().Next(9).ToString());
             }
+
             await _memcachedClient.StoreAsync(
                 Enyim.Caching.Memcached.StoreMode.Set, 
                 this.HandleCacheKey(prefix), 

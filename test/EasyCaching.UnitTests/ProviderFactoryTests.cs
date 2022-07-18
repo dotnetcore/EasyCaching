@@ -25,6 +25,8 @@
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(option =>
             {
+                option.WithJson("redis1");
+                option.WithJson("redis2");
                 option.UseRedis(config =>
                 {
                     config.DBConfig = new RedisDBOptions

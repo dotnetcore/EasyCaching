@@ -98,16 +98,19 @@ namespace EasyCaching.Redis
             ArgumentCheck.NotNullAndCountGTZero(serializers, nameof(serializers));
 
             this._name = name;
-            this._dbProvider = dbProviders.Single(x => x.DBProviderName.Equals(name));
+            this._dbProvider = dbProviders.FirstOrDefault(x => x.DBProviderName.Equals(name));
+            if (this._dbProvider == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundCliExceptionMessage, _name));
+
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultRedisCachingProvider>();
             this._cache = _dbProvider.GetDatabase();
             this._servers = _dbProvider.GetServerList();
             this._cacheStats = new CacheStats();
 
-            this._serializer = !string.IsNullOrWhiteSpace(options.SerializerName)
-                ? serializers.Single(x => x.Name.Equals(options.SerializerName))
-                : serializers.FirstOrDefault(x => x.Name.Equals(_name)) ?? serializers.Single(x => x.Name.Equals(EasyCachingConstValue.DefaultSerializerName));
+            var serName = !string.IsNullOrWhiteSpace(options.SerializerName) ? options.SerializerName : _name;
+
+            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(serName));
+            if (this._serializer == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundSerExceptionMessage, serName));
 
             this.ProviderName = this._name;
             this.ProviderType = CachingProviderType.Redis;
@@ -304,6 +307,11 @@ namespace EasyCaching.Redis
                 // from this redis dev specification, https://yq.aliyun.com/articles/531067 , maybe the appropriate scope is 100~500, using 200 here.
                 keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database, pageSize: 200));
 
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                keys = keys.Select(x => new RedisKey(
+                        x.ToString().Remove(0, _options.DBConfig.KeyPrefix.Length)))
+                    .ToList();
+
             return keys.Distinct().ToArray();
 
             //var keys = new HashSet<RedisKey>();
@@ -342,6 +350,9 @@ namespace EasyCaching.Redis
             // End with *
             if (!prefix.EndsWith("*", StringComparison.OrdinalIgnoreCase))
                 prefix = string.Concat(prefix, "*");
+
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                prefix = _options.DBConfig.KeyPrefix + prefix;
 
             return prefix;
         }

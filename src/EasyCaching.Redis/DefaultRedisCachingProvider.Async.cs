@@ -366,7 +366,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             var timeSpan = await _cache.KeyTimeToLiveAsync(cacheKey);
-            return timeSpan.HasValue ? timeSpan.Value : TimeSpan.Zero;
+            return timeSpan ?? TimeSpan.Zero;
         }
     }
 }
