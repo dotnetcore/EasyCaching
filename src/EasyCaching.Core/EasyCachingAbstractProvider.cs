@@ -6,6 +6,7 @@ namespace EasyCaching.Core
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.Diagnostics;
@@ -43,35 +44,35 @@ namespace EasyCaching.Core
 
         public abstract object BaseGetDatabse();
         public abstract bool BaseExists(string cacheKey);
-        public abstract Task<bool> BaseExistsAsync(string cacheKey);
+        public abstract Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default);
         public abstract void BaseFlush();
-        public abstract Task BaseFlushAsync();
+        public abstract Task BaseFlushAsync(CancellationToken cancellationToken = default);
         public abstract CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration);
         public abstract CacheValue<T> BaseGet<T>(string cacheKey);
         public abstract IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys);
-        public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys);
-        public abstract Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration);
-        public abstract Task<object> BaseGetAsync(string cacheKey, Type type);
-        public abstract Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey);
+        public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default);
+        public abstract Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default);
+        public abstract Task<object> BaseGetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default);
+        public abstract Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, CancellationToken cancellationToken = default);
         public abstract IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix);
-        public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix);
+        public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default);
         public abstract int BaseGetCount(string prefix = "");
-        public abstract Task<int> BaseGetCountAsync(string prefix = "");
+        public abstract Task<int> BaseGetCountAsync(string prefix = "", CancellationToken cancellationToken = default);
         public abstract void BaseRemove(string cacheKey);
         public abstract void BaseRemoveAll(IEnumerable<string> cacheKeys);
-        public abstract Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys);
-        public abstract Task BaseRemoveAsync(string cacheKey);
+        public abstract Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellation = default);
+        public abstract Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken = default);
         public abstract void BaseRemoveByPrefix(string prefix);
-        public abstract Task BaseRemoveByPrefixAsync(string prefix);
+        public abstract Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
         public abstract void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration);
         public abstract void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration);
-        public abstract Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration);
-        public abstract Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
+        public abstract Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default);
+        public abstract Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default);
         public abstract bool BaseTrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration);
-        public abstract Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
+        public abstract Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default);
 
         public abstract TimeSpan BaseGetExpiration(string cacheKey);
-        public abstract Task<TimeSpan> BaseGetExpirationAsync(string cacheKey);
+        public abstract Task<TimeSpan> BaseGetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default);
         public abstract ProviderInfo BaseGetProviderInfo();
 
         public bool Exists(string cacheKey)
@@ -100,13 +101,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task<bool> ExistsAsync(string cacheKey)
+        public async Task<bool> ExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteExistsCacheBefore(new BeforeExistsRequestEventData(CachingProviderType.ToString(), Name, nameof(ExistsAsync), cacheKey));
             Exception e = null;
             try
             {
-                var flag = await BaseExistsAsync(cacheKey);
+                var flag = await BaseExistsAsync(cacheKey, cancellationToken);
                 return flag;
             }
             catch (Exception ex)
@@ -153,13 +154,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task FlushAsync()
+        public async Task FlushAsync(CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteFlushCacheBefore(new EventData(CachingProviderType.ToString(), Name, nameof(FlushAsync)));
             Exception e = null;
             try
             {
-                await BaseFlushAsync();
+                await BaseFlushAsync(cancellationToken);
             }
             catch (Exception ex)
             {
@@ -280,13 +281,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllAsync), cacheKeys.ToArray()));
             Exception e = null;
             try
             {
-                return await BaseGetAllAsync<T>(cacheKeys);
+                return await BaseGetAllAsync<T>(cacheKeys, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -306,13 +307,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAsync), new[] { cacheKey }, expiration));
             Exception e = null;
             try
             {
-                if (_lockFactory == null) return await BaseGetAsync<T>(cacheKey, dataRetriever, expiration);
+                if (_lockFactory == null) return await BaseGetAsync<T>(cacheKey, dataRetriever, expiration, cancellationToken);
 
                 var value = await BaseGetAsync<T>(cacheKey);
                 if (value.HasValue) return value;
@@ -322,7 +323,7 @@ namespace EasyCaching.Core
                 {
                     if (!await @lock.LockAsync(_options.SleepMs)) throw new TimeoutException();
 
-                    value = await BaseGetAsync<T>(cacheKey);
+                    value = await BaseGetAsync<T>(cacheKey, cancellationToken);
                     if (value.HasValue) return value;
 
                     var task = dataRetriever();
@@ -333,7 +334,7 @@ namespace EasyCaching.Core
                     var item = await task;
                     if (item != null || _options.CacheNulls)
                     {
-                        await BaseSetAsync(cacheKey, item, expiration);
+                        await BaseSetAsync(cacheKey, item, expiration, cancellationToken);
 
                         return new CacheValue<T>(item, true);
                     }
@@ -365,13 +366,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task<object> GetAsync(string cacheKey, Type type)
+        public async Task<object> GetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, "GetAsync_Type", new[] { cacheKey }));
             Exception e = null;
             try
             {
-                return await BaseGetAsync(cacheKey, type);
+                return await BaseGetAsync(cacheKey, type, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -391,13 +392,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey)
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAsync), new[] { cacheKey }));
             Exception e = null;
             try
             {
-                return await BaseGetAsync<T>(cacheKey);
+                return await BaseGetAsync<T>(cacheKey, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -443,13 +444,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix)
+        public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetByPrefixAsync), new[] { prefix }));
             Exception e = null;
             try
             {
-                return await BaseGetByPrefixAsync<T>(prefix);
+                return await BaseGetByPrefixAsync<T>(prefix, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -474,9 +475,9 @@ namespace EasyCaching.Core
             return BaseGetCount(prefix);
         }
 
-        public async Task<int> GetCountAsync(string prefix = "")
+        public async Task<int> GetCountAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
-            return await BaseGetCountAsync(prefix);
+            return await BaseGetCountAsync(prefix, cancellationToken);
         }
 
         public void Remove(string cacheKey)
@@ -531,13 +532,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveAllAsync), cacheKeys.ToArray()));
             Exception e = null;
             try
             {
-                await BaseRemoveAllAsync(cacheKeys);
+                await BaseRemoveAllAsync(cacheKeys, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -557,13 +558,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task RemoveAsync(string cacheKey)
+        public async Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveAsync), new[] { cacheKey }));
             Exception e = null;
             try
             {
-                await BaseRemoveAsync(cacheKey);
+                await BaseRemoveAsync(cacheKey, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -609,13 +610,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task RemoveByPrefixAsync(string prefix)
+        public async Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPrefixAsync), new[] { prefix }));
             Exception e = null;
             try
             {
-                await BaseRemoveByPrefixAsync(prefix);
+                await BaseRemoveByPrefixAsync(prefix, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -687,13 +688,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration)
+        public async Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(SetAllAsync), value.ToDictionary(k => k.Key, v => (object)v.Value), expiration));
             Exception e = null;
             try
             {
-                await BaseSetAllAsync(value, expiration);
+                await BaseSetAllAsync(value, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -713,13 +714,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(SetAsync), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
             Exception e = null;
             try
             {
-                await BaseSetAsync(cacheKey, cacheValue, expiration);
+                await BaseSetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -765,13 +766,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public async Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public async Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(TrySetAsync), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
             Exception e = null;
             try
             {
-                return await BaseTrySetAsync(cacheKey, cacheValue, expiration);
+                return await BaseTrySetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -796,9 +797,9 @@ namespace EasyCaching.Core
             return BaseGetExpiration(cacheKey);
         }
 
-        public async Task<TimeSpan> GetExpirationAsync(string cacheKey)
+        public async Task<TimeSpan> GetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
-            return await BaseGetExpirationAsync(cacheKey);
+            return await BaseGetExpirationAsync(cacheKey, cancellationToken);
         }
 
         public ProviderInfo GetProviderInfo()
