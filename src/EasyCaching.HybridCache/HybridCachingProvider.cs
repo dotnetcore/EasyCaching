@@ -188,7 +188,7 @@
             // Circuit Breaker may be more better
             try
             {
-                flag = await _distributedCache.ExistsAsync(cacheKey);
+                flag = await _distributedCache.ExistsAsync(cacheKey, cancellationToken);
                 return flag;
             }
             catch (Exception ex)
@@ -196,7 +196,7 @@
                 LogMessage($"Check cache key [{cacheKey}] exists error", ex);
             }
 
-            flag = await _localCache.ExistsAsync(cacheKey);
+            flag = await _localCache.ExistsAsync(cacheKey, cancellationToken);
             return flag;
         }
 
@@ -205,7 +205,6 @@
         /// </summary>
         /// <returns>The get.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
         public CacheValue<T> Get<T>(string cacheKey)
         {
