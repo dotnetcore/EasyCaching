@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using Dapper;
     using EasyCaching.Core;
@@ -18,15 +19,16 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public override async Task<bool> BaseExistsAsync(string cacheKey)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = await _cache.ExecuteScalarAsync<int>(ConstSQL.EXISTSSQL, new
+            var dbResult = await _cache.ExecuteScalarAsync<int>(new CommandDefinition(ConstSQL.EXISTSSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
-            });
+            }, cancellationToken: cancellationToken));
 
             return dbResult == 1;
         }
@@ -38,17 +40,18 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            var list = await _cache.QueryAsync<string>(new CommandDefinition(ConstSQL.GETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
-            });
+            }, cancellationToken: cancellationToken));
 
             var dbResult = list.FirstOrDefault();
 
@@ -85,16 +88,17 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            var list = await _cache.QueryAsync<string>(new CommandDefinition(ConstSQL.GETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
-            });
+            }, cancellationToken: cancellationToken));
 
             var dbResult = list.FirstOrDefault();
 
@@ -123,15 +127,17 @@
         /// </summary>
         /// <returns>The count.</returns>
         /// <param name="prefix">Prefix.</param>
-        public override async Task<int> BaseGetCountAsync(string prefix = "")
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task<int> BaseGetCountAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                return await _cache.ExecuteScalarAsync<int>(ConstSQL.COUNTALLSQL, new { name = _name });
+                
+                return await _cache.ExecuteScalarAsync<int>(new CommandDefinition(ConstSQL.COUNTALLSQL, new { name = _name }, cancellationToken: cancellationToken));
             }
             else
             {
-                return await _cache.ExecuteScalarAsync<int>(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+                return await _cache.ExecuteScalarAsync<int>(new CommandDefinition(ConstSQL.COUNTPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name }, cancellationToken: cancellationToken));
             }
         }
 
@@ -141,15 +147,18 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="type">Object Type.</param>
-        public override async Task<object> BaseGetAsync(string cacheKey, Type type)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task<object> BaseGetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var list = await _cache.QueryAsync<string>(ConstSQL.GETSQL, new
+            
+
+            var list = await _cache.QueryAsync<string>(new CommandDefinition(ConstSQL.GETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
-            });
+            }, cancellationToken: cancellationToken));
 
             var dbResult = list.FirstOrDefault();
 
@@ -178,11 +187,12 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public override async Task BaseRemoveAsync(string cacheKey)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _cache.ExecuteAsync(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name });
+            await _cache.ExecuteAsync(new CommandDefinition(ConstSQL.REMOVESQL, new { cachekey = cacheKey, name = _name }, cancellationToken: cancellationToken));
         }
 
         /// <summary>
@@ -192,8 +202,9 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
@@ -205,37 +216,43 @@
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
-            await _cache.ExecuteAsync(ConstSQL.SETSQL, new
+            await _cache.ExecuteAsync(new CommandDefinition(ConstSQL.SETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
                 expiration = expiration.Ticks / 10000000
-            });
-        }            
-  
+            }, cancellationToken: cancellationToken));
+        }
+
         /// <summary>
         /// Removes cached item by cachekey's prefix async.
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>
-        public override async Task BaseRemoveByPrefixAsync(string prefix)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
-            await _cache.ExecuteAsync(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+            await _cache.ExecuteAsync(new CommandDefinition(ConstSQL.REMOVEBYPREFIXSQL, new
+            {
+                cachekey = string.Concat(prefix, "%"),
+                name = _name
+            }, cancellationToken: cancellationToken));
         }
-  
+
         /// <summary>
         /// Sets all async.
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="values">Values.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)
+        public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
@@ -257,22 +274,23 @@
 
             tran.Commit();
         }
-   
+
         /// <summary>
         /// Gets all async.
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
-            var list = (await _cache.QueryAsync(ConstSQL.GETALLSQL, new
+            var list = (await _cache.QueryAsync(new CommandDefinition(ConstSQL.GETALLSQL, new
             {
                 cachekey = cacheKeys.ToArray(),
                 name = _name
-            })).ToList();
+            }, cancellationToken: cancellationToken))).ToList();
 
             return GetDict<T>(list);
         }
@@ -282,26 +300,28 @@
         /// </summary>
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var list = (await _cache.QueryAsync(ConstSQL.GETBYPREFIXSQL, new
+            var list = (await _cache.QueryAsync(new CommandDefinition(ConstSQL.GETBYPREFIXSQL, new
             {
                 cachekey = string.Concat(prefix, "%"),
                 name = _name
-            })).ToList();
+            }, cancellationToken: cancellationToken))).ToList();
 
             return GetDict<T>(list);
         }
-  
+
         /// <summary>
         /// Removes all async.
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
-        public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
@@ -318,8 +338,9 @@
         /// <summary>
         /// Flush All Cached Item async.
         /// </summary>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>The async.</returns>
-        public override async Task BaseFlushAsync() => await _cache.ExecuteAsync(ConstSQL.FLUSHSQL, new { name = _name });
+        public override async Task BaseFlushAsync(CancellationToken cancellationToken = default) => await _cache.ExecuteAsync(new CommandDefinition(ConstSQL.FLUSHSQL, new { name = _name }, cancellationToken: cancellationToken));
 
         /// <summary>
         /// Tries the set async.
@@ -328,8 +349,9 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override async Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
@@ -341,13 +363,13 @@
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
-            var rows = await _cache.ExecuteAsync(ConstSQL.TRYSETSQL, new
+            var rows = await _cache.ExecuteAsync(new CommandDefinition(ConstSQL.TRYSETSQL, new
             {
                 cachekey = cacheKey,
                 name = _name,
                 cachevalue = Newtonsoft.Json.JsonConvert.SerializeObject(cacheValue),
                 expiration = expiration.Ticks / 10000000
-            });
+            }, cancellationToken: cancellationToken));
 
             return rows > 0;
         }
@@ -356,16 +378,17 @@
         /// Get the expiration of cache key async
         /// </summary>
         /// <param name="cacheKey">cache key</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>expiration</returns>
-        public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var time = await _cache.ExecuteScalarAsync<long>(ConstSQL.GETEXPIRATIONSQL, new
+            var time = await _cache.ExecuteScalarAsync<long>(new CommandDefinition(ConstSQL.GETEXPIRATIONSQL, new
             {
                 cachekey = cacheKey,
                 name = _name
-            });
+            }, cancellationToken: cancellationToken));
 
             if (time <= 0) return TimeSpan.Zero;
             else return TimeSpan.FromSeconds(time);

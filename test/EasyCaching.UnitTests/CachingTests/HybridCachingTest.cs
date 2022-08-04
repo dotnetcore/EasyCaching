@@ -185,7 +185,7 @@
         [Fact]
         public async Task Distributed_Remove_Async_Throw_Exception_Should_Not_Break()
         {
-            A.CallTo(() => fakeDisProvider.RemoveAsync("fake-remove-key")).ThrowsAsync(new Exception());
+            A.CallTo(() => fakeDisProvider.RemoveAsync("fake-remove-key", default)).ThrowsAsync(new Exception());
 
             await fakeHybrid.RemoveAsync("fake-remove-key");
 
@@ -210,7 +210,7 @@
         [Fact]
         public async Task Distributed_Set_Async_Throw_Exception_Should_Not_Break()
         {
-            A.CallTo(() => fakeDisProvider.SetAsync(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored)).ThrowsAsync(new Exception());
+            A.CallTo(() => fakeDisProvider.SetAsync(A<string>.Ignored, A<string>.Ignored, A<TimeSpan>.Ignored, default)).ThrowsAsync(new Exception());
 
             var key = $"d-set-{Guid.NewGuid().ToString()}";
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EasyCaching.Core
@@ -28,8 +29,9 @@ namespace EasyCaching.Core
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken"></param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
+        Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get the specified cacheKey.
@@ -44,8 +46,9 @@ namespace EasyCaching.Core
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cancellationToken"></param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<CacheValue<T>> GetAsync<T>(string cacheKey);
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Remove the specified cacheKey.
@@ -58,14 +61,16 @@ namespace EasyCaching.Core
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        Task RemoveAsync(string cacheKey);
+        /// <param name="cancellationToken"></param>
+        Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Exists the specified cacheKey async.
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        Task<bool> ExistsAsync(string cacheKey);
+        /// <param name="cancellationToken"></param>
+        Task<bool> ExistsAsync(string cacheKey, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Exists the specified cacheKey.
@@ -91,8 +96,9 @@ namespace EasyCaching.Core
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken"></param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration);
+        Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Sets all.
@@ -108,8 +114,9 @@ namespace EasyCaching.Core
         /// <returns>The all async.</returns>
         /// <param name="value">Value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken"></param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration);
+        Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes all.
@@ -122,7 +129,8 @@ namespace EasyCaching.Core
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
-        Task RemoveAllAsync(IEnumerable<string> cacheKeys);
+        /// <param name="cancellationToken"></param>
+        Task RemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Get the specified cacheKey, dataRetriever and expiration.
@@ -141,8 +149,9 @@ namespace EasyCaching.Core
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken"></param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration);
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Removes cached item by cachekey's prefix.
@@ -154,7 +163,8 @@ namespace EasyCaching.Core
         /// Removes cached item by cachekey's prefix async.
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>
-        Task RemoveByPrefixAsync(string prefix);
+        /// <param name="cancellationToken"></param>
+        Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the specified cacheKey async.
@@ -162,6 +172,7 @@ namespace EasyCaching.Core
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="type">Object Type.</param>
-        Task<object> GetAsync(string cacheKey, Type type);
+        /// <param name="cancellationToken"></param>
+        Task<object> GetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default);
     }
 }
