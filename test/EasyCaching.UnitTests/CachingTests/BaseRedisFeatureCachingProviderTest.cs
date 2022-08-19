@@ -81,6 +81,30 @@
 
             await _provider.KeyDelAsync(cacheKey);
         }
+        
+        [Fact]
+        protected virtual async Task StringSetWithExpiration_And_Persist_And_TTL_Async_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var res = await _provider.StringSetAsync(cacheKey, "123", TimeSpan.FromSeconds(10));
+
+            Assert.True(res);
+            
+            var initialTtl = await _provider.TTLAsync(cacheKey);
+
+            Assert.InRange(initialTtl, 1, 10);
+
+            var flag = await _provider.KeyPersistAsync(cacheKey);
+
+            Assert.True(flag);
+
+            var persistedTtl = await _provider.TTLAsync(cacheKey);
+
+            Assert.Equal(persistedTtl, -1);
+
+            await _provider.KeyDelAsync(cacheKey);
+        }
         #endregion
 
         #region String
