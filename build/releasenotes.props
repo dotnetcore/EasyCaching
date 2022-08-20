@@ -1,26 +1,23 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-	  1. IRedisCachingProvider Support SearchKeysAsync.
-    2. IRedisCachingProvider Support ZRangeByScore/ZRangeByScoreAsync.
+	  1. Add CancellationToken for async methods.
 	</EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Upgrading dependencies.
-      2. Throw exception when can not connect to server
+      1. Add CancellationToken for async methods.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-	  1. IRedisCachingProvider Support SearchKeysAsync/ZRangeByScore/ZRangeByScoreAsync.
-    2. Make clear exception message when serializer not match or notfound.
-    3. Upgrading dependencies.
+	  1. Add CancellationToken for async methods.
+    2. Add persist key method to redis providers.
 	</EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. Upgrading dependencies.
+      1. Add CancellationToken for async methods.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. Upgrading dependencies.
+      1. Add CancellationToken for async methods.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
-      1. Upgrading dependencies.
+      1. Add CancellationToken for async methods.
     </EasyCachingHybridPackageNotes>
     <EasyCachingAspectCorePackageNotes>
       1. Upgrading dependencies.
@@ -41,9 +38,8 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-	  1. IRedisCachingProvider Support SearchKeysAsync/ZRangeByScore/ZRangeByScoreAsync.
-    2. Make clear exception message when serializer not match or notfound.
-    3. Upgrading dependencies.
+	  1. Add CancellationToken for async methods.
+    2. Add persist key method to redis providers.
 	</EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
@@ -55,10 +51,10 @@
 	  1. Upgrading dependencies.
 	</EasyCachingRabbitBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. Upgrading dependencies.
+      1. Add CancellationToken for async methods.
     </EasyCachingDiskPackageNotes>
     <EasyCachingLiteDBPackageNotes>
-      1. Upgrading dependencies.
+      1. Add CancellationToken for async methods.
     </EasyCachingLiteDBPackageNotes>
     <EasyCachingSTJsonPackageNotes>
       1. Upgrading dependencies.
