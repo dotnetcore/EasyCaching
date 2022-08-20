@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
@@ -177,7 +178,8 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public async Task<bool> ExistsAsync(string cacheKey)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public async Task<bool> ExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -186,7 +188,7 @@
             // Circuit Breaker may be more better
             try
             {
-                flag = await _distributedCache.ExistsAsync(cacheKey);
+                flag = await _distributedCache.ExistsAsync(cacheKey, cancellationToken);
                 return flag;
             }
             catch (Exception ex)
@@ -194,7 +196,7 @@
                 LogMessage($"Check cache key [{cacheKey}] exists error", ex);
             }
 
-            flag = await _localCache.ExistsAsync(cacheKey);
+            flag = await _localCache.ExistsAsync(cacheKey, cancellationToken);
             return flag;
         }
 
@@ -246,12 +248,13 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey)
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var cacheValue = await _localCache.GetAsync<T>(cacheKey);
+            var cacheValue = await _localCache.GetAsync<T>(cacheKey, cancellationToken);
 
             if (cacheValue.HasValue)
             {
@@ -262,7 +265,7 @@
 
             try
             {
-                cacheValue = await _distributedCache.GetAsync<T>(cacheKey);
+                cacheValue = await _distributedCache.GetAsync<T>(cacheKey, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -271,9 +274,9 @@
 
             if (cacheValue.HasValue)
             {
-                TimeSpan ts = await GetExpirationAsync(cacheKey);
+                TimeSpan ts = await GetExpirationAsync(cacheKey, cancellationToken);
 
-                await _localCache.SetAsync(cacheKey, cacheValue.Value, ts);
+                await _localCache.SetAsync(cacheKey, cacheValue.Value, ts, cancellationToken);
 
                 return cacheValue;
             }
@@ -312,24 +315,25 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public async Task RemoveAsync(string cacheKey)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public async Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             try
             {
                 // distributed cache at first
-                await _distributedCache.RemoveAsync(cacheKey);
+                await _distributedCache.RemoveAsync(cacheKey, cancellationToken);
             }
             catch (Exception ex)
             {
                 LogMessage($"remove cache key [{cacheKey}] error", ex);
             }
 
-            await _localCache.RemoveAsync(cacheKey);
+            await _localCache.RemoveAsync(cacheKey, cancellationToken);
 
             // send message to bus 
-            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
+            await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }, ct), cancellationToken);
         }
 
         /// <summary>
@@ -365,16 +369,17 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _localCache.SetAsync(cacheKey, cacheValue, expiration);
+            await _localCache.SetAsync(cacheKey, cacheValue, expiration, cancellationToken);
 
             try
             {
-                await _distributedCache.SetAsync(cacheKey, cacheValue, expiration);
+                await _distributedCache.SetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -382,7 +387,7 @@
             }
 
             // When create/update cache, send message to bus so that other clients can remove it.
-            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
+            await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }, ct), cancellationToken);
         }
 
         /// <summary>
@@ -439,8 +444,9 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public async Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -449,7 +455,7 @@
 
             try
             {
-                flag = await _distributedCache.TrySetAsync(cacheKey, cacheValue, expiration);
+                flag = await _distributedCache.TrySetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -461,19 +467,19 @@
             {
                 // When we TrySet succeed in distributed cache, we should Set this cache to local cache.
                 // It's mainly to prevent the cache value was changed
-                await _localCache.SetAsync(cacheKey, cacheValue, expiration);
+                await _localCache.SetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
 
             // distributed cache occur error, have a try with local cache
             if (distributedError)
             {
-                flag = await _localCache.TrySetAsync(cacheKey, cacheValue, expiration);
+                flag = await _localCache.TrySetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
 
             if (flag)
             {
                 // Here should send message to bus due to cache was set successfully.
-                await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }));
+                await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { cacheKey } }, ct), cancellationToken);
             }
 
             return flag;
@@ -508,14 +514,15 @@
         /// <returns>The all async.</returns>
         /// <param name="value">Value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration)
+        public async Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
-            await _localCache.SetAllAsync(value, expiration);
+            await _localCache.SetAllAsync(value, expiration, cancellationToken);
 
             try
             {
-                await _distributedCache.SetAllAsync(value, expiration);
+                await _distributedCache.SetAllAsync(value, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -523,7 +530,7 @@
             }
 
             // send message to bus 
-            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = value.Keys.ToArray(), IsPrefix = false }));
+            await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = value.Keys.ToArray(), IsPrefix = false }, ct), cancellationToken);
         }
 
         /// <summary>
@@ -554,23 +561,24 @@
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
-        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public async Task RemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             try
             {
-                await _distributedCache.RemoveAllAsync(cacheKeys);
+                await _distributedCache.RemoveAllAsync(cacheKeys, cancellationToken);
             }
             catch (Exception ex)
             {
                 LogMessage($"remove all async from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
             }
 
-            await _localCache.RemoveAllAsync(cacheKeys);
+            await _localCache.RemoveAllAsync(cacheKeys, cancellationToken);
 
             // send message to bus in order to notify other clients.
-            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() }));
+            await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = cacheKeys.ToArray() }, ct), cancellationToken);
         }
 
         /// <summary>
@@ -621,13 +629,14 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _localCache.GetAsync<T>(cacheKey);
+            var result = await _localCache.GetAsync<T>(cacheKey, cancellationToken);
 
             if (result.HasValue)
             {
@@ -636,7 +645,7 @@
 
             try
             {
-                result = await _distributedCache.GetAsync<T>(cacheKey, dataRetriever, expiration);
+                result = await _distributedCache.GetAsync<T>(cacheKey, dataRetriever, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -645,7 +654,7 @@
 
             if (result.HasValue)
             {
-                TimeSpan ts = await GetExpirationAsync(cacheKey);
+                TimeSpan ts = await GetExpirationAsync(cacheKey, cancellationToken);
 
                 _localCache.Set(cacheKey, result.Value, ts);
 
@@ -683,13 +692,14 @@
         /// </summary>
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
-        public async Task RemoveByPrefixAsync(string prefix)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public async Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
             try
             {
-                await _distributedCache.RemoveByPrefixAsync(prefix);
+                await _distributedCache.RemoveByPrefixAsync(prefix, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -699,7 +709,7 @@
             await _localCache.RemoveByPrefixAsync(prefix);
 
             // send message to bus in order to notify other clients.
-            await _busAsyncWrap.ExecuteAsync(async () => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true }));
+            await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true }, ct), cancellationToken);
         }
 
         /// <summary>
@@ -722,13 +732,13 @@
             }
         }
 
-        private async Task<TimeSpan> GetExpirationAsync(string cacheKey)
+        private async Task<TimeSpan> GetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             TimeSpan ts = TimeSpan.Zero;
 
             try
             {
-                ts = await _distributedCache.GetExpirationAsync(cacheKey);
+                ts = await _distributedCache.GetExpirationAsync(cacheKey, cancellationToken);
             }
             catch
             {
@@ -764,11 +774,11 @@
             return ts;
         }
 
-        public async Task<object> GetAsync(string cacheKey, Type type)
+        public async Task<object> GetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var cacheValue = await _localCache.GetAsync(cacheKey, type);
+            var cacheValue = await _localCache.GetAsync(cacheKey, type, cancellationToken);
 
             if (cacheValue != null)
             {
@@ -779,7 +789,7 @@
 
             try
             {
-                cacheValue = await _distributedCache.GetAsync(cacheKey, type);
+                cacheValue = await _distributedCache.GetAsync(cacheKey, type, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -788,9 +798,9 @@
 
             if (cacheValue != null)
             {
-                TimeSpan ts = await GetExpirationAsync(cacheKey);
+                TimeSpan ts = await GetExpirationAsync(cacheKey, cancellationToken);
               
-                await _localCache.SetAsync(cacheKey, cacheValue, ts);
+                await _localCache.SetAsync(cacheKey, cacheValue, ts, cancellationToken);
 
                 return cacheValue;
             }

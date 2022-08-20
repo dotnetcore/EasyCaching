@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
 
@@ -28,7 +29,7 @@
             return true;
         }
 
-        public virtual Task<bool> ExistsAsync(string cacheKey)
+        public virtual Task<bool> ExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(true);
         }
@@ -38,7 +39,7 @@
 
         }
 
-        public virtual Task FlushAsync()
+        public virtual Task FlushAsync(CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -58,23 +59,23 @@
             return new Dictionary<string, CacheValue<T>>();
         }
 
-        public virtual Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public virtual Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
             return Task.FromResult(dict);
         }
 
-        public virtual Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public virtual Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(new CacheValue<T>(default(T), true));
         }
 
-        public virtual Task<object> GetAsync(string cacheKey, Type type)
+        public virtual Task<object> GetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default)
         {
             return Task.FromResult<object>(null);
         }
 
-        public virtual Task<CacheValue<T>> GetAsync<T>(string cacheKey)
+        public virtual Task<CacheValue<T>> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(new CacheValue<T>(default(T), true));
         }
@@ -84,7 +85,7 @@
             return new Dictionary<string, CacheValue<T>>();
         }
 
-        public virtual Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix)
+        public virtual Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             IDictionary<string, CacheValue<T>> dict = new Dictionary<string, CacheValue<T>>();
             return Task.FromResult(dict);
@@ -95,7 +96,7 @@
             return 1;
         }
 
-        public Task<int> GetCountAsync(string prefix = "")
+        public Task<int> GetCountAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
             return Task.FromResult(1);
         }
@@ -105,7 +106,7 @@
             return TimeSpan.FromSeconds(1);
         }
 
-        public virtual Task<TimeSpan> GetExpirationAsync(string cacheKey)
+        public virtual Task<TimeSpan> GetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(TimeSpan.FromSeconds(1));
         }
@@ -120,7 +121,7 @@
 
         }
 
-        public virtual Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public virtual Task RefreshAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -135,12 +136,12 @@
 
         }
 
-        public virtual Task RemoveAllAsync(IEnumerable<string> cacheKeys)
+        public virtual Task RemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task RemoveAsync(string cacheKey)
+        public virtual Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -150,7 +151,7 @@
 
         }
 
-        public virtual Task RemoveByPrefixAsync(string prefix)
+        public virtual Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -165,12 +166,12 @@
 
         }
 
-        public virtual Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration)
+        public virtual Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
 
-        public virtual Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public virtual Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -180,7 +181,7 @@
             return true;
         }
 
-        public virtual Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public virtual Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(true);
         }

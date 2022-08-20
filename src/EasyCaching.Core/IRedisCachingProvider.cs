@@ -42,6 +42,18 @@
         /// <returns></returns>
         Task<bool> KeyExpireAsync(string cacheKey, int second);
         /// <summary>
+        /// https://redis.io/commands/persist
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        bool KeyPersist(string cacheKey);
+        /// <summary>
+        /// https://redis.io/commands/persist
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <returns></returns>
+        Task<bool> KeyPersistAsync(string cacheKey);
+        /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>

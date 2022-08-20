@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -34,8 +35,9 @@
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys);
+        Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the by prefix.
@@ -50,8 +52,9 @@
         /// </summary>
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix);
+        Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the count.
@@ -65,7 +68,8 @@
         /// </summary>
         /// <returns>The count.</returns>
         /// <param name="prefix">Prefix.</param>
-        Task<int> GetCountAsync(string prefix = "");
+        /// <param name="cancellationToken">CancellationToken</param>
+        Task<int> GetCountAsync(string prefix = "", CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Flush All Cached Item.
@@ -76,7 +80,8 @@
         /// Flush All Cached Item async.
         /// </summary>
         /// <returns>The async.</returns>
-        Task FlushAsync();
+        /// <param name="cancellationToken">CancellationToken</param>
+        Task FlushAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the max rd second.
@@ -107,8 +112,9 @@
         /// Gets the exporation of specify cachekey async.
         /// </summary>
         /// <param name="cacheKey"></param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns></returns>
-        Task<TimeSpan> GetExpirationAsync(string cacheKey);
+        Task<TimeSpan> GetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the information of provider.
