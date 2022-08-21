@@ -367,13 +367,20 @@ namespace EasyCaching.Redis
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
-
-            var batch = _cache.CreateBatch();
-
-            foreach (var item in values)
-                batch.StringSetAsync(item.Key, _serializer.Serialize(item.Value), expiration);
-
-            batch.Execute();
+            
+            var keyValuePairs = values
+                .ToDictionary(
+                    keySelector: item => (RedisKey)item.Key,
+                    elementSelector: item => (RedisValue)_serializer.Serialize(item.Value))
+                .ToArray();
+            
+            ITransaction transaction = _cache.CreateTransaction();
+            
+            transaction.StringSetAsync(keyValuePairs);
+            foreach (RedisKey key in keyValuePairs.Select(keyVp => keyVp.Key))
+                transaction.KeyExpireAsync(key, expiration);
+            
+            transaction.Execute();
         }
 
         /// <summary>
