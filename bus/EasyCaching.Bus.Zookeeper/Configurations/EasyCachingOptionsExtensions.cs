@@ -47,15 +47,13 @@
             void configure(ZkBusOptions x)
             {
                 x.ConnectionString = zkOptions.ConnectionString;
-                x.SessionId = zkOptions.SessionId;
-                x.SessionPasswd = zkOptions.SessionPasswd;
                 x.SessionTimeout = zkOptions.SessionTimeout;
                 x.OperatingTimeout = zkOptions.OperatingTimeout;
+                x.ConnectionTimeout = zkOptions.ConnectionTimeout;
+                x.Digest = zkOptions.Digest;
+                x.BaseRoutePath = zkOptions.BaseRoutePath;
                 x.ReadOnly = zkOptions.ReadOnly;
                 x.BaseRoutePath = zkOptions.BaseRoutePath;
-                x.HealthyCheckTimes = zkOptions.HealthyCheckTimes;
-                x.RetryCount = zkOptions.RetryCount;
-                x.EnableEphemeralNodeRestore = zkOptions.EnableEphemeralNodeRestore;
                 x.LogToFile = zkOptions.LogToFile;
             }
 
