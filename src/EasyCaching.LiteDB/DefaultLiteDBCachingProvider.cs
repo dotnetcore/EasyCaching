@@ -1,4 +1,5 @@
-﻿namespace EasyCaching.LiteDB
+﻿
+namespace EasyCaching.LiteDB
 {
     using EasyCaching.Core;
     using global::LiteDB;
@@ -6,6 +7,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Linq.Expressions;
 
     /// <summary>
     /// LiteDBCaching provider.
@@ -196,6 +198,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             _cache.DeleteMany(c => c.cachekey == cacheKey);
         }
+        
 
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
@@ -237,6 +240,40 @@
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
             _cache.DeleteMany(c => c.cachekey.StartsWith(prefix));
+        }
+        
+        /// <summary>
+        /// Removes cached item by pattern async.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPattern : pattern = {pattern}");
+            
+            var searchPattern = this.ProcessSearchKeyPattern(pattern);
+            var searchKey = this.HandleSearchKeyPattern(pattern);
+
+            _cache.DeleteMany(FilterByPattern(searchKey, searchPattern));
+        }
+
+        private static Expression<Func<CacheItem, bool>> FilterByPattern(string searchKey, SearchKeyPattern searchKeyPattern)
+        {
+            switch (searchKeyPattern)
+            {
+                case SearchKeyPattern.Postfix:
+                    return item => item.cachekey.EndsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Prefix:
+                    return item => item.cachekey.StartsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Contains:
+                    return item => item.cachekey.Contains(searchKey);
+                case SearchKeyPattern.Exact:
+                    return item => item.cachekey.Equals(searchKey, StringComparison.Ordinal);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(searchKeyPattern), searchKeyPattern, null);
+            }
         }
 
         /// <summary>

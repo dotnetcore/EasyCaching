@@ -229,6 +229,7 @@ namespace EasyCaching.Redis
 
             _cache.KeyDelete(cacheKey);
         }
+  
 
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
@@ -282,6 +283,24 @@ namespace EasyCaching.Redis
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
             var redisKeys = this.SearchRedisKeys(prefix);
+
+            _cache.KeyDelete(redisKeys);
+        }
+        
+        /// <summary>
+        /// Removes cached item by pattern async.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            pattern = this.HandleKeyPattern(pattern);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPattern : pattern = {pattern}");
+
+            var redisKeys = this.SearchRedisKeys(pattern);
 
             _cache.KeyDelete(redisKeys);
         }
@@ -356,7 +375,23 @@ namespace EasyCaching.Redis
 
             return prefix;
         }
+        
+        /// <summary>
+        /// Handles the pattern of CacheKey.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        private string HandleKeyPattern(string pattern)
+        {
+            // Forbid
+            if (pattern.Equals("*"))
+                throw new ArgumentException("the pattern should not equal to *");
 
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                pattern = _options.DBConfig.KeyPrefix + pattern;
+
+            return pattern;
+        }
+        
         /// <summary>
         /// Sets all.
         /// </summary>

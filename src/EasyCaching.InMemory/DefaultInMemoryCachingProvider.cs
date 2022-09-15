@@ -206,6 +206,7 @@
 
             _cache.Remove(cacheKey);
         }
+        
 
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
@@ -256,6 +257,24 @@
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix} , count = {count}");
+        }
+        
+        /// <summary>
+        /// Removes cached items by pattern async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="pattern">Pattern.</param>
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            var searchPattern = this.ProcessSearchKeyPattern(pattern);
+            var searchKey = this.HandleSearchKeyPattern(pattern);
+            
+            var count = _cache.RemoveByPattern( searchKey, searchPattern);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPattern : pattern = {pattern} , count = {count}");
         }
 
         /// <summary>

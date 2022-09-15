@@ -130,6 +130,21 @@
         }
 
         /// <summary>
+        /// Removes cached item by pattern async.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPatternAsync : pattern = {pattern}");
+
+            await Task.Run(() => BaseRemoveByPattern(pattern), cancellationToken);
+        }
+
+        /// <summary>
         /// Sets all async.
         /// </summary>
         /// <returns>The all async.</returns>

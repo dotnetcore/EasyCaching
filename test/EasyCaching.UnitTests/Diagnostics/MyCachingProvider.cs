@@ -137,6 +137,15 @@
             return Task.CompletedTask;
         }
 
+        public override void BaseRemoveByPattern(string pattern)
+        {
+        }
+
+        public override Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
 

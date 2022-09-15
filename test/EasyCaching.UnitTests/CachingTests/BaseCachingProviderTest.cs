@@ -868,6 +868,132 @@
             Assert.False(demo4.HasValue);
             Assert.True(xxx1.HasValue);
         }
+
+        #endregion
+        
+        #region RemoveByPattern/RemoveByPatternAsync
+        
+        [Fact]
+        public virtual void RemoveByPattern_Should_Succeed()
+        {
+            SetCacheItem("garden:pots:flowers", "ok");
+            SetCacheItem("garden:pots:flowers:test", "ok");
+            SetCacheItem("garden:flowerspots:test", "ok" );
+            SetCacheItem("boo:foo", "ok");
+            SetCacheItem("boo:test:foo", "ok");
+            SetCacheItem("sky:birds:bar", "ok");
+            SetCacheItem("sky:birds:test:bar", "ok");
+            SetCacheItem("akey", "ok");
+
+            var val1 = _provider.Get<string>("garden:pots:flowers");
+            var val2 = _provider.Get<string>("garden:pots:flowers:test");
+            var val3 = _provider.Get<string>("garden:flowerspots:test");
+            var val4 = _provider.Get<string>("boo:foo");
+            var val5 = _provider.Get<string>("boo:test:foo");
+            var val6 = _provider.Get<string>("sky:birds:bar");
+            var val7 = _provider.Get<string>("sky:birds:test:bar");
+            var val8 = _provider.Get<string>("akey");
+
+            Assert.True(val1.HasValue);
+            Assert.True(val2.HasValue);
+            Assert.True(val3.HasValue);
+            Assert.True(val4.HasValue);
+            Assert.True(val5.HasValue);
+            Assert.True(val6.HasValue);
+            Assert.True(val7.HasValue);
+            Assert.True(val8.HasValue);
+
+            // contains
+            _provider.RemoveByPattern("*:pots:*");
+
+            // postfix
+            _provider.RemoveByPattern("*foo");
+
+            // prefix
+            _provider.RemoveByPattern("sky*");
+
+            // exact   
+            _provider.RemoveByPattern("akey");
+
+            var val9 = _provider.Get<string>("garden:pots:flowers");
+            var val10 = _provider.Get<string>("garden:pots:flowers:test");
+            var val11 = _provider.Get<string>("garden:flowerspots:test");
+            var val12 = _provider.Get<string>("boo:foo");
+            var val13 = _provider.Get<string>("boo:test:foo");
+            var val14 = _provider.Get<string>("sky:birds:bar");
+            var val15 = _provider.Get<string>("sky:birds:test:bar");
+            var val16 = _provider.Get<string>("akey");
+
+            Assert.False(val9.HasValue);
+            Assert.False(val10.HasValue);
+            Assert.True(val11.HasValue);
+            Assert.False(val12.HasValue);
+            Assert.False(val13.HasValue);
+            Assert.False(val14.HasValue);
+            Assert.False(val15.HasValue);
+            Assert.False(val16.HasValue);
+        }
+        
+        [Fact]
+        public virtual async Task RemoveByPatternAsync_Should_Succeed()
+        {
+            SetCacheItem("garden:pots:flowers", "ok");
+            SetCacheItem("garden:pots:flowers:test", "ok");
+            SetCacheItem("garden:flowerspots:test", "ok" );
+            SetCacheItem("boo:foo", "ok");
+            SetCacheItem("boo:test:foo", "ok");
+            SetCacheItem("sky:birds:bar", "ok");
+            SetCacheItem("sky:birds:test:bar", "ok");
+            SetCacheItem("akey", "ok");
+
+            var val1 = _provider.Get<string>("garden:pots:flowers");
+            var val2 = _provider.Get<string>("garden:pots:flowers:test");
+            var val3 = _provider.Get<string>("garden:flowerspots:test");
+            var val4 = _provider.Get<string>("boo:foo");
+            var val5 = _provider.Get<string>("boo:test:foo");
+            var val6 = _provider.Get<string>("sky:birds:bar");
+            var val7 = _provider.Get<string>("sky:birds:test:bar");
+            var val8 = _provider.Get<string>("akey");
+
+            Assert.True(val1.HasValue);
+            Assert.True(val2.HasValue);
+            Assert.True(val3.HasValue);
+            Assert.True(val4.HasValue);
+            Assert.True(val5.HasValue);
+            Assert.True(val6.HasValue);
+            Assert.True(val7.HasValue);
+            Assert.True(val8.HasValue);
+
+            // contains
+            await _provider.RemoveByPatternAsync("*:pots:*");
+
+            // postfix
+            await _provider.RemoveByPatternAsync("*foo");
+
+            // prefix
+            await _provider.RemoveByPatternAsync("sky*");
+
+            // exact   
+            await _provider.RemoveByPatternAsync("akey");
+
+            var val9 = _provider.Get<string>("garden:pots:flowers");
+            var val10 = _provider.Get<string>("garden:pots:flowers:test");
+            var val11 = _provider.Get<string>("garden:flowerspots:test");
+            var val12 = _provider.Get<string>("boo:foo");
+            var val13 = _provider.Get<string>("boo:test:foo");
+            var val14 = _provider.Get<string>("sky:birds:bar");
+            var val15 = _provider.Get<string>("sky:birds:test:bar");
+            var val16 = _provider.Get<string>("akey");
+
+            Assert.False(val9.HasValue);
+            Assert.False(val10.HasValue);
+            Assert.True(val11.HasValue);
+            Assert.False(val12.HasValue);
+            Assert.False(val13.HasValue);
+            Assert.False(val14.HasValue);
+            Assert.False(val15.HasValue);
+            Assert.False(val16.HasValue);
+        }
         #endregion
 
         #region SetAll/SetAllAsync

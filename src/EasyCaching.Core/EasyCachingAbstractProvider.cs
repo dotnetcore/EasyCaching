@@ -64,6 +64,8 @@ namespace EasyCaching.Core
         public abstract Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken = default);
         public abstract void BaseRemoveByPrefix(string prefix);
         public abstract Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
+        public abstract void BaseRemoveByPattern(string pattern);
+        public abstract Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default);
         public abstract void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration);
         public abstract void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration);
         public abstract Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default);
@@ -636,6 +638,62 @@ namespace EasyCaching.Core
             }
         }
 
+        public void RemoveByPattern(string pattern)
+        {
+            var operationId = s_diagnosticListener.WriteRemoveCacheBefore(
+                new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPattern),
+                    new[] { pattern }));
+            Exception e = null;
+            try
+            {
+                BaseRemoveByPattern(pattern);
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+                throw;
+            }
+            finally
+            {
+                if (e != null)
+                {
+                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
+                }
+                else
+                {
+                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
+                }
+            }
+        }
+
+        public async Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            var operationId = s_diagnosticListener.WriteRemoveCacheBefore(
+                new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPatternAsync),
+                    new[] { pattern }));
+            Exception e = null;
+            try
+            {
+                await BaseRemoveByPatternAsync(pattern, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+                throw;
+            }
+            finally
+            {
+                if (e != null)
+                {
+                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
+                }
+                else
+                {
+                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
+                }
+            }
+        }
+
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(Set), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
@@ -806,5 +864,35 @@ namespace EasyCaching.Core
         {
             return BaseGetProviderInfo();
         }
+
+        protected SearchKeyPattern ProcessSearchKeyPattern(string pattern)
+        {
+            var postfix = pattern.StartsWith("*");
+            var prefix = pattern.EndsWith("*");
+
+            var contains = postfix && prefix;
+
+            if (contains)
+            {
+                return SearchKeyPattern.Contains;
+            }
+
+            if (postfix)
+            {
+                return SearchKeyPattern.Postfix;
+            }
+
+            if (prefix)
+            {
+                return SearchKeyPattern.Prefix;
+            }
+
+            return SearchKeyPattern.Exact;
+        }
+
+        protected string HandleSearchKeyPattern(string pattern)
+        {
+            return pattern.Replace("*", string.Empty);
+        } 
     }
 }
