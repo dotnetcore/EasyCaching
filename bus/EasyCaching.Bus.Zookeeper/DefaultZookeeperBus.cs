@@ -357,7 +357,6 @@
                 var path = watchedEvent.getPath();
                 if (path != null)
                 {
-                    Console.WriteLine("change..");
                     var eventType = watchedEvent.get_Type();
                     var dataChanged = new[]
                     {
