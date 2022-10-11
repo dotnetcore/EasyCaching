@@ -93,7 +93,7 @@
         public override async Task BasePublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
             var msg = _serializer.Serialize(message);
-            var path = $"/{topic}";
+            var path = $"{topic}";
 
             if (!await PathExistsAsync(path, true))
             {
@@ -109,7 +109,7 @@
         /// <param name="action">Action.</param>
         public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
-            var path = $"/{topic}";
+            var path = $"{topic}";
             Task.Factory.StartNew(async () =>
             {
                 await SubscribeDataChangeAsync(path, SubscribeDataChange);
@@ -123,7 +123,6 @@
         private void OnMessage(byte[] body)
         {
             var message = _serializer.Deserialize<EasyCachingMessage>(body);
-            Console.WriteLine("on message...===");
             BaseOnMessage(message);
         }
 
@@ -154,10 +153,10 @@
                 {
                     return zk;
                 }
-                if (DateTime.Now - operationStartTime > TimeSpan.FromSeconds(options.OperatingTimeout))
+                if (DateTime.Now - operationStartTime > TimeSpan.FromMilliseconds(options.OperatingTimeout))
                 {
                     throw new TimeoutException(
-                        $"connect cannot be retried because of retry timeout ({options.OperatingTimeout}seconds)");
+                        $"connect cannot be retried because of retry timeout ({options.OperatingTimeout}Milliseconds)");
                 }
             }
         }
@@ -358,6 +357,7 @@
                 var path = watchedEvent.getPath();
                 if (path != null)
                 {
+                    Console.WriteLine("change..");
                     var eventType = watchedEvent.get_Type();
                     var dataChanged = new[]
                     {

@@ -6,7 +6,7 @@ namespace EasyCaching.Bus.Zookeeper
     {
         public ZkBusOptions()
         {
-            this.ConnectionTimeout = 50000;
+            this.ConnectionTimeout = 50000;//Milliseconds
             this.OperatingTimeout = 10000;
             this.SessionTimeout = 50000;
         }
@@ -72,17 +72,17 @@ namespace EasyCaching.Bus.Zookeeper
         public string BaseRoutePath { get; set; } = "easyCacheBus";
 
         /// <summary>
-        /// wait zooKeeper connect time
+        /// wait zooKeeper connect time with Milliseconds
         /// </summary>
         public int ConnectionTimeout { get; set; }
 
         /// <summary>
-        /// execute zooKeeper handler retry  waittime
+        /// execute zooKeeper handler retry  waittime with Milliseconds
         /// </summary>
         public int OperatingTimeout { get; set; }
 
         /// <summary>
-        /// zookeeper session timeout
+        /// zookeeper session timeout with Milliseconds
         /// </summary>
         public int SessionTimeout { get; set; }
     }
