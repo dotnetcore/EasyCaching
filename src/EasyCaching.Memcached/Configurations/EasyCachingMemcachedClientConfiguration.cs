@@ -38,6 +38,7 @@
             var options = optionsAccessor.DBConfig;
 
             ConfigureServers(options);
+            UseSslStream = options.UseSslStream;
 
             SocketPool = new SocketPoolConfiguration();
             if (options.SocketPool != null)
@@ -181,6 +182,11 @@
         /// Gets the authentication settings.
         /// </summary>
         public IAuthenticationConfiguration Authentication { get; private set; }
+
+        /// <summary>
+        /// Gets the SSL Stream support.
+        /// </summary>
+        public bool UseSslStream { get; private set; }
 
         /// <summary>
         /// Gets or sets the <see cref="T:Enyim.Caching.Memcached.IMemcachedKeyTransformer"/> which will be used to convert item keys for Memcached.
