@@ -9,7 +9,7 @@
 		<VersionPrefix>$(EasyCachingZookeeperBusPackageVersion)</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<Description>
-			A simple caching bus(message bus) based on Kafka.
+			A simple caching bus(message bus) based on Zookeeper.
 		</Description>
 		<PackageTags>Bus,Hybrid,Zookeeper,Caching,Cache</PackageTags>
 		<PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
@@ -18,7 +18,7 @@
 		<ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
 		<PackageIcon>nuget-icon.png</PackageIcon>
 		<PackageReleaseNotes>
-			$(EasyCachingKafkaBusPackageNotes)
+			$(EasyCachingZookeeperBusPackageNotes)
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
