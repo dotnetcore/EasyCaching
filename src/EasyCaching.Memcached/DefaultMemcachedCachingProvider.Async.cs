@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@
     /// Default memcached caching provider.
     /// </summary>
     public partial class DefaultMemcachedCachingProvider : EasyCachingAbstractProvider
-    {       
+    {
         /// <summary>
         /// Gets the specified cacheKey, dataRetriever and expiration async.
         /// </summary>
@@ -19,13 +20,14 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="dataRetriever">Data retriever.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await BaseGetAsync<T>(cacheKey);
+            var result = await BaseGetAsync<T>(cacheKey, cancellationToken);
 
             if (result.HasValue)
             {
@@ -38,13 +40,13 @@
             if (!flag)
             {
                 await Task.Delay(_options.SleepMs);
-                return await GetAsync(cacheKey, dataRetriever, expiration);
+                return await GetAsync(cacheKey, dataRetriever, expiration, cancellationToken);
             }
 
             var item = await dataRetriever();
             if (item != null || _options.CacheNulls)
             {
-                await this.SetAsync(cacheKey, item, expiration);
+                await this.SetAsync(cacheKey, item, expiration, cancellationToken);
                 await _memcachedClient.RemoveAsync(this.HandleCacheKey($"{cacheKey}_Lock"));
                 return new CacheValue<T>(item, true);
             }
@@ -54,14 +56,15 @@
                 return CacheValue<T>.NoValue;
             }
         }
-      
+
         /// <summary>
         /// Gets the specified cacheKey async.
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey)
+        public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -88,7 +91,8 @@
         /// </summary>
         /// <returns>The count.</returns>
         /// <param name="prefix">Prefix.</param>
-        public override Task<int> BaseGetCountAsync(string prefix = "")
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override Task<int> BaseGetCountAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {
@@ -107,7 +111,8 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="type">Object Type.</param>
-        public override async Task<object> BaseGetAsync(string cacheKey, Type type)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task<object> BaseGetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -129,7 +134,8 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public override async Task BaseRemoveAsync(string cacheKey)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
@@ -144,8 +150,9 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
@@ -169,13 +176,14 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
-        public override async Task<bool> BaseExistsAsync(string cacheKey)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
             return await Task.FromResult(_memcachedClient.TryGet(this.HandleCacheKey(cacheKey), out object obj));
         }
-                 
+
         /// <summary>
         /// Removes cached item by cachekey's prefix async.
         /// </summary>
@@ -185,8 +193,9 @@
         /// and confirm that you use the namespacing when you set and get the cache.
         /// </remarks>
         /// <param name="prefix">Prefix of CacheKey.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns></returns>
-        public override async Task BaseRemoveByPrefixAsync(string prefix)
+        public override async Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
@@ -215,8 +224,9 @@
         /// <returns>The all async.</returns>
         /// <param name="values">Values.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)
+        public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
@@ -224,18 +234,19 @@
             var tasks = new List<Task>();
             foreach (var item in values)
             {
-                tasks.Add(SetAsync(item.Key, item.Value, expiration));
+                tasks.Add(SetAsync(item.Key, item.Value, expiration, cancellationToken));
             }
             await Task.WhenAll(tasks);
         }
-  
+
         /// <summary>
         /// Gets all async.
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
@@ -246,30 +257,32 @@
                     pair => pair.Key,
                     pair => ConvertFromStoredValue<T>(pair.Value));
         }
-      
+
         /// <summary>
         /// Gets the by prefix async.
         /// </summary>
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix)
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
-      
+
         /// <summary>
         /// Removes all async.
         /// </summary>
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
-        public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             var tasks = new List<Task>();
             foreach (var item in cacheKeys.Distinct())
-                tasks.Add(RemoveAsync(item));
+                tasks.Add(RemoveAsync(item, cancellationToken));
 
             await Task.WhenAll(tasks);
         }
@@ -278,14 +291,15 @@
         /// Flush All Cached Item async.
         /// </summary>
         /// <returns>The async.</returns>
-        public override async Task BaseFlushAsync()
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseFlushAsync(CancellationToken cancellationToken = default)
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("Memcached -- FlushAsync");
 
             await _memcachedClient.FlushAllAsync();
         }
-     
+
         /// <summary>
         /// Tries the set async.
         /// </summary>
@@ -293,8 +307,9 @@
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cacheValue">Cache value.</param>
         /// <param name="expiration">Expiration.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
@@ -313,7 +328,7 @@
                 expiration);
         }
 
-        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

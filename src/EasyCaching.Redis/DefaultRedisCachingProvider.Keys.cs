@@ -45,6 +45,22 @@
             var flag = await _cache.KeyExpireAsync(cacheKey, TimeSpan.FromSeconds(second));
             return flag;
         }
+        
+        public bool KeyPersist(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var flag = _cache.KeyPersist(cacheKey);
+            return flag;
+        }
+
+        public async Task<bool> KeyPersistAsync(string cacheKey)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            var flag = await _cache.KeyPersistAsync(cacheKey);
+            return flag;
+        }
 
         public bool KeyExists(string cacheKey)
         {

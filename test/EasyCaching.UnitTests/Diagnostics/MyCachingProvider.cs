@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using System;
     using System.Collections.Generic;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public class MyCachingProvider : EasyCachingAbstractProvider
@@ -21,7 +22,7 @@
             return true;
         }
 
-        public override Task<bool> BaseExistsAsync(string cacheKey)
+        public override Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(false);
         }
@@ -31,7 +32,7 @@
 
         }
 
-        public override Task BaseFlushAsync()
+        public override Task BaseFlushAsync(CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -51,22 +52,22 @@
             return null;
         }
 
-        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys)
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             return null;
         }
 
-        public override Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration)
+        public override Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(CacheValue<T>.NoValue);
         }
 
-        public override Task<object> BaseGetAsync(string cacheKey, Type type)
+        public override Task<object> BaseGetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default)
         {
             return Task.FromResult<object>(null);
         }
 
-        public override Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey)
+        public override Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(CacheValue<T>.NoValue);
         }
@@ -76,7 +77,7 @@
             return null;
         }
 
-        public override Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix)
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             return Task.FromResult<IDictionary<string, CacheValue<T>>>(null);
         }
@@ -86,7 +87,7 @@
             return 1;
         }
 
-        public override Task<int> BaseGetCountAsync(string prefix = "")
+        public override Task<int> BaseGetCountAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
             return Task.FromResult(1);
         }
@@ -96,7 +97,7 @@
             return TimeSpan.FromSeconds(1);
         }
 
-        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey)
+        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(TimeSpan.FromSeconds(1));
         }
@@ -116,12 +117,12 @@
 
         }
 
-        public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys)
+        public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
 
-        public override Task BaseRemoveAsync(string cacheKey)
+        public override Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -131,7 +132,7 @@
 
         }
 
-        public override Task BaseRemoveByPrefixAsync(string prefix)
+        public override Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -146,12 +147,12 @@
 
         }
 
-        public override Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration)
+        public override Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
 
-        public override Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;
         }
@@ -161,7 +162,7 @@
             return false;
         }
 
-        public override Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration)
+        public override Task<bool> BaseTrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(false);
         }
