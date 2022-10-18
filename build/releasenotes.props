@@ -50,6 +50,12 @@
     <EasyCachingRabbitBusPackageNotes>
 	  1. Upgrading dependencies.
 	</EasyCachingRabbitBusPackageNotes>
+	 <EasyCachingKafkaBusPackageNotes>
+		  1. Add EasyCachingKafkaBus.
+	 </EasyCachingKafkaBusPackageNotes>
+	 <EasyCachingZookeeperBusPackageNotes>
+		  1. Add EasyCachingZookeeperBus.
+	 </EasyCachingZookeeperBusPackageNotes>
     <EasyCachingDiskPackageNotes>
       1. Add CancellationToken for async methods.
     </EasyCachingDiskPackageNotes>
