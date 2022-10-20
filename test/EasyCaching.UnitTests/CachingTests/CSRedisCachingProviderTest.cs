@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+
 namespace EasyCaching.UnitTests
 {
     using System;
@@ -146,8 +148,7 @@ namespace EasyCaching.UnitTests
                     config.SerializerName = "json";
 
                 }, "WithKeyPrefix");
-
-              
+                
                 x.WithJson("json");
             });
 
@@ -192,6 +193,136 @@ namespace EasyCaching.UnitTests
             var val4 = WithKeyPrefix.Get<string>("KeyPrefix2");
             Assert.False(val3.HasValue);
             Assert.False(val4.HasValue);
+        }
+        
+        [Theory]
+        [InlineData("WithKeyPrefix")]
+        [InlineData("NotKeyPrefix")]
+        public void RemoveByKeyPatternTest(string provider)
+        {
+            var WithKeyPrefix = _providerFactory.GetCachingProvider(provider);
+
+            WithKeyPrefix.Set("garden:pots:flowers", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("garden:pots:flowers:test", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("garden:flowerspots:test", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("boo:foo", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("boo:test:foo", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("sky:birds:bar", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("sky:birds:test:bar", "ok", TimeSpan.FromSeconds(10));
+            WithKeyPrefix.Set("akey", "ok", TimeSpan.FromSeconds(10));
+
+            var val1 = WithKeyPrefix.Get<string>("garden:pots:flowers");
+            var val2 = WithKeyPrefix.Get<string>("garden:pots:flowers:test");
+            var val3 = WithKeyPrefix.Get<string>("garden:flowerspots:test");
+            var val4 = WithKeyPrefix.Get<string>("boo:foo");
+            var val5 = WithKeyPrefix.Get<string>("boo:test:foo");
+            var val6 = WithKeyPrefix.Get<string>("sky:birds:bar");
+            var val7 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
+            var val8 = WithKeyPrefix.Get<string>("akey");
+            
+            Assert.True(val1.HasValue);
+            Assert.True(val2.HasValue);
+            Assert.True(val3.HasValue);
+            Assert.True(val4.HasValue);
+            Assert.True(val5.HasValue);
+            Assert.True(val6.HasValue);
+            Assert.True(val7.HasValue);
+            Assert.True(val8.HasValue);
+
+            // contains
+            WithKeyPrefix.RemoveByPattern("*:pots:*");
+            
+            // postfix
+            WithKeyPrefix.RemoveByPattern("*foo");
+            
+            // prefix
+            WithKeyPrefix.RemoveByPattern("sky*"); 
+            
+            // exact   
+            WithKeyPrefix.RemoveByPattern("akey"); 
+
+            var val9 = WithKeyPrefix.Get<string>("garden:pots:flowers");
+            var val10 = WithKeyPrefix.Get<string>("garden:pots:flowers:test");
+            var val11 = WithKeyPrefix.Get<string>("garden:flowerspots:test");
+            var val12 = WithKeyPrefix.Get<string>("boo:foo");
+            var val13 = WithKeyPrefix.Get<string>("boo:test:foo");
+            var val14 = WithKeyPrefix.Get<string>("sky:birds:bar");
+            var val15 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
+            var val16 = WithKeyPrefix.Get<string>("akey");
+            
+            Assert.False(val9.HasValue);
+            Assert.False(val10.HasValue);
+            Assert.True(val11.HasValue);
+            Assert.False(val12.HasValue);
+            Assert.False(val13.HasValue);
+            Assert.False(val14.HasValue);
+            Assert.False(val15.HasValue);
+            Assert.False(val16.HasValue);
+        }
+        
+                [Theory]
+        [InlineData("WithKeyPrefix")]
+        [InlineData("NotKeyPrefix")]
+        public async Task RemoveByKeyPatternAsyncTest(string provider)
+        {
+            var WithKeyPrefix = _providerFactory.GetCachingProvider(provider);
+
+            await WithKeyPrefix.SetAsync("garden:pots:flowers", "ok", TimeSpan.FromSeconds(10));
+            await WithKeyPrefix.SetAsync("garden:pots:flowers:test", "ok", TimeSpan.FromSeconds(10));
+            await WithKeyPrefix.SetAsync("garden:flowerspots:test", "ok", TimeSpan.FromSeconds(10));
+            await WithKeyPrefix.SetAsync("boo:foo", "ok", TimeSpan.FromSeconds(10));
+            await WithKeyPrefix.SetAsync("boo:test:foo", "ok", TimeSpan.FromSeconds(10));
+            await WithKeyPrefix.SetAsync("sky:birds:bar", "ok", TimeSpan.FromSeconds(10));
+            await WithKeyPrefix.SetAsync("sky:birds:test:bar", "ok", TimeSpan.FromSeconds(10));
+            await WithKeyPrefix.SetAsync("akey", "ok", TimeSpan.FromSeconds(10));
+
+            var val1 = WithKeyPrefix.Get<string>("garden:pots:flowers");
+            var val2 = WithKeyPrefix.Get<string>("garden:pots:flowers:test");
+            var val3 = WithKeyPrefix.Get<string>("garden:flowerspots:test");
+            var val4 = WithKeyPrefix.Get<string>("boo:foo");
+            var val5 = WithKeyPrefix.Get<string>("boo:test:foo");
+            var val6 = WithKeyPrefix.Get<string>("sky:birds:bar");
+            var val7 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
+            var val8 = WithKeyPrefix.Get<string>("akey");
+            
+            Assert.True(val1.HasValue);
+            Assert.True(val2.HasValue);
+            Assert.True(val3.HasValue);
+            Assert.True(val4.HasValue);
+            Assert.True(val5.HasValue);
+            Assert.True(val6.HasValue);
+            Assert.True(val7.HasValue);
+            Assert.True(val8.HasValue);
+
+            // contains
+            await WithKeyPrefix.RemoveByPatternAsync("*:pots:*");
+            
+            // postfix
+            await WithKeyPrefix.RemoveByPatternAsync("*foo");
+            
+            // prefix
+            await WithKeyPrefix.RemoveByPatternAsync("sky*"); 
+            
+            // exact   
+            await WithKeyPrefix.RemoveByPatternAsync("akey"); 
+
+            var val9 = WithKeyPrefix.Get<string>("garden:pots:flowers");
+            var val10 = WithKeyPrefix.Get<string>("garden:pots:flowers:test");
+            var val11 = WithKeyPrefix.Get<string>("garden:flowerspots:test");
+            var val12 = WithKeyPrefix.Get<string>("boo:foo");
+            var val13 = WithKeyPrefix.Get<string>("boo:test:foo");
+            var val14 = WithKeyPrefix.Get<string>("sky:birds:bar");
+            var val15 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
+            var val16 = WithKeyPrefix.Get<string>("akey");
+            
+            Assert.False(val9.HasValue);
+            Assert.False(val10.HasValue);
+            Assert.True(val11.HasValue);
+            Assert.False(val12.HasValue);
+            Assert.False(val13.HasValue);
+            Assert.False(val14.HasValue);
+            Assert.False(val15.HasValue);
+            Assert.False(val16.HasValue);
         }
     }
 }

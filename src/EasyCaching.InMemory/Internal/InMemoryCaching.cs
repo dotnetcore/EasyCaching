@@ -267,6 +267,30 @@
             return RemoveAll(keysToRemove);
         }
 
+        public int RemoveByPattern(string searchKey, SearchKeyPattern searchPattern)
+        {
+            var keysToRemove = _memory.Keys.Where(x => FilterByPattern(x, searchKey, searchPattern)).ToList();
+            
+            return RemoveAll(keysToRemove);
+        }
+        
+        private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)
+        {
+            switch (searchKeyPattern)
+            {
+                case SearchKeyPattern.Postfix:
+                    return key.EndsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Prefix:
+                    return key.StartsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Contains:
+                    return key.Contains(searchKey);
+                case SearchKeyPattern.Exact:
+                    return key.Equals(searchKey, StringComparison.Ordinal);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(searchKeyPattern), searchKeyPattern, null);
+            }
+        }
+
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> keys)
         {
             var map = new Dictionary<string, CacheValue<T>>();

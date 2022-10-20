@@ -151,6 +151,15 @@
 
         }
 
+        public Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        public void RemoveByPattern(string pattern)
+        {
+        }
+
         public virtual Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             return Task.CompletedTask;

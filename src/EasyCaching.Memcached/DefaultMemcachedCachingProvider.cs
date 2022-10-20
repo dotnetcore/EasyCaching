@@ -263,6 +263,11 @@
 
             CheckResult(data);
         }
+        
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            throw new NotSupportedException("RemoveByPattern is not supported in memcached provider.");
+        }
 
         /// <summary>
         /// Handle the cache key of memcached limititaion
