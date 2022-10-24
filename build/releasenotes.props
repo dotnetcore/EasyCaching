@@ -1,23 +1,27 @@
 <Project>
   <PropertyGroup>
     <EasyCachingCorePackageNotes>
-	  1. Add CancellationToken for async methods.
+	  1. Remove BinaryFormatter.
+    2. Support removing cache keys by pattern.
 	</EasyCachingCorePackageNotes>
     <EasyCachingMemcachedPackageNotes>
-      1. Add CancellationToken for async methods.
+       1. Upgrading dependencies.
     </EasyCachingMemcachedPackageNotes>
     <EasyCachingRedisPackageNotes>
-	  1. Add CancellationToken for async methods.
-    2. Add persist key method to redis providers.
+	  1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
 	</EasyCachingRedisPackageNotes>
     <EasyCachingSQLitePackageNotes>
-      1. Add CancellationToken for async methods.
+      1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
     </EasyCachingSQLitePackageNotes>
     <EasyCachingInMemoryPackageNotes>
-      1. Add CancellationToken for async methods.
+      1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
     </EasyCachingInMemoryPackageNotes>
     <EasyCachingHybridPackageNotes>
-      1. Add CancellationToken for async methods.
+      1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
     </EasyCachingHybridPackageNotes>
     <EasyCachingAspectCorePackageNotes>
       1. Upgrading dependencies.
@@ -38,11 +42,12 @@
       1. Upgrading dependencies.
     </EasyCachingProtobufPackageNotes>
     <EasyCachingCSRedisPackageNotes>
-	  1. Add CancellationToken for async methods.
-    2. Add persist key method to redis providers.
+	  1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
 	</EasyCachingCSRedisPackageNotes>
     <EasyCachingCSRedisBusPackageNotes>
       1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
     </EasyCachingCSRedisBusPackageNotes>
     <EasyCachingRedisBusPackageNotes>
       1. Upgrading dependencies.
@@ -57,10 +62,12 @@
 		  1. Add EasyCachingZookeeperBus.
 	 </EasyCachingZookeeperBusPackageNotes>
     <EasyCachingDiskPackageNotes>
-      1. Add CancellationToken for async methods.
+      1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
     </EasyCachingDiskPackageNotes>
     <EasyCachingLiteDBPackageNotes>
-      1. Add CancellationToken for async methods.
+      1. Upgrading dependencies.
+    2. Support removing cache keys by pattern.
     </EasyCachingLiteDBPackageNotes>
     <EasyCachingSTJsonPackageNotes>
       1. Upgrading dependencies.
