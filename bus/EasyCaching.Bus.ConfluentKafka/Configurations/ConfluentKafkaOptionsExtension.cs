@@ -28,8 +28,6 @@
         {
             services.AddOptions();
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-
             services.AddOptions<ConfluentKafkaBusOptions>()
                 .Configure(_confluentKafkaBusOptions);
 
