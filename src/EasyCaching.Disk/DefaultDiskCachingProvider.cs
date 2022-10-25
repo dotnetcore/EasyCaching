@@ -469,6 +469,26 @@
             }
         }
 
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            var searchPattern = this.ProcessSearchKeyPattern(pattern);
+            var searchKey = this.HandleSearchKeyPattern(pattern);
+
+            var list = _cacheKeysMap.Where(pair => FilterByPattern(pair.Key,searchKey, searchPattern)).Select(x => x.Key).ToList();
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+            foreach (var item in list)
+            {
+                var path = BuildMd5Path(item);
+
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(item, out _);
+                }
+            }
+        }
+
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -540,6 +560,23 @@
                 stream.Write(bytes, 0, bytes.Length);
                 AppendKey(cacheKey, fileName);
                 return true;
+            }
+        }
+        
+        private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)
+        {
+            switch (searchKeyPattern)
+            {
+                case SearchKeyPattern.Postfix:
+                    return key.EndsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Prefix:
+                    return key.StartsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Contains:
+                    return key.Contains(searchKey);
+                case SearchKeyPattern.Exact:
+                    return key.Equals(searchKey, StringComparison.Ordinal);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(searchKeyPattern), searchKeyPattern, null);
             }
         }
 

@@ -234,9 +234,23 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix}");
 
-            _cache.Execute(ConstSQL.REMOVEBYPREFIXSQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
+            _cache.Execute(ConstSQL.REMOVEBYLIKESQL, new { cachekey = string.Concat(prefix, "%"), name = _name });
         }
 
+        /// <summary>
+        /// Removes cached item by pattern async.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPattern : pattern = {pattern}");
+            
+            _cache.Execute(ConstSQL.REMOVEBYLIKESQL, new { cachekey = pattern.Replace('*', '%'), name = _name });
+        }
+        
         /// <summary>
         /// Sets all.
         /// </summary>

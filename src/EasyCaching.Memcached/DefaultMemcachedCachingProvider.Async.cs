@@ -218,6 +218,11 @@
                 new TimeSpan(0, 0, 0));
         }
 
+        public override Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException("RemoveByPattern is not supported in memcached provider.");
+        }
+
         /// <summary>
         /// Sets all async.
         /// </summary>

@@ -362,7 +362,29 @@
 
             return Task.CompletedTask;
         }
-          
+
+        public override Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            var searchPattern = this.ProcessSearchKeyPattern(pattern);
+            var searchKey = this.HandleSearchKeyPattern(pattern);
+            
+            var list = _cacheKeysMap.Where(pair => FilterByPattern(pair.Key,searchKey, searchPattern)).Select(x => x.Key).ToList();
+
+            foreach (var item in list)
+            {
+                var path = BuildMd5Path(item);
+
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(item, out _);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+        
         public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));

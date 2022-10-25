@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="../../build/version.props" />
+	<Import Project="../../build/releasenotes.props" />
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+		<Owners>ncc;Catcher Wong</Owners>
+		<Authors>ncc;Catcher Wong</Authors>
+		<VersionPrefix>$(EasyCachingZookeeperBusPackageVersion)</VersionPrefix>
+		<VersionSuffix></VersionSuffix>
+		<Description>
+			A simple caching bus(message bus) based on Zookeeper.
+		</Description>
+		<PackageTags>Bus,Hybrid,Zookeeper,Caching,Cache</PackageTags>
+		<PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+		<ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+		<PackageIcon>nuget-icon.png</PackageIcon>
+		<PackageReleaseNotes>
+			$(EasyCachingZookeeperBusPackageNotes)
+		</PackageReleaseNotes>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<NoWarn>$(NoWarn);1591</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+		<None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="ZooKeeperNetEx" Version="3.4.12.4" />
+	</ItemGroup>
+
+</Project>

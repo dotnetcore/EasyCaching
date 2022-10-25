@@ -160,6 +160,19 @@ namespace EasyCaching.Core
         void RemoveByPrefix(string prefix);
 
         /// <summary>
+        /// Removes cached items by a cache key pattern async.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKeys.</param>
+        /// <param name="cancellationToken"></param>
+        Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// Removes cached items by a cache key pattern.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKeys.</param>
+        void RemoveByPattern(string pattern);
+
+        /// <summary>
         /// Removes cached item by cachekey's prefix async.
         /// </summary>
         /// <param name="prefix">Prefix of CacheKey.</param>

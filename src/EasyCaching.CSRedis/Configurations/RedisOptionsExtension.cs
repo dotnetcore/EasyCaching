@@ -48,8 +48,7 @@ using EasyCaching.CSRedis.DistributedLock;
         {
             services.AddOptions();
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-
+            
             services.Configure(_name, _configure);
 
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
