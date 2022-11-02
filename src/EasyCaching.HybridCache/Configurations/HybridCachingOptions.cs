@@ -16,6 +16,12 @@
         public bool EnableLogging { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether an exception should be thrown if an error on the distributed cache has occurred
+        /// </summary>
+        /// <value><c>true</c> if distributed cache exceptions should not be ignored; otherwise, <c>false</c>.</value>
+        public bool ThrowIfDistributedCacheError { get; set; }
+
+        /// <summary>
         /// local cache provider name
         /// </summary>
         public string LocalCacheProviderName { get; set; }

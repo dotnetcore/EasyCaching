@@ -1,24 +1,20 @@
 ﻿namespace EasyCaching.UnitTests
 {
-    using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using EasyCaching.HybridCache;
-    using EasyCaching.InMemory;
-    using EasyCaching.Redis;
+    using FakeItEasy;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
     using System;
+    using System.Threading;
     using System.Threading.Tasks;
     using Xunit;
-    using FakeItEasy;
-    using System.Threading;
 
     public class HybridCachingTest //: BaseCachingProviderTest
     {
-        private string _namespace;
+        private readonly string _namespace;
         private IHybridCachingProvider hybridCaching_1;
-        private IEasyCachingProviderFactory factory;
 
         private HybridCachingProvider fakeHybrid;
         private IEasyCachingProviderFactory fakeFactory;
@@ -32,6 +28,7 @@
             var options = new HybridCachingOptions
             {
                 EnableLogging = false,
+                ThrowIfDistributedCacheError = false,
                 TopicName = "test_topic",
                 LocalCacheProviderName = "m1",
                 DistributedCacheProviderName = "myredis",
@@ -54,6 +51,7 @@
                 option.UseHybrid(config =>
                 {
                     config.EnableLogging = false;
+                    config.ThrowIfDistributedCacheError = false;
                     config.TopicName = "test_topic";
                     config.LocalCacheProviderName = "m1";
                     config.DistributedCacheProviderName = "myredis";
@@ -68,7 +66,6 @@
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
-            factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
 
             var bus = serviceProvider.GetService<IEasyCachingBus>();
 
@@ -171,7 +168,7 @@
 
             Assert.True(true);
         }
-              
+
         [Fact]
         public void Distributed_Remove_Throw_Exception_Should_Not_Break()
         {
