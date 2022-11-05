@@ -24,5 +24,17 @@
         bool Replace<T>(string key, T value, TimeSpan? expiresIn = null);
         void Clear(string prefix = "");
         TimeSpan GetExpiration(string key);
+
+        event EventHandler<EvictedEventArgs> Evicted;
+    }
+
+    public class EvictedEventArgs : EventArgs
+    {
+        public EvictedEventArgs(string key )
+        {
+            this.Key = key;
+        }
+
+        public string Key { get; private set; }
     }
 }

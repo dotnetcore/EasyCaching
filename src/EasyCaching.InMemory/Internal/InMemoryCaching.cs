@@ -17,6 +17,8 @@
         private long _cacheSize = 0L;
         private const string _UPTOLIMIT_KEY = "inter_up_to_limit_key";
 
+        public event EventHandler<EvictedEventArgs> Evicted;
+
         public InMemoryCaching(string name, InMemoryCachingOptions optionsAccessor)
         {
             ArgumentCheck.NotNull(optionsAccessor, nameof(optionsAccessor));
@@ -32,7 +34,7 @@
         public void Clear(string prefix = "")
         {
             if (string.IsNullOrWhiteSpace(prefix))
-            {                
+            {
                 _memory.Clear();
 
                 if (_options.SizeLimit.HasValue)
@@ -53,9 +55,13 @@
 
         internal void RemoveExpiredKey(string key)
         {
-           bool flag = _memory.TryRemove(key, out _);
-            if (_options.SizeLimit.HasValue && flag)
-                Interlocked.Decrement(ref _cacheSize);
+            if (_memory.TryRemove(key, out _))
+            {
+                Evicted?.Invoke(this, new EvictedEventArgs(key));
+
+                if (_options.SizeLimit.HasValue)
+                    Interlocked.Decrement(ref _cacheSize);
+            }
         }
 
         public CacheValue<T> Get<T>(string key)
@@ -189,7 +195,7 @@
 
                     _memory.AddOrUpdate(deep.Key, deep, (k, cacheEntry) => deep);
 
-                    if(_options.SizeLimit.HasValue)
+                    if (_options.SizeLimit.HasValue)
                         Interlocked.Increment(ref _cacheSize);
                 }
             }
@@ -239,7 +245,7 @@
                     continue;
 
                 if (_memory.TryRemove(key, out _))
-                { 
+                {
                     removed++;
                     if (_options.SizeLimit.HasValue)
                         Interlocked.Decrement(ref _cacheSize);
@@ -254,7 +260,7 @@
             bool flag = _memory.TryRemove(key, out _);
 
             if (_options.SizeLimit.HasValue && !key.Equals(_UPTOLIMIT_KEY) && flag)
-            { 
+            {
                 Interlocked.Decrement(ref _cacheSize);
             }
 
@@ -270,10 +276,10 @@
         public int RemoveByPattern(string searchKey, SearchKeyPattern searchPattern)
         {
             var keysToRemove = _memory.Keys.Where(x => FilterByPattern(x, searchKey, searchPattern)).ToList();
-            
+
             return RemoveAll(keysToRemove);
         }
-        
+
         private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)
         {
             switch (searchKeyPattern)
@@ -336,7 +342,10 @@
             var now = SystemClock.UtcNow;
             foreach (var entry in cache._memory.Values.Where(x => x.ExpiresAt < now))
             {
-                cache.Remove(entry.Key);
+                if (cache.Remove(entry.Key))
+                {
+                    Evicted?.Invoke(this, new EvictedEventArgs(entry.Key));
+                }
             }
         }
 
@@ -403,7 +412,7 @@
             public T GetValue<T>(bool isDeepClone = true)
             {
                 object val = Value;
-              
+
                 var t = typeof(T);
 
                 if (t == TypeHelper.BoolType || t == TypeHelper.StringType || t == TypeHelper.CharType || t == TypeHelper.DateTimeType || t.IsNumeric())
@@ -412,7 +421,7 @@
                 if (t == TypeHelper.NullableBoolType || t == TypeHelper.NullableCharType || t == TypeHelper.NullableDateTimeType || t.IsNullableNumeric())
                     return val == null ? default(T) : (T)Convert.ChangeType(val, Nullable.GetUnderlyingType(t));
 
-                return isDeepClone 
+                return isDeepClone
                     ? DeepClonerGenerator.CloneObject<T>((T)val)
                     : (T)val;
             }
