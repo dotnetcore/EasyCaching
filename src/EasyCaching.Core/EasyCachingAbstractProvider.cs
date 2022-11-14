@@ -32,7 +32,7 @@ namespace EasyCaching.Core
         public CachingProviderType CachingProviderType => this.ProviderType;
         public CacheStats CacheStats => this.ProviderStats;
 
-        public object Database => BaseGetDatabse();
+        public object Database => BaseGetDatabase();
 
         protected EasyCachingAbstractProvider() { }
 
@@ -42,7 +42,7 @@ namespace EasyCaching.Core
             _options = options;
         }
 
-        public abstract object BaseGetDatabse();
+        public abstract object BaseGetDatabase();
         public abstract bool BaseExists(string cacheKey);
         public abstract Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default);
         public abstract void BaseFlush();
