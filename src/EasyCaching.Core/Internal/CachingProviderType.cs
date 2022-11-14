@@ -13,5 +13,6 @@
         Ext1,
         Ext2,
         LiteDB,
+        FasterKv,
     }
 }

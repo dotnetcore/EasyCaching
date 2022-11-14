@@ -443,6 +443,6 @@ namespace EasyCaching.LiteDB
         /// <returns></returns>
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabse() => _cache;
+        public override object BaseGetDatabase() => _cache;
     }
 }

@@ -176,7 +176,7 @@
             return Task.FromResult(false);
         }
 
-        public override object BaseGetDatabse()
+        public override object BaseGetDatabase()
         {
             return null;
         }

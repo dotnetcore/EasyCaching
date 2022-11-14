@@ -74,6 +74,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.ConfluentKa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Bus.Zookeeper", "bus\EasyCaching.Bus.Zookeeper\EasyCaching.Bus.Zookeeper.csproj", "{5E488583-391E-4E15-83C1-7301B4FE79AE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.FasterKv", "src\EasyCaching.FasterKv\EasyCaching.FasterKv.csproj", "{7191E567-38DF-4879-82E1-73EC618AFCAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -196,6 +198,10 @@ Global
 		{5E488583-391E-4E15-83C1-7301B4FE79AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E488583-391E-4E15-83C1-7301B4FE79AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E488583-391E-4E15-83C1-7301B4FE79AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7191E567-38DF-4879-82E1-73EC618AFCAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7191E567-38DF-4879-82E1-73EC618AFCAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7191E567-38DF-4879-82E1-73EC618AFCAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7191E567-38DF-4879-82E1-73EC618AFCAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -230,6 +236,7 @@ Global
 		{4FCF16BF-5E21-4B74-AB45-3C121ADF1485} = {15070C49-A507-4844-BCFE-D319CFBC9A63}
 		{F7FBADEB-D766-4595-949A-07104B52692C} = {B337509B-75F9-4851-821F-9BBE87C4E4BC}
 		{5E488583-391E-4E15-83C1-7301B4FE79AE} = {B337509B-75F9-4851-821F-9BBE87C4E4BC}
+		{7191E567-38DF-4879-82E1-73EC618AFCAC} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63A57886-054B-476C-AAE1-8D7C8917682E}
