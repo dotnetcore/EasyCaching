@@ -1,6 +1,7 @@
 ﻿using System;
 using EasyCaching.Core;
 using EasyCaching.Core.Configurations;
+using EasyCaching.FasterKv;
 using EasyCaching.FasterKv.Configurations;
 using Microsoft.Extensions.Configuration;
 // ReSharper disable CheckNamespace
@@ -9,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection;
 
 public static class FasterKvCachingOptionsExtensions
 {
-            /// <summary>
+        /// <summary>
         /// Uses the FasterKv provider (specify the config via hard code).
         /// </summary>
         /// <param name="options">Options.</param>
