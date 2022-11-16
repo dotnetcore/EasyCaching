@@ -1,11 +1,11 @@
 ﻿namespace EasyCaching.Core
 {
-    using EasyCaching.Core.Bus;
-    using EasyCaching.Core.Diagnostics;
     using System;
     using System.Diagnostics;
     using System.Threading;
     using System.Threading.Tasks;
+    using EasyCaching.Core.Bus;
+    using EasyCaching.Core.Diagnostics;
 
     public abstract class EasyCachingAbstractBus : IEasyCachingBus
     {
@@ -18,8 +18,8 @@
 
         protected Action<EasyCachingMessage> _handler;
 
+        protected Action _reconnectHandler;
         protected string BusName { get; set; }
-
         public string Name => this.BusName;
 
         public void Publish(string topic, EasyCachingMessage message)
@@ -74,9 +74,10 @@
             }
         }
 
-        public void Subscribe(string topic, Action<EasyCachingMessage> action)
+        public void Subscribe(string topic, Action<EasyCachingMessage> action, Action reconnectAction = null)
         {
             _handler = action;
+            _reconnectHandler = reconnectAction;
             BaseSubscribe(topic, action);
         }
 
@@ -104,6 +105,11 @@
                     s_diagnosticListener.WritePublishMessageAfter(operationId);
                 }
             }
+        }
+
+        public virtual void BaseOnReconnect()
+        {
+            _reconnectHandler?.Invoke();
         }
     }
 }

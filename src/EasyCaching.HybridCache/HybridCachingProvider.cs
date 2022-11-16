@@ -93,7 +93,7 @@
             else this._distributedCache = distributed;
 
             this._bus = bus ?? NullEasyCachingBus.Instance;
-            this._bus.Subscribe(_options.TopicName, OnMessage);
+            this._bus.Subscribe(_options.TopicName, OnMessage, OnReconnect);
 
             this._cacheId = Guid.NewGuid().ToString("N");
 
@@ -157,6 +157,12 @@
 
                 LogMessage($"remove local cache that cache key is {item}");
             }
+        }
+
+        private void OnReconnect()
+        {
+            LogMessage("Bus Reconnected, flushing in-memory keys");
+            _localCache.Flush();
         }
 
         /// <summary>

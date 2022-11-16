@@ -12,6 +12,7 @@
         /// </summary>
         /// <param name="topic">Topic.</param>
         /// <param name="action">Action.</param>
-        void Subscribe(string topic, Action<EasyCachingMessage> action);
+        /// <param name="reconnectAction"> Reconnect Action.</param>
+        void Subscribe(string topic, Action<EasyCachingMessage> action, Action reconnectAction = null);
     }
 }
