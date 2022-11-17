@@ -437,6 +437,56 @@ namespace EasyCaching.Redis
             return result;
         }
 
+        
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        {
+            var connection = _cache.Multiplexer;
+
+            var keyArray = connection?.GetServer(connection?.GetEndPoints().FirstOrDefault())
+                ?.Keys(database: _cache.Database, pattern: "*")?.ToArray();
+
+            if (keyArray?.Length == 0 || keyArray is null)
+                return new Dictionary<string, CacheValue<T>>();
+
+            var values = _cache.StringGet(keyArray?.Select(k => (RedisKey)k).ToArray());
+
+            var result = new Dictionary<string, CacheValue<T>>();
+            for (int i = 0; i < keyArray.Length; i++)
+            {
+                var cachedValue = values[i];
+                if (!cachedValue.IsNull)
+                    result.Add(keyArray[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
+                else
+                    result.Add(keyArray[i], CacheValue<T>.NoValue);
+            }
+
+            return result;
+        }
+        
+        
+        /// <summary>
+        /// Gets all keys.
+        /// </summary>
+        /// <returns>The all keys.</returns>
+        public override IEnumerable<string> BaseGetAllKeys()
+        {
+            var keyArray = new List<string>();
+
+            var connection = _cache.Multiplexer;
+
+            var redisKeys = connection?.GetServer(connection?.GetEndPoints().FirstOrDefault())
+                ?.Keys(database: _cache.Database, pattern: "*")?.ToArray();
+            
+            keyArray.AddRange(redisKeys?.Select(key => (string) key) ?? new List<string>());
+
+            return keyArray;
+        }
+
         /// <summary>
         /// Gets the by prefix.
         /// </summary>

@@ -42,13 +42,17 @@
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
 
-            //var redisCache = factory.GetCachingProvider("r1");
-
-            //redisCache.Set<Product>("rkey", new Product() { Name = "test" }, TimeSpan.FromSeconds(20));
-
-            //var redisVal = redisCache.Get<Product>("rkey");
-
-            //Console.WriteLine($"redis cache get value, {redisVal.HasValue} {redisVal.IsNull} {redisVal.Value} ");
+            // var redisCache = factory.GetCachingProvider("r1");
+            //
+            // redisCache.Set<Product>("rkey", new Product() { Name = "test" }, TimeSpan.FromSeconds(20));
+            //
+            // var redisVal = redisCache.Get<Product>("rkey");
+            //
+            // var redisAllVal = redisCache.GetAll();
+            //
+            // var redisAllKey = redisCache.GetAllKeys();
+            //
+            // Console.WriteLine($"redis cache get value, {redisVal.HasValue} {redisVal.IsNull} {redisVal.Value}");
 
 
             var mCache = factory.GetCachingProvider("m1");
@@ -61,6 +65,10 @@
             mCache.Set<string>("mkey", "mvalue", TimeSpan.FromSeconds(20));
 
             var mVal = mCache.Get<string>("mkey");
+            
+            var mAllVal = mCache.GetAll();
+            
+            var mAllKey = mCache.GetAllKeys();
 
             Console.WriteLine($"in-memory cache get value, {mVal.HasValue} {mVal.IsNull} {mVal.Value} ");
 

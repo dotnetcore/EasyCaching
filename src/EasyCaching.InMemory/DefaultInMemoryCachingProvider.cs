@@ -306,6 +306,31 @@
 
             return _cache.GetAll<T>(cacheKeys);
         }
+        
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("GetAll");
+
+            return _cache.GetAll<T>();
+        }
+        
+        /// <summary>
+        /// Get all cacheKey.
+        /// </summary>
+        /// <returns>Get all cacheKey.</returns>
+        public override IEnumerable<string> BaseGetAllKeys()
+        {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("GetAllKeys");
+
+            return _cache.GetAllKeys();
+        }
 
         /// <summary>
         /// Gets the by prefix.

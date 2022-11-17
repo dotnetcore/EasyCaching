@@ -19,7 +19,9 @@
         bool Remove(string key);
         int RemoveByPrefix(string prefix);
         int RemoveByPattern(string searchKey, SearchKeyPattern searchPattern);
+        IEnumerable<string> GetAllKeys();
         IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> keys);
+        IDictionary<string, CacheValue<T>> GetAll<T>();
         int SetAll<T>(IDictionary<string, T> values, TimeSpan? expiresIn = null);
         bool Replace<T>(string key, T value, TimeSpan? expiresIn = null);
         void Clear(string prefix = "");

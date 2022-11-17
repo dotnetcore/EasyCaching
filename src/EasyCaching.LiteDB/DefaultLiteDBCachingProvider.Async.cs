@@ -170,6 +170,16 @@
             return await Task.Run(() => BaseGetAll<T>(cacheKeys), cancellationToken);
         }
 
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the by prefix async.
         /// </summary>

@@ -262,6 +262,17 @@
                     pair => pair.Key,
                     pair => ConvertFromStoredValue<T>(pair.Value));
         }
+        
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+        
+        
+        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Gets the by prefix async.

@@ -252,6 +252,16 @@
             return result;
         }
 
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public override IEnumerable<string> BaseGetAllKeys()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Handles the prefix of CacheKey.
         /// </summary>

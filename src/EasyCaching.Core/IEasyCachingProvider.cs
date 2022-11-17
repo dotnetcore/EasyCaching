@@ -21,8 +21,32 @@
         /// </summary>
         /// <value><c>true</c> if is use lock; otherwise, <c>false</c>.</value>
         bool UseLock { get; }
+        
+        /// <summary>
+        /// Gets all keys.
+        /// </summary>
+        /// <returns>The all keys.</returns>
+        IEnumerable<string> GetAllKeys();
+        
+        /// <summary>
+        /// Gets all keys async.
+        /// </summary>
+        /// <returns>The all keys async.</returns>
+        Task<IEnumerable<string>> GetAllKeysAsync(CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// Gets all.
+        /// </summary>
+        /// <returns>The all.</returns>
+        IDictionary<string, CacheValue<object>> GetAll();
+        
+        /// <summary>
+        /// Gets all async.
+        /// </summary>
+        /// <returns>The all async.</returns>
+        Task<IDictionary<string, CacheValue<object>>> GetAllAsync(CancellationToken cancellationToken = default);
 
-       /// <summary>
+        /// <summary>
         /// Gets all.
         /// </summary>
         /// <returns>The all.</returns>

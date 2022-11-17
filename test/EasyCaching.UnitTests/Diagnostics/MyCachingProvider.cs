@@ -5,6 +5,7 @@
     using System.Collections.Generic;
     using System.Threading;
     using System.Threading.Tasks;
+    using System.Linq;
 
     public class MyCachingProvider : EasyCachingAbstractProvider
     {
@@ -47,12 +48,32 @@
             return CacheValue<T>.NoValue;
         }
 
+        public override IEnumerable<string> BaseGetAllKeys()
+        {
+            return Enumerable.Empty<string>();
+        }
+
+        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Enumerable.Empty<string>());
+        }
+
         public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys)
         {
             return null;
         }
 
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        {
+            return null;
+        }
+
         public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
+        {
+            return null;
+        }
+
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(CancellationToken cancellationToken = default)
         {
             return null;
         }

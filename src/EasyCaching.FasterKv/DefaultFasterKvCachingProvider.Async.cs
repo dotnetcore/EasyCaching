@@ -29,6 +29,15 @@ namespace EasyCaching.FasterKv
             }
         }  
 
+        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
 
         public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys,
             CancellationToken cancellationToken = default)

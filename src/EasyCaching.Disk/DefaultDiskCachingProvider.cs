@@ -336,6 +336,16 @@
             return dict;
         }
 
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public override IEnumerable<string> BaseGetAllKeys()
+        {
+            throw new NotImplementedException();
+        }
+
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
