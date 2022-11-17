@@ -246,7 +246,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
+        public virtual void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
         {
             Assert.Throws<ArgumentNullException>(() => _provider.RemoveByPrefix(prefix));
         }
@@ -255,7 +255,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public async Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
+        public async virtual Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }
@@ -264,7 +264,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
+        public virtual void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
         {
             Assert.Throws<ArgumentNullException>(() => _provider.RemoveByPrefix(prefix));
         }
@@ -273,7 +273,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public async Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
+        public virtual async Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }

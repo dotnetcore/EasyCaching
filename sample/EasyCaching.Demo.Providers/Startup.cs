@@ -61,6 +61,14 @@
                 });
 
                 option.UseMemcached(Configuration);
+
+                //use fasterKv
+                option.UseFasterKv(config =>
+                    {
+                        // fasterKv must be set SerializerName
+                        config.SerializerName = "msg";
+                    })
+                    .WithMessagePack("msg");
             });
         }
 
