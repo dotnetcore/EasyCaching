@@ -280,10 +280,12 @@
             return RemoveAll(keysToRemove);
         }
 
-        public IEnumerable<string> GetAllKeys()
+        public IEnumerable<string> GetAllKeys(string prefix = "")
         {
-            var keys = _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow).Select(x=> x.Key).ToList();
-            return keys;
+            return string.IsNullOrEmpty(prefix) 
+                ? _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow).Select(x=> x.Key).ToList() 
+                : _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow)
+                    .Select(x=> x.Key).ToList();
         }
 
         private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)
@@ -312,9 +314,12 @@
             return map;
         }
 
-        public IDictionary<string, CacheValue<T>> GetAll<T>()
+        public IDictionary<string, CacheValue<T>> GetAll<T>(string prefix = "")
         {
-            var values = _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow);
+            var values = string.IsNullOrEmpty(prefix) 
+                ? _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow) 
+                : _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow);
+            
             return values.ToDictionary(k => k.Key, v => new CacheValue<T>(v.GetValue<T>(_options.EnableReadDeepClone), true));
         }
 

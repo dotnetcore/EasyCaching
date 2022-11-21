@@ -310,26 +310,28 @@
         /// <summary>
         /// Gets all.
         /// </summary>
+        /// <param name="prefix">Prefix.</param>
         /// <returns>The all.</returns>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix = "")
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAll");
 
-            return _cache.GetAll<T>();
+            return _cache.GetAll<T>(prefix);
         }
         
         /// <summary>
         /// Get all cacheKey.
         /// </summary>
+        /// <param name="prefix">Prefix.</param>
         /// <returns>Get all cacheKey.</returns>
-        public override IEnumerable<string> BaseGetAllKeys()
+        public override IEnumerable<string> BaseGetAllKeys(string prefix = "")
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllKeys");
 
-            return _cache.GetAllKeys();
+            return _cache.GetAllKeys(prefix);
         }
 
         /// <summary>

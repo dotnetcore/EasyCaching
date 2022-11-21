@@ -441,28 +441,29 @@ namespace EasyCaching.Redis
         /// <summary>
         /// Gets all.
         /// </summary>
+        /// <param name="prefix">Prefix</param>
         /// <returns>The all.</returns>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix = "")
         {
-            var connection = _cache.Multiplexer;
+            var keys = new List<RedisKey>();
 
-            var keyArray = connection?.GetServer(connection?.GetEndPoints().FirstOrDefault())
-                ?.Keys(database: _cache.Database, pattern: "*")?.ToArray();
-
-            if (keyArray?.Length == 0 || keyArray is null)
+            foreach (var server in _servers)
+                keys.AddRange(server.Keys(pattern: string.IsNullOrEmpty(prefix) ? "*" : prefix, database: _cache.Database));
+            
+            if (keys?.Count == 0 || !keys.Any())
                 return new Dictionary<string, CacheValue<T>>();
 
-            var values = _cache.StringGet(keyArray?.Select(k => (RedisKey)k).ToArray());
+            var values = _cache.StringGet(keys?.Select(k => k).ToArray());
 
             var result = new Dictionary<string, CacheValue<T>>();
-            for (int i = 0; i < keyArray.Length; i++)
+            for (int i = 0; i < keys.Count; i++)
             {
                 var cachedValue = values[i];
                 if (!cachedValue.IsNull)
-                    result.Add(keyArray[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
+                    result.Add(keys[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
                 else
-                    result.Add(keyArray[i], CacheValue<T>.NoValue);
+                    result.Add(keys[i], CacheValue<T>.NoValue);
             }
 
             return result;
@@ -472,19 +473,18 @@ namespace EasyCaching.Redis
         /// <summary>
         /// Gets all keys.
         /// </summary>
+        /// <param name="prefix">Prefix</param>
         /// <returns>The all keys.</returns>
-        public override IEnumerable<string> BaseGetAllKeys()
+        public override IEnumerable<string> BaseGetAllKeys(string prefix = "")
         {
-            var keyArray = new List<string>();
+            var keys = new List<RedisKey>();
 
-            var connection = _cache.Multiplexer;
-
-            var redisKeys = connection?.GetServer(connection?.GetEndPoints().FirstOrDefault())
-                ?.Keys(database: _cache.Database, pattern: "*")?.ToArray();
+            foreach (var server in _servers)
+                keys.AddRange(server.Keys(pattern: string.IsNullOrEmpty(prefix) ? "*" : prefix, database: _cache.Database));
             
-            keyArray.AddRange(redisKeys?.Select(key => (string) key) ?? new List<string>());
-
-            return keyArray;
+            var result = keys?.Select(key => (string) key)?.Distinct();
+            
+            return result;
         }
 
         /// <summary>

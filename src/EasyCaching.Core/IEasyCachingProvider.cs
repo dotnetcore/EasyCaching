@@ -25,26 +25,32 @@
         /// <summary>
         /// Gets all keys.
         /// </summary>
+        /// <param name="prefix">Prefix.</param>
         /// <returns>The all keys.</returns>
-        IEnumerable<string> GetAllKeys();
+        IEnumerable<string> GetAllKeys(string prefix = "");
         
         /// <summary>
         /// Gets all keys async.
         /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>The all keys async.</returns>
-        Task<IEnumerable<string>> GetAllKeysAsync(CancellationToken cancellationToken = default);
+        Task<IEnumerable<string>> GetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Gets all.
         /// </summary>
+        /// <param name="prefix">Prefix.</param>
         /// <returns>The all.</returns>
-        IDictionary<string, CacheValue<object>> GetAll();
+        IDictionary<string, CacheValue<object>> GetAll(string prefix = "");
         
         /// <summary>
         /// Gets all async.
         /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>The all async.</returns>
-        Task<IDictionary<string, CacheValue<object>>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<IDictionary<string, CacheValue<object>>> GetAllAsync(string prefix = "", CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all.

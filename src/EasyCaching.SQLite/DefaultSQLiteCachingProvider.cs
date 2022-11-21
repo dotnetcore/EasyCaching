@@ -297,14 +297,14 @@
             return GetDict<T>(list);
         }
 
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>()
+        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix ="")
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
         
-        public override IEnumerable<string> BaseGetAllKeys()
+        public override IEnumerable<string> BaseGetAllKeys(string prefix ="")
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <summary>

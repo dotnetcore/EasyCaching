@@ -282,24 +282,24 @@
         /// <returns>The all async.</returns>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(CancellationToken cancellationToken = default)
+        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(string prefix = "", CancellationToken cancellationToken = default)
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllAsync");
 
-            return await Task.FromResult(_cache.GetAll<T>());
+            return await Task.FromResult(_cache.GetAll<T>(prefix));
         }
         
         /// <summary>
         /// Get all cacheKey async.
         /// </summary>
         /// <returns>Get all cacheKey async.</returns>
-        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllKeys");
 
-            return Task.FromResult(_cache.GetAllKeys());
+            return Task.FromResult(_cache.GetAllKeys(prefix));
         }
 
         /// <summary>
