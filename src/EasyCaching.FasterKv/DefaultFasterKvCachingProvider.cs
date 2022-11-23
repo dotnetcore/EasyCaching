@@ -162,12 +162,7 @@ namespace EasyCaching.FasterKv
             return BaseGetInternal<T>(cacheKey, session);
         }
         
-        public override IEnumerable<string> BaseGetAllKeys(string prefix = "")
-        {
-            throw new NotSupportedException();
-        }
-
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix = "")
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
         {
             throw new NotSupportedException();
         }

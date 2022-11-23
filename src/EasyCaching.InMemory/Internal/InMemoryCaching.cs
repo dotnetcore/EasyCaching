@@ -280,12 +280,10 @@
             return RemoveAll(keysToRemove);
         }
 
-        public IEnumerable<string> GetAllKeys(string prefix = "")
+        public IEnumerable<string> GetAllKeys(string prefix)
         {
-            return string.IsNullOrEmpty(prefix) 
-                ? _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow).Select(x=> x.Key).ToList() 
-                : _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow)
-                    .Select(x=> x.Key).ToList();
+            return _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow)
+                .Select(x=> x.Key).ToList();
         }
 
         private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)

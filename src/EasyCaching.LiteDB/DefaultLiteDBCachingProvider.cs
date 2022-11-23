@@ -321,12 +321,7 @@ namespace EasyCaching.LiteDB
             return GetDict<T>(list);
         }
 
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix = "")
-        {
-            throw new NotSupportedException();
-        }
-        
-        public override IEnumerable<string> BaseGetAllKeys(string prefix = "")
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
         {
             throw new NotSupportedException();
         }

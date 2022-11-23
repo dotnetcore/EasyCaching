@@ -296,53 +296,22 @@
             return result;
         }
         
-        /// <summary>
-        /// Gets all async.
-        /// </summary>
-        /// <returns>The all async.</returns>
-        /// <param name="prefix">Prefix</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(string prefix = "", CancellationToken cancellationToken = default)
-        {
-            var keys = new List<RedisKey>();
-
-            foreach (var server in _servers)
-                keys.AddRange(server.Keys(pattern: string.IsNullOrEmpty(prefix) ? "*" : prefix, database: _cache.Database));
-            
-            if (keys?.Count == 0 || !keys.Any())
-                return new Dictionary<string, CacheValue<T>>();
-
-            var values = _cache.StringGet(keys?.Select(k => k).ToArray());
-
-            var result = new Dictionary<string, CacheValue<T>>();
-            for (int i = 0; i < keys.Count; i++)
-            {
-                var cachedValue = values[i];
-                if (!cachedValue.IsNull)
-                    result.Add(keys[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
-                else
-                    result.Add(keys[i], CacheValue<T>.NoValue);
-            }
-
-            return await Task.FromResult(result);
-        }
-        
         
         /// <summary>
-        /// Gets all keys async.
+        /// Gets all keys async by prefix.
         /// </summary>
         /// <param name="prefix">Prefix</param>
         /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns>The all keys async.</returns>
-        public override async Task<IEnumerable<string>> BaseGetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default)
+        /// <returns>The all keys by prefix async.</returns>
+        public override async Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
-            var keys = new List<RedisKey>();
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            foreach (var server in _servers)
-                keys.AddRange(server.Keys(pattern: string.IsNullOrEmpty(prefix) ? "*" : prefix, database: _cache.Database));
+            prefix = this.HandlePrefix(prefix);
+
+            var redisKeys = this.SearchRedisKeys(prefix);
             
-            var result = keys?.Select(key => (string) key)?.Distinct();
+            var result = redisKeys?.Select(key => (string) key)?.Distinct();
             
             return await Task.FromResult(result);
         }

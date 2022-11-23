@@ -49,12 +49,10 @@ namespace EasyCaching.Core
         public abstract Task BaseFlushAsync(CancellationToken cancellationToken = default);
         public abstract CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration);
         public abstract CacheValue<T> BaseGet<T>(string cacheKey);
-        public abstract IEnumerable<string> BaseGetAllKeys(string prefix = "");
-        public abstract Task<IEnumerable<string>> BaseGetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default);
+        public abstract IEnumerable<string> BaseGetAllKeysByPrefix(string prefix);
+        public abstract Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
         public abstract IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys);
-        public abstract IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix ="");
         public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default);
-        public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(string prefix ="", CancellationToken cancellationToken = default);
         public abstract Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default);
         public abstract Task<object> BaseGetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default);
         public abstract Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, CancellationToken cancellationToken = default);
@@ -261,13 +259,13 @@ namespace EasyCaching.Core
             }
         }
         
-        public IEnumerable<string> GetAllKeys(string prefix = "")
+        public IEnumerable<string> GetAllKeysByPrefix(string prefix)
         {
-            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeys), null));
+            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeysByPrefix), new[] { prefix }));
             Exception e = null;
             try
             {
-                return BaseGetAllKeys(prefix);
+                return BaseGetAllKeysByPrefix(prefix);
             }
             catch (Exception ex)
             {
@@ -287,39 +285,13 @@ namespace EasyCaching.Core
             }        
         }
         
-        public async Task<IEnumerable<string>> GetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
-            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeysAsync), null));
+            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeysByPrefixAsync), new[] { prefix }));
             Exception e = null;
             try
             {
-                return await BaseGetAllKeysAsync(prefix, cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-                throw;
-            }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                } 
-            }        
-        }
-
-        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)
-        {
-            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAll), cacheKeys.ToArray()));
-            Exception e = null;
-            try
-            {
-                return BaseGetAll<T>(cacheKeys);
+                return await BaseGetAllKeysByPrefixAsync(prefix);
             }
             catch (Exception ex)
             {
@@ -339,39 +311,13 @@ namespace EasyCaching.Core
             }
         }
 
-        public IDictionary<string, CacheValue<object>> GetAll(string prefix = "")
+        public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)
         {
-            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAll), null));
+            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAll), cacheKeys.ToArray()));
             Exception e = null;
             try
             {
-                return BaseGetAll<object>(prefix);
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-                throw;
-            }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                } 
-            }        
-        }
-        
-        public async Task<IDictionary<string, CacheValue<object>>> GetAllAsync(string prefix = "", CancellationToken cancellationToken = default)
-        {
-            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllAsync), null));
-            Exception e = null;
-            try
-            {
-                return await BaseGetAllAsync<object>(prefix, cancellationToken);
+                return BaseGetAll<T>(cacheKeys);
             }
             catch (Exception ex)
             {

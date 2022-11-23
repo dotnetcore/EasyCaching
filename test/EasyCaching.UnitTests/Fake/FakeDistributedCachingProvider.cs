@@ -55,25 +55,14 @@
             return new CacheValue<T>(default(T), true);
         }
         
-        public IEnumerable<string> GetAllKeys(string prefix ="")
+        public IEnumerable<string> GetAllKeysByPrefix(string prefix)
         {
             return Enumerable.Empty<string>();
         }
 
-        public Task<IEnumerable<string>> GetAllKeysAsync(string prefix ="", CancellationToken cancellationToken = default)
+        public Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(Enumerable.Empty<string>());
-        }
-
-        public IDictionary<string, CacheValue<object>> GetAll(string prefix ="")
-        {
-            return new Dictionary<string, CacheValue<object>>();
-        }
-
-        public virtual Task<IDictionary<string, CacheValue<object>>> GetAllAsync(string prefix ="", CancellationToken cancellationToken = default)
-        {
-            IDictionary<string, CacheValue<object>> dict = new Dictionary<string, CacheValue<object>>();
-            return Task.FromResult(dict);
         }
 
         public virtual IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)

@@ -23,34 +23,19 @@
         bool UseLock { get; }
         
         /// <summary>
-        /// Gets all keys.
+        /// Gets all keys by prefix.
         /// </summary>
         /// <param name="prefix">Prefix.</param>
-        /// <returns>The all keys.</returns>
-        IEnumerable<string> GetAllKeys(string prefix = "");
+        /// <returns>The all keys by prefix.</returns>
+        IEnumerable<string> GetAllKeysByPrefix(string prefix);
         
         /// <summary>
-        /// Gets all keys async.
+        /// Gets all keys by prefix async.
         /// </summary>
         /// <param name="prefix">Prefix.</param>
         /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns>The all keys async.</returns>
-        Task<IEnumerable<string>> GetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default);
-        
-        /// <summary>
-        /// Gets all.
-        /// </summary>
-        /// <param name="prefix">Prefix.</param>
-        /// <returns>The all.</returns>
-        IDictionary<string, CacheValue<object>> GetAll(string prefix = "");
-        
-        /// <summary>
-        /// Gets all async.
-        /// </summary>
-        /// <param name="prefix">Prefix.</param>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <returns>The all async.</returns>
-        Task<IDictionary<string, CacheValue<object>>> GetAllAsync(string prefix = "", CancellationToken cancellationToken = default);
+        /// <returns>The all keys by prefix async.</returns>
+        Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets all.

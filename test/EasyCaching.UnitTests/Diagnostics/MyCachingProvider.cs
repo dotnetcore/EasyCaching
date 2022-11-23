@@ -48,12 +48,12 @@
             return CacheValue<T>.NoValue;
         }
 
-        public override IEnumerable<string> BaseGetAllKeys(string prefix ="")
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
         {
             return Enumerable.Empty<string>();
         }
 
-        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(string prefix ="", CancellationToken cancellationToken = default)
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             return Task.FromResult(Enumerable.Empty<string>());
         }
@@ -63,17 +63,7 @@
             return null;
         }
 
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix ="")
-        {
-            return null;
-        }
-
         public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
-        {
-            return null;
-        }
-
-        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(string prefix ="", CancellationToken cancellationToken = default)
         {
             return null;
         }

@@ -84,15 +84,9 @@
 
             return dict;
         }
-        
-        
-        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(string prefix = "", CancellationToken cancellationToken = default)
-        {
-            throw new NotSupportedException();
-        }
-        
-        
-        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default)
+
+
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             throw new NotSupportedException();
         }

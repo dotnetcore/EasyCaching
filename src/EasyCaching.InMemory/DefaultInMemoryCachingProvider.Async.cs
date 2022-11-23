@@ -276,28 +276,17 @@
             return await Task.FromResult(_cache.GetAll<T>(cacheKeys));
         }
         
-        /// <summary>
-        /// Gets all async.
-        /// </summary>
-        /// <returns>The all async.</returns>
-        /// <param name="cancellationToken">CancellationToken</param>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(string prefix = "", CancellationToken cancellationToken = default)
-        {
-            if (_options.EnableLogging)
-                _logger?.LogInformation("GetAllAsync");
 
-            return await Task.FromResult(_cache.GetAll<T>(prefix));
-        }
-        
         /// <summary>
-        /// Get all cacheKey async.
+        /// Get all cacheKey by prefix async.
         /// </summary>
-        /// <returns>Get all cacheKey async.</returns>
-        public override Task<IEnumerable<string>> BaseGetAllKeysAsync(string prefix = "", CancellationToken cancellationToken = default)
+        /// <param name="prefix">Cache keys.</param>
+        /// <param name="cancellationToken">Cache keys.</param>
+        /// <returns>Get all cacheKey by prefix async.</returns>
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             if (_options.EnableLogging)
-                _logger?.LogInformation("GetAllKeys");
+                _logger?.LogInformation("GetAllKeysAsync");
 
             return Task.FromResult(_cache.GetAllKeys(prefix));
         }

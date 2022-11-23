@@ -437,52 +437,20 @@ namespace EasyCaching.Redis
             return result;
         }
 
-        
         /// <summary>
-        /// Gets all.
+        /// Gets all keys by prefix.
         /// </summary>
         /// <param name="prefix">Prefix</param>
-        /// <returns>The all.</returns>
-        /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(string prefix = "")
+        /// <returns>The all keys by prefix.</returns>
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
         {
-            var keys = new List<RedisKey>();
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            foreach (var server in _servers)
-                keys.AddRange(server.Keys(pattern: string.IsNullOrEmpty(prefix) ? "*" : prefix, database: _cache.Database));
+            prefix = this.HandlePrefix(prefix);
+
+            var redisKeys = this.SearchRedisKeys(prefix);
             
-            if (keys?.Count == 0 || !keys.Any())
-                return new Dictionary<string, CacheValue<T>>();
-
-            var values = _cache.StringGet(keys?.Select(k => k).ToArray());
-
-            var result = new Dictionary<string, CacheValue<T>>();
-            for (int i = 0; i < keys.Count; i++)
-            {
-                var cachedValue = values[i];
-                if (!cachedValue.IsNull)
-                    result.Add(keys[i], new CacheValue<T>(_serializer.Deserialize<T>(cachedValue), true));
-                else
-                    result.Add(keys[i], CacheValue<T>.NoValue);
-            }
-
-            return result;
-        }
-        
-        
-        /// <summary>
-        /// Gets all keys.
-        /// </summary>
-        /// <param name="prefix">Prefix</param>
-        /// <returns>The all keys.</returns>
-        public override IEnumerable<string> BaseGetAllKeys(string prefix = "")
-        {
-            var keys = new List<RedisKey>();
-
-            foreach (var server in _servers)
-                keys.AddRange(server.Keys(pattern: string.IsNullOrEmpty(prefix) ? "*" : prefix, database: _cache.Database));
-            
-            var result = keys?.Select(key => (string) key)?.Distinct();
+            var result = redisKeys?.Select(key => (string) key)?.Distinct();
             
             return result;
         }
