@@ -70,8 +70,10 @@
 
             _subConnection = factory.CreateConnection();
 
-            _pubChannelPool = new DefaultObjectPool<IModel>(_objectPolicy);
-            
+            var provider = new DefaultObjectPoolProvider();
+
+            _pubChannelPool = provider.Create(_objectPolicy);
+
             _busId = Guid.NewGuid().ToString("N");
 
             BusName = "easycachingbus";
