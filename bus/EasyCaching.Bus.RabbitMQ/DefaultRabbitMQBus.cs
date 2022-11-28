@@ -150,20 +150,51 @@
                 queueName = _options.QueueName;
             }
 
-            Task.Factory.StartNew(() =>
+            Task.Factory.StartNew(
+                () => StartConsumer(queueName, topic),
+                TaskCreationOptions.LongRunning);
+        }
+
+
+        private void StartConsumer(string queueName, string topic)
+        {
+            var model = _subConnection.CreateModel();
+
+            model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
+            model.QueueDeclare(queueName, false, false, true, null);
+            // bind the queue with the exchange.
+            model.QueueBind(queueName, _options.TopicExchangeName, topic);
+            var consumer = new EventingBasicConsumer(model);
+            consumer.Received += OnMessage;
+            consumer.Shutdown += (sender, e) =>
             {
-                var model = _subConnection.CreateModel();
-                model.ExchangeDeclare(_options.TopicExchangeName, ExchangeType.Topic, true, false, null);
-                model.QueueDeclare(queueName, false, false, true, null);
-                // bind the queue with the exchange.
-                model.QueueBind(queueName, _options.TopicExchangeName, topic);
-                var consumer = new EventingBasicConsumer(model);
-                consumer.Received += OnMessage;
-                consumer.Shutdown += OnConsumerShutdown;
+                OnConsumerShutdown(sender, e);
+                OnConsumerError(queueName, topic, model);
+            };
 
-                model.BasicConsume(queueName, true, consumer);
+            consumer.ConsumerCancelled += (s, e) =>
+            {
+                OnConsumerError(queueName, topic, model);
+            };
 
-            }, TaskCreationOptions.LongRunning);
+            model.BasicConsume(queueName, true, consumer);
+        }
+
+        private void OnConsumerError(string queueName, string topic, IModel model)
+        {
+            StartConsumer(queueName, topic);
+            BaseOnReconnect();
+            try
+            {
+                if (model?.IsOpen == true)
+                {
+                    model?.Dispose();
+                }
+            }
+            catch
+            {
+                // nothing to do
+            }
         }
 
         /// <summary>
