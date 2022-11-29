@@ -351,6 +351,33 @@ namespace EasyCaching.Redis
 
             //return keys.ToArray();
         }
+        
+        
+        /// <summary>
+        /// GetAll the redis keys.
+        /// </summary>
+        /// <returns>The redis keys.</returns>
+        /// <remarks>
+        /// If your Redis Servers support command SCAN ,
+        /// IServer.Keys will use command SCAN to find out the keys.
+        /// Following
+        /// https://github.com/StackExchange/StackExchange.Redis/blob/master/StackExchange.Redis/StackExchange/Redis/RedisServer.cs#L289
+        /// </remarks>
+        /// <param name="pattern">Pattern.</param>
+        private RedisKey[] GetAllRedisKeys(string pattern)
+        {
+            var keys = new List<RedisKey>();
+
+            foreach (var server in _servers)
+                keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database));
+
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                keys = keys.Select(x => new RedisKey(
+                        x.ToString().Remove(0, _options.DBConfig.KeyPrefix.Length)))
+                    .ToList();
+
+            return keys.Distinct().ToArray();
+        }
 
         /// <summary>
         /// Handles the prefix of CacheKey.
@@ -448,7 +475,7 @@ namespace EasyCaching.Redis
 
             prefix = this.HandlePrefix(prefix);
 
-            var redisKeys = this.SearchRedisKeys(prefix);
+            var redisKeys = this.GetAllRedisKeys(prefix);
             
             var result = redisKeys?.Select(key => (string) key)?.Distinct();
             

@@ -309,7 +309,7 @@
 
             prefix = this.HandlePrefix(prefix);
 
-            var redisKeys = this.SearchRedisKeys(prefix);
+            var redisKeys = this.GetAllRedisKeys(prefix);
             
             var result = redisKeys?.Select(key => (string) key)?.Distinct();
             
