@@ -169,6 +169,11 @@
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
             return await Task.Run(() => BaseGetAll<T>(cacheKeys), cancellationToken);
         }
+        
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
 
         /// <summary>
         /// Gets the by prefix async.

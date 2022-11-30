@@ -321,6 +321,11 @@ namespace EasyCaching.LiteDB
             return GetDict<T>(list);
         }
 
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Gets the dict.
         /// </summary>

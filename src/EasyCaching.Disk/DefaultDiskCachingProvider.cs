@@ -336,6 +336,11 @@
             return dict;
         }
 
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
+
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));

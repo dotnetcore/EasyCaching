@@ -5,7 +5,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
-
+    using System.Linq;
+    
     public class FakeDistributedCachingProvider : IEasyCachingProvider
     {
         public string Name => "distributed";
@@ -52,6 +53,16 @@
         public virtual CacheValue<T> Get<T>(string cacheKey)
         {
             return new CacheValue<T>(default(T), true);
+        }
+        
+        public IEnumerable<string> GetAllKeysByPrefix(string prefix)
+        {
+            return Enumerable.Empty<string>();
+        }
+
+        public Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Enumerable.Empty<string>());
         }
 
         public virtual IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)

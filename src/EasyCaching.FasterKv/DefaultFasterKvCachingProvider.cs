@@ -161,6 +161,11 @@ namespace EasyCaching.FasterKv
             using var session = GetSession();
             return BaseGetInternal<T>(cacheKey, session);
         }
+        
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
 
         public override IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys)
         {

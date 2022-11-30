@@ -336,6 +336,11 @@
                     pair => ConvertFromStoredValue<T>(pair.Value));
         }
 
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Gets the by prefix.
         /// </summary>

@@ -262,6 +262,11 @@
                     pair => pair.Key,
                     pair => ConvertFromStoredValue<T>(pair.Value));
         }
+        
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
 
         /// <summary>
         /// Gets the by prefix async.

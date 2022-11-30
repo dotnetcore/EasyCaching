@@ -21,8 +21,23 @@
         /// </summary>
         /// <value><c>true</c> if is use lock; otherwise, <c>false</c>.</value>
         bool UseLock { get; }
+        
+        /// <summary>
+        /// Gets all keys by prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <returns>The all keys by prefix.</returns>
+        IEnumerable<string> GetAllKeysByPrefix(string prefix);
+        
+        /// <summary>
+        /// Gets all keys by prefix async.
+        /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>The all keys by prefix async.</returns>
+        Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
 
-       /// <summary>
+        /// <summary>
         /// Gets all.
         /// </summary>
         /// <returns>The all.</returns>

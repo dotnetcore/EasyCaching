@@ -29,6 +29,10 @@ namespace EasyCaching.FasterKv
             }
         }  
 
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
 
         public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys,
             CancellationToken cancellationToken = default)

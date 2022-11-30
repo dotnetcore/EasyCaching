@@ -295,6 +295,27 @@
 
             return result;
         }
+        
+        
+        /// <summary>
+        /// Gets all keys async by prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>The all keys by prefix async.</returns>
+        public override async Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            prefix = this.HandlePrefix(prefix);
+
+            var redisKeys = this.GetAllRedisKeys(prefix);
+            
+            var result = redisKeys?.Select(key => (string) key)?.Distinct();
+            
+            return await Task.FromResult(result);
+        }
+
 
         /// <summary>
         /// Gets the by prefix async.

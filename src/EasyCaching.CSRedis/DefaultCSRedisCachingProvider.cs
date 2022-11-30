@@ -252,6 +252,11 @@
             return result;
         }
 
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Handles the prefix of CacheKey.
         /// </summary>
