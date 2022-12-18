@@ -752,6 +752,16 @@
         /// <param name="offset"></param>
         /// <returns></returns>
         List<T> ZRangeByScore<T>(string cacheKey, double min, double max, long? count = null, long offset = 0);
+
+        /// <summary>
+        /// https://redis.io/commands/zremrangebyscore/     
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns>The number of elements removed</returns>
+        long ZRangeRemByScore(string cacheKey, double min, double max);
+
         /// <summary>
         /// https://redis.io/commands/zrank
         /// </summary>
@@ -834,6 +844,14 @@
         /// <param name="offset"></param>
         /// <returns></returns>
         Task<List<T>> ZRangeByScoreAsync<T>(string cacheKey, double min, double max, long? count = null, long offset = 0);
+        /// <summary>
+        /// https://redis.io/commands/zremrangebyscore/     
+        /// </summary>
+        /// <param name="cacheKey"></param>
+        /// <param name="min"></param>
+        /// <param name="max"></param>
+        /// <returns>The number of elements removed</returns>
+        Task<long> ZRangeRemByScoreAsync(string cacheKey, double min, double max);
         /// <summary>
         /// https://redis.io/commands/zrank
         /// </summary>
