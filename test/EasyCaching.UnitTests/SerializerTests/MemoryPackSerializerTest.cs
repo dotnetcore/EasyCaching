@@ -10,7 +10,7 @@ public class MemoryPackSerializerTest : BaseSerializerTest
 {
     public MemoryPackSerializerTest()
     {
-        _serializer = new DefaultMemoryPackSerializer("test");
+        _serializer = new DefaultMemoryPackSerializer("mempack");
     }
 
     //This should be overrided becuse it is not supported by memory-pack
