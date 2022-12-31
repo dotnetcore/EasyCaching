@@ -12,6 +12,9 @@
     /// </summary>
     public class DefaultJsonSerializer : IEasyCachingSerializer
     {
+        readonly Microsoft.IO.RecyclableMemoryStreamManager _recManager = new Microsoft.IO.RecyclableMemoryStreamManager();
+
+
         /// <summary>
         /// The json serializer.
         /// </summary>
@@ -94,6 +97,39 @@
                 return ms.ToArray();
             }
         }
+
+        /// <summary>
+        /// Deserializes the object. @jy
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="buf"></param>
+        /// <returns></returns>
+        public T Deserialize<T>(ReadOnlySpan<byte> buf)
+        {
+            using (var stream = _recManager.GetStream(buf))
+            {
+                using (var sr = new StreamReader(stream, s_utf8Encoding))
+                using (var jtr = new JsonTextReader(sr))
+                {
+                    return jsonSerializer.Deserialize<T>(jtr);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Serialize the specified value.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value">Value.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void Serialize<T>(Stream stream, T value)
+        {
+            //JsonSerializer.Serialize(stream, value, jsonSerializerOption);
+            var sr = new StreamWriter(stream, s_utf8Encoding);
+            var jtr = new JsonTextWriter(sr);
+            jsonSerializer.Serialize(jtr, value);
+        }
+
         #region Mainly For Memcached  
         /// <summary>
         /// Serializes the object.

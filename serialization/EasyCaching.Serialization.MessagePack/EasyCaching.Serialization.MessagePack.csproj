@@ -36,5 +36,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="MessagePack" Version="2.3.85" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
 	</ItemGroup>
 </Project>

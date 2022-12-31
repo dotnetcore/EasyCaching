@@ -77,6 +77,28 @@
             }
         }
 
+        /// <summary>
+        /// Deserializes the object. @jy
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="buf"></param>
+        /// <returns></returns>
+        public T Deserialize<T>(ReadOnlySpan<byte> buf)
+        {
+            return Serializer.Deserialize<T>(buf);
+        }
+
+        /// <summary>
+        /// Serialize the specified value.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value">Value.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void Serialize<T>(Stream stream, T value)
+        {
+            Serializer.Serialize<T>(stream, value);
+        }
+
         #region Mainly For Memcached       
         /// <summary>
         /// Serializes the object.

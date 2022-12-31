@@ -50,5 +50,24 @@
         /// <returns>The object.</returns>
         /// <param name="value">Value.</param>
         object DeserializeObject(ArraySegment<byte> value);
+
+#if NET6_0_OR_GREATER
+#endif
+        /// <summary>
+        /// Deserializes the object. @jy
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="buf"></param>
+        /// <returns></returns>
+        T Deserialize<T>(ReadOnlySpan<byte> buf);
+
+        /// <summary>
+        /// Serialize the specified value.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value">Value.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        void Serialize<T>(System.IO.Stream stream, T value);
+
     }
 }

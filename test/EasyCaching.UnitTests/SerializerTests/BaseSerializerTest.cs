@@ -7,6 +7,8 @@
 
     public abstract class BaseSerializerTest
     {
+        readonly Microsoft.IO.RecyclableMemoryStreamManager _recManager = new Microsoft.IO.RecyclableMemoryStreamManager();
+
         protected IEasyCachingSerializer _serializer;
 
         [Fact]
@@ -47,6 +49,39 @@
             var desObj = _serializer.DeserializeObject(bytes) as Model;
 
             Assert.Equal("abc", desObj.Prop);
+        }
+
+        [Fact]
+        public void SerializeStream_should_Succeed() 
+        {
+            using(var stream = _recManager.GetStream())
+            {
+                var obj = new Model { Prop = "abc" };
+
+                _serializer.Serialize(stream, obj);
+
+                Assert.NotEmpty(stream.GetBuffer());
+            }
+            
+        }
+
+        [Fact]
+        public void DeserializeReadOnlySpan_should_Succeed()
+        {
+            using (var stream = _recManager.GetStream())
+            {
+                var obj = new Model { Prop = "abc" };
+
+                _serializer.Serialize(stream, obj);
+
+                var buf = stream.GetBuffer();
+                Assert.NotEmpty(buf);
+
+                var desObj = _serializer.Deserialize<Model>(buf.AsSpan().Slice(0, (int)stream.Length));
+
+                Assert.Equal("abc", desObj.Prop);
+            }
+
         }
 
 

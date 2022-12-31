@@ -115,5 +115,27 @@ namespace EasyCaching.Serialization.SystemTextJson
                 return new ArraySegment<byte>(ms.ToArray(), 0, (int)ms.Length);
             }
         }
+
+        /// <summary>
+        /// Deserializes the object. @jy
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="buf"></param>
+        /// <returns></returns>
+        public T Deserialize<T>(ReadOnlySpan<byte> buf)
+        {
+            return JsonSerializer.Deserialize<T>(buf, jsonSerializerOption);
+        }
+
+        /// <summary>
+        /// Serialize the specified value.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value">Value.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void Serialize<T>(Stream stream, T value)
+        {
+            JsonSerializer.Serialize(stream, value, jsonSerializerOption);
+        }
     }
 }

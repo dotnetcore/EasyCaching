@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Serialization.MessagePack
 {
     using System;
+    using System.IO;
     using EasyCaching.Core.Serialization;
     using global::MessagePack;
     using global::MessagePack.Resolvers;
@@ -10,6 +11,9 @@
     /// </summary>
     public class DefaultMessagePackSerializer : IEasyCachingSerializer
     {
+        readonly Microsoft.IO.RecyclableMemoryStreamManager _recManager = new Microsoft.IO.RecyclableMemoryStreamManager();
+
+
         /// <summary>
         /// The name.
         /// </summary>
@@ -101,6 +105,40 @@
         public object DeserializeObject(ArraySegment<byte> value)
         {
             return MessagePackSerializer.Deserialize<object>(value, TypelessContractlessStandardResolver.Options);
+        }
+
+        /// <summary>
+        /// Deserializes the object. @jy
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="buf"></param>
+        /// <returns></returns>
+        public T Deserialize<T>(ReadOnlySpan<byte> buf)
+        {
+            using (var stream = _recManager.GetStream(buf))
+            {
+                return _options.EnableCustomResolver
+                    ? MessagePackSerializer.Deserialize<T>(stream, MessagePackSerializerOptions.Standard.WithResolver(_options.CustomResolvers))
+                    : MessagePackSerializer.Deserialize<T>(stream, TypelessContractlessStandardResolver.Options);
+            }
+        }
+
+        /// <summary>
+        /// Serialize the specified value.
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="value">Value.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
+        public void Serialize<T>(Stream stream, T value)
+        {
+            if (_options.EnableCustomResolver)
+            {
+                MessagePackSerializer.Serialize(stream, value, MessagePackSerializerOptions.Standard.WithResolver(_options.CustomResolvers));
+            }
+            else
+            {
+                MessagePackSerializer.Serialize(stream, value);
+            }
         }
     }
 }
