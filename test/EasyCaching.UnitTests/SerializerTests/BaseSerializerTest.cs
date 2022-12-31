@@ -2,6 +2,7 @@
 {
     using System;
     using EasyCaching.Core.Serialization;
+    using MemoryPack;
     using ProtoBuf;
     using Xunit;
 
@@ -40,7 +41,7 @@
         }
 
         [Fact]
-        public void DeserializeObject_should_Succeed()
+        public virtual void DeserializeObject_should_Succeed()
         {
             object obj = new Model { Prop = "abc" };
 
@@ -111,7 +112,8 @@
 
     [Serializable]
     [ProtoContract]
-    public class Model
+    [MemoryPackable]
+    public partial class Model
     {
         [ProtoMember(1)]
         public string Prop { get; set; }

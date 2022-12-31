@@ -765,7 +765,7 @@
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
-            var valBeforeRemove = await _provider.GetAsync<string>(cacheKey, null, _defaultTs);
+            var valBeforeRemove = await _provider.GetAsync<string>(cacheKey, () => null, _defaultTs);
             Assert.NotNull(valBeforeRemove);
 
             await _provider.RemoveAsync(cacheKey);
@@ -870,7 +870,7 @@
         }
 
         #endregion
-        
+
         #region RemoveByPattern/RemoveByPatternAsync
         
         [Fact]
@@ -878,7 +878,7 @@
         {
             SetCacheItem("garden:pots:flowers", "ok");
             SetCacheItem("garden:pots:flowers:test", "ok");
-            SetCacheItem("garden:flowerspots:test", "ok" );
+            SetCacheItem("garden:flowerspots:test", "ok");
             SetCacheItem("boo:foo", "ok");
             SetCacheItem("boo:test:foo", "ok");
             SetCacheItem("sky:birds:bar", "ok");
@@ -933,13 +933,13 @@
             Assert.False(val15.HasValue);
             Assert.False(val16.HasValue);
         }
-        
+
         [Fact]
         public virtual async Task RemoveByPatternAsync_Should_Succeed()
         {
             SetCacheItem("garden:pots:flowers", "ok");
             SetCacheItem("garden:pots:flowers:test", "ok");
-            SetCacheItem("garden:flowerspots:test", "ok" );
+            SetCacheItem("garden:flowerspots:test", "ok");
             SetCacheItem("boo:foo", "ok");
             SetCacheItem("boo:test:foo", "ok");
             SetCacheItem("sky:birds:bar", "ok");
