@@ -1,76 +1,80 @@
 <Project>
-  <PropertyGroup>
-    <EasyCachingCorePackageNotes>
-	  1. Remove BinaryFormatter.
-    2. Support removing cache keys by pattern.
-	</EasyCachingCorePackageNotes>
-    <EasyCachingMemcachedPackageNotes>
-       1. Upgrading dependencies.
-    </EasyCachingMemcachedPackageNotes>
-    <EasyCachingRedisPackageNotes>
-	  1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-	</EasyCachingRedisPackageNotes>
-    <EasyCachingSQLitePackageNotes>
-      1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-    </EasyCachingSQLitePackageNotes>
-    <EasyCachingInMemoryPackageNotes>
-      1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-    </EasyCachingInMemoryPackageNotes>
-    <EasyCachingHybridPackageNotes>
-      1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-    </EasyCachingHybridPackageNotes>
-    <EasyCachingAspectCorePackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingAspectCorePackageNotes>
-    <EasyCachingCastlePackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingCastlePackageNotes>
-    <EasyCachingResponseCachingPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingResponseCachingPackageNotes>
-    <EasyCachingJsonPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingJsonPackageNotes>
-    <EasyCachingMessagePackPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingMessagePackPackageNotes>
-    <EasyCachingProtobufPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingProtobufPackageNotes>
-    <EasyCachingCSRedisPackageNotes>
-	  1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-	</EasyCachingCSRedisPackageNotes>
-    <EasyCachingCSRedisBusPackageNotes>
-      1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-    </EasyCachingCSRedisBusPackageNotes>
-    <EasyCachingRedisBusPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingRedisBusPackageNotes>
-    <EasyCachingRabbitBusPackageNotes>
-	  1. Upgrading dependencies.
-	</EasyCachingRabbitBusPackageNotes>
-	 <EasyCachingKafkaBusPackageNotes>
-		  1. Add EasyCachingKafkaBus.
-	 </EasyCachingKafkaBusPackageNotes>
-	 <EasyCachingZookeeperBusPackageNotes>
-		  1. Add EasyCachingZookeeperBus.
-	 </EasyCachingZookeeperBusPackageNotes>
-    <EasyCachingDiskPackageNotes>
-      1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-    </EasyCachingDiskPackageNotes>
-    <EasyCachingLiteDBPackageNotes>
-      1. Upgrading dependencies.
-    2. Support removing cache keys by pattern.
-    </EasyCachingLiteDBPackageNotes>
-    <EasyCachingSTJsonPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingSTJsonPackageNotes>
-  </PropertyGroup>
+	<PropertyGroup>
+		<EasyCachingCorePackageNotes>
+			1. Add GetAllKeysByPrefix.
+			2. Support zremrangebyscore
+		</EasyCachingCorePackageNotes>
+		<EasyCachingMemcachedPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingMemcachedPackageNotes>
+		<EasyCachingRedisPackageNotes>
+			1. Upgrading dependencies.
+			2. Support zremrangebyscore
+		</EasyCachingRedisPackageNotes>
+		<EasyCachingSQLitePackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingSQLitePackageNotes>
+		<EasyCachingInMemoryPackageNotes>
+			1. Upgrading dependencies.
+			2. Support evicted event hook.
+		</EasyCachingInMemoryPackageNotes>
+		<EasyCachingHybridPackageNotes>
+			1. Upgrading dependencies.
+			2. Added a HybridCachingOption to throw an error if the distributed cache throws an error.
+		</EasyCachingHybridPackageNotes>
+		<EasyCachingAspectCorePackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingAspectCorePackageNotes>
+		<EasyCachingCastlePackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingCastlePackageNotes>
+		<EasyCachingResponseCachingPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingResponseCachingPackageNotes>
+		<EasyCachingJsonPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingJsonPackageNotes>
+		<EasyCachingMessagePackPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingMessagePackPackageNotes>
+		<EasyCachingProtobufPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingProtobufPackageNotes>
+		<EasyCachingCSRedisPackageNotes>
+			1. Upgrading dependencies.
+			2. Support zremrangebyscore
+		</EasyCachingCSRedisPackageNotes>
+		<EasyCachingCSRedisBusPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingCSRedisBusPackageNotes>
+		<EasyCachingRedisBusPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingRedisBusPackageNotes>
+		<EasyCachingRabbitBusPackageNotes>
+			1. Upgrading dependencies.
+			2. Use DefaultObjectPoolProvider to get a DisposableObjectPool instead of a DefaultObjectPool
+			3. Restore queue model and consumer on disconnection
+		</EasyCachingRabbitBusPackageNotes>
+		<EasyCachingKafkaBusPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingKafkaBusPackageNotes>
+		<EasyCachingZookeeperBusPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingZookeeperBusPackageNotes>
+		<EasyCachingDiskPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingDiskPackageNotes>
+		<EasyCachingLiteDBPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingLiteDBPackageNotes>
+		<EasyCachingSTJsonPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingSTJsonPackageNotes>
+		<EasyCachingMemoryPackageNotes>
+			1. Support Memory Pack.
+		</EasyCachingMemoryPackageNotes>
+		<EasyCachingFaskKVPackageNotes>
+			1. Support FaskKV.
+		</EasyCachingFaskKVPackageNotes>
+	</PropertyGroup>
 </Project>
