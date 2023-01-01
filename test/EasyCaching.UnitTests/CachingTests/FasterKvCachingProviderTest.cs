@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using EasyCaching.Core;
 using EasyCaching.Core.Configurations;
+using EasyCaching.Serialization.SystemTextJson.Configurations;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +16,7 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     public FasterKvCachingProviderTest(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
-        _defaultTs = TimeSpan.FromSeconds(30);
+        _defaultTs = TimeSpan.FromSeconds(60);
     }
 
     protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)

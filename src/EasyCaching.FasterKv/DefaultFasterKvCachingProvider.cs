@@ -1,18 +1,25 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using EasyCaching.Core;
 using EasyCaching.Core.Serialization;
 using EasyCaching.FasterKv.Configurations;
 using FASTER.core;
 using Microsoft.Extensions.Logging;
+using Microsoft.IO;
 
 namespace EasyCaching.FasterKv
 {
     public sealed partial class DefaultFasterKvCachingProvider : EasyCachingAbstractProvider, IDisposable
     {
+        readonly static Microsoft.IO.RecyclableMemoryStreamManager _recManager = new Microsoft.IO.RecyclableMemoryStreamManager();
+
+
         // name
         private readonly string _name;
         private bool _disposed;
@@ -110,7 +117,7 @@ namespace EasyCaching.FasterKv
             EnsureNotDispose();
             
             using var sessionWarp = GetSession();
-            var key = GetSpanByte(cacheKey);
+            var key = GetKeySpanByte(cacheKey);
             var result = sessionWarp.Session.Read(key);
             if (result.status.IsPending)
                 sessionWarp.Session.CompletePending(true);
@@ -190,7 +197,7 @@ namespace EasyCaching.FasterKv
             
             using var session = GetSession();
             // ignore result
-            _ = session.Session.Delete(GetSpanByte(cacheKey));
+            _ = session.Session.Delete(GetKeySpanByte(cacheKey));
         }
 
         public override void BaseRemoveAll(IEnumerable<string> cacheKeys)
@@ -201,7 +208,7 @@ namespace EasyCaching.FasterKv
             using var session = GetSession();
             foreach (var cacheKey in cacheKeys)
             {
-                _ = session.Session.Delete(GetSpanByte(cacheKey));
+                _ = session.Session.Delete(GetKeySpanByte(cacheKey));
             }
         }
 
@@ -259,8 +266,9 @@ namespace EasyCaching.FasterKv
 
         private CacheValue<T> BaseGetInternal<T>(string cacheKey, ClientSessionWrap session)
         {
+            var key = GetKeySpanByte(cacheKey);
             var context = new StoreContext();
-            var result = session.Session.Read(GetSpanByte(cacheKey), context);
+            var result = session.Session.Read(key, context);
             if (result.status.IsPending)
             {
                 session.Session.CompletePending(true);
@@ -285,23 +293,33 @@ namespace EasyCaching.FasterKv
 
         private void BaseSetInternal<T>(ClientSessionWrap sessionWarp, string cacheKey, T cacheValue)
         {
-            var key = GetSpanByte(cacheKey);
+            var key = GetKeySpanByte(cacheKey);
             var value = GetSpanByte(cacheValue);
             _ = sessionWarp.Session.Upsert(key, value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        SpanByte GetKeySpanByte(string key)
+        {
+            var bytes = Encoding.UTF8.GetBytes(key);
+            return SpanByte.FromFixedSpan(bytes.AsSpan());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private SpanByte GetSpanByte<T>(T value)
         {
-            var bytes = _serializer.Serialize(value);
-            bytes.AsSpan().GetPinnableReference();
-            return SpanByte.FromFixedSpan(bytes);
+            using (var stream = _recManager.GetStream() as RecyclableMemoryStream)
+            {
+                _serializer.Serialize(stream, value);
+
+                return SpanByte.FromFixedSpan(stream!.GetSpan());
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private T GetTValue<T>(ref SpanByteAndMemory span)
         {
-            return _serializer.Deserialize<T>(span.Memory.Memory.ToArray());
+            return _serializer.Deserialize<T>(span.Memory.Memory.Slice(0, span.Length).ToArray());
         }
 
 
@@ -326,7 +344,7 @@ namespace EasyCaching.FasterKv
         }
 
         // Operations not currently supported by FasterKv
-        #region NotSupprotOperate
+#region NotSupprotOperate
 
         public override TimeSpan BaseGetExpiration(string cacheKey)
         {
@@ -353,7 +371,7 @@ namespace EasyCaching.FasterKv
             throw new NotSupportedException("BaseRemoveByPattern is not supported in FasterKv provider.");
         }
 
-        #endregion
+#endregion
 
         private void Dispose(bool _)
         {

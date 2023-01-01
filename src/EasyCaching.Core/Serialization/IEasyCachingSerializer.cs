@@ -51,8 +51,7 @@
         /// <param name="value">Value.</param>
         object DeserializeObject(ArraySegment<byte> value);
 
-#if NET6_0_OR_GREATER
-#endif
+
         /// <summary>
         /// Deserializes the object. @jy
         /// </summary>

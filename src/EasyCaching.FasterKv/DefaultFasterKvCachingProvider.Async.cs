@@ -13,7 +13,7 @@ namespace EasyCaching.FasterKv
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             using var session = GetSession();
-            var result = (await session.Session.ReadAsync(GetSpanByte(cacheKey), token: cancellationToken)).Complete();
+            var result = (await session.Session.ReadAsync(GetKeySpanByte(cacheKey), token: cancellationToken)).Complete();
             return result.status.Found;
         }
 
@@ -104,7 +104,7 @@ namespace EasyCaching.FasterKv
             using var session = GetSession();
             foreach (var cacheKey in cacheKeys)
             {
-                await session.Session.DeleteAsync(GetSpanByte(cacheKey), token: cancellation).ConfigureAwait(false);
+                await session.Session.DeleteAsync(GetKeySpanByte(cacheKey), token: cancellation).ConfigureAwait(false);
             }
         }
 
@@ -114,7 +114,7 @@ namespace EasyCaching.FasterKv
             EnsureNotDispose();
             
             using var session = GetSession();
-            await session.Session.DeleteAsync(GetSpanByte(cacheKey), token: cancellationToken).ConfigureAwait(false);
+            await session.Session.DeleteAsync(GetKeySpanByte(cacheKey), token: cancellationToken).ConfigureAwait(false);
         }
 
 
@@ -166,7 +166,7 @@ namespace EasyCaching.FasterKv
         private async Task BaseSetInternalAsync<T>(ClientSessionWrap sessionWarp, string cacheKey, T cacheValue,
             CancellationToken cancellationToken)
         {
-            _ = await (await sessionWarp.Session.UpsertAsync(GetSpanByte(cacheKey),
+            _ = await (await sessionWarp.Session.UpsertAsync(GetKeySpanByte(cacheKey),
                     GetSpanByte(cacheValue), token: cancellationToken)
                 .ConfigureAwait(false)).CompleteAsync(cancellationToken);
         }
@@ -174,7 +174,7 @@ namespace EasyCaching.FasterKv
 
         private async Task<CacheValue<T>> BaseGetInternalAsync<T>(ClientSessionWrap session, string cacheKey, CancellationToken cancellationToken)
         {
-            var result = (await session.Session.ReadAsync(GetSpanByte(cacheKey),
+            var result = (await session.Session.ReadAsync(GetKeySpanByte(cacheKey),
                     token: cancellationToken)
                 .ConfigureAwait(false)).Complete();
             if (result.status.Found)
