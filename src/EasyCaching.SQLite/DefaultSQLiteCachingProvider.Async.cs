@@ -313,6 +313,11 @@
 
             return GetDict<T>(list);
         }
+        
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
 
         /// <summary>
         /// Gets the by prefix async.

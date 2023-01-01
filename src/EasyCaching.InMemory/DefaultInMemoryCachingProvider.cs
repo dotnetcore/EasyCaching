@@ -308,6 +308,19 @@
         }
 
         /// <summary>
+        /// Get all cacheKey by prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <returns>Get all cacheKey by prefix.</returns>
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("GetAllKeys");
+
+            return _cache.GetAllKeys(prefix);
+        }
+
+        /// <summary>
         /// Gets the by prefix.
         /// </summary>
         /// <returns>The by prefix.</returns>
@@ -396,6 +409,6 @@
         /// <returns></returns>
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabse() => _cache;
+        public override object BaseGetDatabase() => _cache;
     }
 }

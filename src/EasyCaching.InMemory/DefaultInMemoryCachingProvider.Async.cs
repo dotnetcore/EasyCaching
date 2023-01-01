@@ -275,6 +275,21 @@
 
             return await Task.FromResult(_cache.GetAll<T>(cacheKeys));
         }
+        
+
+        /// <summary>
+        /// Get all cacheKey by prefix async.
+        /// </summary>
+        /// <param name="prefix">Cache keys.</param>
+        /// <param name="cancellationToken">Cache keys.</param>
+        /// <returns>Get all cacheKey by prefix async.</returns>
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("GetAllKeysAsync");
+
+            return Task.FromResult(_cache.GetAllKeys(prefix));
+        }
 
         /// <summary>
         /// Gets the by prefix async.

@@ -1,10 +1,5 @@
 ﻿namespace EasyCaching.HybridCache
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using Microsoft.Extensions.Logging;
@@ -12,6 +7,11 @@
     using Polly.Fallback;
     using Polly.Retry;
     using Polly.Wrap;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Hybrid caching provider.
@@ -93,7 +93,7 @@
             else this._distributedCache = distributed;
 
             this._bus = bus ?? NullEasyCachingBus.Instance;
-            this._bus.Subscribe(_options.TopicName, OnMessage);
+            this._bus.Subscribe(_options.TopicName, OnMessage, OnReconnect);
 
             this._cacheId = Guid.NewGuid().ToString("N");
 
@@ -123,7 +123,7 @@
         /// <param name="message">Message.</param>
         private void OnMessage(EasyCachingMessage message)
         {
-            // each clients will recive the message, current client should ignore.
+            // each clients will receive the message, current client should ignore.
             if (!string.IsNullOrWhiteSpace(message.Id) && message.Id.Equals(_cacheId, StringComparison.OrdinalIgnoreCase))
                 return;
 
@@ -136,7 +136,7 @@
 
                 LogMessage($"remove local cache that pattern is {pattern}");
 
-                return;   
+                return;
             }
 
             // remove by prefix
@@ -160,6 +160,21 @@
         }
 
         /// <summary>
+        /// On reconnect (flushes local memory as it could be stale).
+        /// </summary>
+
+        private void OnReconnect()
+        {
+            if (!_options.FlushLocalCacheOnBusReconnection)
+            {
+                return;
+            }
+
+            LogMessage("Flushing local cache due to bus reconnection");
+            _localCache.Flush();
+        }
+
+        /// <summary>
         /// Exists the specified cacheKey.
         /// </summary>
         /// <returns>The exists.</returns>
@@ -178,6 +193,11 @@
             catch (Exception ex)
             {
                 LogMessage($"Check cache key exists error [{cacheKey}] ", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             flag = _localCache.Exists(cacheKey);
@@ -186,7 +206,7 @@
         }
 
         /// <summary>
-        /// Existses the specified cacheKey async.
+        /// Exists the specified cacheKey async.
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
@@ -206,6 +226,11 @@
             catch (Exception ex)
             {
                 LogMessage($"Check cache key [{cacheKey}] exists error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             flag = await _localCache.ExistsAsync(cacheKey, cancellationToken);
@@ -239,12 +264,17 @@
             catch (Exception ex)
             {
                 LogMessage($"distributed cache get error, [{cacheKey}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             if (cacheValue.HasValue)
             {
                 TimeSpan ts = GetExpiration(cacheKey);
-               
+
                 _localCache.Set(cacheKey, cacheValue.Value, ts);
 
                 return cacheValue;
@@ -282,6 +312,11 @@
             catch (Exception ex)
             {
                 LogMessage($"distributed cache get error, [{cacheKey}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             if (cacheValue.HasValue)
@@ -314,6 +349,11 @@
             catch (Exception ex)
             {
                 LogMessage($"remove cache key [{cacheKey}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             _localCache.Remove(cacheKey);
@@ -340,6 +380,11 @@
             catch (Exception ex)
             {
                 LogMessage($"remove cache key [{cacheKey}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             await _localCache.RemoveAsync(cacheKey, cancellationToken);
@@ -368,6 +413,11 @@
             catch (Exception ex)
             {
                 LogMessage($"set cache key [{cacheKey}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             // When create/update cache, send message to bus so that other clients can remove it.
@@ -396,6 +446,11 @@
             catch (Exception ex)
             {
                 LogMessage($"set cache key [{cacheKey}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             // When create/update cache, send message to bus so that other clients can remove it.
@@ -425,6 +480,11 @@
             {
                 distributedError = true;
                 LogMessage($"tryset cache key [{cacheKey}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             if (flag && !distributedError)
@@ -473,6 +533,11 @@
             {
                 distributedError = true;
                 LogMessage($"tryset cache key [{cacheKey}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             if (flag && !distributedError)
@@ -514,6 +579,11 @@
             catch (Exception ex)
             {
                 LogMessage($"set all from distributed provider error [{string.Join(",", value.Keys)}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             // send message to bus 
@@ -539,6 +609,11 @@
             catch (Exception ex)
             {
                 LogMessage($"set all from distributed provider error [{string.Join(",", value.Keys)}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             // send message to bus 
@@ -555,11 +630,16 @@
 
             try
             {
-                _distributedCache.RemoveAllAsync(cacheKeys);
+                _distributedCache.RemoveAll(cacheKeys);
             }
             catch (Exception ex)
             {
                 LogMessage($"remove all from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             _localCache.RemoveAll(cacheKeys);
@@ -585,6 +665,11 @@
             catch (Exception ex)
             {
                 LogMessage($"remove all async from distributed provider error [{string.Join(",", cacheKeys)}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             await _localCache.RemoveAllAsync(cacheKeys, cancellationToken);
@@ -620,6 +705,11 @@
             catch (Exception ex)
             {
                 LogMessage($"get with data retriever from distributed provider error [{cacheKey}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             if (result.HasValue)
@@ -662,13 +752,18 @@
             catch (Exception ex)
             {
                 LogMessage($"get async with data retriever from distributed provider error [{cacheKey}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             if (result.HasValue)
             {
                 TimeSpan ts = await GetExpirationAsync(cacheKey, cancellationToken);
 
-                _localCache.Set(cacheKey, result.Value, ts);
+                await _localCache.SetAsync(cacheKey, result.Value, ts, cancellationToken);
 
                 return result;
             }
@@ -691,6 +786,11 @@
             catch (Exception ex)
             {
                 LogMessage($"remove by prefix [{prefix}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             _localCache.RemoveByPrefix(prefix);
@@ -716,14 +816,19 @@
             catch (Exception ex)
             {
                 LogMessage($"remove by prefix [{prefix}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
-            await _localCache.RemoveByPrefixAsync(prefix);
+            await _localCache.RemoveByPrefixAsync(prefix, cancellationToken);
 
             // send message to bus in order to notify other clients.
             await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { prefix }, IsPrefix = true }, ct), cancellationToken);
         }
-        
+
         /// <summary>
         /// Removes the by pattern async.
         /// </summary>
@@ -741,14 +846,19 @@
             catch (Exception ex)
             {
                 LogMessage($"remove by pattern [{pattern}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
-            await _localCache.RemoveByPatternAsync(pattern);
+            await _localCache.RemoveByPatternAsync(pattern, cancellationToken);
 
             // send message to bus in order to notify other clients.
-            await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { pattern }, IsPattern = true}, ct), cancellationToken);
+            await _busAsyncWrap.ExecuteAsync(async (ct) => await _bus.PublishAsync(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { pattern }, IsPattern = true }, ct), cancellationToken);
         }
-        
+
         /// <summary>
         /// Removes the by pattern.
         /// </summary>
@@ -765,12 +875,17 @@
             catch (Exception ex)
             {
                 LogMessage($"remove by pattern [{pattern}] error", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             _localCache.RemoveByPattern(pattern);
 
             // send message to bus 
-            _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { pattern }, IsPattern = true}));
+            _busSyncWrap.Execute(() => _bus.Publish(_options.TopicName, new EasyCachingMessage { Id = _cacheId, CacheKeys = new string[] { pattern }, IsPattern = true }));
         }
 
         /// <summary>
@@ -855,12 +970,17 @@
             catch (Exception ex)
             {
                 LogMessage($"distributed cache get error, [{cacheKey}]", ex);
+
+                if (_options.ThrowIfDistributedCacheError)
+                {
+                    throw;
+                }
             }
 
             if (cacheValue != null)
             {
                 TimeSpan ts = await GetExpirationAsync(cacheKey, cancellationToken);
-              
+
                 await _localCache.SetAsync(cacheKey, cacheValue, ts, cancellationToken);
 
                 return cacheValue;

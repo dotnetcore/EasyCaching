@@ -336,6 +336,11 @@
             return dict;
         }
 
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
+
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
@@ -712,6 +717,6 @@
 
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabse() => throw new Exception("Disk provider don't support this ");
+        public override object BaseGetDatabase() => throw new Exception("Disk provider don't support this ");
     }
 }

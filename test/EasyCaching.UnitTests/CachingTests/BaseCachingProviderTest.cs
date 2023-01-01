@@ -246,7 +246,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
+        public virtual void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
         {
             Assert.Throws<ArgumentNullException>(() => _provider.RemoveByPrefix(prefix));
         }
@@ -255,7 +255,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public async Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
+        public async virtual Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }
@@ -264,7 +264,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
+        public virtual void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
         {
             Assert.Throws<ArgumentNullException>(() => _provider.RemoveByPrefix(prefix));
         }
@@ -273,7 +273,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public async Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
+        public virtual async Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }
@@ -765,7 +765,7 @@
             var cacheValue = "value";
 
             await _provider.SetAsync(cacheKey, cacheValue, _defaultTs);
-            var valBeforeRemove = await _provider.GetAsync<string>(cacheKey, null, _defaultTs);
+            var valBeforeRemove = await _provider.GetAsync<string>(cacheKey, () => null, _defaultTs);
             Assert.NotNull(valBeforeRemove);
 
             await _provider.RemoveAsync(cacheKey);
@@ -870,7 +870,7 @@
         }
 
         #endregion
-        
+
         #region RemoveByPattern/RemoveByPatternAsync
         
         [Fact]
@@ -878,7 +878,7 @@
         {
             SetCacheItem("garden:pots:flowers", "ok");
             SetCacheItem("garden:pots:flowers:test", "ok");
-            SetCacheItem("garden:flowerspots:test", "ok" );
+            SetCacheItem("garden:flowerspots:test", "ok");
             SetCacheItem("boo:foo", "ok");
             SetCacheItem("boo:test:foo", "ok");
             SetCacheItem("sky:birds:bar", "ok");
@@ -933,13 +933,13 @@
             Assert.False(val15.HasValue);
             Assert.False(val16.HasValue);
         }
-        
+
         [Fact]
         public virtual async Task RemoveByPatternAsync_Should_Succeed()
         {
             SetCacheItem("garden:pots:flowers", "ok");
             SetCacheItem("garden:pots:flowers:test", "ok");
-            SetCacheItem("garden:flowerspots:test", "ok" );
+            SetCacheItem("garden:flowerspots:test", "ok");
             SetCacheItem("boo:foo", "ok");
             SetCacheItem("boo:test:foo", "ok");
             SetCacheItem("sky:birds:bar", "ok");

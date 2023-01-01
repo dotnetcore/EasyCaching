@@ -64,6 +64,11 @@
             return result;
         }
 
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Gets the async.
         /// </summary>

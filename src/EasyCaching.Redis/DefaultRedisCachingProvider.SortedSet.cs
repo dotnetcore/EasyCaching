@@ -3,7 +3,6 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
     using StackExchange.Redis;
 
     /// <summary>
@@ -90,6 +89,13 @@
             }
 
             return list;
+        }
+
+        public long ZRangeRemByScore(string cacheKey, double min, double max)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return _cache.SortedSetRemoveRangeByScore(cacheKey, min, max);
         }
 
         public long? ZRank<T>(string cacheKey, T cacheValue)
@@ -211,6 +217,13 @@
             }
 
             return list;
+        }
+
+        public async Task<long> ZRangeRemByScoreAsync(string cacheKey, double min, double max)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            
+            return await _cache.SortedSetRemoveRangeByScoreAsync(cacheKey, min, max);
         }
 
         public async Task<long?> ZRankAsync<T>(string cacheKey, T cacheValue)

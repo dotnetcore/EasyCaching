@@ -18,6 +18,8 @@
 
         protected Action<EasyCachingMessage> _handler;
 
+        protected Action _reconnectHandler;
+        
         protected string BusName { get; set; }
 
         public string Name => this.BusName;
@@ -74,9 +76,10 @@
             }
         }
 
-        public void Subscribe(string topic, Action<EasyCachingMessage> action)
+        public void Subscribe(string topic, Action<EasyCachingMessage> action, Action reconnectAction)
         {
             _handler = action;
+            _reconnectHandler = reconnectAction;
             BaseSubscribe(topic, action);
         }
 
@@ -104,6 +107,11 @@
                     s_diagnosticListener.WritePublishMessageAfter(operationId);
                 }
             }
+        }
+
+        public virtual void BaseOnReconnect()
+        {
+            _reconnectHandler?.Invoke();
         }
     }
 }

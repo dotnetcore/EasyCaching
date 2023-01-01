@@ -336,6 +336,11 @@
                     pair => ConvertFromStoredValue<T>(pair.Value));
         }
 
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Gets the by prefix.
         /// </summary>
@@ -430,7 +435,7 @@
             return _info;
         }
 
-        public override object BaseGetDatabse() => _memcachedClient;
+        public override object BaseGetDatabase() => _memcachedClient;
 
         private void OnCacheHit(string cacheKey)
         {
