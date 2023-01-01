@@ -8,3 +8,6 @@ Because [EnyimMemcachedCore](https://github.com/cnblogs/EnyimMemcachedCore) use 
 
 Also, EnyimMemcachedCore implements BinaryFormatterTranscoder based on BinaryFormatter.
 
+Important NOTE:
+
+BinaryFormatter was removed by EasyCaching v1.7.0, due to after version .net 5 , it will no longer support.
