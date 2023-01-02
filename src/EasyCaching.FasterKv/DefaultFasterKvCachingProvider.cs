@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using EasyCaching.Core;
 using EasyCaching.Core.Serialization;
@@ -302,24 +303,31 @@ namespace EasyCaching.FasterKv
         SpanByte GetKeySpanByte(string key)
         {
             var bytes = Encoding.UTF8.GetBytes(key);
-            return SpanByte.FromFixedSpan(bytes.AsSpan());
+            return SpanByte.FromFixedSpan(bytes);
+            //return GetSpanByte(key);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private SpanByte GetSpanByte<T>(T value)
         {
-            using (var stream = _recManager.GetStream() as RecyclableMemoryStream)
-            {
-                _serializer.Serialize(stream, value);
+            var bytes = _serializer.Serialize(value);
+            return SpanByte.FromFixedSpan(bytes);
 
-                return SpanByte.FromFixedSpan(stream!.GetSpan());
-            }
+            //    using (var stream = _recManager.GetStream() as RecyclableMemoryStream)
+            //    {
+            //        _serializer.Serialize(stream, value);
+            //        var buf = stream!.GetBuffer();
+            //        var span = buf.AsSpan();
+            //        span.GetPinnableReference();
+            //        return SpanByte.FromFixedSpan(span.Slice(0, (int)stream.Length));
+            //    }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private T GetTValue<T>(ref SpanByteAndMemory span)
         {
-            return _serializer.Deserialize<T>(span.Memory.Memory.Slice(0, span.Length).ToArray());
+            //return _serializer.Deserialize<T>(span.Memory.Memory.Slice(0, span.Length).ToArray());
+            return _serializer.Deserialize<T>(span.Memory.Memory.Slice(0, span.Length).Span);
         }
 
 

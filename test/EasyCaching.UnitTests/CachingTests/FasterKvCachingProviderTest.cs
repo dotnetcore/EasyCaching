@@ -16,7 +16,7 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     public FasterKvCachingProviderTest(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
-        _defaultTs = TimeSpan.FromSeconds(60);
+        _defaultTs = TimeSpan.FromSeconds(120);
     }
 
     protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
@@ -46,7 +46,7 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
         for (int i = 0; i < 10_0000; i++)
         {
             var value = _provider.Get<string>($"Key_{i}");
-            Assert.True(value.HasValue);
+            Assert.True(value.HasValue, $"Key_{i}");
             Assert.Equal(value.Value, $"Cache_{i}");
         }
     }
