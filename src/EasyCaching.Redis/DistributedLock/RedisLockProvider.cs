@@ -15,10 +15,10 @@ namespace EasyCaching.Redis.DistributedLock
             _database.StringSetAsync(key, value, TimeSpan.FromMilliseconds(ttlMs));
 
         public bool Add(string key, byte[] value, int ttlMs) =>
-            _database.StringSet(key, value, TimeSpan.FromMilliseconds(ttlMs));
+            _database.StringSet(key, value, TimeSpan.FromMilliseconds(ttlMs), When.NotExists);
 
         public Task<bool> AddAsync(string key, byte[] value, int ttlMs) =>
-            _database.StringSetAsync(key, value, TimeSpan.FromMilliseconds(ttlMs));
+            _database.StringSetAsync(key, value, TimeSpan.FromMilliseconds(ttlMs), When.NotExists);
 
         public bool Delete(string key, byte[] value) =>
             (long)_database.ScriptEvaluate(@"if redis.call('GET', KEYS[1]) == ARGV[1] then
