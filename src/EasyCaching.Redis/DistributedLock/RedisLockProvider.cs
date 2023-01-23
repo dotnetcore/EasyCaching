@@ -22,8 +22,8 @@ namespace EasyCaching.Redis.DistributedLock
 
         public bool Delete(string key, byte[] value) => _database.LockRelease((RedisKey)key, (RedisValue)value);
 
-        public async Task<bool> DeleteAsync(string key, byte[] value) =>
-            _database.LockRelease((RedisKey)key, (RedisValue)value);
+        public Task<bool> DeleteAsync(string key, byte[] value) =>
+            _database.LockReleaseAsync((RedisKey)key, (RedisValue)value);
 
         public bool CanRetry(Exception ex) => ex is RedisConnectionException;
     }
