@@ -3,10 +3,13 @@
 namespace EasyCaching.Demo.ConsoleApp
 {
     using EasyCaching.Core;
+    using EasyCaching.Disk;
     using EasyCaching.SQLite;
     using MemoryPack;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
     using System;
+    using System.IO;
 
     class Program
     {
@@ -17,32 +20,42 @@ namespace EasyCaching.Demo.ConsoleApp
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(option =>
             {
-                option.WithMemoryPack(configure =>
-                {
-                }, "mempack");
+                //option.WithMemoryPack(configure =>
+                //{
+                //}, "mempack");
 
-                option.UseInMemory("m1");
+                //option.UseInMemory("m1");
 
-                option.UseRedis((options) =>
-                {
-                    options.SerializerName = "mempack";
-                    options.DBConfig.Endpoints.Add(new Core.Configurations.ServerEndPoint("localhost", 6388));
-                }, "r1");
+                //option.UseRedis((options) =>
+                //{
+                //    options.SerializerName = "mempack";
+                //    options.DBConfig.Endpoints.Add(new Core.Configurations.ServerEndPoint("localhost", 6388));
+                //}, "r1");
 
-                option.UseSQLite(c =>
-                {
-                    c.DBConfig = new SQLiteDBOptions
-                    {
-                        FileName = "demo.db",
-                        CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default,
-                        OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory,
-                    };
-                }, "s1");
+                //option.UseSQLite(c =>
+                //{
+                //    c.DBConfig = new SQLiteDBOptions
+                //    {
+                //        FileName = "demo.db",
+                //        CacheMode = Microsoft.Data.Sqlite.SqliteCacheMode.Default,
+                //        OpenMode = Microsoft.Data.Sqlite.SqliteOpenMode.Memory,
+                //    };
+                //}, "s1");
 
                 // option.WithJson(jsonSerializerSettingsConfigure: x =>
                 // {
                 //     x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
                 // }, "json");
+
+                option.UseDisk(cfg =>
+                {
+                    cfg.DBConfig = new DiskDbOptions { BasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache") };
+                    cfg.SerializerName = "mePack-ser";
+                }, "disk")
+                .WithJson("json-ser")
+                .WithProtobuf("protobuf-ser")
+                .WithMessagePack("msgPack-ser")
+                .WithMemoryPack("mePack-ser");
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -60,43 +73,49 @@ namespace EasyCaching.Demo.ConsoleApp
 
 
 
-            var rCache = factory.GetCachingProvider("r1");
+            //var rCache = factory.GetCachingProvider("r1");
 
-            var prod = new Product()
-            {
-                Name = "Name1",
-                Lastname = "Lastname1",
-                Inner = new()
-                {
-                    Name = "Name2",
-                    Lastname = "Lastname2"
-                }
-            };
+            //var prod = new Product()
+            //{
+            //    Name = "Name1",
+            //    Lastname = "Lastname1",
+            //    Inner = new()
+            //    {
+            //        Name = "Name2",
+            //        Lastname = "Lastname2"
+            //    }
+            //};
 
-            prod.Inner.Inner = prod;
-            rCache.Set<Product>("mkey1", prod, TimeSpan.FromSeconds(20));
+            //prod.Inner.Inner = prod;
+            //rCache.Set<Product>("mkey1", prod, TimeSpan.FromSeconds(20));
 
-            var mVal1 = rCache.Get<Product>("mkey1");
+            //var mVal1 = rCache.Get<Product>("mkey1");
 
-            rCache.Set<string>("mkey", "mvalue", TimeSpan.FromSeconds(20));
+            //rCache.Set<string>("mkey", "mvalue", TimeSpan.FromSeconds(20));
 
-            var mVal = rCache.Get<string>("mkey");
+            //var mVal = rCache.Get<string>("mkey");
 
-            var mAllKey = rCache.GetAllKeysByPrefix("mk");
+            //var mAllKey = rCache.GetAllKeysByPrefix("mk");
 
-            Console.WriteLine($"in-memory cache get value, {mVal.HasValue} {mVal.IsNull} {mVal.Value} ");
-
-
-            var sCache = factory.GetCachingProvider("s1");
+            //Console.WriteLine($"in-memory cache get value, {mVal.HasValue} {mVal.IsNull} {mVal.Value} ");
 
 
-            sCache.Set<string>("skey", "svalue", TimeSpan.FromSeconds(20));
+            //var sCache = factory.GetCachingProvider("s1");
 
 
-            var sVal = sCache.Get<string>("skey");
+            //sCache.Set<string>("skey", "svalue", TimeSpan.FromSeconds(20));
 
 
-            Console.WriteLine($"sqlite cache get value, {sVal.HasValue} {sVal.IsNull} {sVal.Value} ");
+            //var sVal = sCache.Get<string>("skey");
+
+
+            //Console.WriteLine($"sqlite cache get value, {sVal.HasValue} {sVal.IsNull} {sVal.Value} ");
+
+            var diskCache = factory.GetCachingProvider("disk");
+            diskCache.Set<string>("diskkey", "diskvalue", TimeSpan.FromSeconds(20));
+            var diskVal = diskCache.Get<string>("diskkey");
+
+            Console.WriteLine($"disk cache get value, {diskVal.HasValue} {diskVal.IsNull} {diskVal.Value} ");
 
             Console.ReadKey();
         }

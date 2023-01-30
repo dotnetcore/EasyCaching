@@ -23,7 +23,7 @@
 
             var val = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            return val.Expiration > DateTimeOffset.UtcNow;
+            return val.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
         public override Task BaseFlushAsync(CancellationToken cancellationToken = default)
@@ -63,7 +63,7 @@
                 {
                     var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
                         var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
 
@@ -110,7 +110,7 @@
                 //var cached = GetDiskCacheValueAsync(path).ConfigureAwait(false).GetAwaiter().GetResult();
                 //var cached = GetDiskCacheValue(path);
 
-                if (cached.Expiration > DateTimeOffset.UtcNow)
+                if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                 {
                     var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
 
@@ -182,7 +182,7 @@
 
             var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            if (cached.Expiration > DateTimeOffset.UtcNow)
+            if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -221,7 +221,7 @@
 
             var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            if (cached.Expiration > DateTimeOffset.UtcNow)
+            if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -267,7 +267,7 @@
                 {
                     var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
                         var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
 
@@ -302,7 +302,7 @@
 
             var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            return cached.Expiration.Subtract(DateTimeOffset.UtcNow);
+            return DateTimeOffset.FromUnixTimeMilliseconds((long)cached.Expiration).Subtract(DateTimeOffset.UtcNow);
         }             
               
         public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
@@ -449,7 +449,7 @@
             {
                 var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-                if (cached.Expiration.Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
+                if (DateTimeOffset.FromUnixTimeMilliseconds((long)cached.Expiration).Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
                 {
                     return false;
                 }
