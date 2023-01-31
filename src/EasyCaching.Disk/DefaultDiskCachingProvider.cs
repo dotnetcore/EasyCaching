@@ -3,8 +3,6 @@
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core.Serialization;
-    using MessagePack;
-    using MessagePack.Resolvers;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Concurrent;
@@ -227,7 +225,7 @@
 
                 if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+                    var t = _serializer.Deserialize<T>(cached.Value);
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -330,7 +328,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -382,7 +380,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {

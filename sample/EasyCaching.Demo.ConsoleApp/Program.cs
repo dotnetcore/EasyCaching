@@ -4,6 +4,7 @@ namespace EasyCaching.Demo.ConsoleApp
 {
     using EasyCaching.Core;
     using EasyCaching.Disk;
+    using EasyCaching.Serialization.SystemTextJson.Configurations;
     using EasyCaching.SQLite;
     using MemoryPack;
     using Microsoft.Extensions.DependencyInjection;
@@ -50,12 +51,13 @@ namespace EasyCaching.Demo.ConsoleApp
                 option.UseDisk(cfg =>
                 {
                     cfg.DBConfig = new DiskDbOptions { BasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache") };
-                    cfg.SerializerName = "mePack-ser";
+                    cfg.SerializerName = "msgPack-ser";
                 }, "disk")
                 .WithJson("json-ser")
+                .WithSystemTextJson("sysJson-ser")
                 .WithProtobuf("protobuf-ser")
                 .WithMessagePack("msgPack-ser")
-                .WithMemoryPack("mePack-ser");
+                .WithMemoryPack("memPack-ser");
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -117,6 +119,11 @@ namespace EasyCaching.Demo.ConsoleApp
 
             Console.WriteLine($"disk cache get value, {diskVal.HasValue} {diskVal.IsNull} {diskVal.Value} ");
 
+            // memorypack serializer test
+            //var ser = MemoryPackSerializer.Serialize(
+            //     new Product { Name = "www", Lastname = "ttt", Inner = new Product { Name = "yyy", Lastname = "aaa" } });
+            //var des = MemoryPackSerializer.Deserialize<Product>(ser);
+
             Console.ReadKey();
         }
     }
@@ -129,11 +136,9 @@ namespace EasyCaching.Demo.ConsoleApp
         public string Name { get; set; }
 
         [MemoryPackOrder(1)]
-
         public string Lastname { get; set; }
 
         [MemoryPackOrder(2)]
-
         public Product Inner { set; get; }
     }
 }

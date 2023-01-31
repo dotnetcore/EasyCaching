@@ -7,8 +7,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
-    using MessagePack;
-    using MessagePack.Resolvers;
     using Microsoft.Extensions.Logging;
 
     public partial class DefaultDiskCachingProvider : EasyCachingAbstractProvider
@@ -65,7 +63,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -112,7 +110,7 @@
 
                 if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                    var t = _serializer.Deserialize<T>(cached.Value);
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -189,7 +187,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize(type, cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                var t = _serializer.Deserialize(cached.Value, type);
                 return t;
             }
             else
@@ -228,7 +226,7 @@
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                var t = _serializer.Deserialize<T>(cached.Value);
                 return new CacheValue<T>(t, true);
             }
             else
@@ -269,7 +267,7 @@
 
                     if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -469,9 +467,13 @@
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var cached = await MessagePackSerializer.DeserializeAsync<DiskCacheValue>(stream, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
-
-                return cached;
+                using (var mStream = new MemoryStream())
+                {
+                    stream.CopyTo(mStream);
+                    mStream.Seek(0, SeekOrigin.Begin);
+                    var cached = _serializer.Deserialize<DiskCacheValue>(mStream.ToArray());
+                    return cached;
+                }
             }
         }
     }
