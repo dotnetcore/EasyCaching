@@ -7,11 +7,14 @@ namespace EasyCaching.UnitTests
     using System.Threading.Tasks;
     using EasyCaching.Core;
     using EasyCaching.Disk;
+    using EasyCaching.Serialization.SystemTextJson.Configurations;
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;
 
     public class DiskCachingProviderTest : BaseCachingProviderTest
     {
+        private readonly string ProviderName = "Test";
+
         public DiskCachingProviderTest()
         {
             _defaultTs = TimeSpan.FromSeconds(30);
@@ -29,7 +32,11 @@ namespace EasyCaching.UnitTests
                         BasePath = Path.GetTempPath()
                     };
                     additionalSetup(options);
+                    options.SerializerName= ProviderName;
                 })
+                //.WithJson(ProviderName)
+                //.WithMessagePack(ProviderName)
+                .WithSystemTextJson(ProviderName)
             );
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
