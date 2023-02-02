@@ -518,7 +518,8 @@
 
             using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
             {
-                stream.Write(bytes, 0, bytes.Length);
+                stream.SetLength(bytes.Length);
+                stream.Write(bytes, offset: 0, bytes.Length);
                 //return true;
             }
 
@@ -540,6 +541,7 @@
 
                     using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
                     {
+                        stream.SetLength(bytes.Length);
                         stream.Write(bytes, 0, bytes.Length);
                     }
 
@@ -663,13 +665,10 @@
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                using (var mStream = new MemoryStream())
-                {
-                    stream.CopyTo(mStream);
-                    mStream.Seek(0, SeekOrigin.Begin);
-                    var cached = _serializer.Deserialize<DiskCacheValue>(mStream.ToArray());
-                    return cached;
-                }
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, bytes.Length);
+                var cached = _serializer.Deserialize<DiskCacheValue>(bytes);
+                return cached;
             }
         }
 
@@ -681,9 +680,7 @@
         private byte[] BuildDiskCacheValue<T>(T t, TimeSpan ts)
         {
             var value = _serializer.Serialize(t);
-
             var cached = new DiskCacheValue(value, DateTimeOffset.UtcNow.AddSeconds((int)ts.TotalSeconds).ToUnixTimeMilliseconds());
-
             var bytes = _serializer.Serialize(cached);
 
             return bytes;
