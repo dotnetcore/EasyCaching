@@ -16,6 +16,7 @@
 		<EasyCachingRedisBusPackageVersion>1.9.1</EasyCachingRedisBusPackageVersion>
 		<EasyCachingCSRedisBusPackageVersion>1.9.1</EasyCachingCSRedisBusPackageVersion>
 		<EasyCachingRabbitBusPackageVersion>1.9.1</EasyCachingRabbitBusPackageVersion>
+		<EasyCachingRabbitStreamBusPackageVersion>1.9.1</EasyCachingRabbitStreamBusPackageVersion>
 		<EasyCachingKafkaBusPackageVersion>1.9.1</EasyCachingKafkaBusPackageVersion>
 		<EasyCachingZookeeperBusPackageVersion>1.9.1</EasyCachingZookeeperBusPackageVersion>
 		<EasyCachingDiskPackageVersion>1.9.1</EasyCachingDiskPackageVersion>
