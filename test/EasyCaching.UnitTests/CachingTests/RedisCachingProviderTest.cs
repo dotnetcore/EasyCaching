@@ -8,6 +8,7 @@ namespace EasyCaching.UnitTests
     using EasyCaching.Serialization.Json;
     using EasyCaching.Serialization.MessagePack;
     using Microsoft.Extensions.DependencyInjection;
+    using StackExchange.Redis;
     using System;
     using Xunit;
 
@@ -91,6 +92,24 @@ namespace EasyCaching.UnitTests
                 {
                     options.DBConfig.Configuration = "127.0.0.1:6380,allowAdmin=false,defaultdatabase=8";
                 }, ProviderName).WithJson(ProviderName));
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var dbProvider = serviceProvider.GetService<IRedisDatabaseProvider>();
+            Assert.NotNull(dbProvider);
+
+            Assert.Equal(8, dbProvider.GetDatabase().Database);
+        }
+
+        [Fact]
+        public void Use_Configuration_Options_Should_Succeed()
+        {
+            IServiceCollection services = new ServiceCollection();
+            var redisConfig = ConfigurationOptions.Parse("127.0.0.1:6380");
+            redisConfig.DefaultDatabase = 8;
+            services.AddEasyCaching(x =>
+                 x.UseRedis(options =>
+                 {
+                     options.DBConfig.ConfigurationOptions = redisConfig;
+                 }, ProviderName).UseRedisLock().WithJson(ProviderName));
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var dbProvider = serviceProvider.GetService<IRedisDatabaseProvider>();
             Assert.NotNull(dbProvider);
