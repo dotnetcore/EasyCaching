@@ -3,6 +3,7 @@
     using EasyCaching.Core;
     using EasyCaching.Core.Configurations;
     using EasyCaching.Core.DistributedLock;
+    using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
     using System;
@@ -35,10 +36,11 @@
             {
                 var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<DiskOptions>>();
                 var options = optionsMon.Get(_name);
+                var serializers = x.GetServices<IEasyCachingSerializer>();
                 var dlf = x.GetService<IDistributedLockFactory>();
                 // ILoggerFactory can be null
                 var factory = x.GetService<Microsoft.Extensions.Logging.ILoggerFactory>();
-                return new DefaultDiskCachingProvider(_name, options, dlf, factory);
+                return new DefaultDiskCachingProvider(_name, serializers, options, dlf, factory);
             });
         }
     }
