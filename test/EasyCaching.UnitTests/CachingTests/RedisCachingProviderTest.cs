@@ -31,7 +31,7 @@ namespace EasyCaching.UnitTests
                     {
                         AllowAdmin = true
                     };
-                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6379));
+                    options.DBConfig.Endpoints.Add(new ServerEndPoint("127.0.0.1", 6380));
                     options.DBConfig.Database = 5;
                     additionalSetup(options);
                 }, ProviderName).UseRedisLock().WithJson(ProviderName));
