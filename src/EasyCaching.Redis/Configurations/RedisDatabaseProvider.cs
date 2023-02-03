@@ -73,6 +73,9 @@
         /// <returns>The connection multiplexer.</returns>
         private ConnectionMultiplexer CreateConnectionMultiplexer()
         {
+            if (_options.ConfigurationOptions != null)
+                return ConnectionMultiplexer.Connect(_options.ConfigurationOptions.ToString());
+
             if (string.IsNullOrWhiteSpace(_options.Configuration))
             {
                 var configurationOptions = new ConfigurationOptions
