@@ -117,6 +117,18 @@
         }
 
         /// <summary>
+        /// Subscribe the specified topic and action async.
+        /// </summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="action">Action.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public override async Task BaseSubscribeAsync(string topic, Action<EasyCachingMessage> action, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var path = $"{topic}";
+            await SubscribeDataChangeAsync(path, SubscribeDataChange);
+        }
+
+        /// <summary>
         /// Ons the message.
         /// </summary>
         /// <param name="body">Body.</param>

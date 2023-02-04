@@ -59,5 +59,17 @@
         {
 
         }
+
+        /// <summary>
+        /// Subscribe the specified topic and action async.
+        /// </summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="action">Action.</param>
+        /// <param name="reconnectAction">Reconnect Action.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public Task SubscribeAsync(string topic, Action<EasyCachingMessage> action, Action reconnectAction = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Task.CompletedTask;
+        }
     }
 }

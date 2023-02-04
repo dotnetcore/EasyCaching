@@ -104,5 +104,16 @@
         {
             _subscriber.Subscribe(topic, OnMessage);
         }
+
+        /// <summary>
+        /// Subscribe the specified topic and action async.
+        /// </summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="action">Action.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public override async Task BaseSubscribeAsync(string topic, Action<EasyCachingMessage> action, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            await _subscriber.SubscribeAsync(topic, OnMessage);
+        }
     }
 }
