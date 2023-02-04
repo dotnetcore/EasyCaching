@@ -1,11 +1,14 @@
 ﻿namespace EasyCaching.UnitTests
 {
+    using EasyCaching.Bus.Redis;
     using EasyCaching.Core;
     using EasyCaching.Core.Bus;
     using EasyCaching.HybridCache;
     using FakeItEasy;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+    using Microsoft.VisualBasic.FileIO;
+    using StackExchange.Redis;
     using System;
     using System.Threading;
     using System.Threading.Tasks;
@@ -147,6 +150,30 @@
 
             Assert.Equal("value", res.Value);
         }
+
+        [Fact]
+        public void WithRedisBus_Use_Configuration_Options_Should_Succeed()
+        {
+            IServiceCollection services = new ServiceCollection();
+
+            var redisConfig = ConfigurationOptions.Parse("127.0.0.1:6379");
+            redisConfig.DefaultDatabase = 6;
+            services.AddEasyCaching(option =>
+            {
+                option.WithRedisBus(config =>
+                {
+                    config.ConfigurationOptions = redisConfig;
+                    config.SerializerName = "myredis";
+                });
+            });
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var dbProvider = serviceProvider.GetService<IRedisSubscriberProvider>();
+            Assert.NotNull(dbProvider);
+            var mul = dbProvider.GetSubscriber().Multiplexer;
+
+            Assert.Equal(6,  mul.GetDatabase().Database);
+        }
+
 
         [Fact]
         public void Send_Msg_Throw_Exception_Should_Not_Break()
