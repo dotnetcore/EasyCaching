@@ -49,7 +49,7 @@
         private ConnectionMultiplexer CreateConnectionMultiplexer()
         {
             if (_options.ConfigurationOptions != null)
-                return ConnectionMultiplexer.Connect(_options.ConfigurationOptions.ToString());
+                return ConnectionMultiplexer.Connect(_options.ConfigurationOptions);
 
             if (string.IsNullOrWhiteSpace(_options.Configuration))
             {
@@ -70,7 +70,7 @@
                     configurationOptions.EndPoints.Add(endpoint.Host, endpoint.Port);
                 }
 
-                return ConnectionMultiplexer.Connect(configurationOptions.ToString());
+                return ConnectionMultiplexer.Connect(configurationOptions);
             }
             else
             {
