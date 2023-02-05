@@ -48,6 +48,9 @@
         /// <returns>The connection multiplexer.</returns>
         private ConnectionMultiplexer CreateConnectionMultiplexer()
         {
+            if (_options.ConfigurationOptions != null)
+                return ConnectionMultiplexer.Connect(_options.ConfigurationOptions);
+
             if (string.IsNullOrWhiteSpace(_options.Configuration))
             {
                 var configurationOptions = new ConfigurationOptions
@@ -67,7 +70,7 @@
                     configurationOptions.EndPoints.Add(endpoint.Host, endpoint.Port);
                 }
 
-                return ConnectionMultiplexer.Connect(configurationOptions.ToString());
+                return ConnectionMultiplexer.Connect(configurationOptions);
             }
             else
             {
