@@ -93,7 +93,7 @@
             else this._distributedCache = distributed;
 
             this._bus = bus ?? NullEasyCachingBus.Instance;
-            this._bus.Subscribe(_options.TopicName, OnMessage, OnReconnect);
+            _ = SubscribeAsync();
 
             this._cacheId = Guid.NewGuid().ToString("N");
 
@@ -115,6 +115,15 @@
 
             _busSyncWrap = Policy.Wrap(fallbackPolicy, retryPolicy);
             _busAsyncWrap = Policy.WrapAsync(fallbackAsyncPolicy, retryAsyncPolicy);
+        }
+
+        /// <summary>
+        /// Subscribe the topic
+        /// </summary>
+        /// <returns></returns>
+        private async Task SubscribeAsync()
+        {
+            await _bus.SubscribeAsync(_options.TopicName, OnMessage, OnReconnect);
         }
 
         /// <summary>

@@ -65,7 +65,7 @@
                 RequestedConnectionTimeout = System.TimeSpan.FromMilliseconds(_options.RequestedConnectionTimeout),
                 SocketReadTimeout = System.TimeSpan.FromMilliseconds(_options.SocketReadTimeout),
                 SocketWriteTimeout = System.TimeSpan.FromMilliseconds(_options.SocketWriteTimeout),
-                ClientProvidedName = _options.ClientProvidedName
+                ClientProvidedName = _options.ClientProvidedName,
             };
 
             _subConnection = factory.CreateConnection();
@@ -155,6 +155,28 @@
                 TaskCreationOptions.LongRunning);
         }
 
+
+        /// <summary>
+        /// Subscribe the specified topic and action async.
+        /// </summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="action">Action.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public override Task BaseSubscribeAsync(string topic, Action<EasyCachingMessage> action, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var queueName = string.Empty;
+            if (string.IsNullOrWhiteSpace(_options.QueueName))
+            {
+                queueName = $"rmq.queue.undurable.easycaching.subscriber.{_busId}";
+            }
+            else
+            {
+                queueName = _options.QueueName;
+            }
+
+            StartConsumer(queueName, topic);
+            return Task.CompletedTask;
+        }
 
         private void StartConsumer(string queueName, string topic)
         {
