@@ -469,7 +469,7 @@
             {
                 using (var mStream = new MemoryStream())
                 {
-                    stream.CopyTo(mStream);
+                    await stream.CopyToAsync(mStream);
                     mStream.Seek(0, SeekOrigin.Begin);
                     var cached = _serializer.Deserialize<DiskCacheValue>(mStream.ToArray());
                     return cached;
