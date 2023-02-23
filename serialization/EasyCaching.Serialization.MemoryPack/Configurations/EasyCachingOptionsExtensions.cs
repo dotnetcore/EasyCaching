@@ -25,7 +25,7 @@ public static class EasyCachingOptionsExtensions
     /// Withs the memory pack serializer.
     /// </summary>        
     /// <param name="options">Options.</param>
-    /// <param name="configure">Configure serializer settings.</param>
+    /// <param name="serializerOptions">Configure serializer settings.</param>
     /// <param name="name">The name of this serializer instance.</param>     
     public static EasyCachingOptions WithMemoryPack(this EasyCachingOptions options, Action<EasyCachingMemPackSerializerOptions> serializerOptions, string name)
     {
