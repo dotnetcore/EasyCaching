@@ -116,12 +116,12 @@
         }
 
         [Fact]
-        public override void RemoveByPattern_Should_Succeed()
+        protected override void RemoveByPattern_Should_Succeed()
         {
         }
 
         [Fact]
-        public override async Task RemoveByPatternAsync_Should_Succeed()
+        protected override async Task RemoveByPatternAsync_Should_Succeed()
         {
             await Task.FromResult(1);
         }

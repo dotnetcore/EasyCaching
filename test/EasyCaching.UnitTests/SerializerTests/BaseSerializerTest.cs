@@ -39,7 +39,7 @@
         }
 
         [Fact]
-        public virtual void DeserializeObject_should_Succeed()
+        protected virtual void DeserializeObject_should_Succeed()
         {
             object obj = new Model { Prop = "abc" };
 
