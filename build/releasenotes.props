@@ -1,26 +1,22 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
-			1. Add GetAllKeysByPrefix.
-			2. Support zremrangebyscore
 		</EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
 			1. Upgrading dependencies.
 		</EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-			1. Upgrading dependencies.
-			2. Support zremrangebyscore
+			1. Fixed redis distributed lock for different process.
+			2. Support code configuration for StackExchange.Redis.
 		</EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
 			1. Upgrading dependencies.
 		</EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
 			1. Upgrading dependencies.
-			2. Support evicted event hook.
 		</EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
 			1. Upgrading dependencies.
-			2. Added a HybridCachingOption to throw an error if the distributed cache throws an error.
 		</EasyCachingHybridPackageNotes>
 		<EasyCachingAspectCorePackageNotes>
 			1. Upgrading dependencies.
@@ -42,27 +38,27 @@
 		</EasyCachingProtobufPackageNotes>
 		<EasyCachingCSRedisPackageNotes>
 			1. Upgrading dependencies.
-			2. Support zremrangebyscore
 		</EasyCachingCSRedisPackageNotes>
 		<EasyCachingCSRedisBusPackageNotes>
-			1. Upgrading dependencies.
+			1. Support async version of subscribe.
 		</EasyCachingCSRedisBusPackageNotes>
 		<EasyCachingRedisBusPackageNotes>
-			1. Upgrading dependencies.
+			1. Support code configuration for StackExchange.Redis.
+			2. Support async version of subscribe.
 		</EasyCachingRedisBusPackageNotes>
 		<EasyCachingRabbitBusPackageNotes>
-			1. Upgrading dependencies.
-			2. Use DefaultObjectPoolProvider to get a DisposableObjectPool instead of a DefaultObjectPool
-			3. Restore queue model and consumer on disconnection
+			1. Support async version of subscribe.
 		</EasyCachingRabbitBusPackageNotes>
 		<EasyCachingKafkaBusPackageNotes>
-			1. Upgrading dependencies.
+			1. Support async version of subscribe.
 		</EasyCachingKafkaBusPackageNotes>
 		<EasyCachingZookeeperBusPackageNotes>
-			1. Upgrading dependencies.
+			1. Support async version of subscribe.
+			2. Rename WithConfluentKafkaBus to WithZookeeeperBus.
 		</EasyCachingZookeeperBusPackageNotes>
 		<EasyCachingDiskPackageNotes>
-			1. Upgrading dependencies.
+			1. Support custom serializer.
+			2. Fixed DiskCachingProvider async warning.
 		</EasyCachingDiskPackageNotes>
 		<EasyCachingLiteDBPackageNotes>
 			1. Upgrading dependencies.
@@ -71,10 +67,10 @@
 			1. Upgrading dependencies.
 		</EasyCachingSTJsonPackageNotes>
 		<EasyCachingMemoryPackageNotes>
-			1. Support Memory Pack.
+			1. Upgrading dependencies.
 		</EasyCachingMemoryPackageNotes>
 		<EasyCachingFaskKVPackageNotes>
-			1. Support FaskKV.
+			1. Upgrading dependencies.
 		</EasyCachingFaskKVPackageNotes>
 	</PropertyGroup>
 </Project>
