@@ -76,13 +76,13 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     {
     }
 
-    public override Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(
+    protected override Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(
         string preifx)
     {
         return Task.CompletedTask;
     }
 
-    public override void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(
+    protected override void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(
         string prefix)
     {
     }
@@ -132,16 +132,16 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     {
     }
 
-    public override void RemoveByPattern_Should_Succeed()
+    protected override void RemoveByPattern_Should_Succeed()
     {
     }
 
-    public override Task RemoveByPatternAsync_Should_Succeed()
+    protected override Task RemoveByPatternAsync_Should_Succeed()
     {
         return Task.CompletedTask;
     }
 
-    public override Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(
+    protected override Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(
         string preifx)
 
     {
@@ -152,7 +152,7 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     {
     }
 
-    public override void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(
+    protected override void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(
         string prefix)
     {
     }

@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\bus\EasyCaching.Bus.CSRedis\EasyCaching.Bus.CSRedis.csproj" />
     <ProjectReference Include="..\..\bus\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\bus\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj" />
+    <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.SystemTextJson\EasyCaching.Serialization.SystemTextJson.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Disk\EasyCaching.Disk.csproj" />

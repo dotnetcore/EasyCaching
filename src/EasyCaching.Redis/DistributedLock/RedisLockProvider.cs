@@ -12,25 +12,18 @@ namespace EasyCaching.Redis.DistributedLock
         public RedisLockProvider(IDatabase database) => _database = database;
 
         public Task<bool> SetAsync(string key, byte[] value, int ttlMs) =>
-            _database.StringSetAsync(key, value, TimeSpan.FromMilliseconds(ttlMs));
+            _database.StringSetAsync((RedisKey)key, (RedisValue)value, TimeSpan.FromMilliseconds(ttlMs));
 
         public bool Add(string key, byte[] value, int ttlMs) =>
-            _database.StringSet(key, value, TimeSpan.FromMilliseconds(ttlMs));
+            _database.LockTake((RedisKey)key, (RedisValue)value, TimeSpan.FromMilliseconds(ttlMs));
 
         public Task<bool> AddAsync(string key, byte[] value, int ttlMs) =>
-            _database.StringSetAsync(key, value, TimeSpan.FromMilliseconds(ttlMs));
+            _database.LockTakeAsync((RedisKey)key, (RedisValue)value, TimeSpan.FromMilliseconds(ttlMs));
 
-        public bool Delete(string key, byte[] value) =>
-            (long)_database.ScriptEvaluate(@"if redis.call('GET', KEYS[1]) == ARGV[1] then
-    return redis.call('DEL', KEYS[1]);
-end
-return -1;", new RedisKey[] { key }, new RedisValue[] { value }) >= 0;
+        public bool Delete(string key, byte[] value) => _database.LockRelease((RedisKey)key, (RedisValue)value);
 
-        public async Task<bool> DeleteAsync(string key, byte[] value) =>
-            (long)await _database.ScriptEvaluateAsync(@"if redis.call('GET', KEYS[1]) == ARGV[1] then
-    return redis.call('DEL', KEYS[1]);
-end
-return -1;", new RedisKey[] { key }, new RedisValue[] { value }) >= 0;
+        public Task<bool> DeleteAsync(string key, byte[] value) =>
+            _database.LockReleaseAsync((RedisKey)key, (RedisValue)value);
 
         public bool CanRetry(Exception ex) => ex is RedisConnectionException;
     }

@@ -15,6 +15,7 @@
         public abstract void BasePublish(string topic, EasyCachingMessage message);
         public abstract Task BasePublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken));
         public abstract void BaseSubscribe(string topic, Action<EasyCachingMessage> action);
+        public abstract Task BaseSubscribeAsync(string topic, Action<EasyCachingMessage> action, CancellationToken cancellationToken = default(CancellationToken));
 
         protected Action<EasyCachingMessage> _handler;
 
@@ -81,6 +82,13 @@
             _handler = action;
             _reconnectHandler = reconnectAction;
             BaseSubscribe(topic, action);
+        }
+
+        public async Task SubscribeAsync(string topic, Action<EasyCachingMessage> action, Action reconnectAction, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            _handler = action;
+            _reconnectHandler = reconnectAction;
+            await BaseSubscribeAsync(topic, action);
         }
 
         public virtual void BaseOnMessage(EasyCachingMessage message)

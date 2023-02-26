@@ -23,5 +23,10 @@
         {
 
         }
+
+        public Task SubscribeAsync(string topic, Action<EasyCachingMessage> action, Action reconnectAction = null, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return Task.CompletedTask;
+        }
     }
 }

@@ -246,7 +246,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public virtual void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
+        protected virtual void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
         {
             Assert.Throws<ArgumentNullException>(() => _provider.RemoveByPrefix(prefix));
         }
@@ -255,7 +255,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public async virtual Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
+        protected async virtual Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }
@@ -264,7 +264,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public virtual void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
+        protected virtual void GetAllByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(string prefix)
         {
             Assert.Throws<ArgumentNullException>(() => _provider.RemoveByPrefix(prefix));
         }
@@ -273,7 +273,7 @@
         [InlineData("")]
         [InlineData(" ")]
         [InlineData(null)]
-        public virtual async Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
+        protected virtual async Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(string preifx)
         {
             await Assert.ThrowsAsync<ArgumentNullException>(async () => await _provider.RemoveByPrefixAsync(preifx));
         }
@@ -874,7 +874,7 @@
         #region RemoveByPattern/RemoveByPatternAsync
         
         [Fact]
-        public virtual void RemoveByPattern_Should_Succeed()
+        protected virtual void RemoveByPattern_Should_Succeed()
         {
             SetCacheItem("garden:pots:flowers", "ok");
             SetCacheItem("garden:pots:flowers:test", "ok");
@@ -935,7 +935,7 @@
         }
 
         [Fact]
-        public virtual async Task RemoveByPatternAsync_Should_Succeed()
+        protected virtual async Task RemoveByPatternAsync_Should_Succeed()
         {
             SetCacheItem("garden:pots:flowers", "ok");
             SetCacheItem("garden:pots:flowers:test", "ok");
