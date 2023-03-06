@@ -34,12 +34,44 @@
 		<None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-	  <PackageReference Include="dotnet-etcd">
-	    <Version>6.0.1</Version>
-	  </PackageReference>
+	<ItemGroup>
+		<None Remove="etcd-logo-rectangle.png" />
+		<None Remove="grpc\proto\google\api\annotations.proto" />
+		<None Remove="LICENSE.md" />
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="etcd-logo-rectangle.png">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="LICENSE.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+		<Protobuf Include="EtcdTools\grpc\proto\etcd\auth.proto" GrpcServices="Client" />
+		<Protobuf Include="EtcdTools\grpc\proto\etcd\election.proto" GrpcServices="Client" />
+		<Protobuf Include="EtcdTools\grpc\proto\etcd\kv.proto" GrpcServices="Client" />
+		<Protobuf Include="EtcdTools\grpc\proto\etcd\lock.proto" GrpcServices="Client" />
+		<Protobuf Include="EtcdTools\grpc\proto\etcd\rpc.proto" GrpcServices="Client" />
+		<Protobuf Include="EtcdTools\grpc\proto\etcd\version.proto" GrpcServices="Client" />
+
+		<Protobuf Include="EtcdTools\grpc\proto\gogoproto\gogo.proto" GrpcServices="Client" />
+
+		<Protobuf Include="EtcdTools\grpc\proto\google\api\annotations.proto" GrpcServices="Client" />
+		<Protobuf Include="EtcdTools\grpc\proto\google\api\http.proto" GrpcServices="Client" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.CLSCompliantAttribute">
+			<_Parameter1>false</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+	
 	<ItemGroup>
 	  <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
 	</ItemGroup>
