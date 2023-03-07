@@ -58,21 +58,21 @@
                 {
                     await SetAsync(cacheKey, res, expiration);
                     //remove mutex key
-                  await DeleteDataAsync($"{cacheKey}_Lock");
+                    await DeleteDataAsync($"{cacheKey}_Lock");
 
                     return new CacheValue<T>(res, true);
                 }
                 else
                 {
                     //remove mutex key
-                   await DeleteDataAsync($"{cacheKey}_Lock");
+                    await DeleteDataAsync($"{cacheKey}_Lock");
                     return CacheValue<T>.NoValue;
                 }
             }
             catch
             {
                 //remove mutex key
-               await DeleteDataAsync($"{cacheKey}_Lock");
+                await DeleteDataAsync($"{cacheKey}_Lock");
                 throw;
             }
         }
@@ -251,7 +251,7 @@
 
             foreach (var item in values)
             {
-               await AddEphemeralDataAsync(item.Key, item.Value, expiration);
+                await AddEphemeralDataAsync(item.Key, item.Value, expiration);
             }
         }
 
@@ -277,7 +277,6 @@
             }
             return result;
         }
-
 
         /// <summary>
         /// Get all cacheKey by prefix async.
@@ -317,7 +316,7 @@
             Dictionary<string, CacheValue<T>> result = new Dictionary<string, CacheValue<T>>();
             foreach (var item in dicData)
             {
-                result.Add(item.Key, new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(item.Value), true));
+                result.Add(item.Key, new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(item.Value)), true));
             }
             return result;
         }
@@ -337,7 +336,7 @@
 
             foreach (var item in cacheKeys)
             {
-               await DeleteDataAsync(item);
+                await DeleteDataAsync(item);
             }
         }
 
