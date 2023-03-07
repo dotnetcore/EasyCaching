@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 
 using dotnet_etcd.interfaces;
@@ -122,12 +123,13 @@ namespace dotnet_etcd
                     nodes.Add(new Uri(host));
                 }
 
-                // var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
+               // var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
                 var services = new ServiceCollection();
-                // services.AddSingleton<ResolverFactory>(factory);
+               // services.AddSingleton<ResolverFactory>(factory);
                 options.ServiceProvider = services.BuildServiceProvider();
 
-                channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
+                //channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
+                channel = GrpcChannel.ForAddress(connectionString, new GrpcChannelOptions { Credentials = ChannelCredentials.Insecure });
             }
 
             CallInvoker callInvoker = interceptors != null && interceptors.Length > 0 ? channel.Intercept(interceptors) : channel.CreateCallInvoker();

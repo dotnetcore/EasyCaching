@@ -4,6 +4,8 @@ using EasyCaching.Core.Serialization;
 using Etcdserverpb;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +53,7 @@ namespace EasyCaching.Etcd
             _logger = loggerFactory?.CreateLogger<DefaultEtcdCachingProvider>();
 
             //init etcd client
-            this._cache = new EtcdClient(connectionString: options.Address,configureChannelOptions:null);
+            this._cache = new EtcdClient(connectionString: options.Address, configureChannelOptions: null);
             //auth
             if (!string.IsNullOrEmpty(options.UserName) && !string.IsNullOrEmpty(options.Password))
             {
