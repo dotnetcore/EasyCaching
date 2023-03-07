@@ -350,7 +350,17 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            throw new NotSupportedException("BaseFlushAsync is not supported in Etcd provider.");
+            var dicData = await GetRangeValsAsync("");
+            if (dicData != null)
+            {
+                List<string> listKeys = new List<string>(dicData.Count);
+                foreach (var item in dicData)
+                {
+                    listKeys.Add(item.Key);
+                }
+               await BaseRemoveAllAsync(listKeys);
+            }
+            //throw new NotSupportedException("BaseFlushAsync is not supported in Etcd provider.");
         }
 
         /// <summary>
