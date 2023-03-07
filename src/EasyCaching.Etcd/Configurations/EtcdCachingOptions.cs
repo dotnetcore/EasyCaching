@@ -14,6 +14,11 @@ namespace EasyCaching.Etcd
         public string Address { get; set; }
 
         /// <summary>
+        /// 服务名
+        /// </summary>
+        public string ServerName { get; set; }
+
+        /// <summary>
         /// Etcd access UserName
         /// </summary>
         public string UserName { get; set; }
