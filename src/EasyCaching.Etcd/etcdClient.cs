@@ -15,6 +15,9 @@ using Etcdserverpb;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Grpc.Net.Client;
+#if NET6_0 || NET5_0
+using Grpc.Net.Client.Balancer;
+#endif
 using Grpc.Net.Client.Configuration;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -122,14 +125,30 @@ namespace dotnet_etcd
 
                     nodes.Add(new Uri(host));
                 }
-
-               // var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
                 var services = new ServiceCollection();
-               // services.AddSingleton<ResolverFactory>(factory);
+#if NET6_0 || NET5_0
+                if (!string.IsNullOrEmpty(serverName))
+                {
+                    var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
+                    services.AddSingleton<ResolverFactory>(factory);
+                    options.ServiceProvider = services.BuildServiceProvider();
+                    channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
+                }
+                else
+                {
+                    options.ServiceProvider = services.BuildServiceProvider();
+                    channel = GrpcChannel.ForAddress(nodes[0], options);
+                }
+#else
                 options.ServiceProvider = services.BuildServiceProvider();
+                channel = GrpcChannel.ForAddress(nodes[0], options);
+#endif
+                //// var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
+                //// services.AddSingleton<ResolverFactory>(factory);
+                //options.ServiceProvider = services.BuildServiceProvider();
 
-                //channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
-                channel = GrpcChannel.ForAddress(connectionString, options);
+                ////channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
+                //channel = GrpcChannel.ForAddress(connectionString, options);
             }
 
             CallInvoker callInvoker = interceptors != null && interceptors.Length > 0 ? channel.Intercept(interceptors) : channel.CreateCallInvoker();
@@ -181,9 +200,9 @@ namespace dotnet_etcd
         {
         }
 
-        #endregion Initializers
+#endregion Initializers
 
-        #region IDisposable Support
+#region IDisposable Support
 
         private bool _disposed; // To detect redundant calls
 
@@ -211,6 +230,6 @@ namespace dotnet_etcd
             GC.SuppressFinalize(this);
         }
 
-        #endregion IDisposable Support
+#endregion IDisposable Support
     }
 }

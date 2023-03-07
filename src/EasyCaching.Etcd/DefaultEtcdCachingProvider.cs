@@ -52,7 +52,7 @@ namespace EasyCaching.Etcd
             _logger = loggerFactory?.CreateLogger<DefaultEtcdCachingProvider>();
 
             //init etcd client
-            this._cache = new EtcdClient(connectionString: options.Address, configureChannelOptions: null);
+            this._cache = new EtcdClient(connectionString: options.Address,serverName:options.ServerName, configureChannelOptions: null);
             //auth
             if (!string.IsNullOrEmpty(options.UserName) && !string.IsNullOrEmpty(options.Password))
             {
