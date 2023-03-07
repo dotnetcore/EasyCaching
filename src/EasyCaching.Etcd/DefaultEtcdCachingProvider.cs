@@ -4,11 +4,10 @@ using EasyCaching.Core.Serialization;
 using Etcdserverpb;
 using Google.Protobuf;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -105,7 +104,7 @@ namespace EasyCaching.Etcd
             var data = _cache.GetVal(cacheKey, _metadata);
             return string.IsNullOrWhiteSpace(data)
                     ? CacheValue<T>.Null
-                    : new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data), true);
+                    : new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(data)), true);
         }
 
         /// <summary>
@@ -118,7 +117,7 @@ namespace EasyCaching.Etcd
             var data = await _cache.GetValAsync(cacheKey, _metadata);
             return string.IsNullOrWhiteSpace(data)
                     ? CacheValue<T>.Null
-                    : new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(data), true);
+                    : new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(data)), true);
         }
 
         /// <summary>
@@ -211,7 +210,7 @@ namespace EasyCaching.Etcd
                 PutRequest request = new PutRequest()
                 {
                     Key = ByteString.CopyFromUtf8(key),
-                    Value = ByteString.CopyFromUtf8(Newtonsoft.Json.JsonConvert.SerializeObject(value)),
+                    Value = ByteString.CopyFrom(_serializer.Serialize(value)),
                     Lease = leaseId
                 };
                 var response = _cache.Put(request: request, headers: _metadata, cancellationToken: cts.Token);
@@ -240,7 +239,7 @@ namespace EasyCaching.Etcd
                 PutRequest request = new PutRequest()
                 {
                     Key = ByteString.CopyFromUtf8(key),
-                    Value = ByteString.CopyFromUtf8(Newtonsoft.Json.JsonConvert.SerializeObject(value)),
+                    Value = ByteString.CopyFrom(_serializer.Serialize(value)),
                     Lease = leaseId
                 };
                 var response = await _cache.PutAsync(request: request, headers: _metadata, cancellationToken: cts.Token);
@@ -542,7 +541,7 @@ namespace EasyCaching.Etcd
             Dictionary<string, CacheValue<T>> result = new Dictionary<string, CacheValue<T>>();
             foreach (var item in dicData)
             {
-                result.Add(item.Key, new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(item.Value), true));
+                result.Add(item.Key, new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(item.Value)), true));
             }
             return result;
         }
