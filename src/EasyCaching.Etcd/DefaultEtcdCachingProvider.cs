@@ -464,13 +464,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
 
-            //var searchPattern = this.ProcessSearchKeyPattern(pattern);
-            //var searchKey = this.HandleSearchKeyPattern(pattern);
-
-            //var count = _cache.RemoveByPattern(searchKey, searchPattern);
-
-            //if (_options.EnableLogging)
-            //    _logger?.LogInformation($"RemoveByPattern : pattern = {pattern} , count = {count}");
+            throw new NotSupportedException("BaseRemoveByPattern is not supported in Etcd provider.");
         }
 
         /// <summary>
@@ -541,8 +535,6 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var map = new Dictionary<string, CacheValue<T>>();
-
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
 
@@ -590,8 +582,7 @@ namespace EasyCaching.Etcd
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
-
-            //_cache.Clear();
+            throw new NotSupportedException("BaseFlush is not supported in Etcd provider.");
         }
 
         /// <summary>
@@ -625,7 +616,7 @@ namespace EasyCaching.Etcd
             //     Keys
             //})
             //return _cache.GetExpiration(cacheKey);
-            return TimeSpan.FromSeconds(1);
+            throw new NotSupportedException("BaseGetExpiration is not supported in Etcd provider.");
         }
 
         /// <summary>
@@ -638,7 +629,17 @@ namespace EasyCaching.Etcd
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool _)
+        {
+            if (_disposed)
+                return;
+
+            _cache.Dispose();
+            _disposed = true;
         }
     }
 }
