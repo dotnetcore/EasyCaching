@@ -52,7 +52,7 @@ namespace EasyCaching.Etcd
             _logger = loggerFactory?.CreateLogger<DefaultEtcdCachingProvider>();
 
             //init etcd client
-            this._cache = new EtcdClient(connectionString: options.Address,serverName:options.ServerName, configureChannelOptions: null);
+            this._cache = new EtcdClient(connectionString: options.Address, serverName: options.ServerName, configureChannelOptions: null);
             //auth
             if (!string.IsNullOrEmpty(options.UserName) && !string.IsNullOrEmpty(options.Password))
             {
@@ -167,13 +167,13 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="ts"></param>
         /// <returns></returns>
-        private long GetRentLeaseId(TimeSpan ts)
+        private long GetRentLeaseId(TimeSpan? ts)
         {
             // create rent id to bind
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
             var response = _cache.LeaseGrant(request: new LeaseGrantRequest()
             {
-                TTL = (long)ts.TotalMilliseconds,
+                TTL = (long)ts.Value.TotalMilliseconds,
             }, cancellationToken: cts.Token);
             return response.ID;
         }
@@ -183,13 +183,13 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="ts"></param>
         /// <returns></returns>
-        private async Task<long> GetRentLeaseIdAsync(TimeSpan ts)
+        private async Task<long> GetRentLeaseIdAsync(TimeSpan? ts)
         {
             // create rent id to bind
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
             var response = await _cache.LeaseGrantAsync(request: new LeaseGrantRequest()
             {
-                TTL = (long)ts.TotalMilliseconds,
+                TTL = (long)ts.Value.TotalMilliseconds,
             }, cancellationToken: cts.Token);
             return response.ID;
         }
@@ -201,11 +201,11 @@ namespace EasyCaching.Etcd
         /// <param name="value"></param>
         /// <param name="ts"></param>
         /// <returns></returns>
-        private bool AddEphemeralData<T>(string key, T value, TimeSpan ts)
+        private bool AddEphemeralData<T>(string key, T value, TimeSpan? ts)
         {
             try
             {
-                long leaseId = GetRentLeaseId(ts);
+                long leaseId = ts.HasValue ? GetRentLeaseId(ts) : 0;
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
                 PutRequest request = new PutRequest()
                 {
@@ -230,11 +230,11 @@ namespace EasyCaching.Etcd
         /// <param name="value"></param>
         /// <param name="ts"></param>
         /// <returns></returns>
-        private async Task<bool> AddEphemeralDataAsync<T>(string key, T value, TimeSpan ts)
+        private async Task<bool> AddEphemeralDataAsync<T>(string key, T value, TimeSpan? ts)
         {
             try
             {
-                long leaseId = await GetRentLeaseIdAsync(ts);
+                long leaseId = ts.HasValue ? await GetRentLeaseIdAsync(ts) : 0;
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
                 PutRequest request = new PutRequest()
                 {
@@ -581,7 +581,18 @@ namespace EasyCaching.Etcd
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
-            throw new NotSupportedException("BaseFlush is not supported in Etcd provider.");
+
+            var dicData = GetRangeVals("");
+            if (dicData != null)
+            {
+                List<string> listKeys = new List<string>(dicData.Count);
+                foreach (var item in dicData)
+                {
+                    listKeys.Add(item.Key);
+                }
+                BaseRemoveAll(listKeys);
+            }
+           // throw new NotSupportedException("BaseFlush is not supported in Etcd provider.");
         }
 
         /// <summary>

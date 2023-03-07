@@ -8,7 +8,7 @@
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        //1. InMemory,Memcached,Redis,SQLite,FasterKv
+        //1. InMemory,Memcached,Redis,SQLite,FasterKv,Etcd
         private readonly IEasyCachingProvider _provider;
 
         public ValuesController(IEasyCachingProvider provider)

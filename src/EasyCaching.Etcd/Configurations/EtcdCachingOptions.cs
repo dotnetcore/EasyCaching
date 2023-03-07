@@ -14,11 +14,6 @@ namespace EasyCaching.Etcd
         public string Address { get; set; }
 
         /// <summary>
-        /// 服务名
-        /// </summary>
-        public string ServerName { get; set; }
-
-        /// <summary>
         /// Etcd access UserName
         /// </summary>
         public string UserName { get; set; }
@@ -34,8 +29,8 @@ namespace EasyCaching.Etcd
         public long Timeout { get; set; }
 
         /// <summary>
-        /// life time ttl
+        /// server name
         /// </summary>
-        public long TTL { get; set; }
+        public string ServerName { get; set; }
     }
 }

@@ -7,6 +7,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\bus\EasyCaching.Bus.ConfluentKafka\EasyCaching.Bus.ConfluentKafka.csproj" />
     <ProjectReference Include="..\..\bus\EasyCaching.Bus.Zookeeper\EasyCaching.Bus.Zookeeper.csproj" />
+    <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Etcd\EasyCaching.Etcd.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.FasterKv\EasyCaching.FasterKv.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Memcached\EasyCaching.Memcached.csproj" />

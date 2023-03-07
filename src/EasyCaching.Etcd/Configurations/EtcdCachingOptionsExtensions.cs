@@ -57,7 +57,6 @@ public static class EtcdCachingOptionsExtensions
                 x.UserName = EtcdOptions.UserName;
                 x.Password = EtcdOptions.Password;
                 x.Timeout= EtcdOptions.Timeout;
-                x.TTL= EtcdOptions.TTL;
             }
 
             options.RegisterExtension(new EtcdOptionsExtension(name, Configure));
