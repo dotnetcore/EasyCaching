@@ -14,6 +14,7 @@
     <ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.CSRedis\EasyCaching.CSRedis.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Disk\EasyCaching.Disk.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Etcd\EasyCaching.Etcd.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
     <ProjectReference Include="..\..\interceptor\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />

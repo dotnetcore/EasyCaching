@@ -129,7 +129,7 @@ namespace dotnet_etcd
                 options.ServiceProvider = services.BuildServiceProvider();
 
                 //channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
-                channel = GrpcChannel.ForAddress(connectionString, new GrpcChannelOptions { Credentials = ChannelCredentials.Insecure });
+                channel = GrpcChannel.ForAddress(connectionString, options);
             }
 
             CallInvoker callInvoker = interceptors != null && interceptors.Length > 0 ? channel.Intercept(interceptors) : channel.CreateCallInvoker();

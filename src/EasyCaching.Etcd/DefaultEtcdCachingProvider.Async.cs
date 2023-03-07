@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
@@ -232,13 +233,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
 
-            //var searchPattern = this.ProcessSearchKeyPattern(pattern);
-            //var searchKey = this.HandleSearchKeyPattern(pattern);
-
-            //var count = await Task.Run(() => _cache.RemoveByPattern(searchKey, searchPattern), cancellationToken);
-
-            //if (_options.EnableLogging)
-            //    _logger?.LogInformation($"BaseRemoveByPatternAsync : pattern = {pattern} , count = {count}");
+            throw new NotSupportedException("BaseRemoveByPatternAsync is not supported in Etcd provider.");
         }
 
         /// <summary>
@@ -314,7 +309,6 @@
         public override async Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-            var map = new Dictionary<string, CacheValue<T>>();
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
@@ -357,8 +351,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            //_cache.Clear();
-            await Task.CompletedTask;
+            throw new NotSupportedException("BaseFlushAsync is not supported in Etcd provider.");
         }
 
         /// <summary>
@@ -390,8 +383,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            // return Task.FromResult(_cache.GetExpiration(cacheKey));
-            return null;
+            throw new NotSupportedException("BaseGetExpirationAsync is not supported in Etcd provider.");
         }
     }
 }
