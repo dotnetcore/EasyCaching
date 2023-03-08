@@ -1,12 +1,12 @@
 ﻿namespace EasyCaching.Etcd
 {
+    using EasyCaching.Core;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
-    using EasyCaching.Core;
-    using Microsoft.Extensions.Logging;
 
     /// <summary>
     /// MemoryCaching provider.
@@ -27,7 +27,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await GetValAsync<T>(cacheKey);
+            var result = await _cache.GetValAsync<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -43,7 +43,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!AddEphemeralData($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
+            if (!await _cache.AddEphemeralDataAsync($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
             {
                 //wait for some ms
                 await Task.Delay(_options.SleepMs, cancellationToken);
@@ -58,21 +58,21 @@
                 {
                     await SetAsync(cacheKey, res, expiration);
                     //remove mutex key
-                    await DeleteDataAsync($"{cacheKey}_Lock");
+                    await _cache.DeleteDataAsync($"{cacheKey}_Lock");
 
                     return new CacheValue<T>(res, true);
                 }
                 else
                 {
                     //remove mutex key
-                    await DeleteDataAsync($"{cacheKey}_Lock");
+                    await _cache.DeleteDataAsync($"{cacheKey}_Lock");
                     return CacheValue<T>.NoValue;
                 }
             }
             catch
             {
                 //remove mutex key
-                await DeleteDataAsync($"{cacheKey}_Lock");
+                await _cache.DeleteDataAsync($"{cacheKey}_Lock");
                 throw;
             }
         }
@@ -88,7 +88,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await GetValAsync<T>(cacheKey);
+            var result = await _cache.GetValAsync<T>(cacheKey);
 
             if (result.HasValue)
             {
@@ -118,7 +118,7 @@
         /// <param name="cancellationToken">CancellationToken</param>
         public override async Task<int> BaseGetCountAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
-            var dicData = await GetRangeValsAsync(prefix);
+            var dicData = await _cache.GetRangeValsAsync(prefix);
             return dicData != null ? dicData.Count : 0;
         }
 
@@ -133,7 +133,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await GetValAsync<object>(cacheKey);
+            var result = await _cache.GetValAsync<object>(cacheKey);
 
             if (result != null)
             {
@@ -165,7 +165,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await DeleteDataAsync(cacheKey);
+            await _cache.DeleteDataAsync(cacheKey);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@
 
             //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
             //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-            AddEphemeralDataAsync<T>(cacheKey, cacheValue, expiration);
+            await _cache.AddEphemeralDataAsync<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -204,7 +204,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return await GetDataExistsAsync(cacheKey);
+            return await _cache.GetDataExistsAsync(cacheKey);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var count = await DeleteRangeDataAsync(prefix);
+            var count = await _cache.DeleteRangeDataAsync(prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix} , count = {count}");
@@ -251,7 +251,7 @@
 
             foreach (var item in values)
             {
-                await AddEphemeralDataAsync(item.Key, item.Value, expiration);
+                await _cache.AddEphemeralDataAsync(item.Key, item.Value, expiration);
             }
         }
 
@@ -289,7 +289,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllKeysAsync");
 
-            var dicData = await GetRangeValsAsync(prefix);
+            var dicData = await _cache.GetRangeValsAsync(prefix);
             List<string> result = new List<string>();
             foreach (var item in dicData)
             {
@@ -312,7 +312,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
 
-            var dicData = await GetRangeValsAsync(prefix);
+            var dicData = await _cache.GetRangeValsAsync(prefix);
             Dictionary<string, CacheValue<T>> result = new Dictionary<string, CacheValue<T>>();
             foreach (var item in dicData)
             {
@@ -336,7 +336,7 @@
 
             foreach (var item in cacheKeys)
             {
-                await DeleteDataAsync(item);
+                await _cache.DeleteDataAsync(item);
             }
         }
 
@@ -350,7 +350,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            var dicData = await GetRangeValsAsync("");
+            var dicData = await _cache.GetRangeValsAsync("");
             if (dicData != null)
             {
                 List<string> listKeys = new List<string>(dicData.Count);
@@ -358,7 +358,7 @@
                 {
                     listKeys.Add(item.Key);
                 }
-               await BaseRemoveAllAsync(listKeys);
+                await BaseRemoveAllAsync(listKeys);
             }
             //throw new NotSupportedException("BaseFlushAsync is not supported in Etcd provider.");
         }
@@ -379,7 +379,7 @@
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             //var val = new CacheValue<T>(cacheValue, true, expiration);
-            return await AddEphemeralDataAsync(cacheKey, cacheValue, expiration);
+            return await _cache.AddEphemeralDataAsync(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
