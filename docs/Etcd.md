@@ -2,7 +2,7 @@
 
 Etcd is a hybrid memory and disk Kv Store, so it can support much larger data storage than memory.
 
-EasyCaching.Etcd is a lib that is based on **EasyCaching.Core** and **Google.Protobuf** and **Grpc.Net.Client** and **Grpc.Tools**.
+EasyCaching.Etcd is a lib that is based on **EasyCaching.Core** and **dotnet-etcd-core**.
 
 
 # How to use ?
@@ -29,6 +29,8 @@ public class Startup
             //use Etcd cache
             option.UseEtcd(config =>
             {
+                config.Address = "http://127.0.0.1:2379";
+                config.Timeout = 30000;
                 // Etcd must be set SerializerName
                 config.SerializerName = "msg";
             })
