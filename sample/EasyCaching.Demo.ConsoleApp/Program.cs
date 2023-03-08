@@ -33,7 +33,6 @@ namespace EasyCaching.Demo.ConsoleApp
                 option.UseEtcd(options =>
                 {
                     options.Address = "http://127.0.0.1:2379";
-                    options.ServerName = "";
                     options.Timeout = 30000;
                     options.SerializerName= "json";
                 }, "e1").WithJson("json");

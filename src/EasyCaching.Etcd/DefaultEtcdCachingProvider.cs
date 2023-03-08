@@ -3,10 +3,12 @@ using EasyCaching.Core;
 using EasyCaching.Core.Serialization;
 using Etcdserverpb;
 using Google.Protobuf;
+using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,7 +54,10 @@ namespace EasyCaching.Etcd
             _logger = loggerFactory?.CreateLogger<DefaultEtcdCachingProvider>();
 
             //init etcd client
-            this._cache = new EtcdClient(connectionString: options.Address, serverName: options.ServerName, configureChannelOptions: null);
+            this._cache = new EtcdClient(connectionString: options.Address, configureChannelOptions: (x) =>
+            {
+                x.Credentials = ChannelCredentials.Insecure;
+            });
             //auth
             if (!string.IsNullOrEmpty(options.UserName) && !string.IsNullOrEmpty(options.Password))
             {
