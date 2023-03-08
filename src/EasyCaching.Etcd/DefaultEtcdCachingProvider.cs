@@ -1,17 +1,10 @@
-﻿using dotnet_etcd;
-using EasyCaching.Core;
+﻿using EasyCaching.Core;
 using EasyCaching.Core.Serialization;
-using Etcdserverpb;
-using Google.Protobuf;
-using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EasyCaching.Etcd
 {
@@ -28,9 +21,7 @@ namespace EasyCaching.Etcd
         private readonly IEasyCachingSerializer _serializer;
         private readonly EtcdCachingOptions _options;
 
-        private readonly EtcdClient _cache;
-        private readonly string _authToken;
-        private readonly Grpc.Core.Metadata _metadata;
+        private readonly IEtcdCaching _cache;
 
         /// <summary>
         /// The cache stats.
@@ -41,6 +32,7 @@ namespace EasyCaching.Etcd
 
         public DefaultEtcdCachingProvider(
             string name,
+            IEnumerable<IEtcdCaching> cache,
             EtcdCachingOptions options,
             IEnumerable<IEasyCachingSerializer> serializers,
             ILoggerFactory? loggerFactory = null)
@@ -53,22 +45,7 @@ namespace EasyCaching.Etcd
             _options = options;
             _logger = loggerFactory?.CreateLogger<DefaultEtcdCachingProvider>();
 
-            //init etcd client
-            this._cache = new EtcdClient(connectionString: options.Address, configureChannelOptions: (x) =>
-            {
-                x.Credentials = ChannelCredentials.Insecure;
-            });
-            //auth
-            if (!string.IsNullOrEmpty(options.UserName) && !string.IsNullOrEmpty(options.Password))
-            {
-                var authRes = this._cache.Authenticate(new Etcdserverpb.AuthenticateRequest()
-                {
-                    Name = options.UserName,
-                    Password = options.Password,
-                });
-                _authToken = authRes.Token;
-                _metadata = new Grpc.Core.Metadata() { new Grpc.Core.Metadata.Entry("token", _authToken) };
-            }
+            _cache = cache.Single(x => x.ProviderName == _name);
 
             var serName = !string.IsNullOrWhiteSpace(options.SerializerName) ? options.SerializerName : name;
             _serializer = serializers.FirstOrDefault(x => x.Name.Equals(serName)) ??
@@ -97,212 +74,6 @@ namespace EasyCaching.Etcd
             };
         }
 
-        #region etcd method
-
-        /// <summary>
-        /// get data
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <returns></returns>
-        private CacheValue<T> GetVal<T>(string cacheKey)
-        {
-            var data = _cache.GetVal(cacheKey, _metadata);
-            return string.IsNullOrWhiteSpace(data)
-                    ? CacheValue<T>.Null
-                    : new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(data)), true);
-        }
-
-        /// <summary>
-        /// get data
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <returns></returns>
-        private async Task<CacheValue<T>> GetValAsync<T>(string cacheKey)
-        {
-            var data = await _cache.GetValAsync(cacheKey, _metadata);
-            return string.IsNullOrWhiteSpace(data)
-                    ? CacheValue<T>.Null
-                    : new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(data)), true);
-        }
-
-        /// <summary>
-        /// get rangevalues
-        /// </summary>
-        /// <param name="prefixKey"></param>
-        /// <returns></returns>
-        private IDictionary<string, string> GetRangeVals(string prefixKey)
-        {
-            return _cache.GetRangeVal(prefixKey, _metadata);
-        }
-
-        /// <summary>
-        /// get rangevalues
-        /// </summary>
-        /// <param name="prefixKey"></param>
-        /// <returns></returns>
-        private async Task<IDictionary<string, string>> GetRangeValsAsync(string prefixKey)
-        {
-            return await _cache.GetRangeValAsync(prefixKey, _metadata);
-        }
-
-        /// <summary>
-        ///  data exists
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <returns></returns>
-        private bool GetDataExists(string cacheKey)
-        {
-            var data = _cache.GetVal(cacheKey, _metadata);
-            return data == string.Empty ? false : true;
-        }
-
-        /// <summary>
-        ///  data exists
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        /// <returns></returns>
-        private async Task<bool> GetDataExistsAsync(string cacheKey)
-        {
-            var data = await _cache.GetValAsync(cacheKey, _metadata);
-            return data == string.Empty ? false : true;
-        }
-
-        /// <summary>
-        /// get rent leaseId
-        /// </summary>
-        /// <param name="ts"></param>
-        /// <returns></returns>
-        private long GetRentLeaseId(TimeSpan? ts)
-        {
-            // create rent id to bind
-            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-            var response = _cache.LeaseGrant(request: new LeaseGrantRequest()
-            {
-                TTL = (long)ts.Value.TotalMilliseconds,
-            }, cancellationToken: cts.Token);
-            return response.ID;
-        }
-
-        /// <summary>
-        /// get rent leaseId
-        /// </summary>
-        /// <param name="ts"></param>
-        /// <returns></returns>
-        private async Task<long> GetRentLeaseIdAsync(TimeSpan? ts)
-        {
-            // create rent id to bind
-            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-            var response = await _cache.LeaseGrantAsync(request: new LeaseGrantRequest()
-            {
-                TTL = (long)ts.Value.TotalMilliseconds,
-            }, cancellationToken: cts.Token);
-            return response.ID;
-        }
-
-        /// <summary>
-        /// put ke-val with leaseId
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="ts"></param>
-        /// <returns></returns>
-        private bool AddEphemeralData<T>(string key, T value, TimeSpan? ts)
-        {
-            try
-            {
-                long leaseId = ts.HasValue ? GetRentLeaseId(ts) : 0;
-                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-                PutRequest request = new PutRequest()
-                {
-                    Key = ByteString.CopyFromUtf8(key),
-                    Value = ByteString.CopyFrom(_serializer.Serialize(value)),
-                    Lease = leaseId
-                };
-                var response = _cache.Put(request: request, headers: _metadata, cancellationToken: cts.Token);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("putEphemeral(key:{},value:{}) error.", key, value, ex);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// put ke-val with leaseId
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="value"></param>
-        /// <param name="ts"></param>
-        /// <returns></returns>
-        private async Task<bool> AddEphemeralDataAsync<T>(string key, T value, TimeSpan? ts)
-        {
-            try
-            {
-                long leaseId = ts.HasValue ? await GetRentLeaseIdAsync(ts) : 0;
-                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-                PutRequest request = new PutRequest()
-                {
-                    Key = ByteString.CopyFromUtf8(key),
-                    Value = ByteString.CopyFrom(_serializer.Serialize(value)),
-                    Lease = leaseId
-                };
-                var response = await _cache.PutAsync(request: request, headers: _metadata, cancellationToken: cts.Token);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("putEphemeral(key:{},value:{}) error.", key, value, ex);
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// delete key
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private long DeleteData(string key)
-        {
-            var response = _cache.Delete(key, _metadata);
-            return response.Deleted;
-        }
-
-        /// <summary>
-        /// delete key
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        private async Task<long> DeleteDataAsync(string key)
-        {
-            var response = await _cache.DeleteAsync(key, _metadata);
-            return response.Deleted;
-        }
-
-        /// <summary>
-        /// delete key
-        /// </summary>
-        /// <param name="prefixKey"></param>
-        /// <returns></returns>
-        private long DeleteRangeData(string prefixKey)
-        {
-            var response = _cache.Delete(prefixKey, _metadata);
-            return response.Deleted;
-        }
-
-        /// <summary>
-        /// delete key
-        /// </summary>
-        /// <param name="prefixKey"></param>
-        /// <returns></returns>
-        private async Task<long> DeleteRangeDataAsync(string prefixKey)
-        {
-            var response = await _cache.DeleteAsync(prefixKey, _metadata);
-            return response.Deleted;
-        }
-
-        #endregion etcd method
-
         /// <summary>
         /// Get the specified cacheKey, dataRetriever and expiration.
         /// </summary>
@@ -316,7 +87,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = GetVal<T>(cacheKey);
+            var result = _cache.GetVal<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -332,7 +103,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!AddEphemeralData<string>($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
+            if (!_cache.AddEphemeralData<string>($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
             {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);
@@ -346,21 +117,21 @@ namespace EasyCaching.Etcd
                 {
                     Set(cacheKey, res, expiration);
                     //remove mutex key
-                    DeleteData($"{cacheKey}_Lock");
+                    _cache.DeleteData($"{cacheKey}_Lock");
 
                     return new CacheValue<T>(res, true);
                 }
                 else
                 {
                     //remove mutex key
-                    DeleteData($"{cacheKey}_Lock");
+                    _cache.DeleteData($"{cacheKey}_Lock");
                     return CacheValue<T>.NoValue;
                 }
             }
             catch
             {
                 //remove mutex key
-                DeleteData($"{cacheKey}_Lock");
+                _cache.DeleteData($"{cacheKey}_Lock");
                 throw;
             }
         }
@@ -375,7 +146,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = GetVal<T>(cacheKey);
+            var result = _cache.GetVal<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -405,7 +176,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            DeleteData(cacheKey);
+            _cache.DeleteData(cacheKey);
         }
 
         /// <summary>
@@ -430,7 +201,7 @@ namespace EasyCaching.Etcd
 
             //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
             //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-            AddEphemeralData<T>(cacheKey, cacheValue, expiration);
+            _cache.AddEphemeralData<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -442,7 +213,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return GetDataExists(cacheKey);
+            return _cache.GetDataExists(cacheKey);
         }
 
         /// <summary>
@@ -453,7 +224,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var count = DeleteRangeData(prefix);
+            var count = _cache.DeleteRangeData(prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix} , count = {count}");
@@ -484,7 +255,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in values)
             {
-                AddEphemeralData<T>(item.Key, item.Value, expiration);
+                _cache.AddEphemeralData<T>(item.Key, item.Value, expiration);
             }
         }
 
@@ -520,7 +291,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllKeys");
 
-            var dicData = GetRangeVals(prefix);
+            var dicData = _cache.GetRangeVals(prefix);
             List<string> result = new List<string>();
             foreach (var item in dicData)
             {
@@ -542,7 +313,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
 
-            var dicData = GetRangeVals(prefix);
+            var dicData = _cache.GetRangeVals(prefix);
             Dictionary<string, CacheValue<T>> result = new Dictionary<string, CacheValue<T>>();
             foreach (var item in dicData)
             {
@@ -564,7 +335,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in cacheKeys)
             {
-                DeleteData(item);
+                _cache.DeleteData(item);
             }
         }
 
@@ -575,7 +346,7 @@ namespace EasyCaching.Etcd
         /// <param name="prefix">Prefix.</param>
         public override int BaseGetCount(string prefix = "")
         {
-            var dicData = GetRangeVals(prefix);
+            var dicData = _cache.GetRangeVals(prefix);
             return dicData != null ? dicData.Count : 0;
         }
 
@@ -587,7 +358,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            var dicData = GetRangeVals("");
+            var dicData = _cache.GetRangeVals("");
             if (dicData != null)
             {
                 List<string> listKeys = new List<string>(dicData.Count);
@@ -597,7 +368,7 @@ namespace EasyCaching.Etcd
                 }
                 BaseRemoveAll(listKeys);
             }
-           // throw new NotSupportedException("BaseFlush is not supported in Etcd provider.");
+            // throw new NotSupportedException("BaseFlush is not supported in Etcd provider.");
         }
 
         /// <summary>
@@ -615,7 +386,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             //var val = new CacheValue<T>(cacheValue, true, expiration);
-            return AddEphemeralData<T>(cacheKey, cacheValue, expiration);
+            return _cache.AddEphemeralData<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -653,7 +424,6 @@ namespace EasyCaching.Etcd
             if (_disposed)
                 return;
 
-            _cache.Dispose();
             _disposed = true;
         }
     }

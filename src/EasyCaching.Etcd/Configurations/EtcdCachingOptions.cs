@@ -24,8 +24,8 @@ namespace EasyCaching.Etcd
         public string Password { get; set; }
 
         /// <summary>
-        /// Etcd timeout
+        /// Etcd timeout with Milliseconds
         /// </summary>
-        public long Timeout { get; set; }
+        public long Timeout { get; set; } = 3000;
     }
 }
