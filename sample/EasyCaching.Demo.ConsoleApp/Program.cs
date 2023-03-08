@@ -35,7 +35,11 @@ namespace EasyCaching.Demo.ConsoleApp
                     options.Address = "http://127.0.0.1:2379";
                     options.Timeout = 30000;
                     options.SerializerName= "json";
-                }, "e1").WithJson("json");
+                }, "e1").WithJson(jsonSerializerSettingsConfigure: x =>
+                {
+                    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }, "json");
 
                 option.UseRedis((options) =>
                 {
@@ -64,7 +68,11 @@ namespace EasyCaching.Demo.ConsoleApp
                     cfg.DBConfig = new DiskDbOptions { BasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache") };
                     cfg.SerializerName = "msgpack";
                 }, "disk")
-                .WithJson("json")
+                .WithJson(jsonSerializerSettingsConfigure: x =>
+                {
+                    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }, "json")
                 .WithSystemTextJson("sysjson")
                 .WithMessagePack("msgpack");
             });
