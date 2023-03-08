@@ -127,28 +127,14 @@ namespace dotnet_etcd
                 }
                 var services = new ServiceCollection();
 #if NET6_0 || NET5_0
-                if (!string.IsNullOrEmpty(serverName))
-                {
-                    var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
-                    services.AddSingleton<ResolverFactory>(factory);
-                    options.ServiceProvider = services.BuildServiceProvider();
-                    channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
-                }
-                else
-                {
-                    options.ServiceProvider = services.BuildServiceProvider();
-                    channel = GrpcChannel.ForAddress(nodes[0], options);
-                }
+                var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
+                services.AddSingleton<ResolverFactory>(factory);
+                options.ServiceProvider = services.BuildServiceProvider();
+                channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
 #else
                 options.ServiceProvider = services.BuildServiceProvider();
                 channel = GrpcChannel.ForAddress(nodes[0], options);
 #endif
-                //// var factory = new StaticResolverFactory(addr => nodes.Select(i => new BalancerAddress(i.Host, i.Port)).ToArray());
-                //// services.AddSingleton<ResolverFactory>(factory);
-                //options.ServiceProvider = services.BuildServiceProvider();
-
-                ////channel = GrpcChannel.ForAddress($"{StaticHostsPrefix}{serverName}", options);
-                //channel = GrpcChannel.ForAddress(connectionString, options);
             }
 
             CallInvoker callInvoker = interceptors != null && interceptors.Length > 0 ? channel.Intercept(interceptors) : channel.CreateCallInvoker();

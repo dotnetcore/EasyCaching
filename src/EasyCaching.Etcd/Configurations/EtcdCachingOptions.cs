@@ -27,10 +27,5 @@ namespace EasyCaching.Etcd
         /// Etcd timeout
         /// </summary>
         public long Timeout { get; set; }
-
-        /// <summary>
-        /// server name
-        /// </summary>
-        public string ServerName { get; set; }
     }
 }
