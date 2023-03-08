@@ -73,7 +73,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        public CacheValue<T> GetVal<T>(string cacheKey)
+        public CacheValue<T> Get<T>(string cacheKey)
         {
             var data = _cache.GetVal(cacheKey, _metadata);
             return string.IsNullOrWhiteSpace(data)
@@ -86,7 +86,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        public async Task<CacheValue<T>> GetValAsync<T>(string cacheKey)
+        public async Task<CacheValue<T>> GetAsync<T>(string cacheKey)
         {
             var data = await _cache.GetValAsync(cacheKey, _metadata);
             return string.IsNullOrWhiteSpace(data)
@@ -99,7 +99,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="prefixKey"></param>
         /// <returns></returns>
-        public IDictionary<string, string> GetRangeVals(string prefixKey)
+        public IDictionary<string, string> GetAll(string prefixKey)
         {
             return _cache.GetRangeVal(prefixKey, _metadata);
         }
@@ -109,7 +109,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="prefixKey"></param>
         /// <returns></returns>
-        public async Task<IDictionary<string, string>> GetRangeValsAsync(string prefixKey)
+        public async Task<IDictionary<string, string>> GetAllAsync(string prefixKey)
         {
             return await _cache.GetRangeValAsync(prefixKey, _metadata);
         }
@@ -119,7 +119,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        public bool GetDataExists(string cacheKey)
+        public bool Exists(string cacheKey)
         {
             var data = _cache.GetVal(cacheKey, _metadata);
             return data == string.Empty ? false : true;
@@ -130,7 +130,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        public async Task<bool> GetDataExistsAsync(string cacheKey)
+        public async Task<bool> ExistsAsync(string cacheKey)
         {
             var data = await _cache.GetValAsync(cacheKey, _metadata);
             return data == string.Empty ? false : true;
@@ -175,7 +175,7 @@ namespace EasyCaching.Etcd
         /// <param name="value"></param>
         /// <param name="ts"></param>
         /// <returns></returns>
-        public bool AddEphemeralData<T>(string key, T value, TimeSpan? ts)
+        public bool Set<T>(string key, T value, TimeSpan? ts)
         {
             try
             {
@@ -192,7 +192,7 @@ namespace EasyCaching.Etcd
             }
             catch (Exception ex)
             {
-                _logger.LogError("putEphemeral(key:{},value:{}) error.", key, value, ex);
+                _logger.LogError(ex, "putEphemeral(key:{},value:{}) error.", key, value);
             }
             return false;
         }
@@ -204,7 +204,7 @@ namespace EasyCaching.Etcd
         /// <param name="value"></param>
         /// <param name="ts"></param>
         /// <returns></returns>
-        public async Task<bool> AddEphemeralDataAsync<T>(string key, T value, TimeSpan? ts)
+        public async Task<bool> SetAsync<T>(string key, T value, TimeSpan? ts)
         {
             try
             {
@@ -221,7 +221,7 @@ namespace EasyCaching.Etcd
             }
             catch (Exception ex)
             {
-                _logger.LogError("putEphemeral(key:{},value:{}) error.", key, value, ex);
+                _logger.LogError(ex,"putEphemeral(key:{},value:{}) error.",key,value);
             }
             return false;
         }
@@ -231,7 +231,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public long DeleteData(string key)
+        public long Delete(string key)
         {
             var response = _cache.Delete(key, _metadata);
             return response.Deleted;
@@ -242,7 +242,7 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<long> DeleteDataAsync(string key)
+        public async Task<long> DeleteAsync(string key)
         {
             var response = await _cache.DeleteAsync(key, _metadata);
             return response.Deleted;
@@ -255,7 +255,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public long DeleteRangeData(string prefixKey)
         {
-            var response = _cache.Delete(prefixKey, _metadata);
+            var response = _cache.DeleteRange(prefixKey, _metadata);
             return response.Deleted;
         }
 
@@ -266,7 +266,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public async Task<long> DeleteRangeDataAsync(string prefixKey)
         {
-            var response = await _cache.DeleteAsync(prefixKey, _metadata);
+            var response = await _cache.DeleteRangeAsync(prefixKey, _metadata);
             return response.Deleted;
         }
 

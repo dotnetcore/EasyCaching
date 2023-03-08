@@ -87,7 +87,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _cache.GetVal<T>(cacheKey);
+            var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -103,7 +103,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!_cache.AddEphemeralData<string>($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
+            if (!_cache.Set<string>($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
             {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);
@@ -117,21 +117,21 @@ namespace EasyCaching.Etcd
                 {
                     Set(cacheKey, res, expiration);
                     //remove mutex key
-                    _cache.DeleteData($"{cacheKey}_Lock");
+                    _cache.Delete($"{cacheKey}_Lock");
 
                     return new CacheValue<T>(res, true);
                 }
                 else
                 {
                     //remove mutex key
-                    _cache.DeleteData($"{cacheKey}_Lock");
+                    _cache.Delete($"{cacheKey}_Lock");
                     return CacheValue<T>.NoValue;
                 }
             }
             catch
             {
                 //remove mutex key
-                _cache.DeleteData($"{cacheKey}_Lock");
+                _cache.Delete($"{cacheKey}_Lock");
                 throw;
             }
         }
@@ -146,7 +146,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _cache.GetVal<T>(cacheKey);
+            var result = _cache.Get<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -176,7 +176,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _cache.DeleteData(cacheKey);
+            _cache.Delete(cacheKey);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace EasyCaching.Etcd
 
             //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
             //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-            _cache.AddEphemeralData<T>(cacheKey, cacheValue, expiration);
+            _cache.Set<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return _cache.GetDataExists(cacheKey);
+            return _cache.Exists(cacheKey);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in values)
             {
-                _cache.AddEphemeralData<T>(item.Key, item.Value, expiration);
+                _cache.Set<T>(item.Key, item.Value, expiration);
             }
         }
 
@@ -291,7 +291,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllKeys");
 
-            var dicData = _cache.GetRangeVals(prefix);
+            var dicData = _cache.GetAll(prefix);
             List<string> result = new List<string>();
             foreach (var item in dicData)
             {
@@ -313,7 +313,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
 
-            var dicData = _cache.GetRangeVals(prefix);
+            var dicData = _cache.GetAll(prefix);
             Dictionary<string, CacheValue<T>> result = new Dictionary<string, CacheValue<T>>();
             foreach (var item in dicData)
             {
@@ -335,7 +335,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in cacheKeys)
             {
-                _cache.DeleteData(item);
+                _cache.Delete(item);
             }
         }
 
@@ -346,7 +346,7 @@ namespace EasyCaching.Etcd
         /// <param name="prefix">Prefix.</param>
         public override int BaseGetCount(string prefix = "")
         {
-            var dicData = _cache.GetRangeVals(prefix);
+            var dicData = _cache.GetAll(prefix);
             return dicData != null ? dicData.Count : 0;
         }
 
@@ -358,7 +358,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            var dicData = _cache.GetRangeVals("");
+            var dicData = _cache.GetAll("");
             if (dicData != null)
             {
                 List<string> listKeys = new List<string>(dicData.Count);
@@ -386,7 +386,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             //var val = new CacheValue<T>(cacheValue, true, expiration);
-            return _cache.AddEphemeralData<T>(cacheKey, cacheValue, expiration);
+            return _cache.Set<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>

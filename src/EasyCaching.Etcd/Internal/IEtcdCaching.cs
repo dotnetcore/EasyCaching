@@ -14,42 +14,42 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        CacheValue<T> GetVal<T>(string cacheKey);
+        CacheValue<T> Get<T>(string cacheKey);
 
         /// <summary>
         /// get data
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        Task<CacheValue<T>> GetValAsync<T>(string cacheKey);
+        Task<CacheValue<T>> GetAsync<T>(string cacheKey);
 
         /// <summary>
         /// get rangevalues
         /// </summary>
         /// <param name="prefixKey"></param>
         /// <returns></returns>
-        IDictionary<string, string> GetRangeVals(string prefixKey);
+        IDictionary<string, string> GetAll(string prefixKey);
 
         /// <summary>
         /// get rangevalues
         /// </summary>
         /// <param name="prefixKey"></param>
         /// <returns></returns>
-        Task<IDictionary<string, string>> GetRangeValsAsync(string prefixKey);
+        Task<IDictionary<string, string>> GetAllAsync(string prefixKey);
 
         /// <summary>
         ///  data exists
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        bool GetDataExists(string cacheKey);
+        bool Exists(string cacheKey);
 
         /// <summary>
         ///  data exists
         /// </summary>
         /// <param name="cacheKey"></param>
         /// <returns></returns>
-        Task<bool> GetDataExistsAsync(string cacheKey);
+        Task<bool> ExistsAsync(string cacheKey);
 
         /// <summary>
         /// put ke-val with leaseId
@@ -58,7 +58,7 @@ namespace EasyCaching.Etcd
         /// <param name="value"></param>
         /// <param name="ts"></param>
         /// <returns></returns>
-        bool AddEphemeralData<T>(string key, T value, TimeSpan? ts);
+        bool Set<T>(string key, T value, TimeSpan? ts);
 
         /// <summary>
         /// put ke-val with leaseId
@@ -67,21 +67,21 @@ namespace EasyCaching.Etcd
         /// <param name="value"></param>
         /// <param name="ts"></param>
         /// <returns></returns>
-        Task<bool> AddEphemeralDataAsync<T>(string key, T value, TimeSpan? ts);
+        Task<bool> SetAsync<T>(string key, T value, TimeSpan? ts);
 
         /// <summary>
         /// delete key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        long DeleteData(string key);
+        long Delete(string key);
 
         /// <summary>
         /// delete key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        Task<long> DeleteDataAsync(string key);
+        Task<long> DeleteAsync(string key);
 
         /// <summary>
         /// delete range key
