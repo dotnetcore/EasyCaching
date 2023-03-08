@@ -252,6 +252,11 @@
             return result;
         }
 
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Handles the prefix of CacheKey.
         /// </summary>
@@ -274,6 +279,22 @@
                 prefix = _cache.Nodes?.Values?.FirstOrDefault()?.Prefix + prefix;
 
             return prefix;
+        }
+        
+        /// <summary>
+        /// Handles the pattern of CacheKey.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        private string HandleKeyPattern(string pattern)
+        {
+            // Forbid
+            if (pattern.Equals("*"))
+                throw new ArgumentException("the pattern should not equal to *");
+
+            if (!string.IsNullOrWhiteSpace(_cache.Nodes?.Values?.FirstOrDefault()?.Prefix))
+                pattern = _cache.Nodes?.Values?.FirstOrDefault()?.Prefix + pattern;
+
+            return pattern;
         }
 
         /// <summary>
@@ -402,6 +423,27 @@
         }
 
         /// <summary>
+        /// Remove cached value by pattern
+        /// </summary>
+        /// <param name="pattern">The pattern of cache key</param>
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            pattern = this.HandleKeyPattern(pattern);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPattern : pattern = {pattern}");
+
+            var redisKeys = this.SearchRedisKeys(pattern);
+
+            foreach (var item in redisKeys)
+            {
+                _cache.Del(item);
+            }
+        }
+
+        /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
         /// </summary>
         /// <param name="cacheKey">Cache key.</param>
@@ -495,6 +537,6 @@
         /// <returns></returns>
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabse() => _cache;
+        public override object BaseGetDatabase() => _cache;
     }
 }

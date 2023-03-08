@@ -12,7 +12,7 @@
     using Microsoft.Extensions.Options;
 
     public class DefaultConfluentKafkaBus : EasyCachingAbstractBus
-    {     
+    {
 
 
         /// <summary>
@@ -77,7 +77,7 @@
         /// <param name="cancellationToken">Cancellation token.</param>
         public override async Task BasePublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var msg =  _serializer.Serialize(message);
+            var msg = _serializer.Serialize(message);
 
             await _producer.ProduceAsync(topic, new Message<Null, byte[]> { Value = msg });
         }
@@ -89,7 +89,27 @@
         /// <param name="action">Action.</param>
         public override void BaseSubscribe(string topic, Action<EasyCachingMessage> action)
         {
-            Task.Factory.StartNew(() =>
+            _ = StartConsumer(topic);
+        }
+
+        /// <summary>
+        /// Subscribe the specified topic and action async.
+        /// </summary>
+        /// <param name="topic">Topic.</param>
+        /// <param name="action">Action.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        public override async Task BaseSubscribeAsync(string topic, Action<EasyCachingMessage> action, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            await StartConsumer(topic);
+        }
+
+        /// <summary>
+        /// Ons the consumer.
+        /// </summary>
+        /// <param name="topic">Topic</param>
+        private Task StartConsumer(string topic)
+        {
+            return Task.Factory.StartNew(() =>
             {
                 for (int i = 0; i < this._kafkaBusOptions.ConsumerCount; i++)
                 {

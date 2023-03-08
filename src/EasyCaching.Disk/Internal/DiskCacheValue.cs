@@ -1,23 +1,19 @@
 ﻿namespace EasyCaching.Disk
 {
-    using System;
-    using MessagePack;
-
-    [MessagePackObject]
     public class DiskCacheValue
     {
-        [SerializationConstructor]
-        public DiskCacheValue(byte[] val, DateTimeOffset time)
+        public DiskCacheValue()
+        {
+        }
+
+        public DiskCacheValue(byte[] val, long time)
         {
             Value = val;
             Expiration = time;
         }
 
+        public byte[] Value { get; set; }
 
-        [Key(0)]
-        public byte[] Value { get; private set; }
-
-        [Key(1)]
-        public DateTimeOffset Expiration { get; private set; }
+        public long Expiration { get; set; }
     }
 }

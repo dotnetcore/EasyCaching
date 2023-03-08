@@ -39,7 +39,4 @@
 		<Folder Include="Configurations\" />
 		<Folder Include="Internal\" />
 	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="MessagePack" Version="2.3.85" />
-	</ItemGroup>
 </Project>

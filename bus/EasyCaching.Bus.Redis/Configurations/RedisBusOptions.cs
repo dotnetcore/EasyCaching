@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Bus.Redis
 {
     using EasyCaching.Core.Configurations;
+    using StackExchange.Redis;
 
     /// <summary>
     /// Redis bus options.
@@ -17,5 +18,10 @@
         /// Gets or sets the serializer name that should be use in this bus.
         /// </summary>
         public string SerializerName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Redis database ConfigurationOptions will use.
+        /// </summary>
+        public ConfigurationOptions ConfigurationOptions { get; set; }
     }
 }

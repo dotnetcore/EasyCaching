@@ -118,6 +118,43 @@ namespace EasyCaching.UnitTests
             Assert.NotNull(db);
             Assert.IsType<InMemoryCaching>(db);
         }
+
+        [Fact]
+        public void Evicted_Event_Should_Trigger_When_StartScanForExpiredItems()
+        {
+            var key1 = "Evicted-111";
+            var key2 = "Evicted-112";
+
+            var db = (IInMemoryCaching)_provider.Database;
+
+            db.Evicted += (s,e) => 
+            {
+                Assert.Equal(key1, e.Key);
+            };
+
+            _provider.Set(key1, "111", TimeSpan.FromMilliseconds(500));
+            _provider.Set(key2, "112", TimeSpan.FromMilliseconds(6000));
+
+            System.Threading.Thread.Sleep(1000);
+        }
+
+        [Fact]
+        public void Evicted_Event_Should_Trigger_When_GetExpiredItems()
+        {
+            var key1 = "Evicted-211";
+
+            var db = (IInMemoryCaching)_provider.Database;
+
+            db.Evicted += (s, e) =>
+            {
+                Assert.Equal(key1, e.Key);
+            };
+
+            _provider.Set(key1, "211", TimeSpan.FromMilliseconds(500));
+            System.Threading.Thread.Sleep(1000);
+            _provider.Get<string>(key1);
+            System.Threading.Thread.Sleep(500);
+        }
     }
 
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest

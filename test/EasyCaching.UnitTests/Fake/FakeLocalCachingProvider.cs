@@ -5,7 +5,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
-
+    using System.Linq;
+    
     public class FakeLocalCachingProvider : IEasyCachingProvider
     {
         public string Name => "local";
@@ -52,6 +53,16 @@
         public CacheValue<T> Get<T>(string cacheKey)
         {
             return new CacheValue<T>(default(T), true);
+        }
+        
+        public IEnumerable<string> GetAllKeysByPrefix(string prefix)
+        {
+            return Enumerable.Empty<string>();
+        }
+
+        public Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(Enumerable.Empty<string>());
         }
 
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)
@@ -149,6 +160,15 @@
         public void RemoveByPrefix(string prefix)
         {
 
+        }
+
+        public Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            return Task.CompletedTask;
+        }
+
+        public void RemoveByPattern(string pattern)
+        {
         }
 
         public Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)

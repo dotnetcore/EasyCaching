@@ -64,6 +64,11 @@
             return result;
         }
 
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
+        }
+
         /// <summary>
         /// Gets the async.
         /// </summary>
@@ -288,6 +293,33 @@
                 _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix}");
 
             var redisKeys = this.SearchRedisKeys(prefix);
+
+            var tasks = new List<Task<long>>();
+
+            foreach (var item in redisKeys)
+            {
+                tasks.Add(_cache.DelAsync(item));
+            }
+
+            await Task.WhenAll(tasks);
+        }
+
+        /// <summary>
+        /// Removes the by pattern async.
+        /// </summary>
+        /// <returns>The by pattern async.</returns>
+        /// <param name="pattern">Pattern.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+            
+            pattern = this.HandleKeyPattern(pattern);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPatternAsync : pattern = {pattern}");
+            
+            var redisKeys = this.SearchRedisKeys(pattern);
 
             var tasks = new List<Task<long>>();
 

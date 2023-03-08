@@ -25,5 +25,11 @@
         /// </summary>
         /// <value><c>true</c> if is prefix; otherwise, <c>false</c>.</value>
         public bool IsPrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="T:EasyCaching.Core.Bus.EasyCachingMessage"/> is pattern.
+        /// </summary>
+        /// <value><c>true</c> if is pattern; otherwise, <c>false</c>.</value>
+        public bool IsPattern { get; set; }
     }
 }

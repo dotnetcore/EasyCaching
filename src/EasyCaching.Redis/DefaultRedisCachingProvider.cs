@@ -229,6 +229,7 @@ namespace EasyCaching.Redis
 
             _cache.KeyDelete(cacheKey);
         }
+  
 
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
@@ -285,6 +286,24 @@ namespace EasyCaching.Redis
 
             _cache.KeyDelete(redisKeys);
         }
+        
+        /// <summary>
+        /// Removes cached item by pattern async.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            pattern = this.HandleKeyPattern(pattern);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPattern : pattern = {pattern}");
+
+            var redisKeys = this.SearchRedisKeys(pattern);
+
+            _cache.KeyDelete(redisKeys);
+        }
 
         /// <summary>
         /// Searchs the redis keys.
@@ -332,6 +351,33 @@ namespace EasyCaching.Redis
 
             //return keys.ToArray();
         }
+        
+        
+        /// <summary>
+        /// GetAll the redis keys.
+        /// </summary>
+        /// <returns>The redis keys.</returns>
+        /// <remarks>
+        /// If your Redis Servers support command SCAN ,
+        /// IServer.Keys will use command SCAN to find out the keys.
+        /// Following
+        /// https://github.com/StackExchange/StackExchange.Redis/blob/master/StackExchange.Redis/StackExchange/Redis/RedisServer.cs#L289
+        /// </remarks>
+        /// <param name="pattern">Pattern.</param>
+        private RedisKey[] GetAllRedisKeys(string pattern)
+        {
+            var keys = new List<RedisKey>();
+
+            foreach (var server in _servers)
+                keys.AddRange(server.Keys(pattern: pattern, database: _cache.Database));
+
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                keys = keys.Select(x => new RedisKey(
+                        x.ToString().Remove(0, _options.DBConfig.KeyPrefix.Length)))
+                    .ToList();
+
+            return keys.Distinct().ToArray();
+        }
 
         /// <summary>
         /// Handles the prefix of CacheKey.
@@ -356,7 +402,23 @@ namespace EasyCaching.Redis
 
             return prefix;
         }
+        
+        /// <summary>
+        /// Handles the pattern of CacheKey.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        private string HandleKeyPattern(string pattern)
+        {
+            // Forbid
+            if (pattern.Equals("*"))
+                throw new ArgumentException("the pattern should not equal to *");
 
+            if (!string.IsNullOrWhiteSpace(_options.DBConfig.KeyPrefix))
+                pattern = _options.DBConfig.KeyPrefix + pattern;
+
+            return pattern;
+        }
+        
         /// <summary>
         /// Sets all.
         /// </summary>
@@ -399,6 +461,24 @@ namespace EasyCaching.Redis
                     result.Add(keyArray[i], CacheValue<T>.NoValue);
             }
 
+            return result;
+        }
+
+        /// <summary>
+        /// Gets all keys by prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix</param>
+        /// <returns>The all keys by prefix.</returns>
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            prefix = this.HandlePrefix(prefix);
+
+            var redisKeys = this.GetAllRedisKeys(prefix);
+            
+            var result = redisKeys?.Select(key => (string) key)?.Distinct();
+            
             return result;
         }
 
@@ -525,6 +605,6 @@ namespace EasyCaching.Redis
         /// <returns></returns>
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabse() => _cache;
+        public override object BaseGetDatabase() => _cache;
     }
 }

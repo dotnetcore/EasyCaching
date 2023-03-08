@@ -206,6 +206,7 @@
 
             _cache.Remove(cacheKey);
         }
+        
 
         /// <summary>
         /// Set the specified cacheKey, cacheValue and expiration.
@@ -257,6 +258,24 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix} , count = {count}");
         }
+        
+        /// <summary>
+        /// Removes cached items by pattern async.
+        /// </summary>
+        /// <returns>The by prefix async.</returns>
+        /// <param name="pattern">Pattern.</param>
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            var searchPattern = this.ProcessSearchKeyPattern(pattern);
+            var searchKey = this.HandleSearchKeyPattern(pattern);
+            
+            var count = _cache.RemoveByPattern( searchKey, searchPattern);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPattern : pattern = {pattern} , count = {count}");
+        }
 
         /// <summary>
         /// Sets all.
@@ -286,6 +305,19 @@
                 _logger?.LogInformation($"GetAll : cacheKeys = {string.Join(",", cacheKeys)}");
 
             return _cache.GetAll<T>(cacheKeys);
+        }
+
+        /// <summary>
+        /// Get all cacheKey by prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix.</param>
+        /// <returns>Get all cacheKey by prefix.</returns>
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            if (_options.EnableLogging)
+                _logger?.LogInformation("GetAllKeys");
+
+            return _cache.GetAllKeys(prefix);
         }
 
         /// <summary>
@@ -377,6 +409,6 @@
         /// <returns></returns>
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabse() => _cache;
+        public override object BaseGetDatabase() => _cache;
     }
 }

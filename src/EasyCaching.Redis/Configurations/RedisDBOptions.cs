@@ -1,6 +1,7 @@
 ﻿namespace EasyCaching.Redis
 {
     using EasyCaching.Core.Configurations;
+    using StackExchange.Redis;
 
     /// <summary>
     /// Redis cache options.
@@ -29,5 +30,10 @@
         /// Gets or sets the Redis database KeyPrefix will use.
         /// </summary>
         public string KeyPrefix { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Redis database ConfigurationOptions will use.
+        /// </summary>
+        public ConfigurationOptions ConfigurationOptions { get; set; }
     }
 }

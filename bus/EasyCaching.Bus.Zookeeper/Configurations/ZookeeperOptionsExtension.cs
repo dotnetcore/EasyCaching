@@ -27,8 +27,6 @@
         {
             services.AddOptions();
 
-            services.TryAddSingleton<IEasyCachingSerializer, DefaultBinaryFormatterSerializer>();
-
             services.AddOptions<ZkBusOptions>()
                 .Configure(_zkBusOptions);
 

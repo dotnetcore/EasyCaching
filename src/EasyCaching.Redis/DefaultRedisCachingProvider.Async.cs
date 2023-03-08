@@ -230,6 +230,25 @@
         }
 
         /// <summary>
+        /// Removes cached item by pattern async.
+        /// </summary>
+        /// <param name="pattern">Pattern of CacheKey.</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        public override async Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            pattern = this.HandleKeyPattern(pattern);
+
+            if (_options.EnableLogging)
+                _logger?.LogInformation($"RemoveByPatternAsync : pattern = {pattern}");
+
+            var redisKeys = this.SearchRedisKeys(pattern);
+
+            await _cache.KeyDeleteAsync(redisKeys);
+        }
+
+        /// <summary>
         /// Sets all async.
         /// </summary>
         /// <returns>The all async.</returns>
@@ -276,6 +295,27 @@
 
             return result;
         }
+        
+        
+        /// <summary>
+        /// Gets all keys async by prefix.
+        /// </summary>
+        /// <param name="prefix">Prefix</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns>The all keys by prefix async.</returns>
+        public override async Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
+
+            prefix = this.HandlePrefix(prefix);
+
+            var redisKeys = this.GetAllRedisKeys(prefix);
+            
+            var result = redisKeys?.Select(key => (string) key)?.Distinct();
+            
+            return await Task.FromResult(result);
+        }
+
 
         /// <summary>
         /// Gets the by prefix async.

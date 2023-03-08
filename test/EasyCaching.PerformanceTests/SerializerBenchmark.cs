@@ -18,7 +18,6 @@
         private DefaultJsonSerializer _json = new DefaultJsonSerializer("json", new JsonSerializerSettings());
         private DefaultMessagePackSerializer _messagepack = new DefaultMessagePackSerializer("msgpack", new EasyCachingMsgPackSerializerOptions { });
         private DefaultProtobufSerializer _protobuf = new DefaultProtobufSerializer("proto");
-        private DefaultBinaryFormatterSerializer _binary = new DefaultBinaryFormatterSerializer();
         protected MyPoco _single;
         protected List<MyPoco> _list;
         private int _count;
@@ -37,12 +36,6 @@
             }
 
             _list = items;
-        }
-
-        [Benchmark]
-        public void BinaryFormatter()
-        {
-            Exec(_binary);
         }
 
         [Benchmark]

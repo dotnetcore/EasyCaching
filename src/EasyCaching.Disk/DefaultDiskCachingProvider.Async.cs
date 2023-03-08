@@ -7,8 +7,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
-    using MessagePack;
-    using MessagePack.Resolvers;
     using Microsoft.Extensions.Logging;
 
     public partial class DefaultDiskCachingProvider : EasyCachingAbstractProvider
@@ -23,7 +21,7 @@
 
             var val = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            return val.Expiration > DateTimeOffset.UtcNow;
+            return val.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
         public override Task BaseFlushAsync(CancellationToken cancellationToken = default)
@@ -63,9 +61,9 @@
                 {
                     var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -83,6 +81,12 @@
             }
 
             return dict;
+        }
+
+
+        public override Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            throw new NotSupportedException();
         }
 
         public override async Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
@@ -104,9 +108,9 @@
                 //var cached = GetDiskCacheValueAsync(path).ConfigureAwait(false).GetAwaiter().GetResult();
                 //var cached = GetDiskCacheValue(path);
 
-                if (cached.Expiration > DateTimeOffset.UtcNow)
+                if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                    var t = _serializer.Deserialize<T>(cached.Value);
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -176,14 +180,14 @@
 
             var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            if (cached.Expiration > DateTimeOffset.UtcNow)
+            if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize(type, cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                var t = _serializer.Deserialize(cached.Value, type);
                 return t;
             }
             else
@@ -215,14 +219,14 @@
 
             var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            if (cached.Expiration > DateTimeOffset.UtcNow)
+            if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                var t = _serializer.Deserialize<T>(cached.Value);
                 return new CacheValue<T>(t, true);
             }
             else
@@ -261,9 +265,9 @@
                 {
                     var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -296,7 +300,7 @@
 
             var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-            return cached.Expiration.Subtract(DateTimeOffset.UtcNow);
+            return DateTimeOffset.FromUnixTimeMilliseconds((long)cached.Expiration).Subtract(DateTimeOffset.UtcNow);
         }             
               
         public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
@@ -362,7 +366,29 @@
 
             return Task.CompletedTask;
         }
-          
+
+        public override Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            var searchPattern = this.ProcessSearchKeyPattern(pattern);
+            var searchKey = this.HandleSearchKeyPattern(pattern);
+            
+            var list = _cacheKeysMap.Where(pair => FilterByPattern(pair.Key,searchKey, searchPattern)).Select(x => x.Key).ToList();
+
+            foreach (var item in list)
+            {
+                var path = BuildMd5Path(item);
+
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(item, out _);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+        
         public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
@@ -421,7 +447,7 @@
             {
                 var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
-                if (cached.Expiration.Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
+                if (DateTimeOffset.FromUnixTimeMilliseconds((long)cached.Expiration).Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
                 {
                     return false;
                 }
@@ -441,9 +467,13 @@
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var cached = await MessagePackSerializer.DeserializeAsync<DiskCacheValue>(stream, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance), cancellationToken);
-
-                return cached;
+                using (var mStream = new MemoryStream())
+                {
+                    await stream.CopyToAsync(mStream);
+                    mStream.Seek(0, SeekOrigin.Begin);
+                    var cached = _serializer.Deserialize<DiskCacheValue>(mStream.ToArray());
+                    return cached;
+                }
             }
         }
     }

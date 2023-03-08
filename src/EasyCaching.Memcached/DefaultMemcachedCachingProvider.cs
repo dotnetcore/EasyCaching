@@ -263,6 +263,11 @@
 
             CheckResult(data);
         }
+        
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            throw new NotSupportedException("RemoveByPattern is not supported in memcached provider.");
+        }
 
         /// <summary>
         /// Handle the cache key of memcached limititaion
@@ -329,6 +334,11 @@
                 .ToDictionary(
                     pair => pair.Key,
                     pair => ConvertFromStoredValue<T>(pair.Value));
+        }
+
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -425,7 +435,7 @@
             return _info;
         }
 
-        public override object BaseGetDatabse() => _memcachedClient;
+        public override object BaseGetDatabase() => _memcachedClient;
 
         private void OnCacheHit(string cacheKey)
         {

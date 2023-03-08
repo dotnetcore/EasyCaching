@@ -115,6 +115,16 @@
         /// </summary>
         public const string LiteDBSection= "easycaching:litedb";
 
+        /// <summary>
+        /// The default name of the FasterKv
+        /// </summary>
+        public const string DefaultFasterKvName = "DefaultFasterKvName";
+        
+        /// <summary>
+        /// The FasterKv section.
+        /// </summary>
+        public const string FasterKvSection= "easycaching:fasterKv";
+
         public const string NotFoundCliExceptionMessage = "Can not find the matched client instance, client name is {0}";
 
         public const string NotFoundSerExceptionMessage = "Can not find the matched serializer instance, serializer name is {0}";

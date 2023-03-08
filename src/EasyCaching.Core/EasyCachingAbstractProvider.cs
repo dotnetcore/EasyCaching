@@ -32,7 +32,7 @@ namespace EasyCaching.Core
         public CachingProviderType CachingProviderType => this.ProviderType;
         public CacheStats CacheStats => this.ProviderStats;
 
-        public object Database => BaseGetDatabse();
+        public object Database => BaseGetDatabase();
 
         protected EasyCachingAbstractProvider() { }
 
@@ -42,13 +42,15 @@ namespace EasyCaching.Core
             _options = options;
         }
 
-        public abstract object BaseGetDatabse();
+        public abstract object BaseGetDatabase();
         public abstract bool BaseExists(string cacheKey);
         public abstract Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default);
         public abstract void BaseFlush();
         public abstract Task BaseFlushAsync(CancellationToken cancellationToken = default);
         public abstract CacheValue<T> BaseGet<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration);
         public abstract CacheValue<T> BaseGet<T>(string cacheKey);
+        public abstract IEnumerable<string> BaseGetAllKeysByPrefix(string prefix);
+        public abstract Task<IEnumerable<string>> BaseGetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
         public abstract IDictionary<string, CacheValue<T>> BaseGetAll<T>(IEnumerable<string> cacheKeys);
         public abstract Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default);
         public abstract Task<CacheValue<T>> BaseGetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default);
@@ -64,6 +66,8 @@ namespace EasyCaching.Core
         public abstract Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken = default);
         public abstract void BaseRemoveByPrefix(string prefix);
         public abstract Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default);
+        public abstract void BaseRemoveByPattern(string pattern);
+        public abstract Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default);
         public abstract void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration);
         public abstract void BaseSetAll<T>(IDictionary<string, T> values, TimeSpan expiration);
         public abstract Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default);
@@ -236,6 +240,58 @@ namespace EasyCaching.Core
             try
             {
                 return BaseGet<T>(cacheKey);
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+                throw;
+            }
+            finally
+            {
+                if (e != null)
+                {
+                    s_diagnosticListener.WriteGetCacheError(operationId, e);
+                }
+                else
+                {
+                    s_diagnosticListener.WriteGetCacheAfter(operationId);
+                }
+            }
+        }
+        
+        public IEnumerable<string> GetAllKeysByPrefix(string prefix)
+        {
+            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeysByPrefix), new[] { prefix }));
+            Exception e = null;
+            try
+            {
+                return BaseGetAllKeysByPrefix(prefix);
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+                throw;
+            }
+            finally
+            {
+                if (e != null)
+                {
+                    s_diagnosticListener.WriteGetCacheError(operationId, e);
+                }
+                else
+                {
+                    s_diagnosticListener.WriteGetCacheAfter(operationId);
+                } 
+            }        
+        }
+        
+        public async Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        {
+            var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeysByPrefixAsync), new[] { prefix }));
+            Exception e = null;
+            try
+            {
+                return await BaseGetAllKeysByPrefixAsync(prefix);
             }
             catch (Exception ex)
             {
@@ -636,6 +692,62 @@ namespace EasyCaching.Core
             }
         }
 
+        public void RemoveByPattern(string pattern)
+        {
+            var operationId = s_diagnosticListener.WriteRemoveCacheBefore(
+                new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPattern),
+                    new[] { pattern }));
+            Exception e = null;
+            try
+            {
+                BaseRemoveByPattern(pattern);
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+                throw;
+            }
+            finally
+            {
+                if (e != null)
+                {
+                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
+                }
+                else
+                {
+                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
+                }
+            }
+        }
+
+        public async Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        {
+            var operationId = s_diagnosticListener.WriteRemoveCacheBefore(
+                new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPatternAsync),
+                    new[] { pattern }));
+            Exception e = null;
+            try
+            {
+                await BaseRemoveByPatternAsync(pattern, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+                throw;
+            }
+            finally
+            {
+                if (e != null)
+                {
+                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
+                }
+                else
+                {
+                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
+                }
+            }
+        }
+
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(Set), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
@@ -806,5 +918,35 @@ namespace EasyCaching.Core
         {
             return BaseGetProviderInfo();
         }
+
+        protected SearchKeyPattern ProcessSearchKeyPattern(string pattern)
+        {
+            var postfix = pattern.StartsWith("*");
+            var prefix = pattern.EndsWith("*");
+
+            var contains = postfix && prefix;
+
+            if (contains)
+            {
+                return SearchKeyPattern.Contains;
+            }
+
+            if (postfix)
+            {
+                return SearchKeyPattern.Postfix;
+            }
+
+            if (prefix)
+            {
+                return SearchKeyPattern.Prefix;
+            }
+
+            return SearchKeyPattern.Exact;
+        }
+
+        protected string HandleSearchKeyPattern(string pattern)
+        {
+            return pattern.Replace("*", string.Empty);
+        } 
     }
 }

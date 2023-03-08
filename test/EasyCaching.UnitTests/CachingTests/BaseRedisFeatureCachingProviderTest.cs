@@ -7,6 +7,8 @@
     using System.Threading.Tasks;
     using Xunit;
 
+
+
     public abstract class BaseRedisFeatureCachingProviderTest
     {
         protected IRedisCachingProvider _provider;
@@ -81,7 +83,7 @@
 
             await _provider.KeyDelAsync(cacheKey);
         }
-        
+
         [Fact]
         protected virtual async Task StringSetWithExpiration_And_Persist_And_TTL_Async_Should_Succeed()
         {
@@ -90,7 +92,7 @@
             var res = await _provider.StringSetAsync(cacheKey, "123", TimeSpan.FromSeconds(10));
 
             Assert.True(res);
-            
+
             var initialTtl = await _provider.TTLAsync(cacheKey);
 
             Assert.InRange(initialTtl, 1, 10);
@@ -1689,7 +1691,36 @@
             Assert.Contains("two", items);
 
             _baseProvider.Remove(cacheKey);
-        } 
+        }
+
+        [Fact]
+        protected virtual async void ZRangeRemByScoreAsync_Should_Succeed()
+        {
+            var cacheKey = $"{_nameSpace}-{Guid.NewGuid().ToString()}";
+
+            var dict = new Dictionary<string, double>()
+            {
+                { "one", 1},
+                { "two", 2},
+                { "three", 3},
+                { "four", 4},
+            };
+
+            var res = await _provider.ZAddAsync(cacheKey, dict);
+
+            var deletedCount = await _provider.ZRangeRemByScoreAsync(cacheKey, 1, 2);
+
+            var items = await _provider.ZRangeByScoreAsync<string>(cacheKey, 1, 4);
+
+            Assert.Equal(2, deletedCount);
+            Assert.DoesNotContain("one", items);
+            Assert.DoesNotContain("two", items);
+            Assert.Contains("three", items);
+            Assert.Contains("four", items);
+
+            _baseProvider.Remove(cacheKey);
+        }
+
         #endregion
 
         #region Hyperloglog             

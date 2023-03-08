@@ -17,6 +17,8 @@
         private long _cacheSize = 0L;
         private const string _UPTOLIMIT_KEY = "inter_up_to_limit_key";
 
+        public event EventHandler<EvictedEventArgs> Evicted;
+
         public InMemoryCaching(string name, InMemoryCachingOptions optionsAccessor)
         {
             ArgumentCheck.NotNull(optionsAccessor, nameof(optionsAccessor));
@@ -32,7 +34,7 @@
         public void Clear(string prefix = "")
         {
             if (string.IsNullOrWhiteSpace(prefix))
-            {                
+            {
                 _memory.Clear();
 
                 if (_options.SizeLimit.HasValue)
@@ -53,9 +55,13 @@
 
         internal void RemoveExpiredKey(string key)
         {
-           bool flag = _memory.TryRemove(key, out _);
-            if (_options.SizeLimit.HasValue && flag)
-                Interlocked.Decrement(ref _cacheSize);
+            if (_memory.TryRemove(key, out _))
+            {
+                Evicted?.Invoke(this, new EvictedEventArgs(key));
+
+                if (_options.SizeLimit.HasValue)
+                    Interlocked.Decrement(ref _cacheSize);
+            }
         }
 
         public CacheValue<T> Get<T>(string key)
@@ -189,7 +195,7 @@
 
                     _memory.AddOrUpdate(deep.Key, deep, (k, cacheEntry) => deep);
 
-                    if(_options.SizeLimit.HasValue)
+                    if (_options.SizeLimit.HasValue)
                         Interlocked.Increment(ref _cacheSize);
                 }
             }
@@ -239,7 +245,7 @@
                     continue;
 
                 if (_memory.TryRemove(key, out _))
-                { 
+                {
                     removed++;
                     if (_options.SizeLimit.HasValue)
                         Interlocked.Decrement(ref _cacheSize);
@@ -254,7 +260,7 @@
             bool flag = _memory.TryRemove(key, out _);
 
             if (_options.SizeLimit.HasValue && !key.Equals(_UPTOLIMIT_KEY) && flag)
-            { 
+            {
                 Interlocked.Decrement(ref _cacheSize);
             }
 
@@ -267,6 +273,36 @@
             return RemoveAll(keysToRemove);
         }
 
+        public int RemoveByPattern(string searchKey, SearchKeyPattern searchPattern)
+        {
+            var keysToRemove = _memory.Keys.Where(x => FilterByPattern(x, searchKey, searchPattern)).ToList();
+
+            return RemoveAll(keysToRemove);
+        }
+
+        public IEnumerable<string> GetAllKeys(string prefix)
+        {
+            return _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow)
+                .Select(x=> x.Key).ToList();
+        }
+
+        private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)
+        {
+            switch (searchKeyPattern)
+            {
+                case SearchKeyPattern.Postfix:
+                    return key.EndsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Prefix:
+                    return key.StartsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Contains:
+                    return key.Contains(searchKey);
+                case SearchKeyPattern.Exact:
+                    return key.Equals(searchKey, StringComparison.Ordinal);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(searchKeyPattern), searchKeyPattern, null);
+            }
+        }
+
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> keys)
         {
             var map = new Dictionary<string, CacheValue<T>>();
@@ -274,6 +310,15 @@
                 map[key] = Get<T>(key);
 
             return map;
+        }
+
+        public IDictionary<string, CacheValue<T>> GetAll<T>(string prefix = "")
+        {
+            var values = string.IsNullOrEmpty(prefix) 
+                ? _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow) 
+                : _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow);
+            
+            return values.ToDictionary(k => k.Key, v => new CacheValue<T>(v.GetValue<T>(_options.EnableReadDeepClone), true));
         }
 
         public int SetAll<T>(IDictionary<string, T> values, TimeSpan? expiresIn = null)
@@ -312,7 +357,10 @@
             var now = SystemClock.UtcNow;
             foreach (var entry in cache._memory.Values.Where(x => x.ExpiresAt < now))
             {
-                cache.Remove(entry.Key);
+                if (cache.Remove(entry.Key))
+                {
+                    Evicted?.Invoke(this, new EvictedEventArgs(entry.Key));
+                }
             }
         }
 
@@ -379,7 +427,7 @@
             public T GetValue<T>(bool isDeepClone = true)
             {
                 object val = Value;
-              
+
                 var t = typeof(T);
 
                 if (t == TypeHelper.BoolType || t == TypeHelper.StringType || t == TypeHelper.CharType || t == TypeHelper.DateTimeType || t.IsNumeric())
@@ -388,7 +436,7 @@
                 if (t == TypeHelper.NullableBoolType || t == TypeHelper.NullableCharType || t == TypeHelper.NullableDateTimeType || t.IsNullableNumeric())
                     return val == null ? default(T) : (T)Convert.ChangeType(val, Nullable.GetUnderlyingType(t));
 
-                return isDeepClone 
+                return isDeepClone
                     ? DeepClonerGenerator.CloneObject<T>((T)val)
                     : (T)val;
             }

@@ -34,7 +34,7 @@
         /// <param name="configuration"></param>
         /// <param name="sectionName">The section name in the configuration file.</param>
         /// <returns></returns>
-        public static EasyCachingOptions WithConfluentKafkaBus(
+        public static EasyCachingOptions WithZookeeeperBus(
             this EasyCachingOptions options
             , IConfiguration configuration
             , string sectionName = EasyCachingConstValue.ZookeeperBusSection

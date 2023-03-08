@@ -24,8 +24,9 @@
                 x.UseMemcached(options =>
                 {
                     options.DBConfig.AddServer("127.0.0.1", 11211);
+                    options.SerializerName = "msg";
                     additionalSetup(options);
-                }).UseMemcachedLock());
+                }).WithMessagePack("msg").UseMemcachedLock());
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetService<IEasyCachingProvider>();
@@ -112,6 +113,17 @@
         [Fact]
         protected override void GetByPrefix_Should_Succeed()
         {
+        }
+
+        [Fact]
+        protected override void RemoveByPattern_Should_Succeed()
+        {
+        }
+
+        [Fact]
+        protected override async Task RemoveByPatternAsync_Should_Succeed()
+        {
+            await Task.FromResult(1);
         }
 
         [Fact]
@@ -212,9 +224,18 @@
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>
             {
-                x.UseMemcached(options => { options.DBConfig.AddServer("127.0.0.1", 11212); }, SECOND_PROVIDER_NAME)
+                x.WithMessagePack("msg");
+                x.UseMemcached(options => 
+                { 
+                    options.DBConfig.AddServer("127.0.0.1", 11212);
+                    options.SerializerName = "msg";
+                }, SECOND_PROVIDER_NAME)
                     .UseMemcached(
-                        options => { options.DBConfig.AddServer("127.0.0.1", 11211); }, "MyTest");
+                        options => 
+                        { 
+                            options.DBConfig.AddServer("127.0.0.1", 11211);
+                            options.SerializerName = "msg";
+                        }, "MyTest");
             });
             services.AddLogging();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -335,6 +356,7 @@
             services.AddLogging();
             services.AddEasyCaching(option =>
             {
+                option.WithMessagePack("msg");
                 option.UseMemcached(config =>
                 {
                     config.DBConfig = new EasyCachingMemcachedClientOptions
@@ -344,6 +366,7 @@
                             new Enyim.Caching.Configuration.Server() {Address = "127.0.0.1", Port = 11212}
                         }
                     };
+                    config.SerializerName = "msg";
                 }, EasyCachingConstValue.DefaultMemcachedName);
             });
 
@@ -361,7 +384,7 @@
         {
             IServiceCollection services = new ServiceCollection();
 
-            var appsettings = " { \"easycaching\": { \"memcached\": { \"MaxRdSecond\": 600, \"dbconfig\": { \"Servers\": [ { \"Address\": \"127.0.0.1\", \"Port\": 11211 } ] }  } }}";
+            var appsettings = " {\"easycaching\":{\"memcached\":{\"MaxRdSecond\":600,\"dbconfig\":{\"Servers\":[{\"Address\":\"127.0.0.1\",\"Port\":11211}]},\"SerializerName\":\"msg\"}}} ";
             var path = TestHelpers.CreateTempFile(appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
@@ -371,7 +394,11 @@
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
             services.AddLogging();
-            services.AddEasyCaching(option => { option.UseMemcached(config, "mName"); });
+            services.AddEasyCaching(option => 
+            {
+                option.WithMessagePack("msg");
+                option.UseMemcached(config, "mName"); 
+            });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
@@ -396,6 +423,7 @@
             services.AddLogging();
             services.AddEasyCaching(option =>
             {
+                option.WithMessagePack("msg");
                 option.UseMemcached(config =>
                 {
                     config.DBConfig = new EasyCachingMemcachedClientOptions
@@ -411,6 +439,7 @@
                             ReceiveTimeout = TimeSpan.FromSeconds(2),
                         }
                     };
+                    config.SerializerName = "msg";
                 }, EasyCachingConstValue.DefaultMemcachedName);
             });
 

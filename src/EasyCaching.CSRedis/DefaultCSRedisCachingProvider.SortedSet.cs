@@ -1,7 +1,6 @@
 ﻿namespace EasyCaching.CSRedis
 {
     using EasyCaching.Core;
-    using EasyCaching.Core.Internal;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
@@ -86,6 +85,13 @@
             return list;
         }
 
+        public long ZRangeRemByScore(string cacheKey, double min, double max)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+            
+            return _cache.ZRemRangeByScore(cacheKey, (decimal)min, (decimal)max);
+        }
+
         public long? ZRank<T>(string cacheKey, T cacheValue)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -163,7 +169,7 @@
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNullOrWhiteSpace(field, nameof(field));
 
-            var value= await _cache.ZIncrByAsync(cacheKey, field, (decimal)val);
+            var value = await _cache.ZIncrByAsync(cacheKey, field, (decimal)val);
             return (double)value;
         }
 
@@ -205,6 +211,13 @@
             }
 
             return list;
+        }
+
+        public async Task<long> ZRangeRemByScoreAsync(string cacheKey, double min, double max)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
+
+            return await _cache.ZRemRangeByScoreAsync(cacheKey, (decimal)min, (decimal)max);
         }
 
         public async Task<long?> ZRankAsync<T>(string cacheKey, T cacheValue)

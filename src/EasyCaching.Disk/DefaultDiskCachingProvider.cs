@@ -2,8 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
-    using MessagePack;
-    using MessagePack.Resolvers;
+    using EasyCaching.Core.Serialization;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Concurrent;
@@ -20,6 +19,11 @@
         /// The options.
         /// </summary>
         private readonly DiskOptions _options;
+
+        /// <summary>
+        /// The serializer.
+        /// </summary>
+        private readonly IEasyCachingSerializer _serializer;
 
         /// <summary>
         /// The logger.
@@ -43,18 +47,22 @@
         private Timer _saveKeyTimer;
 
         public DefaultDiskCachingProvider(string name,
+            IEnumerable<IEasyCachingSerializer> serializers,
             DiskOptions options,
             ILoggerFactory loggerFactory = null)
-            : this(name, options, null, loggerFactory)
+            : this(name, serializers, options, null, loggerFactory)
         {
         }
 
         public DefaultDiskCachingProvider(string name,
+            IEnumerable<IEasyCachingSerializer> serializers,
             DiskOptions options,
             IDistributedLockFactory factory = null,
             ILoggerFactory loggerFactory = null)
             : base(factory, options)
         {
+            ArgumentCheck.NotNullAndCountGTZero(serializers, nameof(serializers));
+
             this._name = name;
             this._options = options;
             this._logger = loggerFactory?.CreateLogger<DefaultDiskCachingProvider>();
@@ -68,6 +76,10 @@
             this.ProviderStats = _cacheStats;
             this.ProviderMaxRdSecond = _options.MaxRdSecond;
             this.IsDistributedProvider = false;
+
+            var serName = !string.IsNullOrWhiteSpace(options.SerializerName) ? options.SerializerName : _name;
+            this._serializer = serializers.FirstOrDefault(x => x.Name.Equals(serName));
+            if (this._serializer == null) throw new EasyCachingNotFoundException(string.Format(EasyCachingConstValue.NotFoundSerExceptionMessage, serName));
 
             _info = new ProviderInfo
             {
@@ -183,7 +195,7 @@
 
             var val = GetDiskCacheValue(path);
 
-            return val.Expiration > DateTimeOffset.UtcNow;
+            return val.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
         public override void BaseFlush()
@@ -211,9 +223,9 @@
             {
                 var cached = GetDiskCacheValue(path);
 
-                if (cached.Expiration > DateTimeOffset.UtcNow)
+                if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                 {
-                    var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+                    var t = _serializer.Deserialize<T>(cached.Value);
 
                     if (_options.EnableLogging)
                         _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
@@ -272,14 +284,14 @@
 
             var cached = GetDiskCacheValue(path);
 
-            if (cached.Expiration > DateTimeOffset.UtcNow)
+            if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
-                var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+                var t = _serializer.Deserialize<T>(cached.Value);
                 return new CacheValue<T>(t, true);
             }
             else
@@ -314,9 +326,9 @@
                 {
                     var cached = GetDiskCacheValue(path);
 
-                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -334,6 +346,11 @@
             }
 
             return dict;
+        }
+
+        public override IEnumerable<string> BaseGetAllKeysByPrefix(string prefix)
+        {
+            throw new NotSupportedException();
         }
 
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
@@ -361,9 +378,9 @@
                 {
                     var cached = GetDiskCacheValue(path);
 
-                    if (cached.Expiration > DateTimeOffset.UtcNow)
+                    if (cached.Expiration > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds())
                     {
-                        var t = MessagePackSerializer.Deserialize<T>(cached.Value, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+                        var t = _serializer.Deserialize<T>(cached.Value);
 
                         if (!dict.ContainsKey(item))
                         {
@@ -408,7 +425,7 @@
 
             var cached = GetDiskCacheValue(path);
 
-            return cached.Expiration.Subtract(DateTimeOffset.UtcNow);
+            return DateTimeOffset.FromUnixTimeMilliseconds(cached.Expiration).Subtract(DateTimeOffset.UtcNow);
         }
 
         public override void BaseRemove(string cacheKey)
@@ -469,6 +486,26 @@
             }
         }
 
+        public override void BaseRemoveByPattern(string pattern)
+        {
+            ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
+
+            var searchPattern = this.ProcessSearchKeyPattern(pattern);
+            var searchKey = this.HandleSearchKeyPattern(pattern);
+
+            var list = _cacheKeysMap.Where(pair => FilterByPattern(pair.Key, searchKey, searchPattern)).Select(x => x.Key).ToList();
+
+            foreach (var item in list)
+            {
+                var path = BuildMd5Path(item);
+
+                if (DeleteFileWithRetry(path))
+                {
+                    _cacheKeysMap.TryRemove(item, out _);
+                }
+            }
+        }
+
         public override void BaseSet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -481,7 +518,8 @@
 
             using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
             {
-                stream.Write(bytes, 0, bytes.Length);
+                stream.SetLength(bytes.Length);
+                stream.Write(bytes, offset: 0, bytes.Length);
                 //return true;
             }
 
@@ -503,6 +541,7 @@
 
                     using (FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read))
                     {
+                        stream.SetLength(bytes.Length);
                         stream.Write(bytes, 0, bytes.Length);
                     }
 
@@ -527,7 +566,7 @@
             {
                 var cached = GetDiskCacheValue(path);
 
-                if (cached.Expiration.Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
+                if (DateTimeOffset.FromUnixTimeMilliseconds(cached.Expiration).Subtract(DateTimeOffset.UtcNow) > TimeSpan.Zero)
                 {
                     return false;
                 }
@@ -540,6 +579,23 @@
                 stream.Write(bytes, 0, bytes.Length);
                 AppendKey(cacheKey, fileName);
                 return true;
+            }
+        }
+
+        private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)
+        {
+            switch (searchKeyPattern)
+            {
+                case SearchKeyPattern.Postfix:
+                    return key.EndsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Prefix:
+                    return key.StartsWith(searchKey, StringComparison.Ordinal);
+                case SearchKeyPattern.Contains:
+                    return key.Contains(searchKey);
+                case SearchKeyPattern.Exact:
+                    return key.Equals(searchKey, StringComparison.Ordinal);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(searchKeyPattern), searchKeyPattern, null);
             }
         }
 
@@ -609,8 +665,9 @@
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                var cached = MessagePackSerializer.Deserialize<DiskCacheValue>(stream, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
-
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, bytes.Length);
+                var cached = _serializer.Deserialize<DiskCacheValue>(bytes);
                 return cached;
             }
         }
@@ -622,11 +679,9 @@
 
         private byte[] BuildDiskCacheValue<T>(T t, TimeSpan ts)
         {
-            var value = MessagePackSerializer.Serialize(t, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
-
-            var cached = new DiskCacheValue(value, DateTimeOffset.UtcNow.AddSeconds((int)ts.TotalSeconds));
-
-            var bytes = MessagePackSerializer.Serialize(cached, MessagePackSerializerOptions.Standard.WithResolver(ContractlessStandardResolver.Instance));
+            var value = _serializer.Serialize(t);
+            var cached = new DiskCacheValue(value, DateTimeOffset.UtcNow.AddSeconds((int)ts.TotalSeconds).ToUnixTimeMilliseconds());
+            var bytes = _serializer.Serialize(cached);
 
             return bytes;
         }
@@ -675,6 +730,6 @@
 
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabse() => throw new Exception("Disk provider don't support this ");
+        public override object BaseGetDatabase() => throw new Exception("Disk provider don't support this ");
     }
 }

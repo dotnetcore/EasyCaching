@@ -12,8 +12,12 @@ namespace EasyCaching.UnitTests.DistributedLock
     {
         private static readonly IDistributedLockFactory Factory = new ServiceCollection()
             .AddLogging()
-            .AddEasyCaching(option => option.UseMemcached(config =>
+            .AddEasyCaching(option =>
+            {
+                option.WithMessagePack("msg");
+                option.UseMemcached(config =>
                 {
+                    config.SerializerName = "msg";
                     config.DBConfig = new EasyCachingMemcachedClientOptions
                     {
                         Servers =
@@ -21,8 +25,9 @@ namespace EasyCaching.UnitTests.DistributedLock
                             new Server { Address = "127.0.0.1", Port = 11211 }
                         }
                     };
-                })
-                .UseMemcachedLock())
+                });
+                option.UseMemcachedLock();
+            })
             .BuildServiceProvider()
             .GetService<MemcachedLockFactory>();
 

@@ -1,69 +1,76 @@
 <Project>
-  <PropertyGroup>
-    <EasyCachingCorePackageNotes>
-	  1. Add CancellationToken for async methods.
-	</EasyCachingCorePackageNotes>
-    <EasyCachingMemcachedPackageNotes>
-      1. Add CancellationToken for async methods.
-    </EasyCachingMemcachedPackageNotes>
-    <EasyCachingRedisPackageNotes>
-	  1. Add CancellationToken for async methods.
-    2. Add persist key method to redis providers.
-	</EasyCachingRedisPackageNotes>
-    <EasyCachingSQLitePackageNotes>
-      1. Add CancellationToken for async methods.
-    </EasyCachingSQLitePackageNotes>
-    <EasyCachingInMemoryPackageNotes>
-      1. Add CancellationToken for async methods.
-    </EasyCachingInMemoryPackageNotes>
-    <EasyCachingHybridPackageNotes>
-      1. Add CancellationToken for async methods.
-    </EasyCachingHybridPackageNotes>
-    <EasyCachingAspectCorePackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingAspectCorePackageNotes>
-    <EasyCachingCastlePackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingCastlePackageNotes>
-    <EasyCachingResponseCachingPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingResponseCachingPackageNotes>
-    <EasyCachingJsonPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingJsonPackageNotes>
-    <EasyCachingMessagePackPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingMessagePackPackageNotes>
-    <EasyCachingProtobufPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingProtobufPackageNotes>
-    <EasyCachingCSRedisPackageNotes>
-	  1. Add CancellationToken for async methods.
-    2. Add persist key method to redis providers.
-	</EasyCachingCSRedisPackageNotes>
-    <EasyCachingCSRedisBusPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingCSRedisBusPackageNotes>
-    <EasyCachingRedisBusPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingRedisBusPackageNotes>
-    <EasyCachingRabbitBusPackageNotes>
-	  1. Upgrading dependencies.
-	</EasyCachingRabbitBusPackageNotes>
-	 <EasyCachingKafkaBusPackageNotes>
-		  1. Add EasyCachingKafkaBus.
-	 </EasyCachingKafkaBusPackageNotes>
-	 <EasyCachingZookeeperBusPackageNotes>
-		  1. Add EasyCachingZookeeperBus.
-	 </EasyCachingZookeeperBusPackageNotes>
-    <EasyCachingDiskPackageNotes>
-      1. Add CancellationToken for async methods.
-    </EasyCachingDiskPackageNotes>
-    <EasyCachingLiteDBPackageNotes>
-      1. Add CancellationToken for async methods.
-    </EasyCachingLiteDBPackageNotes>
-    <EasyCachingSTJsonPackageNotes>
-      1. Upgrading dependencies.
-    </EasyCachingSTJsonPackageNotes>
-  </PropertyGroup>
+	<PropertyGroup>
+		<EasyCachingCorePackageNotes>
+		</EasyCachingCorePackageNotes>
+		<EasyCachingMemcachedPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingMemcachedPackageNotes>
+		<EasyCachingRedisPackageNotes>
+			1. Fixed redis distributed lock for different process.
+			2. Support code configuration for StackExchange.Redis.
+		</EasyCachingRedisPackageNotes>
+		<EasyCachingSQLitePackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingSQLitePackageNotes>
+		<EasyCachingInMemoryPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingInMemoryPackageNotes>
+		<EasyCachingHybridPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingHybridPackageNotes>
+		<EasyCachingAspectCorePackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingAspectCorePackageNotes>
+		<EasyCachingCastlePackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingCastlePackageNotes>
+		<EasyCachingResponseCachingPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingResponseCachingPackageNotes>
+		<EasyCachingJsonPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingJsonPackageNotes>
+		<EasyCachingMessagePackPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingMessagePackPackageNotes>
+		<EasyCachingProtobufPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingProtobufPackageNotes>
+		<EasyCachingCSRedisPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingCSRedisPackageNotes>
+		<EasyCachingCSRedisBusPackageNotes>
+			1. Support async version of subscribe.
+		</EasyCachingCSRedisBusPackageNotes>
+		<EasyCachingRedisBusPackageNotes>
+			1. Support code configuration for StackExchange.Redis.
+			2. Support async version of subscribe.
+		</EasyCachingRedisBusPackageNotes>
+		<EasyCachingRabbitBusPackageNotes>
+			1. Support async version of subscribe.
+		</EasyCachingRabbitBusPackageNotes>
+		<EasyCachingKafkaBusPackageNotes>
+			1. Support async version of subscribe.
+		</EasyCachingKafkaBusPackageNotes>
+		<EasyCachingZookeeperBusPackageNotes>
+			1. Support async version of subscribe.
+			2. Rename WithConfluentKafkaBus to WithZookeeeperBus.
+		</EasyCachingZookeeperBusPackageNotes>
+		<EasyCachingDiskPackageNotes>
+			1. Support custom serializer.
+			2. Fixed DiskCachingProvider async warning.
+		</EasyCachingDiskPackageNotes>
+		<EasyCachingLiteDBPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingLiteDBPackageNotes>
+		<EasyCachingSTJsonPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingSTJsonPackageNotes>
+		<EasyCachingMemoryPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingMemoryPackageNotes>
+		<EasyCachingFaskKVPackageNotes>
+			1. Upgrading dependencies.
+		</EasyCachingFaskKVPackageNotes>
+	</PropertyGroup>
 </Project>
