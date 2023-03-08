@@ -24,6 +24,11 @@
 			$(EasyCachingEtcdPackageNotes)
 		</PackageReleaseNotes>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="grpc\**" />
+	  <EmbeddedResource Remove="grpc\**" />
+	  <None Remove="grpc\**" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
@@ -35,36 +40,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="grpc\proto\google\api\annotations.proto" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Protobuf Include="grpc\proto\etcd\auth.proto" GrpcServices="Client" />
-		<Protobuf Include="grpc\proto\etcd\election.proto" GrpcServices="Client" />
-		<Protobuf Include="grpc\proto\etcd\kv.proto" GrpcServices="Client" />
-		<Protobuf Include="grpc\proto\etcd\lock.proto" GrpcServices="Client" />
-		<Protobuf Include="grpc\proto\etcd\rpc.proto" GrpcServices="Client" />
-		<Protobuf Include="grpc\proto\etcd\version.proto" GrpcServices="Client" />
-
-		<Protobuf Include="grpc\proto\gogoproto\gogo.proto" GrpcServices="Client" />
-
-		<Protobuf Include="grpc\proto\google\api\annotations.proto" GrpcServices="Client" />
-		<Protobuf Include="grpc\proto\google\api\http.proto" GrpcServices="Client" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<AssemblyAttribute Include="System.CLSCompliantAttribute">
 			<_Parameter1>false</_Parameter1>
 		</AssemblyAttribute>
 	</ItemGroup>
 	
 	<ItemGroup>
-	  <PackageReference Include="Google.Protobuf" Version="3.22.0" />
-	  <PackageReference Include="Grpc.Net.Client" Version="2.51.0" />
-	  <PackageReference Include="Grpc.Tools" Version="2.51.0">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
+	  <PackageReference Include="dotnet-etcd-core" Version="6.2.1" />
 	</ItemGroup>
 
 </Project>
