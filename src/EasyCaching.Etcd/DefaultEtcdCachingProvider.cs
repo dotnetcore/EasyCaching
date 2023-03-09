@@ -366,7 +366,8 @@ namespace EasyCaching.Etcd
                 {
                     listKeys.Add(item.Key);
                 }
-                BaseRemoveAll(listKeys);
+                if(listKeys.Count > 0)
+                 BaseRemoveAll(listKeys);
             }
             // throw new NotSupportedException("BaseFlush is not supported in Etcd provider.");
         }
