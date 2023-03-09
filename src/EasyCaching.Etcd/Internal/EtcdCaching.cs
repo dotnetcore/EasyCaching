@@ -147,7 +147,7 @@ namespace EasyCaching.Etcd
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
             var response = _cache.LeaseGrant(request: new LeaseGrantRequest()
             {
-                TTL = (long)ts.Value.TotalMilliseconds,
+                TTL = (long)(ts.Value.TotalMilliseconds < 1000 ? 1: ts.Value.TotalMilliseconds / 1000),
             }, cancellationToken: cts.Token);
             return response.ID;
         }
@@ -163,7 +163,7 @@ namespace EasyCaching.Etcd
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
             var response = await _cache.LeaseGrantAsync(request: new LeaseGrantRequest()
             {
-                TTL = (long)ts.Value.TotalMilliseconds,
+                TTL = (long)(ts.Value.TotalMilliseconds < 1000 ? 1 : ts.Value.TotalMilliseconds / 1000),
             }, cancellationToken: cts.Token);
             return response.ID;
         }
