@@ -72,5 +72,8 @@
 		<EasyCachingFaskKVPackageNotes>
 			1. Upgrading dependencies.
 		</EasyCachingFaskKVPackageNotes>
+		<EasyCachingEtcdPackageNotes>
+			1. Add etcd module.
+		</EasyCachingEtcdPackageNotes>
 	</PropertyGroup>
 </Project>
