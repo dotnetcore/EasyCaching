@@ -6,10 +6,13 @@ namespace EasyCaching.Demo.ConsoleApp
     using EasyCaching.Disk;
     using EasyCaching.Serialization.SystemTextJson.Configurations;
     using EasyCaching.SQLite;
+    using Google.Protobuf.WellKnownTypes;
     using MemoryPack;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.IO;
 
     class Program
@@ -27,6 +30,17 @@ namespace EasyCaching.Demo.ConsoleApp
 
                 option.UseInMemory("m1");
 
+                option.UseEtcd(options =>
+                {
+                    options.Address = "http://127.0.0.1:2379";
+                    options.Timeout = 30000;
+                    options.SerializerName= "json";
+                }, "e1").WithJson(jsonSerializerSettingsConfigure: x =>
+                {
+                    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }, "json");
+
                 option.UseRedis((options) =>
                 {
                     options.SerializerName = "mempack";
@@ -43,17 +57,22 @@ namespace EasyCaching.Demo.ConsoleApp
                     };
                 }, "s1");
 
-                // option.WithJson(jsonSerializerSettingsConfigure: x =>
-                // {
-                //     x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
-                // }, "json");
+                option.WithJson(jsonSerializerSettingsConfigure: x =>
+                {
+                    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }, "json");
 
                 option.UseDisk(cfg =>
                 {
                     cfg.DBConfig = new DiskDbOptions { BasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cache") };
                     cfg.SerializerName = "msgpack";
                 }, "disk")
-                .WithJson("json")
+                .WithJson(jsonSerializerSettingsConfigure: x =>
+                {
+                    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }, "json")
                 .WithSystemTextJson("sysjson")
                 .WithMessagePack("msgpack");
             });
@@ -61,15 +80,15 @@ namespace EasyCaching.Demo.ConsoleApp
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var factory = serviceProvider.GetService<IEasyCachingProviderFactory>();
 
-            // var redisCache = factory.GetCachingProvider("r1");
-            //
-            // redisCache.Set<Product>("rkey", new Product() { Name = "test" }, TimeSpan.FromSeconds(20));
-            //
-            // var redisAllKey = redisCache.GetAllKeysByPrefix("rkey");
-            //
-            // var redisVal = redisCache.Get<Product>("rkey");
-            //
-            // Console.WriteLine($"redis cache get value, {redisVal.HasValue} {redisVal.IsNull} {redisVal.Value}");
+            var redisCache = factory.GetCachingProvider("r1");
+
+            redisCache.Set<Product>("rkey", new Product() { Name = "test" }, TimeSpan.FromSeconds(20));
+
+            var redisAllKey = redisCache.GetAllKeysByPrefix("rkey");
+
+            var redisVal = redisCache.Get<Product>("rkey");
+
+            Console.WriteLine($"redis cache get value, {redisVal.HasValue} {redisVal.IsNull} {redisVal.Value}");
 
             var prod = new Product()
             {
@@ -103,6 +122,19 @@ namespace EasyCaching.Demo.ConsoleApp
             diskCache.Set<string>("diskkey", "diskvalue", TimeSpan.FromSeconds(20));
             var diskVal = diskCache.Get<string>("diskkey");
             Console.WriteLine($"disk cache get value, {diskVal.HasValue} {diskVal.IsNull} {diskVal.Value} ");
+
+            //etcd cache
+            var etcdCache = factory.GetCachingProvider("e1");
+            var re11 = etcdCache.GetAllKeysByPrefix("emk");
+            var re12 = etcdCache.GetByPrefix<Product>("emk");
+            etcdCache.Set<Product>("emkey3", prod, TimeSpan.FromSeconds(2000));
+            var re13 = etcdCache.Get<Product>("emkey3");
+            var re14 = etcdCache.GetAll<Product>(new List<string>()
+            {
+                "emkey3"
+            });
+            etcdCache.Remove("emkey3");
+            Console.WriteLine($"etcd cache get value, {re13.HasValue} {re13.IsNull} {re13.Value} ");
 
             Console.ReadKey();
         }

@@ -47,13 +47,23 @@ namespace EasyCaching.Etcd
 
             services.TryAddSingleton<IEasyCachingProviderFactory, DefaultEasyCachingProviderFactory>();
 
-            services.AddSingleton<IEasyCachingProvider, DefaultEtcdCachingProvider>(x =>
+            services.AddSingleton<IEtcdCaching, EtcdCaching>(x =>
             {
                 var optionsMon = x.GetRequiredService<IOptionsMonitor<EtcdCachingOptions>>();
                 var options = optionsMon.Get(_name);
                 var factory = x.GetService<ILoggerFactory>();
                 var serializers = x.GetServices<IEasyCachingSerializer>();
-                return new DefaultEtcdCachingProvider(_name, options, serializers, factory);
+                return new EtcdCaching(_name, options,serializers,factory);
+            });
+
+            services.AddSingleton<IEasyCachingProvider, DefaultEtcdCachingProvider>(x =>
+            {
+                var mCache = x.GetServices<IEtcdCaching>();
+                var optionsMon = x.GetRequiredService<IOptionsMonitor<EtcdCachingOptions>>();
+                var options = optionsMon.Get(_name);
+                var factory = x.GetService<ILoggerFactory>();
+                var serializers = x.GetServices<IEasyCachingSerializer>();
+                return new DefaultEtcdCachingProvider(_name,mCache, options, serializers, factory);
             });
         }
     }
