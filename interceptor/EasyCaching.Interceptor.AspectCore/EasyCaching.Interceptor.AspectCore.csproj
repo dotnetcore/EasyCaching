@@ -35,7 +35,7 @@
 		<ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="AspectCore.Core" Version="2.2.0" />
-		<PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="2.2.0" />
+		<PackageReference Include="AspectCore.Core" Version="2.3.0" />
+		<PackageReference Include="AspectCore.Extensions.DependencyInjection" Version="2.3.0" />
 	</ItemGroup>
 </Project>
