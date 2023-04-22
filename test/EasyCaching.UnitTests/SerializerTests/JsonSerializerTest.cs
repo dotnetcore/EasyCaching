@@ -1,8 +1,6 @@
 ﻿namespace EasyCaching.UnitTests
 {
     using EasyCaching.Serialization.Json;
-    using FakeItEasy;
-    using Microsoft.Extensions.Options;
     using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;

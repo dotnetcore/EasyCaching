@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace EasyCaching.UnitTests.DistributedLock
 {
-    public class MemoryLockTest : DistributedLockTest
+    public class MemoryLockTest : BaseDistributedLockTest
     {
         public static IDistributedLockFactory Factory = new MemoryLockFactory();
 

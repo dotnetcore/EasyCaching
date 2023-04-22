@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace EasyCaching.UnitTests.DistributedLock
 {
-    public class RedisLockTest : DistributedLockTest
+    public class RedisLockTest : BaseDistributedLockTest
     {
         private static readonly IDistributedLockFactory Factory = new ServiceCollection()
             .AddLogging()
