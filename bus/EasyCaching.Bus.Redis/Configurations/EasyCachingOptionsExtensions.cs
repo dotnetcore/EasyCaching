@@ -58,6 +58,7 @@
                 x.Username = redisOptions.Username;
                 x.Password = redisOptions.Password;
                 x.SslHost = redisOptions.SslHost;
+                x.SerializerName = redisOptions.SerializerName;
 
                 foreach (var item in redisOptions.Endpoints) x.Endpoints.Add(item);
             }
