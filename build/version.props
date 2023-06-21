@@ -13,7 +13,7 @@
 		<EasyCachingMessagePackPackageVersion>1.9.0</EasyCachingMessagePackPackageVersion>
 		<EasyCachingProtobufPackageVersion>1.9.0</EasyCachingProtobufPackageVersion>
 		<EasyCachingCSRedisPackageVersion>1.9.0</EasyCachingCSRedisPackageVersion>
-		<EasyCachingRedisBusPackageVersion>1.9.0</EasyCachingRedisBusPackageVersion>
+		<EasyCachingRedisBusPackageVersion>1.9.1</EasyCachingRedisBusPackageVersion>
 		<EasyCachingCSRedisBusPackageVersion>1.9.0</EasyCachingCSRedisBusPackageVersion>
 		<EasyCachingRabbitBusPackageVersion>1.9.0</EasyCachingRabbitBusPackageVersion>
 		<EasyCachingKafkaBusPackageVersion>1.9.0</EasyCachingKafkaBusPackageVersion>

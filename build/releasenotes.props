@@ -45,6 +45,7 @@
 		<EasyCachingRedisBusPackageNotes>
 			1. Support code configuration for StackExchange.Redis.
 			2. Support async version of subscribe.
+			3. fix: Using IConfiguration for WithRedisBus configuration cause DefaultRedisBus throw "Sequence contains no matching element" exception
 		</EasyCachingRedisBusPackageNotes>
 		<EasyCachingRabbitBusPackageNotes>
 			1. Support async version of subscribe.
