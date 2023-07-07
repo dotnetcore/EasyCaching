@@ -159,11 +159,12 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cancellationToken">CancellationToken</param>
-        public override async Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
+        public override Task BaseRemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await Task.Run(() => { _cache.Remove(cacheKey); }, cancellationToken);
+            _cache.Remove(cacheKey);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -175,7 +176,7 @@
         /// <param name="expiration">Expiration.</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
+        public override Task BaseSetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
@@ -187,12 +188,10 @@
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
-            await Task.Run(() =>
-            {
-                //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
-                //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-                _cache.Set(cacheKey, cacheValue, expiration);
-            }, cancellationToken);
+            //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
+            //var val = new CacheValue<T>(cacheValue, true, valExpiration);
+            _cache.Set(cacheKey, cacheValue, expiration);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -201,11 +200,11 @@
         /// <returns>The async.</returns>
         /// <param name="cacheKey">Cache key.</param>
         /// <param name="cancellationToken">CancellationToken</param>
-        public override async Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
+        public override Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return await Task.FromResult(_cache.Exists(cacheKey));
+            return Task.FromResult(_cache.Exists(cacheKey));
         }
 
         /// <summary>
@@ -214,14 +213,15 @@
         /// <returns>The by prefix async.</returns>
         /// <param name="prefix">Prefix.</param>
         /// <param name="cancellationToken">CancellationToken</param>
-        public override async Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
+        public override Task BaseRemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var count = await Task.Run(() => _cache.RemoveByPrefix(prefix), cancellationToken);
+            var count = _cache.RemoveByPrefix(prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix} , count = {count}");
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -230,17 +230,18 @@
         /// <returns>The by prefix async.</returns>
         /// <param name="pattern">Pattern.</param>
         /// <param name="cancellationToken">CancellationToken</param>
-        public override async Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
+        public override Task BaseRemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(pattern, nameof(pattern));
 
             var searchPattern = this.ProcessSearchKeyPattern(pattern);
             var searchKey = this.HandleSearchKeyPattern(pattern);
-            
-            var count = await Task.Run(() => _cache.RemoveByPattern(searchKey, searchPattern), cancellationToken);
+
+            var count = _cache.RemoveByPattern(searchKey, searchPattern);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"BaseRemoveByPatternAsync : pattern = {pattern} , count = {count}");
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -251,12 +252,13 @@
         /// <param name="expiration">Expiration.</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
+        public override Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
 
-            await Task.Run(() => _cache.SetAll(values, expiration), cancellationToken);
+            _cache.SetAll(values, expiration);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -266,16 +268,16 @@
         /// <param name="cacheKeys">Cache keys.</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            return await Task.FromResult(_cache.GetAll<T>(cacheKeys));
+            return Task.FromResult(_cache.GetAll<T>(cacheKeys));
         }
-        
+
 
         /// <summary>
         /// Get all cacheKey by prefix async.
@@ -298,7 +300,7 @@
         /// <param name="prefix">Prefix.</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        public override async Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
+        public override Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
             var map = new Dictionary<string, CacheValue<T>>();
@@ -306,7 +308,7 @@
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
 
-            return await Task.FromResult(_cache.GetByPrefix<T>(prefix));
+            return Task.FromResult(_cache.GetByPrefix<T>(prefix));
         }
 
         /// <summary>
@@ -315,14 +317,15 @@
         /// <returns>The all async.</returns>
         /// <param name="cacheKeys">Cache keys.</param>
         /// <param name="cancellationToken">CancellationToken</param>
-        public override async Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
+        public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveAllAsync : cacheKeys = {string.Join(",", cacheKeys)}");
 
-            await Task.Run(() => _cache.RemoveAll(cacheKeys), cancellationToken);
+            _cache.RemoveAll(cacheKeys);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -330,13 +333,13 @@
         /// </summary>
         /// <returns>The async.</returns>
         /// <param name="cancellationToken">CancellationToken</param>
-        public override async Task BaseFlushAsync(CancellationToken cancellationToken = default)
+        public override Task BaseFlushAsync(CancellationToken cancellationToken = default)
         {
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
             _cache.Clear();
-            await Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         /// <summary>
