@@ -46,7 +46,7 @@ public class Startup
                     // below two settings are added in v0.8.0
                     // enable deep clone when reading object from cache or not, default value is true.
                     EnableReadDeepClone = true,
-                    // enable deep clone when writing object to cache or not, default valuee is false.
+                    // enable deep clone when writing object to cache or not, default value is false.
                     EnableWriteDeepClone = false,
                 };
                 // the max random second will be added to cache's expiration, default value is 120
