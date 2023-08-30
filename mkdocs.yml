@@ -15,6 +15,7 @@ pages:
     - Disk : Disk.md
     - LiteDB : LiteDB.md
     - FasterKv: FasterKv.md
+    - Etcd: Etcd.md
     # - ProviderFactory : ProviderFactory.md
 - Provider Factory:
     - Overview : FactoryOverview.md

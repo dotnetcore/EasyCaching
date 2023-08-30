@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -72,11 +73,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.ConfluentKafka", "bus\EasyCaching.Bus.ConfluentKafka\EasyCaching.Bus.ConfluentKafka.csproj", "{F7FBADEB-D766-4595-949A-07104B52692C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Bus.Zookeeper", "bus\EasyCaching.Bus.Zookeeper\EasyCaching.Bus.Zookeeper.csproj", "{5E488583-391E-4E15-83C1-7301B4FE79AE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Bus.Zookeeper", "bus\EasyCaching.Bus.Zookeeper\EasyCaching.Bus.Zookeeper.csproj", "{5E488583-391E-4E15-83C1-7301B4FE79AE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.FasterKv", "src\EasyCaching.FasterKv\EasyCaching.FasterKv.csproj", "{7191E567-38DF-4879-82E1-73EC618AFCAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.FasterKv", "src\EasyCaching.FasterKv\EasyCaching.FasterKv.csproj", "{7191E567-38DF-4879-82E1-73EC618AFCAC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Serialization.MemoryPack", "serialization\EasyCaching.Serialization.MemoryPack\EasyCaching.Serialization.MemoryPack.csproj", "{EEF22C21-F380-4980-B72C-F14488369333}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCaching.Serialization.MemoryPack", "serialization\EasyCaching.Serialization.MemoryPack\EasyCaching.Serialization.MemoryPack.csproj", "{EEF22C21-F380-4980-B72C-F14488369333}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCaching.Etcd", "src\EasyCaching.Etcd\EasyCaching.Etcd.csproj", "{984B7E9C-B8C3-4C01-BBC2-345AF28FCC11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -208,6 +211,10 @@ Global
 		{EEF22C21-F380-4980-B72C-F14488369333}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEF22C21-F380-4980-B72C-F14488369333}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEF22C21-F380-4980-B72C-F14488369333}.Release|Any CPU.Build.0 = Release|Any CPU
+		{984B7E9C-B8C3-4C01-BBC2-345AF28FCC11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{984B7E9C-B8C3-4C01-BBC2-345AF28FCC11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{984B7E9C-B8C3-4C01-BBC2-345AF28FCC11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{984B7E9C-B8C3-4C01-BBC2-345AF28FCC11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -244,6 +251,7 @@ Global
 		{5E488583-391E-4E15-83C1-7301B4FE79AE} = {B337509B-75F9-4851-821F-9BBE87C4E4BC}
 		{7191E567-38DF-4879-82E1-73EC618AFCAC} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 		{EEF22C21-F380-4980-B72C-F14488369333} = {15070C49-A507-4844-BCFE-D319CFBC9A63}
+		{984B7E9C-B8C3-4C01-BBC2-345AF28FCC11} = {A0F5CC7E-155F-4726-8DEB-E966950B3FE9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63A57886-054B-476C-AAE1-8D7C8917682E}

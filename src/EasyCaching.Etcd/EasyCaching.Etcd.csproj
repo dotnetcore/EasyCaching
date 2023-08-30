@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="../../build/version.props" />
+	<Import Project="../../build/releasenotes.props" />
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+		<Owners>ncc;Catcher Wong</Owners>
+		<Authors>ncc;Catcher Wong</Authors>
+		<LangVersion>10</LangVersion>
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<VersionPrefix>$(EasyCachingEtcdPackageVersion)</VersionPrefix>
+		<VersionSuffix></VersionSuffix>
+		<Description>
+			A simple local caching provider based on ETCD.
+		</Description>
+		<PackageTags>ETCD,File,LocalCache,Caching,Cache</PackageTags>
+		<PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
+		<ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
+		<PackageIcon>nuget-icon.png</PackageIcon>
+		<PackageReleaseNotes>
+			$(EasyCachingEtcdPackageNotes)
+		</PackageReleaseNotes>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="grpc\**" />
+	  <EmbeddedResource Remove="grpc\**" />
+	  <None Remove="grpc\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../../LICENSE" Pack="true" Visible="false" PackagePath="" />
+		<None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.CLSCompliantAttribute">
+			<_Parameter1>false</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="dotnet-etcd-core" Version="6.2.1.1" />
+	</ItemGroup>
+
+</Project>
+

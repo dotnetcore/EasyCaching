@@ -24,5 +24,6 @@
 		<EasyCachingSTJsonPackageVersion>1.9.0</EasyCachingSTJsonPackageVersion>
 		<EasyCachingMemoryPackageVersion>1.9.0</EasyCachingMemoryPackageVersion>
 		<EasyCachingFaskKVPackageVersion>1.9.0</EasyCachingFaskKVPackageVersion>
+		<EasyCachingEtcdPackageVersion>1.9.0</EasyCachingEtcdPackageVersion>
 	</PropertyGroup>
 </Project>
