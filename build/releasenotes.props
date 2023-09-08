@@ -1,13 +1,13 @@
 <Project>
 	<PropertyGroup>
 		<EasyCachingCorePackageNotes>
+			1. Support IServiceProvider in setupActions
 		</EasyCachingCorePackageNotes>
 		<EasyCachingMemcachedPackageNotes>
 			1. Upgrading dependencies.
 		</EasyCachingMemcachedPackageNotes>
 		<EasyCachingRedisPackageNotes>
-			1. Fixed redis distributed lock for different process.
-			2. Support code configuration for StackExchange.Redis.
+			1. Upgrading dependencies.
 		</EasyCachingRedisPackageNotes>
 		<EasyCachingSQLitePackageNotes>
 			1. Upgrading dependencies.
@@ -40,25 +40,22 @@
 			1. Upgrading dependencies.
 		</EasyCachingCSRedisPackageNotes>
 		<EasyCachingCSRedisBusPackageNotes>
-			1. Support async version of subscribe.
+			1. Upgrading dependencies.
 		</EasyCachingCSRedisBusPackageNotes>
 		<EasyCachingRedisBusPackageNotes>
-			1. Support code configuration for StackExchange.Redis.
-			2. Support async version of subscribe.
+			1. Upgrading dependencies.
 		</EasyCachingRedisBusPackageNotes>
 		<EasyCachingRabbitBusPackageNotes>
-			1. Support async version of subscribe.
+			1. Upgrading dependencies.
 		</EasyCachingRabbitBusPackageNotes>
 		<EasyCachingKafkaBusPackageNotes>
-			1. Support async version of subscribe.
+			1. Upgrading dependencies.
 		</EasyCachingKafkaBusPackageNotes>
 		<EasyCachingZookeeperBusPackageNotes>
-			1. Support async version of subscribe.
-			2. Rename WithConfluentKafkaBus to WithZookeeeperBus.
+			1. Upgrading dependencies.
 		</EasyCachingZookeeperBusPackageNotes>
 		<EasyCachingDiskPackageNotes>
-			1. Support custom serializer.
-			2. Fixed DiskCachingProvider async warning.
+			1. Upgrading dependencies.
 		</EasyCachingDiskPackageNotes>
 		<EasyCachingLiteDBPackageNotes>
 			1. Upgrading dependencies.

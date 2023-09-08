@@ -1,5 +1,6 @@
 ﻿namespace EasyCaching.UnitTests.Infrastructure
 {
+    using EasyCaching.BaseTest.Infrastructure;
     using EasyCaching.Core.Interceptor;
     using EasyCaching.UnitTests.CustomInterceptors;
     using System;
@@ -143,13 +144,13 @@
         Task<string> PutTestAsync(int num, string str = "123");
 
         [EasyCachingAble(Expiration = 1)]
-        Task<IEnumerable<Model>> AbleIEnumerableTest();
+        Task<IEnumerable<SerializerTestModel>> AbleIEnumerableTest();
 
         [EasyCachingAble(Expiration = 1)]
-        Task<IList<Model>> AbleIListTest();
+        Task<IList<SerializerTestModel>> AbleIListTest();
 
         [EasyCachingAble(Expiration = 1)]
-        Task<List<Model>> AbleListTest();
+        Task<List<SerializerTestModel>> AbleListTest();
 
         [EasyCachingAble(Expiration = 1)]
         Task<string> AbleTestWithNullValueAsync();
@@ -210,21 +211,21 @@
             return await Task.FromResult($"PutTestAsync-{num}");
         }
 
-        public Task<IEnumerable<Model>> AbleIEnumerableTest()
+        public Task<IEnumerable<SerializerTestModel>> AbleIEnumerableTest()
         {
-            IEnumerable<Model> list = new List<Model> { new Model { Prop = "prop" } };
+            IEnumerable<SerializerTestModel> list = new List<SerializerTestModel> { new SerializerTestModel { Prop = "prop" } };
             return Task.FromResult(list);
         }
 
-        public Task<IList<Model>> AbleIListTest()
+        public Task<IList<SerializerTestModel>> AbleIListTest()
         {
-            IList<Model> list = new List<Model> { new Model { Prop = "prop" } };
+            IList<SerializerTestModel> list = new List<SerializerTestModel> { new SerializerTestModel { Prop = "prop" } };
             return Task.FromResult(list);
         }
 
-        public Task<List<Model>> AbleListTest()
+        public Task<List<SerializerTestModel>> AbleListTest()
         {
-            var list = new List<Model> { new Model { Prop = "prop" } };
+            var list = new List<SerializerTestModel> { new SerializerTestModel { Prop = "prop" } };
             return Task.FromResult(list);
         }
 

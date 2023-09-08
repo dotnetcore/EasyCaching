@@ -14,7 +14,7 @@ public class MemoryPackSerializerTest : BaseSerializerTest
     }
 
     //This should be overrided becuse it is not supported by memory-pack
-    protected override void DeserializeObject_should_Succeed()
+    public override void DeserializeObject_should_Succeed()
     {
         Person input = new("test", "test1");
         var serialized = _serializer.Serialize<Person>(input);
