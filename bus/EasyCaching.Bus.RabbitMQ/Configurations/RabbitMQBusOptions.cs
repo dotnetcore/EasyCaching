@@ -6,7 +6,7 @@
     /// RabbitMQ Bus options.
     /// </summary>
     public class RabbitMQBusOptions : BaseRabbitMQOptions
-    {        
+    {
         /// <summary>
         /// Gets or sets the name of the queue.
         /// </summary>
