@@ -62,6 +62,7 @@ namespace EasyCaching.Bus.RabbitMQ
         /// <param name="objectPolicy">Object policy.</param>
         /// <param name="rabbitMQOptions">RabbitMQ Options.</param>
         /// <param name="serializer">Serializer.</param>
+        /// <param name="logger">Logger.</param>
         public DefaultRabbitMQStreamBus(
             IPooledObjectPolicy<IModel> objectPolicy
             , IOptions<RabbitMQBusOptions> rabbitMQOptions
