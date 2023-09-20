@@ -30,7 +30,7 @@ public class LocksController : Controller
         catch (Exception ex)
         {
             // log error
-            throw new Exception("Exception", ex);
+            throw;
         }
         finally
         {
@@ -59,7 +59,7 @@ public class LocksController : Controller
         catch (Exception ex)
         {
             // log error
-            throw new Exception("Exception", ex);
+            throw;
         }
         finally
         {

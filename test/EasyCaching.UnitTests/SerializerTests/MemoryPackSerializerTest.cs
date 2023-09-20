@@ -14,7 +14,6 @@ public class MemoryPackSerializerTest : BaseSerializerTest
     }
 
     //This should be overrided becuse it is not supported by memory-pack
-    [Fact]
     public override void DeserializeObject_should_Succeed()
     {
         Person input = new("test", "test1");
