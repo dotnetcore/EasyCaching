@@ -113,7 +113,7 @@ namespace EasyCaching.LiteDB
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var dbResult = _cache.Count(fc => fc.cachekey == cacheKey && fc.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
+            var dbResult = _cache.Count(fc => fc.cachekey == cacheKey && fc.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
             return dbResult > 0;
         }
@@ -131,7 +131,7 @@ namespace EasyCaching.LiteDB
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
+            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
             if (cacheItem != null)
             {
@@ -164,7 +164,7 @@ namespace EasyCaching.LiteDB
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
+            var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
             if (cacheItem != null || _options.CacheNulls)
             {
@@ -317,7 +317,7 @@ namespace EasyCaching.LiteDB
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
             var lst = cacheKeys.ToList();
-            var list = _cache.Find(c => lst.Contains(c.cachekey) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds()).ToList();
+            var list = _cache.Find(c => lst.Contains(c.cachekey) && c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds()).ToList();
             return GetDict<T>(list);
         }
 
@@ -354,7 +354,7 @@ namespace EasyCaching.LiteDB
         public override IDictionary<string, CacheValue<T>> BaseGetByPrefix<T>(string prefix)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
-            var list = _cache.Find(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds()).ToList();
+            var list = _cache.Find(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds()).ToList();
             return GetDict<T>(list);
         }
 
@@ -380,11 +380,11 @@ namespace EasyCaching.LiteDB
         {
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                return _cache.Count(c =>  c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
+                return _cache.Count(c =>  c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             }
             else
             {
-                return _cache.Count(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
+                return _cache.Count(c => c.cachekey.StartsWith(prefix) && c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             }
         }
 
@@ -413,7 +413,7 @@ namespace EasyCaching.LiteDB
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
          
-            var r = _cache.FindOne(c => c.cachekey == cacheKey &&   c.expiration > DateTimeOffset.Now.ToUnixTimeSeconds());
+            var r = _cache.FindOne(c => c.cachekey == cacheKey &&   c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             bool result = false;
             if (r == null)
             {
