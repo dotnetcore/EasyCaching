@@ -283,7 +283,7 @@
         public IEnumerable<string> GetAllKeys(string prefix)
         {
             return _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow)
-                .Select(x=> x.Key).ToList();
+                .Select(x => x.Key).ToList();
         }
 
         private static bool FilterByPattern(string key, string searchKey, SearchKeyPattern searchKeyPattern)
@@ -314,10 +314,10 @@
 
         public IDictionary<string, CacheValue<T>> GetAll<T>(string prefix = "")
         {
-            var values = string.IsNullOrEmpty(prefix) 
-                ? _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow) 
+            var values = string.IsNullOrEmpty(prefix)
+                ? _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow)
                 : _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow);
-            
+
             return values.ToDictionary(k => k.Key, v => new CacheValue<T>(v.GetValue<T>(_options.EnableReadDeepClone), true));
         }
 
