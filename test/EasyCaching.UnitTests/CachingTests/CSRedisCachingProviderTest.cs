@@ -41,6 +41,32 @@ namespace EasyCaching.UnitTests
             return serviceProvider.GetService<IEasyCachingProvider>();
         }
 
+        /*[Fact]
+        public async void Use_Redis6_ACL_Should_Succeed()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddEasyCaching(x =>
+                x.UseCSRedis(options =>
+                {
+                    options.DBConfig = new CSRedisDBOptions
+                    {
+                        ConnectionStrings = new System.Collections.Generic.List<string>
+                            {
+                                "127.0.0.1:6388,user=user,password=userpwd,defaultDatabase=13,poolsize=10"
+                            }
+                    };
+                }).UseCSRedisLock().WithJson(EasyCachingConstValue.DefaultCSRedisName));
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var provider = serviceProvider.GetService<IEasyCachingProvider>();
+            var key = Guid.NewGuid().ToString();
+            var value = "value";
+            await provider.SetAsync(key, value, TimeSpan.FromSeconds(20));
+
+            var getValue = await provider.GetAsync<string>(key);
+
+            Assert.Equal(value, getValue?.Value);
+        }*/
+
         [Fact]
         public void GetDatabase_Should_Succeed()
         {
@@ -148,7 +174,7 @@ namespace EasyCaching.UnitTests
                     config.SerializerName = "json";
 
                 }, "WithKeyPrefix");
-                
+
                 x.WithJson("json");
             });
 
@@ -194,7 +220,7 @@ namespace EasyCaching.UnitTests
             Assert.False(val3.HasValue);
             Assert.False(val4.HasValue);
         }
-        
+
         [Theory]
         [InlineData("WithKeyPrefix")]
         [InlineData("NotKeyPrefix")]
@@ -219,7 +245,7 @@ namespace EasyCaching.UnitTests
             var val6 = WithKeyPrefix.Get<string>("sky:birds:bar");
             var val7 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
             var val8 = WithKeyPrefix.Get<string>("akey");
-            
+
             Assert.True(val1.HasValue);
             Assert.True(val2.HasValue);
             Assert.True(val3.HasValue);
@@ -231,15 +257,15 @@ namespace EasyCaching.UnitTests
 
             // contains
             WithKeyPrefix.RemoveByPattern("*:pots:*");
-            
+
             // postfix
             WithKeyPrefix.RemoveByPattern("*foo");
-            
+
             // prefix
-            WithKeyPrefix.RemoveByPattern("sky*"); 
-            
+            WithKeyPrefix.RemoveByPattern("sky*");
+
             // exact   
-            WithKeyPrefix.RemoveByPattern("akey"); 
+            WithKeyPrefix.RemoveByPattern("akey");
 
             var val9 = WithKeyPrefix.Get<string>("garden:pots:flowers");
             var val10 = WithKeyPrefix.Get<string>("garden:pots:flowers:test");
@@ -249,7 +275,7 @@ namespace EasyCaching.UnitTests
             var val14 = WithKeyPrefix.Get<string>("sky:birds:bar");
             var val15 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
             var val16 = WithKeyPrefix.Get<string>("akey");
-            
+
             Assert.False(val9.HasValue);
             Assert.False(val10.HasValue);
             Assert.True(val11.HasValue);
@@ -259,8 +285,8 @@ namespace EasyCaching.UnitTests
             Assert.False(val15.HasValue);
             Assert.False(val16.HasValue);
         }
-        
-                [Theory]
+
+        [Theory]
         [InlineData("WithKeyPrefix")]
         [InlineData("NotKeyPrefix")]
         public async Task RemoveByKeyPatternAsyncTest(string provider)
@@ -284,7 +310,7 @@ namespace EasyCaching.UnitTests
             var val6 = WithKeyPrefix.Get<string>("sky:birds:bar");
             var val7 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
             var val8 = WithKeyPrefix.Get<string>("akey");
-            
+
             Assert.True(val1.HasValue);
             Assert.True(val2.HasValue);
             Assert.True(val3.HasValue);
@@ -296,15 +322,15 @@ namespace EasyCaching.UnitTests
 
             // contains
             await WithKeyPrefix.RemoveByPatternAsync("*:pots:*");
-            
+
             // postfix
             await WithKeyPrefix.RemoveByPatternAsync("*foo");
-            
+
             // prefix
-            await WithKeyPrefix.RemoveByPatternAsync("sky*"); 
-            
+            await WithKeyPrefix.RemoveByPatternAsync("sky*");
+
             // exact   
-            await WithKeyPrefix.RemoveByPatternAsync("akey"); 
+            await WithKeyPrefix.RemoveByPatternAsync("akey");
 
             var val9 = WithKeyPrefix.Get<string>("garden:pots:flowers");
             var val10 = WithKeyPrefix.Get<string>("garden:pots:flowers:test");
@@ -314,7 +340,7 @@ namespace EasyCaching.UnitTests
             var val14 = WithKeyPrefix.Get<string>("sky:birds:bar");
             var val15 = WithKeyPrefix.Get<string>("sky:birds:test:bar");
             var val16 = WithKeyPrefix.Get<string>("akey");
-            
+
             Assert.False(val9.HasValue);
             Assert.False(val10.HasValue);
             Assert.True(val11.HasValue);
