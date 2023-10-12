@@ -49,8 +49,8 @@
         public int GetCount(string prefix = "")
         {
             return string.IsNullOrWhiteSpace(prefix)
-                ? _memory.Count
-                : _memory.Count(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+                ? _memory.Values.Where(x => x.ExpiresAt > SystemClock.UtcNow).Count()
+                : _memory.Values.Where(x => x.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && x.ExpiresAt > SystemClock.UtcNow).Count();
         }
 
         internal void RemoveExpiredKey(string key)
