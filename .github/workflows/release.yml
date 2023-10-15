@@ -38,6 +38,7 @@ jobs:
           uses: actions/download-artifact@v3
           with:
             name: nugetpkgs
+            path: nugetpkgs
         - name: list nugetpkgs
           run: ls nugetpkgs
         - name: Release
