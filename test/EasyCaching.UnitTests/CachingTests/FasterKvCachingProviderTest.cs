@@ -77,7 +77,7 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     }
 
     public override Task GetAllByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(
-        string preifx)
+       string preifx)
     {
         return Task.CompletedTask;
     }
@@ -92,10 +92,32 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
         return Task.CompletedTask;
     }
 
+    public override void RemoveByPattern_Should_Succeed()
+    {
+    }
+
+    public override Task RemoveByPatternAsync_Should_Succeed()
+    {
+        return Task.CompletedTask;
+    }
+
+    public override Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(
+        string preifx)
+
+    {
+        return Task.CompletedTask;
+    }
+
+    public override void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(
+    string prefix)
+    {
+    }
+
     protected override Task Get_Count_Async_Without_Prefix_Should_Succeed()
     {
         return Task.CompletedTask;
     }
+
 
     protected override void Get_Count_With_Prefix_Should_Succeed()
     {
@@ -118,6 +140,8 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
         return Task.CompletedTask;
     }
 
+
+
     protected override Task GetByPrefixAsync_With_Not_Existed_Prefix_Should_Return_Empty_Dict()
     {
         return Task.CompletedTask;
@@ -132,28 +156,7 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     {
     }
 
-    public override void RemoveByPattern_Should_Succeed()
-    {
-    }
-
-    public override Task RemoveByPatternAsync_Should_Succeed()
-    {
-        return Task.CompletedTask;
-    }
-
-    public override Task RemoveByPrefix_Async_Should_Throw_ArgumentNullException_When_Prefix_IsNullOrWhiteSpace(
-        string preifx)
-
-    {
-        return Task.CompletedTask;
-    }
-
     protected override void RemoveByPrefix_Should_Succeed()
-    {
-    }
-
-    public override void RemoveByPrefix_Should_Throw_ArgumentNullException_When_CacheKey_IsNullOrWhiteSpace(
-        string prefix)
     {
     }
 

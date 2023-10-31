@@ -155,6 +155,21 @@ namespace EasyCaching.UnitTests
             _provider.Get<string>(key1);
             System.Threading.Thread.Sleep(500);
         }
+
+        [Fact]
+        public async void Issues497_GetCountAsync_Check_Expires_Test()
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                await _provider.SetAsync(Guid.NewGuid().ToString(), $"value-{i}", TimeSpan.FromSeconds(5));
+            }
+
+            Assert.Equal(9, await _provider.GetCountAsync());
+
+            await Task.Delay(5000);
+
+            Assert.Equal(0, await _provider.GetCountAsync());
+        }
     }
 
     public class MemoryCachingProviderWithFactoryTest : BaseCachingProviderWithFactoryTest

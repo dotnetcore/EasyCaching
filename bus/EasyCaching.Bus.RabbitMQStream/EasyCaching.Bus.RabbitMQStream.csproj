@@ -3,26 +3,27 @@
 	<Import Project="../../build/releasenotes.props" />
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
-		<Owners>maikebing</Owners>
-		<Authors>maikebing</Authors>
-		<VersionPrefix>$(EasyCachingLiteDBPackageVersion)</VersionPrefix>
+		<Owners>ncc;Thomas Sarmis</Owners>
+		<Authors>ncc;Thomas Sarmis</Authors>
+		<VersionPrefix>$(EasyCachingRabbitStreamBusPackageVersion)</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
-		<Description>A simple local caching provider based on LiteDB</Description>
-		<PackageTags>LiteDB,LocalCache,Caching,Cache,InMemory,Persisted</PackageTags>
+		<Description>
+			A simple caching bus(message bus) based on RabbitMQ using amqp Streams.
+		</Description>
+		<PackageTags>Bus,Hybrid,RabbitMQ,Caching,Cache</PackageTags>
 		<PackageProjectUrl>https://github.com/dotnetcore/EasyCaching</PackageProjectUrl>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 		<RepositoryUrl>https://github.com/dotnetcore/EasyCaching</RepositoryUrl>
 		<ProjectUrl>https://github.com/dotnetcore/EasyCaching</ProjectUrl>
 		<PackageIcon>nuget-icon.png</PackageIcon>
 		<PackageReleaseNotes>
-			$(EasyCachingLiteDBPackageNotes)
+			$(EasyCachingRabbitStreamBusPackageNotes)
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
-		<Company>maikebing</Company>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,11 +32,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\EasyCaching.Core\EasyCaching.Core.csproj" />
+		<ProjectReference Include="..\..\src\EasyCaching.Core\EasyCaching.Core.csproj" />
+		<ProjectReference Include="..\EasyCaching.Bus.RabbitMQ\EasyCaching.Bus.RabbitMQ.csproj" />
 	</ItemGroup>
+
 	<ItemGroup>
-		<PackageReference Include="LiteDB" Version="5.0.13" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+		<PackageReference Include="RabbitMQ.Client" Version="6.2.4" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="3.1.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="Microsoft.Extensions.ObjectPool" Version="6.0.0" />
 	</ItemGroup>
 </Project>
