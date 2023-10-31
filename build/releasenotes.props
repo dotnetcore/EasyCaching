@@ -14,6 +14,7 @@
 		</EasyCachingSQLitePackageNotes>
 		<EasyCachingInMemoryPackageNotes>
 			1. Upgrading dependencies.
+			2. Fix no check expires when get cache count
 		</EasyCachingInMemoryPackageNotes>
 		<EasyCachingHybridPackageNotes>
 			1. Upgrading dependencies.
@@ -59,6 +60,7 @@
 		</EasyCachingDiskPackageNotes>
 		<EasyCachingLiteDBPackageNotes>
 			1. Upgrading dependencies.
+			2. Always use utc to compare the expiry
 		</EasyCachingLiteDBPackageNotes>
 		<EasyCachingSTJsonPackageNotes>
 			1. Upgrading dependencies.
@@ -69,5 +71,8 @@
 		<EasyCachingFaskKVPackageNotes>
 			1. Upgrading dependencies.
 		</EasyCachingFaskKVPackageNotes>
+		<EasyCachingRabbitStreamBusPackageNotes>
+			1. Initial release.
+		</EasyCachingRabbitStreamBusPackageNotes>
 	</PropertyGroup>
 </Project>
