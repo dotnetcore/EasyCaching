@@ -11,7 +11,7 @@ pages:
     - CSRedis: CSRedis.md
     - Memcached : Memcached.md
     - SQLite : SQLite.md
-    - Hybird : Hybrid.md
+    - Hybrid : Hybrid.md
     - Disk : Disk.md
     - LiteDB : LiteDB.md
     - FasterKv: FasterKv.md
