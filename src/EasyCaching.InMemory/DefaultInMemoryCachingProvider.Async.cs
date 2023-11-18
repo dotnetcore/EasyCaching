@@ -5,6 +5,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -184,7 +185,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 

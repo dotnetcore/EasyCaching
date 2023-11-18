@@ -2,10 +2,12 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
+    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Security.Cryptography;
 
     /// <summary>
     /// MemoryCaching provider.
@@ -224,7 +226,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 

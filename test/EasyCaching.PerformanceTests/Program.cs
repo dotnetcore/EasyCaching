@@ -12,7 +12,10 @@
             //BenchmarkRunner.Run<SerializerMultiObject2ArraySegmentBenchmark>();
             //BenchmarkRunner.Run<SetBenchmark>();
             //BenchmarkRunner.Run<GetBenchmark>();
-            BenchmarkRunner.Run<FasterKvBenchmark>();
+            //BenchmarkRunner.Run<FasterKvBenchmark>();
+            // BenchmarkRunner.Run<RandomNextBenchmark>();
+            //BenchmarkRunner.Run<MBenchmark>();
+            new MBenchmark().Test();
         }
     }
 }

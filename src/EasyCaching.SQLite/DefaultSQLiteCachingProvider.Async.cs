@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using Dapper;
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -212,7 +213,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
@@ -383,7 +384,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
 
