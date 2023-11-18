@@ -42,8 +42,8 @@
         public string SerializerName { get; set; }
 
         /// <summary>
-        /// Get or sets whether null values should be cached, default is false.
+        /// Get or sets whether null values should be cached, default is true.
         /// </summary>
-        public bool CacheNulls { get; set; } = false;
+        public bool CacheNulls { get; set; } = true;
     }
 }
