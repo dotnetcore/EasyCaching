@@ -1,8 +1,7 @@
-using EasyCaching.Core.Configurations;
-using EasyCaching.Core.DistributedLock;
-
 namespace EasyCaching.UnitTests
 {
+    using EasyCaching.Core.Configurations;
+    using EasyCaching.Core.DistributedLock;
     using EasyCaching.Core;
     using EasyCaching.InMemory;
     using Microsoft.Extensions.Configuration;
