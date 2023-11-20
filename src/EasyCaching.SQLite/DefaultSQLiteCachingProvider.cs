@@ -85,7 +85,7 @@
         /// </summary>
         /// <param name="dbProvider"></param>
         private void InitDb(ISQLiteDatabaseProvider dbProvider)
-        {            
+        {
             var conn = dbProvider.GetConnection();
 
             if (conn.State == System.Data.ConnectionState.Closed)
@@ -93,7 +93,7 @@
                 conn.Open();
             }
 
-            conn.Execute(ConstSQL.CREATESQL);            
+            conn.Execute(ConstSQL.CREATESQL);
         }
 
         /// <summary>
@@ -159,16 +159,16 @@
                 name = _name
             }).FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(dbResult) || _options.CacheNulls)
+            if (!string.IsNullOrWhiteSpace(dbResult))
             {
                 CacheStats.OnHit();
 
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
-
-                return string.IsNullOrWhiteSpace(dbResult) 
+                var cacheValue = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult);
+                return cacheValue == null
                     ? CacheValue<T>.Null
-                    : new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(dbResult), true);
+                    : new CacheValue<T>(cacheValue, true);
             }
             else
             {
@@ -221,7 +221,7 @@
                 expiration = expiration.Ticks / 10000000
             });
 
-        }          
+        }
 
         /// <summary>
         /// Removes cached item by cachekey's prefix.
@@ -247,10 +247,10 @@
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPattern : pattern = {pattern}");
-            
+
             _cache.Execute(ConstSQL.REMOVEBYLIKESQL, new { cachekey = pattern.Replace('*', '%'), name = _name });
         }
-        
+
         /// <summary>
         /// Sets all.
         /// </summary>
@@ -276,7 +276,7 @@
             }
 
             tran.Commit();
-        }   
+        }
 
         /// <summary>
         /// Gets all.
@@ -339,7 +339,7 @@
 
             return GetDict<T>(list);
         }
-    
+
         /// <summary>
         /// Removes all.
         /// </summary>
