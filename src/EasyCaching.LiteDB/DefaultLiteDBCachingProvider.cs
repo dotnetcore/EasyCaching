@@ -166,14 +166,14 @@ namespace EasyCaching.LiteDB
 
             var cacheItem = _cache.FindOne(c => c.cachekey == cacheKey && c.expiration > DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-            if (cacheItem != null || _options.CacheNulls)
+            if (cacheItem != null)
             {
                 if (_options.EnableLogging)
                     _logger?.LogInformation($"Cache Hit : cachekey = {cacheKey}");
 
                 CacheStats.OnHit();
 
-                return string.IsNullOrWhiteSpace(cacheItem?.cachevalue) 
+                return cacheItem.cachevalue == null
                     ? CacheValue<T>.Null 
                     : new CacheValue<T>(Newtonsoft.Json.JsonConvert.DeserializeObject<T>(cacheItem.cachevalue), true);
             }
