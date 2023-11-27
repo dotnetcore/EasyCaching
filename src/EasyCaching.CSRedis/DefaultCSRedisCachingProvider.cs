@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
+    using EasyCaching.Core.Internal;
     using EasyCaching.Core.Serialization;
     using EasyCaching.CSRedis.DistributedLock;
     using global::CSRedis;
@@ -458,7 +459,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
@@ -480,7 +481,7 @@
             //whether to use pipe based on redis mode
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
@@ -506,7 +507,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 

@@ -2,6 +2,7 @@
 namespace EasyCaching.LiteDB
 {
     using EasyCaching.Core;
+    using EasyCaching.Core.Internal;
     using global::LiteDB;
     using Microsoft.Extensions.Logging;
     using System;
@@ -216,7 +217,7 @@ namespace EasyCaching.LiteDB
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
             _cache.Upsert(new CacheItem
@@ -409,7 +410,7 @@ namespace EasyCaching.LiteDB
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration.Add(new TimeSpan(0, 0, addSec));
             }
          

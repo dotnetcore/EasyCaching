@@ -2,6 +2,7 @@
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
+    using EasyCaching.Core.Internal;
     using EasyCaching.Memcached.DistributedLock;
     using Microsoft.Extensions.Logging;
     using System;
@@ -205,7 +206,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 
@@ -410,7 +411,7 @@
 
             if (MaxRdSecond > 0)
             {
-                var addSec = new Random().Next(1, MaxRdSecond);
+                var addSec = RandomHelper.GetNext(1, MaxRdSecond);
                 expiration = expiration.Add(TimeSpan.FromSeconds(addSec));
             }
 

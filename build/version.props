@@ -1,29 +1,29 @@
 <Project>
 	<PropertyGroup>
-		<EasyCachingCorePackageVersion>1.9.2</EasyCachingCorePackageVersion>
-		<EasyCachingMemcachedPackageVersion>1.9.2</EasyCachingMemcachedPackageVersion>
-		<EasyCachingRedisPackageVersion>1.9.2</EasyCachingRedisPackageVersion>
-		<EasyCachingSQLitePackageVersion>1.9.2</EasyCachingSQLitePackageVersion>
-		<EasyCachingInMemoryPackageVersion>1.9.2</EasyCachingInMemoryPackageVersion>
-		<EasyCachingHybridPackageVersion>1.9.2</EasyCachingHybridPackageVersion>
-		<EasyCachingAspectCorePackageVersion>1.9.2</EasyCachingAspectCorePackageVersion>
-		<EasyCachingCastlePackageVersion>1.9.2</EasyCachingCastlePackageVersion>
-		<EasyCachingResponseCachingPackageVersion>1.9.2</EasyCachingResponseCachingPackageVersion>
-		<EasyCachingJsonPackageVersion>1.9.2</EasyCachingJsonPackageVersion>
-		<EasyCachingMessagePackPackageVersion>1.9.2</EasyCachingMessagePackPackageVersion>
-		<EasyCachingProtobufPackageVersion>1.9.2</EasyCachingProtobufPackageVersion>
-		<EasyCachingCSRedisPackageVersion>1.9.2</EasyCachingCSRedisPackageVersion>
-		<EasyCachingRedisBusPackageVersion>1.9.2</EasyCachingRedisBusPackageVersion>
-		<EasyCachingCSRedisBusPackageVersion>1.9.2</EasyCachingCSRedisBusPackageVersion>
-		<EasyCachingRabbitBusPackageVersion>1.9.2</EasyCachingRabbitBusPackageVersion>
-		<EasyCachingRabbitStreamBusPackageVersion>1.9.2</EasyCachingRabbitStreamBusPackageVersion>
-		<EasyCachingKafkaBusPackageVersion>1.9.2</EasyCachingKafkaBusPackageVersion>
-		<EasyCachingZookeeperBusPackageVersion>1.9.2</EasyCachingZookeeperBusPackageVersion>
-		<EasyCachingDiskPackageVersion>1.9.2</EasyCachingDiskPackageVersion>
-		<EasyCachingMsExtPackageVersion>1.9.2</EasyCachingMsExtPackageVersion>
-		<EasyCachingLiteDBPackageVersion>1.9.2</EasyCachingLiteDBPackageVersion>
-		<EasyCachingSTJsonPackageVersion>1.9.2</EasyCachingSTJsonPackageVersion>
-		<EasyCachingMemoryPackageVersion>1.9.2</EasyCachingMemoryPackageVersion>
-		<EasyCachingFaskKVPackageVersion>1.9.2</EasyCachingFaskKVPackageVersion>
+		<EasyCachingCorePackageVersion>1.9.3</EasyCachingCorePackageVersion>
+		<EasyCachingMemcachedPackageVersion>1.9.3</EasyCachingMemcachedPackageVersion>
+		<EasyCachingRedisPackageVersion>1.9.3</EasyCachingRedisPackageVersion>
+		<EasyCachingSQLitePackageVersion>1.9.3</EasyCachingSQLitePackageVersion>
+		<EasyCachingInMemoryPackageVersion>1.9.3</EasyCachingInMemoryPackageVersion>
+		<EasyCachingHybridPackageVersion>1.9.3</EasyCachingHybridPackageVersion>
+		<EasyCachingAspectCorePackageVersion>1.9.3</EasyCachingAspectCorePackageVersion>
+		<EasyCachingCastlePackageVersion>1.9.3</EasyCachingCastlePackageVersion>
+		<EasyCachingResponseCachingPackageVersion>1.9.3</EasyCachingResponseCachingPackageVersion>
+		<EasyCachingJsonPackageVersion>1.9.3</EasyCachingJsonPackageVersion>
+		<EasyCachingMessagePackPackageVersion>1.9.3</EasyCachingMessagePackPackageVersion>
+		<EasyCachingProtobufPackageVersion>1.9.3</EasyCachingProtobufPackageVersion>
+		<EasyCachingCSRedisPackageVersion>1.9.3</EasyCachingCSRedisPackageVersion>
+		<EasyCachingRedisBusPackageVersion>1.9.3</EasyCachingRedisBusPackageVersion>
+		<EasyCachingCSRedisBusPackageVersion>1.9.3</EasyCachingCSRedisBusPackageVersion>
+		<EasyCachingRabbitBusPackageVersion>1.9.3</EasyCachingRabbitBusPackageVersion>
+		<EasyCachingRabbitStreamBusPackageVersion>1.9.3</EasyCachingRabbitStreamBusPackageVersion>
+		<EasyCachingKafkaBusPackageVersion>1.9.3</EasyCachingKafkaBusPackageVersion>
+		<EasyCachingZookeeperBusPackageVersion>1.9.3</EasyCachingZookeeperBusPackageVersion>
+		<EasyCachingDiskPackageVersion>1.9.3</EasyCachingDiskPackageVersion>
+		<EasyCachingMsExtPackageVersion>1.9.3</EasyCachingMsExtPackageVersion>
+		<EasyCachingLiteDBPackageVersion>1.9.3</EasyCachingLiteDBPackageVersion>
+		<EasyCachingSTJsonPackageVersion>1.9.3</EasyCachingSTJsonPackageVersion>
+		<EasyCachingMemoryPackageVersion>1.9.3</EasyCachingMemoryPackageVersion>
+		<EasyCachingFaskKVPackageVersion>1.9.3</EasyCachingFaskKVPackageVersion>
 	</PropertyGroup>
 </Project>
