@@ -97,6 +97,11 @@ namespace EasyCaching.Bus.RabbitMQ
                 };
 
                 var provider = new DefaultObjectPoolProvider();
+                
+                if (_options.PublishingChannelsPoolSize.HasValue) 
+                {
+                    provider.MaximumRetained = _options.PublishingChannelsPoolSize.Value;
+                }
 
                 _pubChannelPool = provider.Create(objectPolicy);
 

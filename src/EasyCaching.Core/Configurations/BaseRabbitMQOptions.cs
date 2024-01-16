@@ -56,5 +56,10 @@
         /// Gets or sets the client-provided name for the rabbit connection. Default null (handled by rabbit client)
         /// </summary>
         public string ClientProvidedName { get; set; }
+        
+        /// <summary>
+        /// Sets the Pool size for the publishing channels, if null the default is used (default = cpu core count x 2)
+        /// </summary>
+        public int? PublishingChannelsPoolSize { get; set; } = null;
     }
 }
