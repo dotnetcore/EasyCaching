@@ -60,6 +60,9 @@ public static class FasterKvCachingOptionsExtensions
                 x.ReadCacheMemorySizeBit = fasterKvOptions.ReadCacheMemorySizeBit;
                 x.ReadCachePageSizeBit = fasterKvOptions.ReadCachePageSizeBit;
                 x.LogPath = fasterKvOptions.LogPath;
+                x.PreallocateFile = fasterKvOptions.PreallocateFile;
+                x.DeleteFileOnClose = fasterKvOptions.DeleteFileOnClose;
+                x.TryRecoverLatest = fasterKvOptions.TryRecoverLatest;
             }
 
             options.RegisterExtension(new FasterKvOptionsExtension(name, Configure));
