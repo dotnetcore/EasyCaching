@@ -28,7 +28,8 @@
                 VirtualHost = _options.VirtualHost,
                 RequestedConnectionTimeout = System.TimeSpan.FromMilliseconds(_options.RequestedConnectionTimeout),
                 SocketReadTimeout = System.TimeSpan.FromMilliseconds(_options.SocketReadTimeout),
-                SocketWriteTimeout = System.TimeSpan.FromMilliseconds(_options.SocketWriteTimeout)
+                SocketWriteTimeout = System.TimeSpan.FromMilliseconds(_options.SocketWriteTimeout),
+                ClientProvidedName = _options.ClientProvidedName,
             };
 
             return factory.CreateConnection();
