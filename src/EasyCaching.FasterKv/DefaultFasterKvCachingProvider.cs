@@ -59,8 +59,16 @@ namespace EasyCaching.FasterKv
             {
                 var logSetting = options.GetLogSettings(name);
                 _logDevice = logSetting.LogDevice;
-                _fasterKv = new FasterKV<SpanByte, SpanByte>(_options.IndexCount, logSetting,
-                    loggerFactory: loggerFactory);
+                _fasterKv = new FasterKV<SpanByte, SpanByte>(
+                    _options.IndexCount,
+                    logSetting,
+                    loggerFactory: loggerFactory,
+                    tryRecoverLatest: _options.TryRecoverLatest,
+                    checkpointSettings: new CheckpointSettings()
+                    {
+                        CheckpointDir = options.LogPath + ".checkpoint"
+                    }
+                );
             }
             else
             {
@@ -364,12 +372,18 @@ namespace EasyCaching.FasterKv
             {
                 session.Dispose();
             }
-
-            _logDevice?.Dispose();
+            
             if (_options.CustomStore != _fasterKv)
             {
+                if (_options.DeleteFileOnClose == false)
+                {
+                    _fasterKv.TakeFullCheckpointAsync(CheckpointType.FoldOver).AsTask().GetAwaiter().GetResult();
+                }
                 _fasterKv.Dispose();   
             }
+            
+            _logDevice?.Dispose();
+            
             _disposed = true;
         }
 

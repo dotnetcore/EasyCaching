@@ -47,7 +47,21 @@ namespace EasyCaching.FasterKv.Configurations
 #else
             Path.Combine(Environment.CurrentDirectory, $"EasyCaching-FasterKv-{System.Diagnostics.Process.GetCurrentProcess().Id}");
 #endif
-            
+        
+        /// <summary>
+        /// Preallocate file
+        /// </summary>
+        public bool PreallocateFile { get; set; } = false;
+    
+        /// <summary>
+        /// Delete file on close
+        /// </summary>
+        public bool DeleteFileOnClose { get; set; } = true;
+    
+        /// <summary>
+        /// Try recover latest
+        /// </summary>
+        public bool TryRecoverLatest { get; set; } = false;
         
         /// <summary>
         /// Set Custom Store
@@ -59,8 +73,8 @@ namespace EasyCaching.FasterKv.Configurations
             return new LogSettings
             {
                 LogDevice = Devices.CreateLogDevice(Path.Combine(LogPath, name),
-                    preallocateFile: true,
-                    deleteOnClose: true),
+                    preallocateFile: PreallocateFile,
+                    deleteOnClose: DeleteFileOnClose),
                 PageSizeBits = PageSizeBit,
                 MemorySizeBits = MemorySizeBit,
                 ReadCacheSettings = new ReadCacheSettings
