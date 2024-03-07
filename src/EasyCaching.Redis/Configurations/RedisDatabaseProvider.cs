@@ -1,4 +1,6 @@
-﻿namespace EasyCaching.Redis
+﻿using Elastic.Apm.StackExchange.Redis;
+
+namespace EasyCaching.Redis
 {
     using StackExchange.Redis;
     using StackExchange.Redis.KeyspaceIsolation;
@@ -17,6 +19,8 @@
         /// </summary>
         private readonly RedisDBOptions _options;
 
+        private readonly bool _useApm;
+
         /// <summary>
         /// The connection multiplexer.
         /// </summary>
@@ -25,6 +29,7 @@
         public RedisDatabaseProvider(string name, RedisOptions options)
         {
             _options = options.DBConfig;
+            _useApm = options.UseApm;
             _connectionMultiplexer = new Lazy<ConnectionMultiplexer>(CreateConnectionMultiplexer);
             _name = name;
         }
@@ -40,10 +45,14 @@
         {
             try
             {
-
                 var database = _connectionMultiplexer.Value.GetDatabase();
+                
                 if (!string.IsNullOrEmpty(_options.KeyPrefix))
                     database = database.WithKeyPrefix(_options.KeyPrefix);
+                
+                if (_useApm)
+                    _connectionMultiplexer.Value.UseElasticApm();
+
                 return database;
             }
             catch (Exception)

@@ -33,6 +33,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Elastic.Apm.StackExchange.Redis" Version="1.25.1" />
 		<PackageReference Include="StackExchange.Redis" Version="2.5.43" />
 	</ItemGroup>
 	<ItemGroup>
