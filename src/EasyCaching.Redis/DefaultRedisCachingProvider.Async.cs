@@ -261,13 +261,20 @@
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
             ArgumentCheck.NotNullAndCountGTZero(values, nameof(values));
+            
+            var keyValuePairs = values
+                .ToDictionary(
+                    keySelector: item => (RedisKey)item.Key,
+                    elementSelector: item => (RedisValue)_serializer.Serialize(item.Value))
+                .ToArray();
+            
+            ITransaction transaction = _cache.CreateTransaction();
+            
+            _ = transaction.StringSetAsync(keyValuePairs);
+            foreach (RedisKey key in keyValuePairs.Select(keyVp => keyVp.Key))
+                _ = transaction.KeyExpireAsync(key, expiration);
 
-            var tasks = new List<Task>();
-
-            foreach (var item in values)
-                tasks.Add(SetAsync(item.Key, item.Value, expiration, cancellationToken));
-
-            await Task.WhenAll(tasks);
+            await transaction.ExecuteAsync();
         }
 
         /// <summary>
