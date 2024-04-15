@@ -1,4 +1,4 @@
-﻿namespace EasyCaching.Disk
+namespace EasyCaching.Disk
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
@@ -171,9 +171,12 @@
                             string line;
                             while ((line = reader.ReadLine()) != null)
                             {
+                              if (!line.EndsWith("_Lock", StringComparison.Ordinal))
+                              {
                                 _cacheKeysMap.TryAdd(line, GetMd5Str(line));
                             }
                         }
+                    }
                     }
 
                     break;
