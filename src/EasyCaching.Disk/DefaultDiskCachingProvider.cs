@@ -1,4 +1,4 @@
-namespace EasyCaching.Disk
+﻿namespace EasyCaching.Disk
 {
     using EasyCaching.Core;
     using EasyCaching.Core.DistributedLock;
@@ -174,9 +174,9 @@ namespace EasyCaching.Disk
                               if (!line.EndsWith("_Lock", StringComparison.Ordinal))
                               {
                                 _cacheKeysMap.TryAdd(line, GetMd5Str(line));
+                              }
                             }
                         }
-                    }
                     }
 
                     break;
@@ -244,28 +244,37 @@ namespace EasyCaching.Disk
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            // TODO: how to add mutex key here
-            if (!_cacheKeysMap.TryAdd($"{cacheKey}_Lock", "1"))
+            try
             {
+              // TODO: how to add mutex key here
+              if (!_cacheKeysMap.TryAdd($"{cacheKey}_Lock", "1"))
+              {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);
-            }
+              }
 
-            var res = dataRetriever();
+              var res = dataRetriever();
 
-            if (res != null || _options.CacheNulls)
-            {
+              if (res != null || _options.CacheNulls)
+              {
                 Set(cacheKey, res, expiration);
                 // remove mutex key
                 _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
 
                 return new CacheValue<T>(res, true);
-            }
-            else
-            {
+              }
+              else
+              {
                 // remove mutex key
                 _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
                 return CacheValue<T>.NoValue;
+              }
+            }
+            catch (Exception ex)
+            {
+              // remove mutex key
+              _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
+              throw;
             }
         }
 

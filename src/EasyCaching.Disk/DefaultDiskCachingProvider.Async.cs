@@ -133,20 +133,29 @@
                 return await GetAsync(cacheKey, dataRetriever, expiration, cancellationToken);
             }
 
-            var res = await dataRetriever();
-
-            if (res != null || _options.CacheNulls)
+            try
             {
+              var res = await dataRetriever();
+
+              if (res != null || _options.CacheNulls)
+              {
                 await SetAsync(cacheKey, res, expiration, cancellationToken);
                 //remove mutex key
                 _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
                 return new CacheValue<T>(res, true);
-            }
-            else
-            {
+              }
+              else
+              {
                 //remove mutex key
                 _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
                 return CacheValue<T>.NoValue;
+              }
+            }
+            catch (Exception ex)
+            {
+              //remove mutex key
+              _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
+              throw;
             }
         }
 
