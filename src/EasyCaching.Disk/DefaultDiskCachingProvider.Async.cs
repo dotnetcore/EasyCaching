@@ -10,7 +10,7 @@
     using Microsoft.Extensions.Logging;
 
     public partial class DefaultDiskCachingProvider : EasyCachingAbstractProvider
-    {   
+    {
         public override async Task<bool> BaseExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -38,7 +38,7 @@
             _cacheKeysMap.Clear();
 
             return Task.CompletedTask;
-        }            
+        }
 
         public override async Task<IDictionary<string, CacheValue<T>>> BaseGetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
@@ -151,7 +151,7 @@
                 return CacheValue<T>.NoValue;
               }
             }
-            catch (Exception ex)
+            catch
             {
               //remove mutex key
               _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
@@ -248,7 +248,7 @@
                 return CacheValue<T>.NoValue;
             }
         }
-            
+
         public override async Task<IDictionary<string, CacheValue<T>>> BaseGetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
@@ -295,7 +295,7 @@
 
             return dict;
         }
-             
+
         public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
@@ -310,8 +310,8 @@
             var cached = await GetDiskCacheValueAsync(path, cancellationToken);
 
             return DateTimeOffset.FromUnixTimeMilliseconds((long)cached.Expiration).Subtract(DateTimeOffset.UtcNow);
-        }             
-              
+        }
+
         public override Task BaseRemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullAndCountGTZero(cacheKeys, nameof(cacheKeys));
@@ -382,7 +382,7 @@
 
             var searchPattern = this.ProcessSearchKeyPattern(pattern);
             var searchKey = this.HandleSearchKeyPattern(pattern);
-            
+
             var list = _cacheKeysMap.Where(pair => FilterByPattern(pair.Key,searchKey, searchPattern)).Select(x => x.Key).ToList();
 
             foreach (var item in list)
@@ -397,7 +397,7 @@
 
             return Task.CompletedTask;
         }
-        
+
         public override async Task BaseSetAllAsync<T>(IDictionary<string, T> values, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
@@ -471,7 +471,7 @@
                 return true;
             }
         }
-               
+
         private async Task<DiskCacheValue> GetDiskCacheValueAsync(string path, CancellationToken cancellationToken = default)
         {
             using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))

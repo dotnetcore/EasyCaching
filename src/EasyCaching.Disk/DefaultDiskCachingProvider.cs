@@ -270,7 +270,7 @@
                 return CacheValue<T>.NoValue;
               }
             }
-            catch (Exception ex)
+            catch
             {
               // remove mutex key
               _cacheKeysMap.TryRemove($"{cacheKey}_Lock", out _);
