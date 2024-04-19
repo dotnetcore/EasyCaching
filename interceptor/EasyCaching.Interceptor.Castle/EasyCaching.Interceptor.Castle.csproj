@@ -39,6 +39,8 @@
 		<PackageReference Include="Autofac.Extras.DynamicProxy" Version="6.0.1" />
 		<PackageReference Include="Autofac" Version="6.3.0" />
 		<PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'== 'netStandard2.0'">
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 	</ItemGroup>
 </Project>

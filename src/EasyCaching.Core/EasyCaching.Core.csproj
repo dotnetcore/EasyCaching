@@ -42,7 +42,6 @@
 		<PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-		<PackageReference Include="System.Diagnostics.DiagnosticSource" Version="6.0.0" />
 	</ItemGroup>
-	
+
 </Project>

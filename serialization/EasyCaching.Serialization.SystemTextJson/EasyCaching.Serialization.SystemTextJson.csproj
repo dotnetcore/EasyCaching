@@ -30,7 +30,7 @@
 		<None Include="../../media/nuget-icon.png" Pack="true" Visible="false" PackagePath="" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'== 'netStandard2.0'">
 		<PackageReference Include="System.Text.Json" Version="6.0.3" />
 	</ItemGroup>
 
