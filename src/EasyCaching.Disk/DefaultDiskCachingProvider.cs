@@ -115,7 +115,7 @@
 
             if (!File.Exists(path))
             {
-                File.Create(path);
+                using (File.Create(path)) {}
             }
 
             InitCacheKey();
