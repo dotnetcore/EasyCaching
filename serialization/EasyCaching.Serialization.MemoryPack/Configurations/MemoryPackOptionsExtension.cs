@@ -1,11 +1,9 @@
-namespace EasyCaching.Serialization.Json;
-
-using System;
 using EasyCaching.Core.Configurations;
 using EasyCaching.Core.Serialization;
-using EasyCaching.Serialization.MemoryPack;
-using global::MemoryPack;
+using MemoryPack;
 using Microsoft.Extensions.DependencyInjection;
+
+namespace EasyCaching.Serialization.MemoryPack;
 
 /// <summary>
 /// MemoryPack options extension.
@@ -29,8 +27,8 @@ internal sealed class MemoryPackOptionsExtension : IEasyCachingOptionsExtension
     /// <param name="configure">Configure.</param>
     public MemoryPackOptionsExtension(string name, Action<EasyCachingMemPackSerializerOptions> configure)
     {
-        this._name = name;
-        this._configure = configure;
+        _name = name;
+        _configure = configure;
     }
 
     /// <summary>
@@ -44,11 +42,16 @@ internal sealed class MemoryPackOptionsExtension : IEasyCachingOptionsExtension
         services.AddOptions();
         services.Configure(_name, configure);
 
-        services.AddSingleton<IEasyCachingSerializer, DefaultMemoryPackSerializer>(x =>
+        services.AddSingleton<IEasyCachingSerializer, DefaultMemoryPackSerializer>(services =>
         {
-            var optionsMon = x.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<EasyCachingMemPackSerializerOptions>>();
+            var optionsMon = services.GetRequiredService<Microsoft.Extensions.Options.IOptionsMonitor<EasyCachingMemPackSerializerOptions>>();
             var easyCachingOptions = optionsMon.Get(_name);
-            var options = new MemoryPackSerializerOptions { StringEncoding = easyCachingOptions.StringEncoding };
+
+            var options = MemoryPackSerializerOptions.Default;
+            typeof(MemoryPackSerializerOptions)
+                .GetProperty(nameof(MemoryPackSerializerOptions.StringEncoding))
+                .SetValue(options, easyCachingOptions.StringEncoding);
+
             return new DefaultMemoryPackSerializer(_name, options);
         });
     }

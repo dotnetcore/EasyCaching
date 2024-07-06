@@ -7,7 +7,11 @@ namespace EasyCaching.Serialization.MemoryPack;
 /// </summary>
 public record EasyCachingMemPackSerializerOptions
 {
-    public StringEncoding StringEncoding { set; get; }
+    /// <summary>
+    /// Gets or sets the string encoding. (Defaults to <see cref="StringEncoding.Utf8"/>)
+    /// </summary>
+    /// <value>
+    /// The string encoding.
+    /// </value>
+    public StringEncoding StringEncoding { set; get; } = StringEncoding.Utf8;
 }
-
-
