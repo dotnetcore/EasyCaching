@@ -54,6 +54,8 @@
                 x.DistributedCacheProviderName = hybridOptions.DistributedCacheProviderName;
                 x.LocalCacheProviderName = hybridOptions.LocalCacheProviderName;
                 x.TopicName = hybridOptions.TopicName;
+                x.ThrowIfDistributedCacheError = hybridOptions.ThrowIfDistributedCacheError;
+                x.FlushLocalCacheOnBusReconnection = hybridOptions.FlushLocalCacheOnBusReconnection;
             }
             return options.UseHybrid(configure, name);
         }
