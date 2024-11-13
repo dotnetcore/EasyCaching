@@ -16,7 +16,7 @@ namespace EasyCaching.Core.DistributedLock
 
         public string Key { get; }
 
-        private readonly object _syncObj = new object();
+        private readonly Lock _syncObj = LockFactory.Create();
 
         public MemoryLock(string key) => Key = key;
 

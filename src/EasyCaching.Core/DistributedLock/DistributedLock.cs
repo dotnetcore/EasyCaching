@@ -9,7 +9,7 @@ namespace EasyCaching.Core.DistributedLock
     public class DistributedLock : MemoryLock
     {
         private readonly IDistributedLockProvider _provider;
-        private readonly object _syncObj = new object();
+        private readonly Lock _syncObj = LockFactory.Create();
         private readonly DistributedLockOptions _options;
         private readonly ILogger _logger;
 

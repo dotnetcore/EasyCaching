@@ -3,7 +3,8 @@
 	<Import Project="../../build/version.props" />
 	<Import Project="../../build/releasenotes.props" />
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net8.0;net9.0</TargetFrameworks>
+		<LangVersion>latest</LangVersion>
 		<Owners>ncc;Catcher Wong</Owners>
 		<Authors>ncc;Catcher Wong</Authors>
 		<VersionPrefix>$(EasyCachingZookeeperBusPackageVersion)</VersionPrefix>
@@ -38,6 +39,13 @@
 
 	<ItemGroup>
 	  <PackageReference Include="ZooKeeperNetEx" Version="3.4.12.4" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Backport.System.Threading.Lock" Version="2.0.7" />
+	  <Using Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" Alias="Lock" Include="System.Threading.Lock" />
+	  <Using Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" Alias="Lock" Include="Backport.System.Threading.Lock" />
+	  <Using Alias="LockFactory" Include="Backport.System.Threading.LockFactory" />
 	</ItemGroup>
 
 </Project>
