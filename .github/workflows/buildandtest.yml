@@ -38,10 +38,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup .NET SDK 8.0.x
+      - name: Setup .NET SDK 9.0.x
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 9.0.x
 
       - name: Show dotnet Version
         run: |
@@ -56,6 +56,6 @@ jobs:
         run: |
           dotnet build --configuration Release /home/runner/work/EasyCaching/EasyCaching/EasyCaching.sln
 
-      - name: Run tests on net8.0
+      - name: Run tests on net9.0
         run: |
-          dotnet test --framework=net8.0 /home/runner/work/EasyCaching/EasyCaching/test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
+          dotnet test --framework=net9.0 /home/runner/work/EasyCaching/EasyCaching/test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
