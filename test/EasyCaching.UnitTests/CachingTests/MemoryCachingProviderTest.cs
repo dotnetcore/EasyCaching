@@ -165,7 +165,7 @@ namespace EasyCaching.UnitTests
 
             Assert.Equal(9, await _provider.GetCountAsync());
 
-            await Task.Delay(5500);
+            await Task.Delay(5000);
 
             Assert.Equal(0, await _provider.GetCountAsync());
         }
