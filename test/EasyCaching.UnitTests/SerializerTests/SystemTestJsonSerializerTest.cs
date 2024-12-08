@@ -59,7 +59,7 @@ namespace EasyCaching.UnitTests.SerializerTests
             var serializer = new DefaultJsonSerializer("json", new JsonSerializerOptions
             {
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            }) ;
+            });
 
             Employee joe = new Employee { Name = "Joe User" };
 
@@ -67,6 +67,20 @@ namespace EasyCaching.UnitTests.SerializerTests
             var joe_obj = serializer.Deserialize<Employee>(joe_byte);
 
             Assert.Null(joe.Manager);
+        }
+
+        [Fact]
+        public void SerializeObject_NestedClass_Test_Should_Succeed()
+        {
+            var serializer = new DefaultJsonSerializer("json", new JsonSerializerOptions());
+
+            Employee joe = new Employee { Name = "Joe User" };
+
+            var joe_byte = serializer.SerializeObject(joe);
+            var joe_obj = serializer.DeserializeObject(joe_byte);
+
+            Assert.IsType<Employee>(joe_obj);
+            Assert.Equal(joe.Name, ((Employee)joe_obj).Name);
         }
     }
 }
