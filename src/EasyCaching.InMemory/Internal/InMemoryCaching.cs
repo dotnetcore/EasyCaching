@@ -305,11 +305,7 @@
 
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> keys)
         {
-            var map = new Dictionary<string, CacheValue<T>>();
-            foreach (string key in keys)
-                map[key] = Get<T>(key);
-
-            return map;
+            return keys.ToDictionary(key => key, key => Get<T>(key));
         }
 
         public IDictionary<string, CacheValue<T>> GetAll<T>(string prefix = "")
@@ -323,13 +319,7 @@
 
         public int SetAll<T>(IDictionary<string, T> values, TimeSpan? expiresIn = null)
         {
-            if (values == null || values.Count == 0) return 0;
-
-            var list = new List<bool>();
-
-            foreach (var entry in values) list.Add(Set(entry.Key, entry.Value, expiresIn));
-
-            return list.Count(r => r);
+            return values?.Count(entry => Set(entry.Key, entry.Value, expiresIn)) ?? 0;
         }
 
         public bool Replace<T>(string key, T value, TimeSpan? expiresIn = null)

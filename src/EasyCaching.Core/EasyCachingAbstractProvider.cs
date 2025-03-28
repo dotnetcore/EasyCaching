@@ -82,112 +82,71 @@ namespace EasyCaching.Core
         public bool Exists(string cacheKey)
         {
             var operationId = s_diagnosticListener.WriteExistsCacheBefore(new BeforeExistsRequestEventData(CachingProviderType.ToString(), Name, nameof(Exists), cacheKey));
-            Exception e = null;
+            bool result;
             try
             {
-                return BaseExists(cacheKey);
+                result = BaseExists(cacheKey);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteExistsCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteExistsCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteExistsCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteExistsCacheAfter(operationId);
+            return result;
         }
 
         public async Task<bool> ExistsAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteExistsCacheBefore(new BeforeExistsRequestEventData(CachingProviderType.ToString(), Name, nameof(ExistsAsync), cacheKey));
-            Exception e = null;
+            bool result;
             try
             {
-                var flag = await BaseExistsAsync(cacheKey, cancellationToken);
-                return flag;
+                result = await BaseExistsAsync(cacheKey, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteExistsCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteExistsCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteExistsCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteExistsCacheAfter(operationId);
+            return result;
         }
 
         public void Flush()
         {
             var operationId = s_diagnosticListener.WriteFlushCacheBefore(new EventData(CachingProviderType.ToString(), Name, nameof(Flush)));
-            Exception e = null;
             try
             {
                 BaseFlush();
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteFlushCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteFlushCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteFlushCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteFlushCacheAfter(operationId);
         }
 
         public async Task FlushAsync(CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteFlushCacheBefore(new EventData(CachingProviderType.ToString(), Name, nameof(FlushAsync)));
-            Exception e = null;
             try
             {
                 await BaseFlushAsync(cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteFlushCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteFlushCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteFlushCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteFlushCacheAfter(operationId);
         }
 
         public CacheValue<T> Get<T>(string cacheKey, Func<T> dataRetriever, TimeSpan expiration)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(Get), new[] { cacheKey }, expiration));
-            Exception e = null;
+            bool doNotEnterFinally = false;
             try
             {
                 if (_lockFactory == null) return BaseGet<T>(cacheKey, dataRetriever, expiration);
@@ -217,16 +176,13 @@ namespace EasyCaching.Core
             }
             catch (Exception ex)
             {
-                e = ex;
+                doNotEnterFinally = true;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
             finally
             {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
+                if (!doNotEnterFinally)
                 {
                     s_diagnosticListener.WriteGetCacheAfter(operationId);
                 }
@@ -236,137 +192,92 @@ namespace EasyCaching.Core
         public CacheValue<T> Get<T>(string cacheKey)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(Get), new[] { cacheKey }));
-            Exception e = null;
+            CacheValue<T> result;
             try
             {
-                return BaseGet<T>(cacheKey);
+                result = BaseGet<T>(cacheKey);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
-        
+
         public IEnumerable<string> GetAllKeysByPrefix(string prefix)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeysByPrefix), new[] { prefix }));
-            Exception e = null;
+            IEnumerable<string> result;
             try
             {
-                return BaseGetAllKeysByPrefix(prefix);
+                result = BaseGetAllKeysByPrefix(prefix);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                } 
-            }        
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
-        
+
         public async Task<IEnumerable<string>> GetAllKeysByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllKeysByPrefixAsync), new[] { prefix }));
-            Exception e = null;
+            IEnumerable<string> result;
             try
             {
-                return await BaseGetAllKeysByPrefixAsync(prefix);
+                result = await BaseGetAllKeysByPrefixAsync(prefix);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
 
         public IDictionary<string, CacheValue<T>> GetAll<T>(IEnumerable<string> cacheKeys)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAll), cacheKeys.ToArray()));
-            Exception e = null;
+            IDictionary<string, CacheValue<T>> result;
             try
             {
-                return BaseGetAll<T>(cacheKeys);
+                result = BaseGetAll<T>(cacheKeys);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
 
         public async Task<IDictionary<string, CacheValue<T>>> GetAllAsync<T>(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAllAsync), cacheKeys.ToArray()));
-            Exception e = null;
+            IDictionary<string, CacheValue<T>> result;
             try
             {
-                return await BaseGetAllAsync<T>(cacheKeys, cancellationToken);
+                result = await BaseGetAllAsync<T>(cacheKeys, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
 
         public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, Func<Task<T>> dataRetriever, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAsync), new[] { cacheKey }, expiration));
-            Exception e = null;
+            bool doNotEnterFinally = false;
             try
             {
                 if (_lockFactory == null) return await BaseGetAsync<T>(cacheKey, dataRetriever, expiration, cancellationToken);
@@ -406,16 +317,13 @@ namespace EasyCaching.Core
             }
             catch (Exception ex)
             {
-                e = ex;
+                doNotEnterFinally = true;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
             finally
             {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
+                if (!doNotEnterFinally)
                 {
                     s_diagnosticListener.WriteGetCacheAfter(operationId);
                 }
@@ -425,105 +333,69 @@ namespace EasyCaching.Core
         public async Task<object> GetAsync(string cacheKey, Type type, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, "GetAsync_Type", new[] { cacheKey }));
-            Exception e = null;
+            object result;
             try
             {
-                return await BaseGetAsync(cacheKey, type, cancellationToken);
+                result = await BaseGetAsync(cacheKey, type, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
 
         public async Task<CacheValue<T>> GetAsync<T>(string cacheKey, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetAsync), new[] { cacheKey }));
-            Exception e = null;
+            CacheValue<T> result;
             try
             {
-                return await BaseGetAsync<T>(cacheKey, cancellationToken);
+                result = await BaseGetAsync<T>(cacheKey, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
 
         public IDictionary<string, CacheValue<T>> GetByPrefix<T>(string prefix)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetByPrefix), new[] { prefix }));
-            Exception e = null;
+            IDictionary<string, CacheValue<T>> result;
             try
             {
-                return BaseGetByPrefix<T>(prefix);
+                result = BaseGetByPrefix<T>(prefix);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
 
         public async Task<IDictionary<string, CacheValue<T>>> GetByPrefixAsync<T>(string prefix, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteGetCacheBefore(new BeforeGetRequestEventData(CachingProviderType.ToString(), Name, nameof(GetByPrefixAsync), new[] { prefix }));
-            Exception e = null;
+            IDictionary<string, CacheValue<T>> result;
             try
             {
-                return await BaseGetByPrefixAsync<T>(prefix, cancellationToken);
+                result = await BaseGetByPrefixAsync<T>(prefix, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteGetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteGetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteGetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteGetCacheAfter(operationId);
+            return result;
         }
 
         public int GetCount(string prefix = "")
@@ -539,157 +411,91 @@ namespace EasyCaching.Core
         public void Remove(string cacheKey)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(Remove), new[] { cacheKey }));
-            Exception e = null;
             try
             {
                 BaseRemove(cacheKey);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public void RemoveAll(IEnumerable<string> cacheKeys)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveAll), cacheKeys.ToArray()));
-            Exception e = null;
             try
             {
                 BaseRemoveAll(cacheKeys);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public async Task RemoveAllAsync(IEnumerable<string> cacheKeys, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveAllAsync), cacheKeys.ToArray()));
-            Exception e = null;
             try
             {
                 await BaseRemoveAllAsync(cacheKeys, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public async Task RemoveAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveAsync), new[] { cacheKey }));
-            Exception e = null;
             try
             {
                 await BaseRemoveAsync(cacheKey, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public void RemoveByPrefix(string prefix)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPrefix), new[] { prefix }));
-            Exception e = null;
             try
             {
                 BaseRemoveByPrefix(prefix);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public async Task RemoveByPrefixAsync(string prefix, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPrefixAsync), new[] { prefix }));
-            Exception e = null;
             try
             {
                 await BaseRemoveByPrefixAsync(prefix, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public void RemoveByPattern(string pattern)
@@ -697,27 +503,16 @@ namespace EasyCaching.Core
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(
                 new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPattern),
                     new[] { pattern }));
-            Exception e = null;
             try
             {
                 BaseRemoveByPattern(pattern);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public async Task RemoveByPatternAsync(string pattern, CancellationToken cancellationToken = default)
@@ -725,183 +520,110 @@ namespace EasyCaching.Core
             var operationId = s_diagnosticListener.WriteRemoveCacheBefore(
                 new BeforeRemoveRequestEventData(CachingProviderType.ToString(), Name, nameof(RemoveByPatternAsync),
                     new[] { pattern }));
-            Exception e = null;
             try
             {
                 await BaseRemoveByPatternAsync(pattern, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteRemoveCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteRemoveCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteRemoveCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteRemoveCacheAfter(operationId);
         }
 
         public void Set<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(Set), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
-            Exception e = null;
             try
             {
                 BaseSet(cacheKey, cacheValue, expiration);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteSetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteSetCacheAfter(operationId);
         }
 
         public void SetAll<T>(IDictionary<string, T> value, TimeSpan expiration)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(SetAll), value.ToDictionary(k => k.Key, v => (object)v.Value), expiration));
-            Exception e = null;
             try
             {
                 BaseSetAll(value, expiration);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteSetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteSetCacheAfter(operationId);
         }
 
         public async Task SetAllAsync<T>(IDictionary<string, T> value, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(SetAllAsync), value.ToDictionary(k => k.Key, v => (object)v.Value), expiration));
-            Exception e = null;
             try
             {
                 await BaseSetAllAsync(value, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteSetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteSetCacheAfter(operationId);
         }
 
         public async Task SetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(SetAsync), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
-            Exception e = null;
             try
             {
                 await BaseSetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteSetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteSetCacheAfter(operationId);
         }
 
         public bool TrySet<T>(string cacheKey, T cacheValue, TimeSpan expiration)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(TrySet), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
-            Exception e = null;
+            bool result;
             try
             {
-                return BaseTrySet(cacheKey, cacheValue, expiration);
+                result = BaseTrySet(cacheKey, cacheValue, expiration);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteSetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteSetCacheAfter(operationId);
+            return result;
         }
 
         public async Task<bool> TrySetAsync<T>(string cacheKey, T cacheValue, TimeSpan expiration, CancellationToken cancellationToken = default)
         {
             var operationId = s_diagnosticListener.WriteSetCacheBefore(new BeforeSetRequestEventData(CachingProviderType.ToString(), Name, nameof(TrySetAsync), new Dictionary<string, object> { { cacheKey, cacheValue } }, expiration));
-            Exception e = null;
+            bool result;
             try
             {
-                return await BaseTrySetAsync(cacheKey, cacheValue, expiration, cancellationToken);
+                result = await BaseTrySetAsync(cacheKey, cacheValue, expiration, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WriteSetCacheError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WriteSetCacheError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WriteSetCacheAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WriteSetCacheAfter(operationId);
+            return result;
         }
 
         public TimeSpan GetExpiration(string cacheKey)
@@ -947,6 +669,6 @@ namespace EasyCaching.Core
         protected string HandleSearchKeyPattern(string pattern)
         {
             return pattern.Replace("*", string.Empty);
-        } 
+        }
     }
 }

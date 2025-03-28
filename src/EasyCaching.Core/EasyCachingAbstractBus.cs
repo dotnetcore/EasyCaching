@@ -28,53 +28,31 @@
         public void Publish(string topic, EasyCachingMessage message)
         {
             var operationId = s_diagnosticListener.WritePublishMessageBefore(new BeforePublishMessageRequestEventData(topic, message));
-            Exception e = null;
             try
             {
                 BasePublish(topic, message);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WritePublishMessageError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WritePublishMessageError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WritePublishMessageAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WritePublishMessageAfter(operationId);
         }
 
         public async Task PublishAsync(string topic, EasyCachingMessage message, CancellationToken cancellationToken = default(CancellationToken))
         {
             var operationId = s_diagnosticListener.WritePublishMessageBefore(new BeforePublishMessageRequestEventData(topic, message));
-            Exception e = null;
             try
             {
                 await BasePublishAsync(topic, message, cancellationToken);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WritePublishMessageError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WritePublishMessageError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WritePublishMessageAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WritePublishMessageAfter(operationId);
         }
 
         public void Subscribe(string topic, Action<EasyCachingMessage> action, Action reconnectAction)
@@ -94,27 +72,16 @@
         public virtual void BaseOnMessage(EasyCachingMessage message)
         {
             var operationId = s_diagnosticListener.WriteSubscribeMessageBefore(new BeforeSubscribeMessageRequestEventData(message));
-            Exception e = null;
             try
             {
                 _handler?.Invoke(message);
             }
             catch (Exception ex)
             {
-                e = ex;
+                s_diagnosticListener.WritePublishMessageError(operationId, ex);
                 throw;
             }
-            finally
-            {
-                if (e != null)
-                {
-                    s_diagnosticListener.WritePublishMessageError(operationId, e);
-                }
-                else
-                {
-                    s_diagnosticListener.WritePublishMessageAfter(operationId);
-                }
-            }
+            s_diagnosticListener.WritePublishMessageAfter(operationId);
         }
 
         public virtual void BaseOnReconnect()
