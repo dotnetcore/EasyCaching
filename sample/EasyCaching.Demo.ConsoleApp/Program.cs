@@ -9,7 +9,9 @@ namespace EasyCaching.Demo.ConsoleApp
     using MemoryPack;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json;
     using System;
+    using System.Collections.Generic;
     using System.IO;
 
     class Program
@@ -56,6 +58,17 @@ namespace EasyCaching.Demo.ConsoleApp
                 .WithJson("json")
                 .WithSystemTextJson("sysjson")
                 .WithMessagePack("msgpack");
+
+                option.UseEtcd(options =>
+                {
+                    options.Address = "http://127.0.0.1:2379";
+                    options.Timeout = 30000;
+                    options.SerializerName = "json";
+                }, "e1").WithJson(jsonSerializerSettingsConfigure: x =>
+                {
+                    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }, "json");
             });
 
             IServiceProvider serviceProvider = services.BuildServiceProvider();
@@ -103,6 +116,19 @@ namespace EasyCaching.Demo.ConsoleApp
             diskCache.Set<string>("diskkey", "diskvalue", TimeSpan.FromSeconds(20));
             var diskVal = diskCache.Get<string>("diskkey");
             Console.WriteLine($"disk cache get value, {diskVal.HasValue} {diskVal.IsNull} {diskVal.Value} ");
+
+            //etcd cache
+            var etcdCache = factory.GetCachingProvider("e1");
+            var re11 = etcdCache.GetAllKeysByPrefix("emk");
+            var re12 = etcdCache.GetByPrefix<Product>("emk");
+            etcdCache.Set<Product>("emkey3", prod, TimeSpan.FromSeconds(2000));
+            var re13 = etcdCache.Get<Product>("emkey3");
+            var re14 = etcdCache.GetAll<Product>(new List<string>()
+            {
+                "emkey3"
+            });
+            etcdCache.Remove("emkey3");
+            Console.WriteLine($"etcd cache get value, {re13.HasValue} {re13.IsNull} {re13.Value} ");
 
             Console.ReadKey();
         }
