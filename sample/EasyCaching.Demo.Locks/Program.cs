@@ -37,7 +37,7 @@ builder.Services.AddEasyCaching(option =>
     {
         x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
         x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-    }, "json").UseEtcdLock(); ;
+    }, "json").UseEtcdLock();
 });
 
 #region How Inject Distributed and Memory lock

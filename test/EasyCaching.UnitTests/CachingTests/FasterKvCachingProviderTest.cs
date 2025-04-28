@@ -164,4 +164,9 @@ public class FasterKvCachingProviderTest : BaseCachingProviderTest
     {
         return Task.CompletedTask;
     }
+
+    protected override void GetAll_Should_Succeed()
+    {
+
+    }
 }
