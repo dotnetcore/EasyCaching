@@ -10,18 +10,16 @@ namespace EasyCaching.Etcd
 {
     public sealed partial class DefaultEtcdCachingProvider : EasyCachingAbstractProvider, IDisposable
     {
-        // name
         private readonly string _name;
 
         private bool _disposed;
 
-        // com
         private readonly ILogger? _logger;
 
         private readonly IEasyCachingSerializer _serializer;
         private readonly EtcdCachingOptions _options;
 
-        private readonly IEtcdCaching _cache;
+        private readonly IEtcdCaching _etcdClient;
 
         /// <summary>
         /// The cache stats.
@@ -45,7 +43,7 @@ namespace EasyCaching.Etcd
             _options = options;
             _logger = loggerFactory?.CreateLogger<DefaultEtcdCachingProvider>();
 
-            _cache = cache.Single(x => x.ProviderName == _name);
+            _etcdClient = cache.Single(x => x.ProviderName == _name);
 
             var serName = !string.IsNullOrWhiteSpace(options.SerializerName) ? options.SerializerName : name;
             _serializer = serializers.FirstOrDefault(x => x.Name.Equals(serName)) ??
@@ -87,7 +85,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = _cache.Get<T>(cacheKey);
+            var result = _etcdClient.Get<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -103,7 +101,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!_cache.Set<string>($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
+            if (!_etcdClient.Set<string>($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
             {
                 System.Threading.Thread.Sleep(_options.SleepMs);
                 return Get(cacheKey, dataRetriever, expiration);
@@ -117,21 +115,21 @@ namespace EasyCaching.Etcd
                 {
                     Set(cacheKey, res, expiration);
                     //remove mutex key
-                    _cache.Delete($"{cacheKey}_Lock");
+                    _etcdClient.Delete($"{cacheKey}_Lock");
 
                     return new CacheValue<T>(res, true);
                 }
                 else
                 {
                     //remove mutex key
-                    _cache.Delete($"{cacheKey}_Lock");
+                    _etcdClient.Delete($"{cacheKey}_Lock");
                     return CacheValue<T>.NoValue;
                 }
             }
             catch
             {
                 //remove mutex key
-                _cache.Delete($"{cacheKey}_Lock");
+                _etcdClient.Delete($"{cacheKey}_Lock");
                 throw;
             }
         }
@@ -146,7 +144,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = _cache.Get<T>(cacheKey);
+            var result = _etcdClient.Get<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -176,7 +174,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            _cache.Delete(cacheKey);
+            _etcdClient.Delete(cacheKey);
         }
 
         /// <summary>
@@ -201,7 +199,7 @@ namespace EasyCaching.Etcd
 
             //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
             //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-            _cache.Set<T>(cacheKey, cacheValue, expiration);
+            _etcdClient.Set<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -213,7 +211,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return _cache.Exists(cacheKey);
+            return _etcdClient.Exists(cacheKey);
         }
 
         /// <summary>
@@ -224,7 +222,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var count = _cache.DeleteRangeData(prefix);
+            var count = _etcdClient.DeleteRangeData(prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefix : prefix = {prefix} , count = {count}");
@@ -255,7 +253,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in values)
             {
-                _cache.Set<T>(item.Key, item.Value, expiration);
+                _etcdClient.Set<T>(item.Key, item.Value, expiration);
             }
         }
 
@@ -291,7 +289,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllKeys");
 
-            var dicData = _cache.GetAll(prefix);
+            var dicData = _etcdClient.GetAll(prefix);
             List<string> result = new List<string>();
             foreach (var item in dicData)
             {
@@ -313,7 +311,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefix : prefix = {prefix}");
 
-            var dicData = _cache.GetAll(prefix);
+            var dicData = _etcdClient.GetAll(prefix);
             Dictionary<string, CacheValue<T>> result = new Dictionary<string, CacheValue<T>>();
             foreach (var item in dicData)
             {
@@ -335,7 +333,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in cacheKeys)
             {
-                _cache.Delete(item);
+                _etcdClient.Delete(item);
             }
         }
 
@@ -346,7 +344,7 @@ namespace EasyCaching.Etcd
         /// <param name="prefix">Prefix.</param>
         public override int BaseGetCount(string prefix = "")
         {
-            var dicData = _cache.GetAll(prefix);
+            var dicData = _etcdClient.GetAll(prefix);
             return dicData != null ? dicData.Count : 0;
         }
 
@@ -358,7 +356,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("Flush");
 
-            var dicData = _cache.GetAll("");
+            var dicData = _etcdClient.GetAll("");
             if (dicData != null)
             {
                 List<string> listKeys = new List<string>(dicData.Count);
@@ -387,7 +385,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
             //var val = new CacheValue<T>(cacheValue, true, expiration);
-            return _cache.Set<T>(cacheKey, cacheValue, expiration);
+            return _etcdClient.Set<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -398,12 +396,8 @@ namespace EasyCaching.Etcd
         public override TimeSpan BaseGetExpiration(string cacheKey)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-            //_cache.LeaseTimeToLive(new LeaseTimeToLiveRequest()
-            //{
-            //     Keys
-            //})
-            //return _cache.GetExpiration(cacheKey);
-            throw new NotSupportedException("BaseGetExpiration is not supported in Etcd provider.");
+            var secondsTTL =  _etcdClient.GetExpireTTL(cacheKey);
+            return TimeSpan.FromSeconds(secondsTTL);
         }
 
         /// <summary>
@@ -412,7 +406,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public override ProviderInfo BaseGetProviderInfo() => _info;
 
-        public override object BaseGetDatabase() => _cache;
+        public override object BaseGetDatabase() => _etcdClient;
 
         public void Dispose()
         {

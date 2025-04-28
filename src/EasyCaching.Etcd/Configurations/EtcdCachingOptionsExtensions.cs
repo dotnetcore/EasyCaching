@@ -1,7 +1,9 @@
 ﻿using System;
 using EasyCaching.Core;
 using EasyCaching.Core.Configurations;
+using EasyCaching.Core.DistributedLock;
 using EasyCaching.Etcd;
+using EasyCaching.Etcd.DistributedLock;
 using Microsoft.Extensions.Configuration;
 // ReSharper disable CheckNamespace
 
@@ -62,4 +64,15 @@ public static class EtcdCachingOptionsExtensions
             options.RegisterExtension(new EtcdOptionsExtension(name, Configure));
             return options;
         }
+
+    /// <summary>
+    /// Uses the Etcd lock.
+    /// </summary>
+    /// <param name="options">Options.</param>
+    public static EasyCachingOptions UseEtcdLock(this EasyCachingOptions options)
+    {
+        options.UseDistributedLock<EtcdLockFactory>();
+
+        return options;
+    }
 }

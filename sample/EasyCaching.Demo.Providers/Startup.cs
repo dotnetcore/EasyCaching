@@ -8,6 +8,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Hosting;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     public class Startup
     {
@@ -69,6 +70,18 @@
                         config.SerializerName = "msg";
                     })
                     .WithMessagePack("msg");
+
+                // use etcd cache
+                option.UseEtcd(options =>
+                {
+                    options.Address = "http://121.196.220.148:12379";
+                    options.Timeout = 30000;
+                    options.SerializerName = "json";
+                }, "e1").WithJson(jsonSerializerSettingsConfigure: x =>
+                {
+                    x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+                    x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                }, "json");
             });
         }
 

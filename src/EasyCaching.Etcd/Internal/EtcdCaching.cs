@@ -3,6 +3,7 @@ using EasyCaching.Core;
 using EasyCaching.Core.Serialization;
 using Etcdserverpb;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using V3Lockpb;
 
 namespace EasyCaching.Etcd
 {
@@ -21,7 +23,7 @@ namespace EasyCaching.Etcd
         private readonly EtcdCachingOptions _options;
         private readonly string _name;
 
-        private readonly EtcdClient _cache;
+        private readonly EtcdClient _etcdClient;
         private readonly string _authToken;
         private readonly Metadata _metadata;
 
@@ -39,14 +41,14 @@ namespace EasyCaching.Etcd
             _logger = loggerFactory?.CreateLogger<DefaultEtcdCachingProvider>();
 
             //init etcd client
-            this._cache = new EtcdClient(connectionString: options.Address, configureChannelOptions: (x) =>
+            this._etcdClient = new EtcdClient(connectionString: options.Address, configureChannelOptions: (x) =>
             {
                 x.Credentials = ChannelCredentials.Insecure;
             });
             //auth
             if (!string.IsNullOrEmpty(options.UserName) && !string.IsNullOrEmpty(options.Password))
             {
-                var authRes = this._cache.Authenticate(new AuthenticateRequest()
+                var authRes = this._etcdClient.Authenticate(new AuthenticateRequest()
                 {
                     Name = options.UserName,
                     Password = options.Password,
@@ -73,7 +75,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public CacheValue<T> Get<T>(string cacheKey)
         {
-            var data = _cache.GetVal(cacheKey, _metadata);
+            var data = _etcdClient.GetVal(cacheKey, _metadata);
             return string.IsNullOrWhiteSpace(data)
                     ? CacheValue<T>.Null
                     : new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(data)), true);
@@ -86,7 +88,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public async Task<CacheValue<T>> GetAsync<T>(string cacheKey)
         {
-            var data = await _cache.GetValAsync(cacheKey, _metadata);
+            var data = await _etcdClient.GetValAsync(cacheKey, _metadata);
             return string.IsNullOrWhiteSpace(data)
                     ? CacheValue<T>.Null
                     : new CacheValue<T>(_serializer.Deserialize<T>(Encoding.UTF8.GetBytes(data)), true);
@@ -99,7 +101,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public IDictionary<string, string> GetAll(string prefixKey)
         {
-            return _cache.GetRangeVal(prefixKey, _metadata);
+            return _etcdClient.GetRangeVal(prefixKey, _metadata);
         }
 
         /// <summary>
@@ -109,7 +111,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public async Task<IDictionary<string, string>> GetAllAsync(string prefixKey)
         {
-            return await _cache.GetRangeValAsync(prefixKey, _metadata);
+            return await _etcdClient.GetRangeValAsync(prefixKey, _metadata);
         }
 
         /// <summary>
@@ -119,7 +121,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public bool Exists(string cacheKey)
         {
-            var data = _cache.GetVal(cacheKey, _metadata);
+            var data = _etcdClient.GetVal(cacheKey, _metadata);
             return data == string.Empty ? false : true;
         }
 
@@ -130,7 +132,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public async Task<bool> ExistsAsync(string cacheKey)
         {
-            var data = await _cache.GetValAsync(cacheKey, _metadata);
+            var data = await _etcdClient.GetValAsync(cacheKey, _metadata);
             return data == string.Empty ? false : true;
         }
 
@@ -143,7 +145,7 @@ namespace EasyCaching.Etcd
         {
             // create rent id to bind
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-            var response = _cache.LeaseGrant(request: new LeaseGrantRequest()
+            var response = _etcdClient.LeaseGrant(request: new LeaseGrantRequest()
             {
                 TTL = (long)(ts.Value.TotalMilliseconds < 1000 ? 1: ts.Value.TotalMilliseconds / 1000),
             }, cancellationToken: cts.Token);
@@ -159,7 +161,7 @@ namespace EasyCaching.Etcd
         {
             // create rent id to bind
             CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-            var response = await _cache.LeaseGrantAsync(request: new LeaseGrantRequest()
+            var response = await _etcdClient.LeaseGrantAsync(request: new LeaseGrantRequest()
             {
                 TTL = (long)(ts.Value.TotalMilliseconds < 1000 ? 1 : ts.Value.TotalMilliseconds / 1000),
             }, cancellationToken: cts.Token);
@@ -185,7 +187,7 @@ namespace EasyCaching.Etcd
                     Value = ByteString.CopyFrom(_serializer.Serialize(value)),
                     Lease = leaseId
                 };
-                var response = _cache.Put(request: request, headers: _metadata, cancellationToken: cts.Token);
+                var response = _etcdClient.Put(request: request, headers: _metadata, cancellationToken: cts.Token);
                 return true;
             }
             catch (Exception ex)
@@ -214,7 +216,7 @@ namespace EasyCaching.Etcd
                     Value = ByteString.CopyFrom(_serializer.Serialize(value)),
                     Lease = leaseId
                 };
-                var response = await _cache.PutAsync(request: request, headers: _metadata, cancellationToken: cts.Token);
+                var response = await _etcdClient.PutAsync(request: request, headers: _metadata, cancellationToken: cts.Token);
                 return true;
             }
             catch (Exception ex)
@@ -225,13 +227,194 @@ namespace EasyCaching.Etcd
         }
 
         /// <summary>
+        /// Lock
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        public bool Lock(string key, TimeSpan? ts)
+        {
+            try
+            {
+                long leaseId = ts.HasValue ? GetRentLeaseId(ts) : 0;
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                LockRequest request = new LockRequest()
+                {
+                    Name = ByteString.CopyFromUtf8(key),
+                    Lease = leaseId
+                };
+                var response = _etcdClient.Lock(request: request, headers: _metadata, deadline: DateTime.UtcNow.AddSeconds(_options.Timeout), cancellationToken: cts.Token);
+                if (response?.Key == null || response.Key.IsEmpty)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.DeadlineExceeded)
+            {
+                _logger.LogError(ex, "Lock DeadlineExceeded (key:{}) error.", key);
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition)
+            {
+                _logger.LogError(ex, "Lock FailedPrecondition (key:{}) error.", key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lock(key:{}) error.", key);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// LockAsync
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        public async Task<bool> LockAsync(string key, TimeSpan? ts)
+        {
+            try
+            {
+                long leaseId = ts.HasValue ? GetRentLeaseId(ts) : 0;
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                LockRequest request = new LockRequest()
+                {
+                    Name = ByteString.CopyFromUtf8(key),
+                    Lease = leaseId
+                };
+                var response = await _etcdClient.LockAsync(request: request, headers: _metadata,deadline: DateTime.UtcNow.AddSeconds(_options.Timeout), cancellationToken: cts.Token);
+                if (response?.Key == null || response.Key.IsEmpty)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.DeadlineExceeded)
+            {
+                _logger.LogError(ex, "LockAsync DeadlineExceeded (key:{}) error.", key);
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition)
+            {
+                _logger.LogError(ex, "LockAsync FailedPrecondition (key:{}) error.", key);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "LockAsync(key:{}) error.", key);
+            }
+            return false;
+        }
+
+      /// <summary>
+      /// UnLock
+      /// releaseLock
+      /// </summary>
+      /// <param name="key"></param>
+      /// <returns></returns>
+        public bool UnLock(string key)
+        {
+            try
+            {
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                var response = _etcdClient.Unlock(key, headers: _metadata, cancellationToken: cts.Token);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UnLock(key:{}) error.", key);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// UnLockAsync
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<bool> UnLockAsnyc(string key)
+        {
+            try
+            {
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                var response = await _etcdClient.UnlockAsync(key, headers: _metadata, cancellationToken: cts.Token);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "UnLockAsync(key:{}) error.", key);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// get key expireTTL
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public long GetExpireTTL(string key)
+        {
+            try
+            {
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                var rangeResponse = _etcdClient.GetRange(key, headers: _metadata, cancellationToken: cts.Token);
+                if (rangeResponse != null && rangeResponse.Kvs != null && rangeResponse.Kvs.Count > 0)
+                {
+                    var leaseId = rangeResponse.Kvs[0].Lease;
+                    var leaseTimeToLiveResponse = _etcdClient.LeaseTimeToLive(new LeaseTimeToLiveRequest
+                    {
+                        ID = leaseId,
+                        Keys = true
+                    });
+
+                    var remainingTtlSeconds = leaseTimeToLiveResponse.TTL;
+                    return remainingTtlSeconds;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetExpireMsTTL(key:{}) error.", key);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// get key expireTTL
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<long> GetExpireTTLAsync(string key)
+        {
+            try
+            {
+                CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                var rangeResponse = await _etcdClient.GetRangeAsync(key, headers: _metadata, cancellationToken: cts.Token);
+                if (rangeResponse != null && rangeResponse.Kvs != null && rangeResponse.Kvs.Count > 0)
+                {
+                    var leaseId = rangeResponse.Kvs[0].Lease;
+                    var leaseTimeToLiveResponse = await _etcdClient.LeaseTimeToLiveAsync(new LeaseTimeToLiveRequest
+                    {
+                        ID = leaseId,
+                        Keys = true
+                    });
+
+                    var remainingTtlSeconds = leaseTimeToLiveResponse.TTL;
+                    return remainingTtlSeconds ;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GetExpireMsTTLAsync(key:{}) error.", key);
+            }
+            return 0;
+        }
+
+        /// <summary>
         /// delete key
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public long Delete(string key)
         {
-            var response = _cache.Delete(key, _metadata);
+            var response = _etcdClient.Delete(key, _metadata);
             return response.Deleted;
         }
 
@@ -242,7 +425,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public async Task<long> DeleteAsync(string key)
         {
-            var response = await _cache.DeleteAsync(key, _metadata);
+            var response = await _etcdClient.DeleteAsync(key, _metadata);
             return response.Deleted;
         }
 
@@ -253,7 +436,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public long DeleteRangeData(string prefixKey)
         {
-            var response = _cache.DeleteRange(prefixKey, _metadata);
+            var response = _etcdClient.DeleteRange(prefixKey, _metadata);
             return response.Deleted;
         }
 
@@ -264,7 +447,7 @@ namespace EasyCaching.Etcd
         /// <returns></returns>
         public async Task<long> DeleteRangeDataAsync(string prefixKey)
         {
-            var response = await _cache.DeleteRangeAsync(prefixKey, _metadata);
+            var response = await _etcdClient.DeleteRangeAsync(prefixKey, _metadata);
             return response.Deleted;
         }
 

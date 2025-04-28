@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -23,6 +25,19 @@ builder.Services.AddEasyCaching(option =>
     })
     .WithJson()//with josn serialization
     .UseRedisLock(); // use distributed lock
+
+    // use etcd cache
+    option.UseEtcd(options =>
+    {
+        options.Address = "http://121.196.220.148:12379";
+        options.Timeout = 30000;
+        options.LockMs = 3000;
+        options.SerializerName = "json";
+    }).WithJson(jsonSerializerSettingsConfigure: x =>
+    {
+        x.TypeNameHandling = Newtonsoft.Json.TypeNameHandling.None;
+        x.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+    }, "json").UseEtcdLock(); ;
 });
 
 #region How Inject Distributed and Memory lock
@@ -32,6 +47,9 @@ builder.Services.AddSingleton<IDistributedLockFactory, RedisLockFactory>();
 
 // inject to use memory lock
 builder.Services.AddSingleton<IDistributedLockFactory, MemoryLockFactory>();
+
+// inject to use memory lock
+builder.Services.AddSingleton<IDistributedLockFactory, EtcdLockFactory>();
 
 #endregion
 

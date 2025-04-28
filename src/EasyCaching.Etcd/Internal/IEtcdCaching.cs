@@ -70,6 +70,51 @@ namespace EasyCaching.Etcd
         Task<bool> SetAsync<T>(string key, T value, TimeSpan? ts);
 
         /// <summary>
+        /// set lock with leaseId
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        bool Lock(string key, TimeSpan? ts);
+
+        /// <summary>
+        /// set lock with leaseId
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="ts"></param>
+        /// <returns></returns>
+        Task<bool> LockAsync(string key, TimeSpan? ts);
+
+        /// <summary>
+        /// release lock 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        bool UnLock(string key);
+
+        /// <summary>
+        /// release lock 
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        /// <returns></returns>
+        Task<bool> UnLockAsnyc(string key);
+
+        /// <summary>
+        /// get key expireTTL
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        long GetExpireTTL(string key);
+
+        /// <summary>
+        /// get key expireTTL
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        Task<long> GetExpireTTLAsync(string key);
+
+        /// <summary>
         /// delete key
         /// </summary>
         /// <param name="key"></param>

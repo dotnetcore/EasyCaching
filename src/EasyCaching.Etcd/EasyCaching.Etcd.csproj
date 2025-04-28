@@ -35,7 +35,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="dotnet-etcd" Version="8.0.2" />
+	  <PackageReference Include="dotnet-etcd-core" Version="8.0.2" />
 	</ItemGroup>
 
 </Project>

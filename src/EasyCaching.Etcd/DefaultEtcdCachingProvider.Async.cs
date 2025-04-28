@@ -10,7 +10,7 @@ namespace EasyCaching.Etcd
 {
 
     /// <summary>
-    /// MemoryCaching provider.
+    /// EtcdCaching provider.
     /// </summary>
     public partial class DefaultEtcdCachingProvider : EasyCachingAbstractProvider
     {
@@ -28,7 +28,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            var result = await _cache.GetAsync<T>(cacheKey);
+            var result = await _etcdClient.GetAsync<T>(cacheKey);
             if (result.HasValue)
             {
                 if (_options.EnableLogging)
@@ -44,7 +44,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"Cache Missed : cachekey = {cacheKey}");
 
-            if (!await _cache.SetAsync($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
+            if (!await _etcdClient.SetAsync($"{cacheKey}_Lock", "1", TimeSpan.FromMilliseconds(_options.LockMs)))
             {
                 //wait for some ms
                 await Task.Delay(_options.SleepMs, cancellationToken);
@@ -59,21 +59,21 @@ namespace EasyCaching.Etcd
                 {
                     await SetAsync(cacheKey, res, expiration);
                     //remove mutex key
-                    await _cache.DeleteAsync($"{cacheKey}_Lock");
+                    await _etcdClient.DeleteAsync($"{cacheKey}_Lock");
 
                     return new CacheValue<T>(res, true);
                 }
                 else
                 {
                     //remove mutex key
-                    await _cache.DeleteAsync($"{cacheKey}_Lock");
+                    await _etcdClient.DeleteAsync($"{cacheKey}_Lock");
                     return CacheValue<T>.NoValue;
                 }
             }
             catch
             {
                 //remove mutex key
-                await _cache.DeleteAsync($"{cacheKey}_Lock");
+                await _etcdClient.DeleteAsync($"{cacheKey}_Lock");
                 throw;
             }
         }
@@ -89,7 +89,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await _cache.GetAsync<T>(cacheKey);
+            var result = await _etcdClient.GetAsync<T>(cacheKey);
 
             if (result.HasValue)
             {
@@ -119,7 +119,7 @@ namespace EasyCaching.Etcd
         /// <param name="cancellationToken">CancellationToken</param>
         public override async Task<int> BaseGetCountAsync(string prefix = "", CancellationToken cancellationToken = default)
         {
-            var dicData = await _cache.GetAllAsync(prefix);
+            var dicData = await _etcdClient.GetAllAsync(prefix);
             return dicData != null ? dicData.Count : 0;
         }
 
@@ -134,7 +134,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var result = await _cache.GetAsync<object>(cacheKey);
+            var result = await _etcdClient.GetAsync<object>(cacheKey);
 
             if (result != null)
             {
@@ -166,7 +166,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            await _cache.DeleteAsync(cacheKey);
+            await _etcdClient.DeleteAsync(cacheKey);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace EasyCaching.Etcd
 
             //var valExpiration = expiration.Seconds <= 1 ? expiration : TimeSpan.FromSeconds(expiration.Seconds / 2);
             //var val = new CacheValue<T>(cacheValue, true, valExpiration);
-            await _cache.SetAsync<T>(cacheKey, cacheValue, expiration);
+            await _etcdClient.SetAsync<T>(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            return await _cache.ExistsAsync(cacheKey);
+            return await _etcdClient.ExistsAsync(cacheKey);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace EasyCaching.Etcd
         {
             ArgumentCheck.NotNullOrWhiteSpace(prefix, nameof(prefix));
 
-            var count = await _cache.DeleteRangeDataAsync(prefix);
+            var count = await _etcdClient.DeleteRangeDataAsync(prefix);
 
             if (_options.EnableLogging)
                 _logger?.LogInformation($"RemoveByPrefixAsync : prefix = {prefix} , count = {count}");
@@ -252,7 +252,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in values)
             {
-                await _cache.SetAsync(item.Key, item.Value, expiration);
+                await _etcdClient.SetAsync(item.Key, item.Value, expiration);
             }
         }
 
@@ -290,7 +290,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("GetAllKeysAsync");
 
-            var dicData = await _cache.GetAllAsync(prefix);
+            var dicData = await _etcdClient.GetAllAsync(prefix);
             List<string> result = new List<string>();
             foreach (var item in dicData)
             {
@@ -313,7 +313,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation($"GetByPrefixAsync : prefix = {prefix}");
 
-            var dicData = await _cache.GetAllAsync(prefix);
+            var dicData = await _etcdClient.GetAllAsync(prefix);
             Dictionary<string, CacheValue<T>> result = new Dictionary<string, CacheValue<T>>();
             foreach (var item in dicData)
             {
@@ -337,7 +337,7 @@ namespace EasyCaching.Etcd
 
             foreach (var item in cacheKeys)
             {
-                await _cache.DeleteAsync(item);
+                await _etcdClient.DeleteAsync(item);
             }
         }
 
@@ -351,7 +351,7 @@ namespace EasyCaching.Etcd
             if (_options.EnableLogging)
                 _logger?.LogInformation("FlushAsync");
 
-            var dicData = await _cache.GetAllAsync("");
+            var dicData = await _etcdClient.GetAllAsync("");
             if (dicData != null)
             {
                 List<string> listKeys = new List<string>(dicData.Count);
@@ -361,7 +361,6 @@ namespace EasyCaching.Etcd
                 }
                 await BaseRemoveAllAsync(listKeys);
             }
-            //throw new NotSupportedException("BaseFlushAsync is not supported in Etcd provider.");
         }
 
         /// <summary>
@@ -379,8 +378,7 @@ namespace EasyCaching.Etcd
             ArgumentCheck.NotNull(cacheValue, nameof(cacheValue), _options.CacheNulls);
             ArgumentCheck.NotNegativeOrZero(expiration, nameof(expiration));
 
-            //var val = new CacheValue<T>(cacheValue, true, expiration);
-            return await _cache.SetAsync(cacheKey, cacheValue, expiration);
+            return await _etcdClient.SetAsync(cacheKey, cacheValue, expiration);
         }
 
         /// <summary>
@@ -389,11 +387,11 @@ namespace EasyCaching.Etcd
         /// <param name="cacheKey">cache key</param>
         /// <param name="cancellationToken">CancellationToken</param>
         /// <returns>expiration</returns>
-        public override Task<TimeSpan> BaseGetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
+        public override async Task<TimeSpan> BaseGetExpirationAsync(string cacheKey, CancellationToken cancellationToken = default)
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
-
-            throw new NotSupportedException("BaseGetExpirationAsync is not supported in Etcd provider.");
+            var secondsTTL = await _etcdClient.GetExpireTTLAsync(cacheKey);
+            return TimeSpan.FromSeconds(secondsTTL);
         }
     }
 }
