@@ -39,9 +39,9 @@ jobs:
         image: quay.io/coreos/etcd:v3.5.18
         ports:
           - 2379:2379
-        command: >
-          etcd 
-          --advertise-client-urls http://0.0.0.0:2379 
+        options: >- 
+          --name etcd 
+          --advertise-client-urls http://127.0.0.1:2379 
           --listen-client-urls http://0.0.0.0:2379  
         env:
           ETCDCTL_API: 3
