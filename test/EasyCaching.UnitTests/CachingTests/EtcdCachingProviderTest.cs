@@ -17,6 +17,7 @@ namespace EasyCaching.UnitTests.CachingTests
 
         public EtcdCachingProviderTest()
         {
+            _defaultTs = TimeSpan.FromSeconds(30);
         }
 
         protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
