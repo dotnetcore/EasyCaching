@@ -44,6 +44,7 @@ namespace EasyCaching.Etcd
             this._etcdClient = new EtcdClient(connectionString: options.Address, configureChannelOptions: (x) =>
             {
                 x.Credentials = ChannelCredentials.Insecure;
+                x.LoggerFactory = loggerFactory;
             });
             //auth
             if (!string.IsNullOrEmpty(options.UserName) && !string.IsNullOrEmpty(options.Password))
@@ -141,10 +142,9 @@ namespace EasyCaching.Etcd
         /// </summary>
         /// <param name="ts"></param>
         /// <returns></returns>
-        private long GetRentLeaseId(TimeSpan? ts)
+        private long GetRentLeaseId(TimeSpan? ts, CancellationTokenSource cts)
         {
             // create rent id to bind
-            CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
             var response = _etcdClient.LeaseGrant(request: new LeaseGrantRequest()
             {
                 TTL = (long)(ts.Value.TotalMilliseconds < 1000 ? 1: ts.Value.TotalMilliseconds / 1000),
@@ -164,7 +164,7 @@ namespace EasyCaching.Etcd
             var response = await _etcdClient.LeaseGrantAsync(request: new LeaseGrantRequest()
             {
                 TTL = (long)(ts.Value.TotalMilliseconds < 1000 ? 1 : ts.Value.TotalMilliseconds / 1000),
-            }, cancellationToken: cts.Token);
+            }, deadline: DateTime.UtcNow.AddMilliseconds(_options.Timeout), cancellationToken: cts.Token);
             return response.ID;
         }
 
@@ -179,8 +179,8 @@ namespace EasyCaching.Etcd
         {
             try
             {
-                long leaseId = ts.HasValue ? GetRentLeaseId(ts) : 0;
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                long leaseId = ts.HasValue ? GetRentLeaseId(ts,cts) : 0;
                 PutRequest request = new PutRequest()
                 {
                     Key = ByteString.CopyFromUtf8(key),
@@ -236,14 +236,14 @@ namespace EasyCaching.Etcd
         {
             try
             {
-                long leaseId = ts.HasValue ? GetRentLeaseId(ts) : 0;
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                long leaseId = ts.HasValue ? GetRentLeaseId(ts,cts) : 0;
                 LockRequest request = new LockRequest()
                 {
                     Name = ByteString.CopyFromUtf8(key),
                     Lease = leaseId
                 };
-                var response = _etcdClient.Lock(request: request, headers: _metadata, deadline: DateTime.UtcNow.AddSeconds(_options.Timeout), cancellationToken: cts.Token);
+                var response = _etcdClient.Lock(request: request, headers: _metadata, deadline: DateTime.UtcNow.AddMilliseconds(_options.Timeout), cancellationToken: cts.Token);
                 if (response?.Key == null || response.Key.IsEmpty)
                 {
                     return false;
@@ -275,14 +275,14 @@ namespace EasyCaching.Etcd
         {
             try
             {
-                long leaseId = ts.HasValue ? GetRentLeaseId(ts) : 0;
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
+                long leaseId = ts.HasValue ? GetRentLeaseId(ts,cts) : 0;
                 LockRequest request = new LockRequest()
                 {
                     Name = ByteString.CopyFromUtf8(key),
                     Lease = leaseId
                 };
-                var response = await _etcdClient.LockAsync(request: request, headers: _metadata,deadline: DateTime.UtcNow.AddSeconds(_options.Timeout), cancellationToken: cts.Token);
+                var response = await _etcdClient.LockAsync(request: request, headers: _metadata, deadline: DateTime.UtcNow.AddMilliseconds(_options.Timeout), cancellationToken: cts.Token);
                 if (response?.Key == null || response.Key.IsEmpty)
                 {
                     return false;
@@ -315,7 +315,7 @@ namespace EasyCaching.Etcd
             try
             {
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-                var response = _etcdClient.Unlock(key, headers: _metadata, cancellationToken: cts.Token);
+                var response = _etcdClient.Unlock(key, headers: _metadata, deadline: DateTime.UtcNow.AddMilliseconds(_options.Timeout), cancellationToken: cts.Token);
                 return true;
             }
             catch (Exception ex)
@@ -335,7 +335,7 @@ namespace EasyCaching.Etcd
             try
             {
                 CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(_options.Timeout));
-                var response = await _etcdClient.UnlockAsync(key, headers: _metadata, cancellationToken: cts.Token);
+                var response = await _etcdClient.UnlockAsync(key, headers: _metadata, deadline: DateTime.UtcNow.AddMilliseconds(_options.Timeout), cancellationToken: cts.Token);
                 return true;
             }
             catch (Exception ex)

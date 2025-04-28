@@ -75,7 +75,6 @@ public class LocksController : Controller
 
         try
         {
-            await distributedLock.LockAsync(millisecondsTimeout);
             if (await distributedLock.LockAsync(millisecondsTimeout))
             {
                 // Simulate operation

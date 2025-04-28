@@ -8,7 +8,7 @@
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        //1. InMemory,Memcached,Redis,SQLite,FasterKv
+        //1. InMemory,Memcached,Redis,SQLite,FasterKv,Etcd
         private readonly IEasyCachingProvider _provider;
 
         public ValuesController(IEasyCachingProvider provider)
@@ -38,6 +38,9 @@
                 case "set" :
                     _provider.Set("demo", "123", TimeSpan.FromMinutes(1));
                     return "seted";
+                case "getexpiretime":
+                   var timeSpanData = _provider.GetExpiration("demo");
+                    return $"{timeSpanData.TotalSeconds}";
                 case "remove" :
                     _provider.Remove("demo");
                     return "removed";
@@ -64,6 +67,9 @@
                 case "set":
                     await _provider.SetAsync("demo", "123", TimeSpan.FromMinutes(1));
                     return "seted";
+                case "getexpiretime":
+                    var timeSpanData = _provider.GetExpiration("demo");
+                    return $"{timeSpanData.TotalSeconds}";
                 case "remove":
                     await _provider.RemoveAsync("demo");
                     return "removed";
