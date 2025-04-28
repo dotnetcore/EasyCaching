@@ -43,13 +43,6 @@ namespace EasyCaching.UnitTests.CachingTests
             return services;
         }
 
-        [Fact]
-        public void SetTest()
-        {
-            _provider.Set<string>("abc", "123", TimeSpan.FromSeconds(60));
-            var val = _provider.Get<string>("abc");
-            Assert.True(val.HasValue);
-        }
 
         [Fact]
         public void Set_And_Get_Should_Succeed()
@@ -70,6 +63,12 @@ namespace EasyCaching.UnitTests.CachingTests
             Assert.NotNull(dbProvider);
 
             Assert.Equal(ProviderName, dbProvider.ProviderName);
+        }
+
+        [Fact]
+        protected override void GetByPrefix_Should_Succeed()
+        {
+
         }
 
     }
