@@ -1,12 +1,9 @@
 ﻿using EasyCaching.Core;
-using EasyCaching.Core.Configurations;
 using EasyCaching.Etcd;
-using FakeItEasy;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Xunit;
 
 namespace EasyCaching.UnitTests.CachingTests
@@ -19,7 +16,7 @@ namespace EasyCaching.UnitTests.CachingTests
         public EtcdCachingProviderTest()
         {
             // _defaultTs = TimeSpan.FromSeconds(30);
-           var services = getServiceCollection();
+            var services = getServiceCollection();
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             _provider = serviceProvider.GetService<IEasyCachingProvider>();
         }
@@ -37,7 +34,7 @@ namespace EasyCaching.UnitTests.CachingTests
             services.AddEasyCaching(option =>
                 option.UseEtcd(options =>
                 {
-                    options.Address = "http://121.196.220.148:12379";
+                    options.Address = "http://127.0.0.1:2379";
                     options.Timeout = 30000;
                     options.SerializerName = "json";
                 }, ProviderName).WithJson(jsonSerializerSettingsConfigure: x =>
@@ -60,7 +57,7 @@ namespace EasyCaching.UnitTests.CachingTests
         [Fact]
         public async Task SetAsync_And_GetAsync_Should_Succeed()
         {
-           await _provider.SetAsync<string>("abcd", "1234", TimeSpan.FromSeconds(60));
+            await _provider.SetAsync<string>("abcd", "1234", TimeSpan.FromSeconds(60));
             var val = await _provider.GetAsync<string>("abcd");
             Assert.True(val.HasValue);
             Assert.Equal("1234", val.Value);
@@ -76,8 +73,8 @@ namespace EasyCaching.UnitTests.CachingTests
         [Fact]
         public async Task RemoveAsync_Should_Succeed()
         {
-           await _provider.SetAsync<string>("abcf", "123", TimeSpan.FromSeconds(60));
-           await _provider.RemoveAsync("abcf");
+            await _provider.SetAsync<string>("abcf", "123", TimeSpan.FromSeconds(60));
+            await _provider.RemoveAsync("abcf");
         }
 
 
