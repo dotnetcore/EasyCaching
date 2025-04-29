@@ -67,4 +67,33 @@ public class LocksController : Controller
             await memoryLock.ReleaseAsync();
         }
     }
+
+    [HttpPost("etcd-locking")]
+    public async Task EtcdLockingOperation(int millisecondsTimeout)
+    {
+        using var distributedLock = _distributedLockFactory.CreateLock("DefaultEtcd", "YourKey");
+
+        try
+        {
+            if (await distributedLock.LockAsync(millisecondsTimeout))
+            {
+                // Simulate operation
+                Thread.Sleep(2000);
+            }
+            else
+            {
+                // Proper error
+            }
+        }
+        catch (Exception ex)
+        {
+            // log error
+            throw new Exception("Exception", ex);
+        }
+        finally
+        {
+            // release lock at the end
+            await distributedLock.ReleaseAsync();
+        }
+    }
 }

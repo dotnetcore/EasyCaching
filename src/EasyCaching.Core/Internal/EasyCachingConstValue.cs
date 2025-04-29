@@ -119,7 +119,17 @@
         /// The default name of the FasterKv
         /// </summary>
         public const string DefaultFasterKvName = "DefaultFasterKvName";
-        
+
+        /// <summary>
+        /// The default name of the etcd.
+        /// </summary>
+        public const string DefaultEtcdName = "DefaultEtcd";
+
+        /// <summary>
+        /// The etcd section.
+        /// </summary>
+        public const string EtcdSection = "easycaching:etcd";
+
         /// <summary>
         /// The FasterKv section.
         /// </summary>

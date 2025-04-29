@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\bus\EasyCaching.Bus.Redis\EasyCaching.Bus.Redis.csproj" />
     <ProjectReference Include="..\..\interceptor\EasyCaching.Interceptor.AspectCore\EasyCaching.Interceptor.AspectCore.csproj" />
     <ProjectReference Include="..\..\serialization\EasyCaching.Serialization.Json\EasyCaching.Serialization.Json.csproj" />
+    <ProjectReference Include="..\..\src\EasyCaching.Etcd\EasyCaching.Etcd.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.HybridCache\EasyCaching.HybridCache.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.InMemory\EasyCaching.InMemory.csproj" />
     <ProjectReference Include="..\..\src\EasyCaching.Redis\EasyCaching.Redis.csproj" />
