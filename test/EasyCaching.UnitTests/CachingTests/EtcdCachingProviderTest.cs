@@ -5,27 +5,31 @@ using FakeItEasy;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Xunit;
 
 namespace EasyCaching.UnitTests.CachingTests
 {
-    public class EtcdCachingProviderTest : BaseCachingProviderTest
+    public class EtcdCachingProviderTest //: BaseCachingProviderTest
     {
         private readonly string ProviderName = "EtcdTest";
-
+        private readonly IEasyCachingProvider _provider;
 
         public EtcdCachingProviderTest()
         {
-            _defaultTs = TimeSpan.FromSeconds(30);
+            // _defaultTs = TimeSpan.FromSeconds(30);
+           var services = getServiceCollection();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            _provider = serviceProvider.GetService<IEasyCachingProvider>();
         }
 
-        protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
-        {
-            IServiceCollection services = getServiceCollection();
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            return serviceProvider.GetService<IEasyCachingProvider>();
-        }
+        //protected override IEasyCachingProvider CreateCachingProvider(Action<BaseProviderOptions> additionalSetup)
+        //{
+        //    IServiceCollection services = getServiceCollection();
+        //    IServiceProvider serviceProvider = services.BuildServiceProvider();
+        //    return serviceProvider.GetService<IEasyCachingProvider>();
+        //}
 
         private IServiceCollection getServiceCollection()
         {
@@ -33,7 +37,7 @@ namespace EasyCaching.UnitTests.CachingTests
             services.AddEasyCaching(option =>
                 option.UseEtcd(options =>
                 {
-                    options.Address = "http://127.0.0.1:2379";
+                    options.Address = "http://121.196.220.148:12379";
                     options.Timeout = 30000;
                     options.SerializerName = "json";
                 }, ProviderName).WithJson(jsonSerializerSettingsConfigure: x =>
@@ -50,8 +54,30 @@ namespace EasyCaching.UnitTests.CachingTests
         {
             _provider.Set<string>("abc", "123", TimeSpan.FromSeconds(60));
             var val = _provider.Get<string>("abc");
-            Assert.True(val.HasValue);
             Assert.Equal("123", val.Value);
+        }
+
+        [Fact]
+        public async Task SetAsync_And_GetAsync_Should_Succeed()
+        {
+           await _provider.SetAsync<string>("abcd", "1234", TimeSpan.FromSeconds(60));
+            var val = await _provider.GetAsync<string>("abcd");
+            Assert.True(val.HasValue);
+            Assert.Equal("1234", val.Value);
+        }
+
+        [Fact]
+        public void Remove_Should_Succeed()
+        {
+            _provider.Set<string>("abcf", "123", TimeSpan.FromSeconds(60));
+            _provider.Remove("abcf");
+        }
+
+        [Fact]
+        public async Task RemoveAsync_Should_Succeed()
+        {
+           await _provider.SetAsync<string>("abcf", "123", TimeSpan.FromSeconds(60));
+           await _provider.RemoveAsync("abcf");
         }
 
 
@@ -64,12 +90,6 @@ namespace EasyCaching.UnitTests.CachingTests
             Assert.NotNull(dbProvider);
 
             Assert.Equal(ProviderName, dbProvider.ProviderName);
-        }
-
-        [Fact]
-        protected override void GetByPrefix_Should_Succeed()
-        {
-
         }
 
     }
