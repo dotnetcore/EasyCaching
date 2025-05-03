@@ -61,3 +61,7 @@ jobs:
       - name: Run tests on net8.0
         run: |
           dotnet test --framework=net8.0 /home/runner/work/EasyCaching/EasyCaching/test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj
+
+      - name: Run tests on net9.0
+        run: |
+          dotnet test --framework=net9.0 /home/runner/work/EasyCaching/EasyCaching/test/EasyCaching.UnitTests/EasyCaching.UnitTests.csproj          
