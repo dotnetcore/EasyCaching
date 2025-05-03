@@ -38,7 +38,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var len = _cache.SortedSetLengthByValue(cacheKey, min, max);
+            var len = _cache.SortedSetLength(cacheKey, min, max);
             return len;
         }
 
@@ -166,7 +166,7 @@
         {
             ArgumentCheck.NotNullOrWhiteSpace(cacheKey, nameof(cacheKey));
 
-            var len = await _cache.SortedSetLengthByValueAsync(cacheKey, min, max);
+            var len = await _cache.SortedSetLengthAsync(cacheKey, min, max);
             return len;
         }
 

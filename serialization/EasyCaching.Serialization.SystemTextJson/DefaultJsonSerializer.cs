@@ -3,6 +3,7 @@ using EasyCaching.Core.Serialization;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace EasyCaching.Serialization.SystemTextJson
@@ -16,6 +17,10 @@ namespace EasyCaching.Serialization.SystemTextJson
         /// The json serializer.
         /// </summary>
         private readonly JsonSerializerOptions jsonSerializerOption;
+        /// <summary>
+        /// The option for Utf8JsonWriter.
+        /// </summary>
+        private readonly JsonWriterOptions _jsonWriterOption;
         /// <summary>
         /// The name.
         /// </summary>
@@ -35,6 +40,10 @@ namespace EasyCaching.Serialization.SystemTextJson
         {
             _name = name;
             jsonSerializerOption = serializerSettings;
+
+            // NOTE: We must use UnsafeRelaxedJsonEscaping instead of the encoder from JsonSerializerOptions,
+            // because we must ensure that the plus sign '+', which is the part of a nested class, is not escaped when writing type name.
+            _jsonWriterOption = new JsonWriterOptions { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
         }
 
         /// <summary>
@@ -64,7 +73,7 @@ namespace EasyCaching.Serialization.SystemTextJson
         /// <param name="value">Value.</param>
         public object DeserializeObject(ArraySegment<byte> value)
         {
-            var jr = new Utf8JsonReader(value);
+            var jr = new Utf8JsonReader(value); // the JsonReaderOptions will be used here, which works well.
             jr.Read();
             if (jr.TokenType == JsonTokenType.StartArray)
             {
@@ -101,7 +110,7 @@ namespace EasyCaching.Serialization.SystemTextJson
             var typeName = TypeHelper.BuildTypeName(obj.GetType());
 
             using (var ms = new MemoryStream())
-            using (var jw = new Utf8JsonWriter(ms))
+            using (var jw = new Utf8JsonWriter(ms, _jsonWriterOption)) 
             {
                 jw.WriteStartArray();
                 jw.WriteStringValue(typeName);
