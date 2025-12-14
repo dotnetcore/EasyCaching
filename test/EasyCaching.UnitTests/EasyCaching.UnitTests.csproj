@@ -61,4 +61,10 @@
 		<ProjectReference Include="..\..\serialization\EasyCaching.Serialization.Protobuf\EasyCaching.Serialization.Protobuf.csproj" />
 		<ProjectReference Include="..\..\serialization\EasyCaching.Serialization.SystemTextJson\EasyCaching.Serialization.SystemTextJson.csproj" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="xunit.runner.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

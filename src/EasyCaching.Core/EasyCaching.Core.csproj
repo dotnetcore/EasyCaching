@@ -54,12 +54,15 @@
 	<ItemGroup>
 	  <PackageReference Include="AsyncKeyedLock" Version="7.1.8" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <PackageReference Include="Backport.System.Threading.Lock" Version="3.1.5" />
-	  <Using Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" Alias="Lock" Include="System.Threading.Lock" />
-	  <Using Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" Alias="Lock" Include="Backport.System.Threading.Lock" />
-	  <Using Alias="LockFactory" Include="Backport.System.Threading.LockFactory" />
+		<PackageReference Include="Backport.System.Threading.Lock" Version="3.1.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>analyzers</IncludeAssets>
+		</PackageReference>
+		<Using Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" Alias="Lock" Include="System.Threading.Lock" />
+		<Using Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net9.0'))" Alias="Lock" Include="Backport.System.Threading.Lock" />
+		<Using Alias="LockFactory" Include="Backport.System.Threading.LockFactory" />
 	</ItemGroup>	
 
 </Project>
