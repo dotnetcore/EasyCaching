@@ -417,7 +417,7 @@
     public class MemcachedProviderNoConnectionTest 
     {
         [Fact]
-        public async void NoConnectionTest()
+        public async Task NoConnectionTest()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddLogging();

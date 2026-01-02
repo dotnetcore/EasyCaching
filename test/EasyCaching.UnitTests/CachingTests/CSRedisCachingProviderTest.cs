@@ -42,7 +42,7 @@ namespace EasyCaching.UnitTests
         }
 
         /*[Fact]
-        public async void Use_Redis6_ACL_Should_Succeed()
+        public async Task Use_Redis6_ACL_Should_Succeed()
         {
             IServiceCollection services = new ServiceCollection();
             services.AddEasyCaching(x =>

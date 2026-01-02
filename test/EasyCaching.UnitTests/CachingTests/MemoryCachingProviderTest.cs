@@ -156,7 +156,7 @@ namespace EasyCaching.UnitTests
         }
 
         [Fact]
-        public async void Issues497_GetCountAsync_Check_Expires_Test()
+        public async Task Issues497_GetCountAsync_Check_Expires_Test()
         {
             for (int i = 0; i < 9; i++)
             {

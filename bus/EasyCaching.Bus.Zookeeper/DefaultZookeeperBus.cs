@@ -1,18 +1,18 @@
-﻿namespace EasyCaching.Bus.Zookeeper
-{
-    using EasyCaching.Core;
-    using EasyCaching.Core.Bus;
-    using EasyCaching.Core.Serialization;
-    using Microsoft.Extensions.Options;
-    using org.apache.zookeeper;
-    using org.apache.zookeeper.data;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using EasyCaching.Core;
+using EasyCaching.Core.Bus;
+using EasyCaching.Core.Serialization;
+using Microsoft.Extensions.Options;
+using org.apache.zookeeper;
+using org.apache.zookeeper.data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace EasyCaching.Bus.Zookeeper
+{
     public class DefaultZookeeperBus : EasyCachingAbstractBus
     {
         /// <summary>
@@ -41,7 +41,7 @@
         /// <summary>
         /// lock
         /// </summary>
-        private readonly object _zkEventLock = new object();
+        private readonly Lock _zkEventLock = LockFactory.Create();
 
         /// <summary>
         /// The serializer.
@@ -214,7 +214,7 @@
         /// <returns></returns>
         private async Task ReZkConnect()
         {
-            if (!Monitor.TryEnter(_zkEventLock, _zkBusOptions.ConnectionTimeout))
+            if (!_zkEventLock.TryEnter(_zkBusOptions.ConnectionTimeout))
                 return;
             try
             {
@@ -234,7 +234,7 @@
             }
             finally
             {
-                Monitor.Exit(_zkEventLock);
+                _zkEventLock.Exit();
             }
         }
 
